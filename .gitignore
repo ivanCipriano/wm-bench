@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+build/
+artifacts/
+.cache/
+*.sif
+containers/sandbox_dir/
