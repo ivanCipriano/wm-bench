@@ -1,0 +1,27 @@
+[submodule "third_party/sweet-watermark"]
+	path = third_party/sweet-watermark
+	url = https://github.com/hongcheki/sweet-watermark
+[submodule "third_party/ACW"]
+	path = third_party/ACW
+	url = https://github.com/Noelle1831-k/ACW
+[submodule "third_party/STONE-watermarking"]
+	path = third_party/STONE-watermarking
+	url = https://github.com/inistory/STONE-watermarking
+[submodule "third_party/code_acrostic"]
+	path = third_party/code_acrostic
+	url = https://github.com/XHLin-gamer/code_acrostic
+[submodule "third_party/PromptMark"]
+	path = third_party/PromptMark
+	url = https://github.com/ahmedfahad04/promptmark
+[submodule "third_party/MCGMT"]
+	path = third_party/MCGMT
+	url = https://github.com/KevinHeiwa/MCGMT
+[submodule "third_party/bigcode-evaluation-harness"]
+	path = third_party/bigcode-evaluation-harness
+	url = https://github.com/bigcode-project/bigcode-evaluation-harness
+[submodule "third_party/ClassEval"]
+	path = third_party/ClassEval
+	url = https://github.com/FudanSELab/ClassEval
+[submodule "third_party/lm-watermarking"]
+	path = third_party/lm-watermarking
+	url = https://github.com/jwkirchenbauer/lm-watermarking
