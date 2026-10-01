@@ -1,0 +1,24 @@
+# Contratti condivisi tra orchestratore e worker (SPEC §5.1).
+# Solo libreria standard, compatibile con Python >= 3.9 (cluster_info §1).
+# Installazione in tutti e 7 gli ambienti: scripts/install_contracts.sh
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bench-contracts"
+version = "1.0.0"
+description = "Contratti stdlib-only tra orchestratore wm-bench e worker dei metodi"
+requires-python = ">=3.9"
+dependencies = []
+
+[tool.setuptools]
+packages = ["bench_contracts"]
+
+[tool.setuptools.package-data]
+bench_contracts = ["py.typed"]
+
+[tool.ruff]
+extend = "../../pyproject.toml"
+target-version = "py39"
