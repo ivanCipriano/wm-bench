@@ -1,0 +1,13 @@
+diff --git a/lm_eval/generation.py b/lm_eval/generation.py
+index dfa14eb..6209b93 100644
+--- a/lm_eval/generation.py
++++ b/lm_eval/generation.py
+@@ -79,7 +79,7 @@ def parallel_generations(task, dataset, accelerator, model, tokenizer, n_tasks,
+         gen_kwargs["logits_processor"] = LogitsProcessorList(
+             [sweet_processor]
+         )
+-    elif args.rdfw or args.srdfw:
++    elif args.exp:
+         exp_processor = EXPLogitsProcessor(vocab=list(tokenizer.get_vocab().values()),
+                                                         n=args.key_length,
+                                                         temperature=args.temperature, # consider the temperature here because after RDFW, the token to be generated is fixed

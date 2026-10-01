@@ -1,0 +1,36 @@
+diff --git a/stone_implementation/evaluation/stem.py b/stone_implementation/evaluation/stem.py
+index 06a68d4..9b61bd4 100644
+--- a/stone_implementation/evaluation/stem.py
++++ b/stone_implementation/evaluation/stem.py
+@@ -8,7 +8,7 @@ Description of calculate_STEM function parameters:
+ """
+ def calculate_STEM(pass_k, AUROC, perplexity_H, perplexity_wm):
+     try: 
+-        correctness = round((pass_k)/2,3)
++        correctness = round(pass_k,3)
+         detectability = round(AUROC,3)
+         naturalness = round(1-(abs(perplexity_wm-perplexity_H)) / perplexity_H ,3)
+         STEM =  round((correctness + detectability + naturalness)/3,3)
+diff --git a/stone_implementation/run.py b/stone_implementation/run.py
+index a2cd8ac..2e3b06c 100644
+--- a/stone_implementation/run.py
++++ b/stone_implementation/run.py
+@@ -200,14 +200,14 @@ if __name__ == '__main__':
+             unwatermarked_codes.append(unwatermarked_completions)  
+         elif args.data == 'mbppplus':
+             for completion in watermarked_completions:
+-                watermarked_codes.append({"task_id": f"Mbpp/{task_id}", "solution": completion})
++                watermarked_codes.append({"task_id": task_id, "solution": completion})
+             for completion in unwatermarked_completions:
+-                unwatermarked_codes.append({"task_id": f"Mbpp/{task_id}", "solution": completion})
++                unwatermarked_codes.append({"task_id": task_id, "solution": completion})
+         else:
+             for completion in watermarked_completions:
+-                watermarked_codes.append({"task_id": f"HumanEval/{task_id}", "completion": completion})
++                watermarked_codes.append({"task_id": task_id, "completion": completion})
+             for completion in unwatermarked_completions:
+-                unwatermarked_codes.append({"task_id": f"HumanEval/{task_id}", "completion": completion})            
++                unwatermarked_codes.append({"task_id": task_id, "completion": completion})            
+ 
+     # Calculate average perplexity for each sample
+     average_perplexity_watermarked_samples = []

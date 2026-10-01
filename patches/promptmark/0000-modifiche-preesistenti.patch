@@ -1,0 +1,193 @@
+diff --git a/requirements.txt b/requirements.txt
+index 35925a3..a852d5b 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -17,4 +17,4 @@ scikit-learn>=1.0.0
+ 
+ # Utilities
+ python-dotenv>=0.19.0       # Environment variable management
+-dark>=22.0.0                # Optional: code formatting
++black>=22.0.0                # Optional: code formatting
+diff --git a/scripts/evals/batch_eval.py b/scripts/evals/batch_eval.py
+index ac3dea5..b76aae9 100644
+--- a/scripts/evals/batch_eval.py
++++ b/scripts/evals/batch_eval.py
+@@ -303,7 +303,7 @@ def main():
+             if dataset == 'humaneval':
+                 reference_file = f"{base_dir}/datasets/human_eval_164.jsonl"
+             elif dataset == 'mbpp':
+-                reference_file = f"{base_dir}/datasets/sanitized-mbpp.json"
++                reference_file = f"{base_dir}/datasets/sanitized-mbpp-sample-100.jsonl"
+             else:
+                 reference_file = f"{base_dir}/datasets/{dataset}.jsonl"  # fallback
+             
+diff --git a/scripts/evals/comprehensive_evaluation.py b/scripts/evals/comprehensive_evaluation.py
+index 74c3b4b..4f8dcda 100644
+--- a/scripts/evals/comprehensive_evaluation.py
++++ b/scripts/evals/comprehensive_evaluation.py
+@@ -592,7 +592,7 @@ def main():
+             if dataset == 'humaneval':
+                 ref_file = f"{base_dir}/datasets/human_eval_164.jsonl"
+             elif dataset == 'mbpp':
+-                ref_file = f"{base_dir}/datasets/sanitized-mbpp.json"
++                ref_file = f"{base_dir}/datasets/sanitized-mbpp-sample-100.jsonl"
+             else:
+                 ref_file = f"{base_dir}/datasets/{dataset}.jsonl"
+             args.csv_file = f"{base_dir}/results/raw/{experiment}.csv"
+diff --git a/scripts/evals/quick_eval.py b/scripts/evals/quick_eval.py
+index 8f7ccf6..f63b6a4 100644
+--- a/scripts/evals/quick_eval.py
++++ b/scripts/evals/quick_eval.py
+@@ -65,7 +65,7 @@ def get_default_paths(experiment: str):
+     if dataset == 'humaneval':
+         reference_file = f"{base_dir}/datasets/human_eval_164.jsonl"
+     elif dataset == 'mbpp':
+-        reference_file = f"{base_dir}/datasets/sanitized-mbpp.json"
++        reference_file = f"{base_dir}/datasets/sanitized-mbpp-sample-100.jsonl"
+     else:
+         reference_file = f"{base_dir}/datasets/{dataset}.jsonl"  # fallback
+     
+diff --git a/scripts/evals/sweet_codebleu_eval/calculate_codebleu_ast_dataflow_only.py b/scripts/evals/sweet_codebleu_eval/calculate_codebleu_ast_dataflow_only.py
+index c3237c2..59f60a3 100644
+--- a/scripts/evals/sweet_codebleu_eval/calculate_codebleu_ast_dataflow_only.py
++++ b/scripts/evals/sweet_codebleu_eval/calculate_codebleu_ast_dataflow_only.py
+@@ -18,7 +18,7 @@ from typing import Dict, List, Tuple, Any
+ from collections import defaultdict
+ 
+ # Add metrics to path
+-metrics_dir = '/home/fahad/Documents/PROJECTS/promptmark/experiments/evals/metrics'
++metrics_dir = '/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/repos/shared/promptmark/scripts/evals/metrics'
+ sys.path.insert(0, metrics_dir)
+ 
+ try:
+@@ -321,7 +321,7 @@ def calculate_codebleu_ast_dataflow(
+ def main():
+     """Main execution"""
+     
+-    base_path = Path('/home/fahad/Documents/PROJECTS/promptmark')
++    base_path = Path('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/repos/shared/promptmark')
+     
+     # MBPP paths
+     mbpp_gen_path = base_path / 'output/baseline_results/mbpp/generations.json'
+diff --git a/scripts/evals/sweet_codebleu_eval/calculate_codebleu_eval_mapping.py b/scripts/evals/sweet_codebleu_eval/calculate_codebleu_eval_mapping.py
+index fe9b44e..2c555a5 100644
+--- a/scripts/evals/sweet_codebleu_eval/calculate_codebleu_eval_mapping.py
++++ b/scripts/evals/sweet_codebleu_eval/calculate_codebleu_eval_mapping.py
+@@ -15,7 +15,7 @@ import re
+ from collections import defaultdict
+ 
+ # Add metrics to path
+-metrics_dir = '/home/fahad/Documents/PROJECTS/promptmark/experiments/evals/metrics'
++metrics_dir = '/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/repos/shared/promptmark/scripts/evals/metrics'
+ sys.path.insert(0, metrics_dir)
+ 
+ try:
+@@ -246,7 +246,7 @@ def calculate_codebleu_with_eval_mapping(
+ def main():
+     """Main execution function"""
+     
+-    base_path = Path('/home/fahad/Documents/PROJECTS/promptmark')
++    base_path = Path('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/repos/shared/promptmark')
+     
+     # MBPP paths
+     mbpp_gen_path = base_path / 'output/baseline_results/mbpp/generations.json'
+diff --git a/scripts/evals/sweet_codebleu_eval/calculate_codebleu_with_mapping.py b/scripts/evals/sweet_codebleu_eval/calculate_codebleu_with_mapping.py
+index 57695e7..254f794 100644
+--- a/scripts/evals/sweet_codebleu_eval/calculate_codebleu_with_mapping.py
++++ b/scripts/evals/sweet_codebleu_eval/calculate_codebleu_with_mapping.py
+@@ -19,7 +19,7 @@ import re
+ from collections import defaultdict
+ 
+ # Add metrics to path
+-metrics_dir = '/home/fahad/Documents/PROJECTS/promptmark/experiments/evals/metrics'
++metrics_dir = '/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/repos/shared/promptmark/scripts/evals/metrics'
+ sys.path.insert(0, metrics_dir)
+ 
+ try:
+@@ -407,7 +407,7 @@ def calculate_std(values: List[float]) -> float:
+ def main():
+     """Main execution function"""
+     
+-    base_path = Path('/home/fahad/Documents/PROJECTS/promptmark')
++    base_path = Path('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/repos/shared/promptmark')
+     
+     # MBPP paths
+     mbpp_gen_path = base_path / 'output/baseline_results/mbpp/generations.json'
+diff --git a/scripts/evals/sweet_codebleu_eval/sample_and_codebleu.py b/scripts/evals/sweet_codebleu_eval/sample_and_codebleu.py
+index ffe158f..5627b19 100644
+--- a/scripts/evals/sweet_codebleu_eval/sample_and_codebleu.py
++++ b/scripts/evals/sweet_codebleu_eval/sample_and_codebleu.py
+@@ -263,7 +263,7 @@ def main():
+     """Main execution."""
+     
+     # Define paths
+-    base_dir = "/home/fahad/Documents/PROJECTS/promptmark"
++    base_dir = "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/repos/shared/promptmark"
+     output_dir = os.path.join(base_dir, "output", "baseline_results")
+     
+     # Find ALL generation JSON files recursively
+diff --git a/scripts/robustness/program_perturb_rename_comments.py b/scripts/robustness/program_perturb_rename_comments.py
+index 568d9dc..e3a9cf6 100644
+--- a/scripts/robustness/program_perturb_rename_comments.py
++++ b/scripts/robustness/program_perturb_rename_comments.py
+@@ -277,7 +277,7 @@ class t_seq(object):
+         return did_change, cur_ast
+ 
+ if __name__ == "__main__":
+-    csv_file = '/home/sakib/Documents/promptmark/scripts/robustness/data/csvs/exp_4_data.csv'
++    csv_file = '/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/repos/shared/promptmark/scripts/robustness/data/csvs/exp_4_data.csv'
+     rows = []
+     with open(csv_file, 'r', newline='') as f:
+         reader = csv.DictReader(f)
+diff --git a/src/run_experiments.sh b/src/run_experiments.sh
+index 8f53890..d3fdcb4 100755
+--- a/src/run_experiments.sh
++++ b/src/run_experiments.sh
+@@ -31,7 +31,7 @@ OUTPUT_DIR="$BASE_DIR/output"
+ RESULTS_DIR="$BASE_DIR/results/raw"
+ 
+ # Active model configuration for experiment runs
+-ACTIVE_PROVIDER="claude"  # claude, gemini
++ACTIVE_PROVIDER="${LLM_PROVIDER:-claude}"  # claude, gemini
+ ACTIVE_MODEL="${DEFAULT_MODEL:-us.anthropic.claude-sonnet-4-20250514-v1:0}"
+ 
+ # Create necessary directories
+@@ -67,13 +67,13 @@ run_experiment() {
+ 
+     print_section "Running $exp_name Experiment"
+     
+-    local output_dir="$OUTPUT_DIR/claude_${exp_name}_during_gen_v1_${sample_size}_${dataset_type}"
+-    local results_csv="$RESULTS_DIR/claude_${exp_name}_during_gen_v1_${sample_size}_${dataset_type}.csv"
++    local output_dir="$OUTPUT_DIR/${ACTIVE_PROVIDER}_${exp_name}_during_gen_v1_${sample_size}_${dataset_type}"
++    local results_csv="$RESULTS_DIR/${ACTIVE_PROVIDER}_${exp_name}_during_gen_v1_${sample_size}_${dataset_type}.csv"
+     
+     # Special case for refactoring which uses "only-gen"
+     if [ "$exp_name" = "expX" ]; then
+-        output_dir="$OUTPUT_DIR/claude_${exp_name}_only-gen_gen_v1_${sample_size}_${dataset_type}"
+-        results_csv="$RESULTS_DIR/claude_${exp_name}_only-gen_gen_v1_${sample_size}_${dataset_type}.csv"
++        output_dir="$OUTPUT_DIR/${ACTIVE_PROVIDER}_${exp_name}_only-gen_gen_v1_${sample_size}_${dataset_type}"
++        results_csv="$RESULTS_DIR/${ACTIVE_PROVIDER}_${exp_name}_only-gen_gen_v1_${sample_size}_${dataset_type}.csv"
+     fi
+ 
+     echo "📊 Experiment: $exp_name"
+@@ -123,7 +123,7 @@ if [ "$DATASET" = "humaneval" ]; then
+     DATASET_PATH="$DATASET_DIR/humaneval_164.jsonl"
+     DATASET_TYPE="humaneval"
+ elif [ "$DATASET" = "mbpp" ]; then
+-    DATASET_PATH="$DATASET_DIR/sanitized-mbpp-sample-100.json"
++    DATASET_PATH="$DATASET_DIR/sanitized-mbpp-sample-100.jsonl"
+     DATASET_TYPE="mbpp"
+ else
+     DATASET_PATH="$DATASET"
+@@ -210,9 +210,9 @@ echo "📁 Generated Files:"
+ for method in "${METHODS_TO_RUN[@]}"; do
+     method=$(echo "$method" | xargs)
+     if [ "$method" = "expX" ]; then
+-        csv_file="$RESULTS_DIR/claude_${method}_only-gen_gen_v1_${SAMPLE_SIZE}_${DATASET_TYPE}.csv"
++        csv_file="$RESULTS_DIR/${ACTIVE_PROVIDER}_${method}_only-gen_gen_v1_${SAMPLE_SIZE}_${DATASET_TYPE}.csv"
+     else
+-        csv_file="$RESULTS_DIR/claude_${method}_during_gen_v1_${SAMPLE_SIZE}_${DATASET_TYPE}.csv"
++        csv_file="$RESULTS_DIR/${ACTIVE_PROVIDER}_${method}_during_gen_v1_${SAMPLE_SIZE}_${DATASET_TYPE}.csv"
+     fi
+     if [ -f "$csv_file" ]; then
+         echo "   ✅ $csv_file"

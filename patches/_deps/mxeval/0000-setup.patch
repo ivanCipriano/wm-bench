@@ -1,0 +1,13 @@
+diff --git a/setup.py b/setup.py
+index 6a930f9..baf0a06 100644
+--- a/setup.py
++++ b/setup.py
+@@ -21,7 +21,7 @@ setup(
+     ],
+     entry_points={
+         "console_scripts": [
+-            "evaluate_functional_correctness = mxeval.evaluate_functional_correctness",
++            "evaluate_functional_correctness = mxeval.evaluate_functional_correctness:main",
+         ]
+     }
+ )

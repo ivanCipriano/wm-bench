@@ -1,0 +1,145 @@
+diff --git a/source/.sourcery.yaml b/source/.sourcery.yaml
+new file mode 100644
+index 0000000..524b012
+--- /dev/null
++++ b/source/.sourcery.yaml
+@@ -0,0 +1,38 @@
++version: '1'
++rule_settings:
++  enable:
++  - remove-unnecessary-else
++  - hoist-statement-from-loop
++  - boolean-if-exp-identity
++  - list-comprehension
++  - remove-unnecessary-cast
++  - merge-comparisons
++  - sum-comprehension
++  - merge-list-append
++  - merge-nested-ifs
++  - avoid-builtin-shadow
++  - inline-immediately-returned-variable
++  - for-index-underscore
++  - simplify-constant-sum
++  - simplify-len-comparison
++  - comprehension-to-generator
++  - use-any
++  - reintroduce-else
++  - min-max-identity
++  - merge-duplicate-blocks
++  - square-identity
++  - move-assign-in-block
++  - merge-else-if-into-elif
++  - use-next
++  - swap-if-else-branches
++  - switch
++  - invert-any-all
++  - remove-redundant-if
++  - use-join
++  - for-append-to-extend
++  - hoist-similar-statement-from-if
++  - identity-comprehension
++  - merge-list-appends-into-extend
++  - use-dict-items
++  - remove-redundant-slice-index
++  - assign-if-exp
+diff --git a/source/RQ4-get-results.py b/source/RQ4-get-results.py
+index 0be80bf..85d4d2d 100644
+--- a/source/RQ4-get-results.py
++++ b/source/RQ4-get-results.py
+@@ -141,3 +141,14 @@ class Folder_Processer:
+         with open(f'output_attack_{self.attack}.json', 'w', encoding='utf-8') as f:
+             json.dump(result, f, ensure_ascii=False, indent=4)
+         print("Save results to output.json")
++
++
++import fire
++
++
++def folder_process(strength=1):
++    Folder_Processer(attack=int(strength) - 1).folder_process()
++
++
++if __name__ == "__main__":
++    fire.Fire({"folder_process": folder_process})
+diff --git a/source/folder_list.py b/source/folder_list.py
+index c987245..bd2ed66 100644
+--- a/source/folder_list.py
++++ b/source/folder_list.py
+@@ -1,7 +1,4 @@
+ folder_paths = [
+-    "H/APPS_H",
+-    "H/HE_H",
+-    "H/MBPP_H",
+     "G/MBPP_Q_G",
+     "G/MBPP_4o_G",
+     "G/MBPP_4_G",
+diff --git a/source/folder_to_jsonl.py b/source/folder_to_jsonl.py
+index 8ed3b71..ab913c6 100644
+--- a/source/folder_to_jsonl.py
++++ b/source/folder_to_jsonl.py
+@@ -17,7 +17,7 @@ class PythonFileConverter:
+                     with open(file_path, 'r', encoding='utf-8') as py_file:
+                         code_content = py_file.read()
+                     json_item = {
+-                        "task_id": os.path.splitext(filename)[0].replace('_', '/'),
++                        "task_id": __import__("re").sub(r"^HumanEval([0-9]+)$", r"HumanEval/\1", os.path.splitext(filename)[0]).replace('_', '/'),
+                         "completion": code_content,
+                         "language": self.language
+                     }
+diff --git a/source/one_rule_format.py b/source/one_rule_format.py
+index cc4a55b..2a0452c 100644
+--- a/source/one_rule_format.py
++++ b/source/one_rule_format.py
+@@ -43,8 +43,7 @@ def reorder_process(index, file_path):
+                 content = file.read()
+                 lines = content.split('\n')
+             tree = ast.parse(content)
+-            for node in ast.walk(tree):
+-                transform_operations_add(node, lines, file_path, tree)
++            transform_operations_add(file_path)
+         except Exception as e:
+             print(f"Error processing file {file_path}: {e}")
+         else:
+@@ -55,8 +54,7 @@ def reorder_process(index, file_path):
+                 content = file.read()
+                 lines = content.split('\n')
+             tree = ast.parse(content)
+-            for node in ast.walk(tree):
+-                transform_operations_mult(node, lines, file_path, tree)
++            transform_operations_mult(file_path)
+         except Exception as e:
+             print(f"Error processing file {file_path}: {e}")
+         else:
+@@ -67,8 +65,7 @@ def reorder_process(index, file_path):
+                 content = file.read()
+                 lines = content.split('\n')
+             tree = ast.parse(content)
+-            for node in ast.walk(tree):
+-                transform_comparison_LG(node, lines, file_path, tree)
++            transform_comparison_LG(file_path)
+         except Exception as e:
+             print(f"Error processing file {file_path}: {e}")
+         else:
+@@ -79,8 +76,7 @@ def reorder_process(index, file_path):
+                 content = file.read()
+                 lines = content.split('\n')
+             tree = ast.parse(content)
+-            for node in ast.walk(tree):
+-                transform_comparison_LGE(node, lines, file_path, tree)
++            transform_comparison_LGE(file_path)
+         except Exception as e:
+             print(f"Error processing file {file_path}: {e}")
+         else:
+diff --git a/source/refactor.py b/source/refactor.py
+index f9e8846..8d1c7ad 100644
+--- a/source/refactor.py
++++ b/source/refactor.py
+@@ -17,7 +17,7 @@ from typing import List, Tuple, Optional, Dict, Any
+ import folder_list
+ import refact_list
+ from one_rule_format import reorder_process, tab_convert_process
+-from formatting_pep8 import apply_pep8_rule
++from one_rule_format import reformatting_process as apply_pep8_rule
+ 
+ 
+ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

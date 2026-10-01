@@ -1,0 +1,17 @@
+diff --git a/CC.json b/CC.json
+new file mode 100644
+index 0000000..ce44ba5
+--- /dev/null
++++ b/CC.json
+@@ -0,0 +1,10 @@
++{
++    "algorithm_name": "CC",
++    "gamma": 0.1,
++    "delta": 4.0,
++    "hash_key": 15485863,
++    "prefix_length": 1,
++    "z_threshold": 1.7,
++    "f_scheme": "time",
++    "window_scheme": "left"
++}
+\ No newline at end of file
