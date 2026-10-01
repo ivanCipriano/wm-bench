@@ -1,0 +1,7 @@
+# Normalizzazione dei fine riga: il repository si usa da Windows (core.autocrlf=true) e da Linux (cluster).
+* text=auto eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+# Le patch vanno conservate byte per byte: nessuna conversione dei fine riga.
+patches/** -text
+*.patch -text

@@ -1,0 +1,60 @@
+# Pacchetto "bench" (orchestratore). Gira solo nell'ambiente bench-core (Python 3.11).
+# Le dipendenze NON sono dichiarate qui: la fonte di verità è environment-bench-core.yml,
+# congelata nei lockfile requirements-bench-core.lock e conda-bench-core.lock (SPEC §20).
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bench"
+version = "0.0.0"
+description = "Framework unificato di benchmark per watermarking di codice generato da LLM"
+requires-python = ">=3.11,<3.12"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ---------------------------------------------------------------- ruff (SPEC §19)
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["third_party", "build", "artifacts", "patches"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "RUF", "PL"]
+ignore = [
+    "RUF001",  # caratteri ambigui: prosa e docstring sono in italiano
+    "RUF002",
+    "RUF003",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR2004"]  # valori attesi letterali nei test
+
+# Il codice che gira nei worker deve restare compatibile con Python 3.9 (cluster_info §1):
+# UP non deve proporre sintassi più recente.
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+strict = true
+python_version = "3.11"
+files = ["src/bench", "packages/bench-contracts/bench_contracts"]
+
+# ---------------------------------------------------------------- pytest (SPEC §21.1)
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# "packages/bench-contracts" permette i test unitari anche senza installazione; il test di
+# contratto lancia invece ogni interprete senza PYTHONPATH e verifica l'installazione reale.
+pythonpath = [".", "packages/bench-contracts"]
+addopts = "-ra --strict-markers"
+markers = [
+    "contract: test di contratto tra orchestratore e ambienti dei metodi",
+    "gpu: richiede una GPU NVIDIA",
+    "oracle: test di fedeltà degli shim rispetto al codice originale",
+    "apptainer: richiede Apptainer e l'immagine della sandbox",
+    "slurm: richiede SLURM",
+]

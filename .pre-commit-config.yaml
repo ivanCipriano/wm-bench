@@ -1,0 +1,38 @@
+# Hook di pre-commit (SPEC §19). ruff e mypy sono quelli installati in bench-core
+# (versioni congelate nel lockfile): gli hook "local" li usano con language: system,
+# quindi pre-commit va lanciato con l'ambiente bench-core attivo.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+        exclude: ^patches/
+      - id: check-merge-conflict
+      - id: check-yaml
+
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff
+        entry: ruff check --fix
+        language: system
+        types: [python]
+        exclude: ^(third_party|build|patches)/
+      - id: ruff-format
+        name: ruff-format
+        entry: ruff format
+        language: system
+        types: [python]
+        exclude: ^(third_party|build|patches)/
+      - id: mypy
+        name: mypy --strict
+        entry: mypy
+        language: system
+        pass_filenames: false
+        files: ^(src/bench|packages/bench-contracts)/
+      - id: forbid-artifacts
+        name: vietato versionare artifacts/
+        entry: i file sotto artifacts/ non vanno versionati
+        language: fail
+        files: ^artifacts/
