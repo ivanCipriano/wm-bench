@@ -29,6 +29,7 @@ from bench.doctor import (
     SourceryTokenCheck,
     Status,
     SubmodulesCheck,
+    gpu_envs,
     load_cluster_profiles,
 )
 from tests.conftest import REPO_ROOT, FakeRunner, rebuild
@@ -318,10 +319,25 @@ def test_gpu_checks_only_on_request(cfg: ExperimentConfig, tmp_path: Path) -> No
     no = CommandResult(
         0, json.dumps({"cuda": False, "cuda_version": None, "devices": 0, "torch": "2.4.1"}), ""
     )
-    runner = FakeRunner(fallback=lambda cmd: no if "acw" in cmd[0] else ok)
+    no_torch = CommandResult(1, "", "ModuleNotFoundError: No module named 'torch'")
+
+    def answer(cmd: tuple[str, ...]) -> CommandResult:
+        if "acw" in cmd[0]:
+            return no_torch  # come sul cluster: l'ambiente acw non ha torch
+        return no if "mcgmark" in cmd[0] else ok
+
+    runner = FakeRunner(fallback=answer)
     results = _statuses(GpuCheck().run(_ctx(cfg, runner, gpu=True)))
+    assert results["bench-core"] is Status.OK
     assert results["sweet"] is Status.OK
-    assert results["acw"] is Status.FAIL
+    assert results["mcgmark"] is Status.FAIL  # metodo GPU senza CUDA
+    # ACW è solo CPU (resources): non si prova nemmeno a importare torch.
+    assert results["acw"] is Status.SKIP
+    assert not any("acw" in call[0] for call in runner.calls)
+
+
+def test_gpu_envs_follow_resource_rules(cfg: ExperimentConfig) -> None:
+    assert gpu_envs(cfg) == {"bench-core", "sweet", "stone", "promptmark", "mcgmark"}
 
 
 # ----------------------------------------------------------------------------- report

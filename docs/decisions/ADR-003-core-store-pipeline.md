@@ -64,7 +64,9 @@
 8. **`bench doctor`.**
    - I controlli sono strategie indipendenti; un controllo che solleva diventa un FAIL e non interrompe
      il report.
-   - I controlli su CUDA girano solo con `--gpu`, perché di norma il doctor si lancia dal nodo di login.
+   - I controlli su CUDA girano solo con `--gpu`, perché di norma il doctor si lancia dal nodo di login,
+     e solo negli ambienti che la usano: bench-core e i metodi con almeno una fase su GPU secondo
+     `resources.gpu_methods_by_stage`. Gli ambienti solo CPU (oggi `acw`, che non ha torch) sono SKIP.
    - `SOURCERY_TOKEN`: se ne verifica solo la presenza, il valore non compare mai nel report né nel JSON.
    - Exit code 1 se c'è almeno un FAIL.
    - Valori attesi presi da cluster_info: 8 submodule, Apptainer 1.1.9, Python 3.11 per bench-core e

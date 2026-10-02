@@ -36,11 +36,13 @@ WMB_REQUIRE_ENVS=1 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bi
 
 ## CLI `bench` (Milestone 1)
 
-Dopo `pip install --no-deps -e .` nell'ambiente `bench-core`:
+Dopo `python -m pip install --no-deps --no-build-isolation -e .` nell'ambiente `bench-core`
+(`--no-build-isolation` usa il setuptools già presente nell'ambiente, così l'installazione non
+dipende dalla connessione a PyPI):
 
 ```bash
 bench doctor                      # diagnostica dal nodo di login (exit code 1 se c'è un FAIL)
-bench doctor --gpu                # anche i controlli CUDA: solo su un nodo GPU NVIDIA (gpuq/aiq)
+bench doctor --gpu                # anche CUDA negli ambienti che la usano: solo su un nodo NVIDIA (gpuq/aiq)
 bench doctor --json report.json   # report anche in JSON
 bench stage=selftest              # fase di autoverifica: scrive, poi SKIPPED; force=true per rieseguire
 bench stage=selftest paths=local  # prove locali sotto $WMB_LOCAL_ROOT (default: <repo>/.local_wmb)

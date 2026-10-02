@@ -553,8 +553,22 @@ class PathsCheck(DoctorCheck):
         return results
 
 
+def gpu_envs(cfg: ExperimentConfig) -> set[str]:
+    """Ambienti che richiedono CUDA: bench-core e i metodi con almeno una fase su GPU.
+
+    Le fasi per metodo vengono da ``resources.gpu_methods_by_stage``: un metodo solo CPU
+    (es. ACW) può non avere torch nel proprio ambiente.
+    """
+    envs = {"bench-core"}
+    for by_method in cfg.resources.gpu_methods_by_stage.values():
+        for method, uses_gpu in by_method.items():
+            if uses_gpu and method in cfg.methods_catalog:
+                envs.add(cfg.methods_catalog[method].env)
+    return envs
+
+
 class GpuCheck(DoctorCheck):
-    """CUDA negli ambienti (solo con ``--gpu``, su un nodo con GPU NVIDIA)."""
+    """CUDA negli ambienti che la richiedono (solo con ``--gpu``, su un nodo NVIDIA)."""
 
     category = "gpu"
 
@@ -562,7 +576,13 @@ class GpuCheck(DoctorCheck):
         if not ctx.gpu:
             return [self.result("cuda", Status.SKIP, "use 'bench doctor --gpu' on a GPU node")]
         results: list[CheckResult] = []
+        required = gpu_envs(ctx.cfg)
         for name, spec in sorted(ctx.cfg.envs.items()):
+            if name not in required:
+                results.append(
+                    self.result(name, Status.SKIP, "CPU-only method (resources): CUDA not required")
+                )
+                continue
             if not spec.python.exists():
                 results.append(self.result(name, Status.FAIL, "interpreter not found"))
                 continue

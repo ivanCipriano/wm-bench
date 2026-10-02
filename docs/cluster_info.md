@@ -69,7 +69,7 @@ export HF_HUB_CACHE=$WMB/hf_cache/hub
 | promptmark | `/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/promptmark/bin/python` | 3.10.21 |
 | mcgmark | `/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/mcgmark/bin/python` | 3.10.21 |
 
-Tutti gli ambienti dei metodi hanno torch compilato **solo per CUDA**.
+Gli ambienti dei metodi hanno torch compilato **solo per CUDA**, tranne `acw`, che **non ha torch** (ACW è un metodo solo CPU; verificato con `bench doctor --gpu` su gpuq il 2 ottobre 2026). `sweet` ha torch 2.4.0, gli altri 2.4.1 (tutti CUDA 12.1).
 
 Installazioni editable negli ambienti (da non rompere: le cartelle in `deps/` non vanno spostate né cancellate):
 
