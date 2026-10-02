@@ -1,0 +1,410 @@
+##### 0. git status prima del pull
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+From https://github.com/ivanCipriano/wm-bench
+   6ce40ee..ee307d5  main       -> origin/main
+Updating files:  26% (15/56)Updating files:  28% (16/56)Updating files:  30% (17/56)Updating files:  32% (18/56)Updating files:  33% (19/56)Updating files:  35% (20/56)Updating files:  37% (21/56)Updating files:  39% (22/56)Updating files:  41% (23/56)Updating files:  42% (24/56)Updating files:  44% (25/56)Updating files:  46% (26/56)Updating files:  48% (27/56)Updating files:  50% (28/56)Updating files:  51% (29/56)Updating files:  53% (30/56)Updating files:  55% (31/56)Updating files:  57% (32/56)Updating files:  58% (33/56)Updating files:  60% (34/56)Updating files:  62% (35/56)Updating files:  64% (36/56)Updating files:  66% (37/56)Updating files:  67% (38/56)Updating files:  69% (39/56)Updating files:  71% (40/56)Updating files:  73% (41/56)Updating files:  75% (42/56)Updating files:  76% (43/56)Updating files:  78% (44/56)Updating files:  80% (45/56)Updating files:  82% (46/56)Updating files:  83% (47/56)Updating files:  85% (48/56)Updating files:  87% (49/56)Updating files:  89% (50/56)Updating files:  91% (51/56)Updating files:  92% (52/56)Updating files:  94% (53/56)Updating files:  96% (54/56)Updating files:  98% (55/56)Updating files: 100% (56/56)Updating files: 100% (56/56), done.
+Updating 6ce40ee..ee307d5
+Fast-forward
+ .gitattributes                                     |   7 ++
+ .gitignore                                         |   5 +-
+ .gitmodules                                        |  27 +++++
+ .pre-commit-config.yaml                            |  38 ++++++
+ README.md                                          |  33 ++++++
+ configs/envs/envs.yaml                             |  10 ++
+ containers/.gitkeep                                |   0
+ docs/audit/.gitkeep                                |   0
+ docs/cluster_info.md                               | 118 +++++++++++++------
+ .../ADR-002-submodules-and-patched-copies.md       |  51 ++++++++
+ docs/deviations.md                                 |  34 ++++++
+ .../bench-contracts/bench_contracts/__init__.py    |  36 ++++++
+ packages/bench-contracts/bench_contracts/enums.py  |  38 ++++++
+ packages/bench-contracts/bench_contracts/jsonl.py  |  77 +++++++++++++
+ packages/bench-contracts/bench_contracts/py.typed  |   0
+ packages/bench-contracts/bench_contracts/schema.py | 128 +++++++++++++++++++++
+ packages/bench-contracts/bench_contracts/seeds.py  |  23 ++++
+ packages/bench-contracts/pyproject.toml            |  24 ++++
+ patches/_deps/README.md                            |  10 ++
+ patches/acrostic/README.md                         |  15 +++
+ patches/acw/README.md                              |  23 ++++
+ patches/mcgmark/README.md                          |  20 ++++
+ patches/promptmark/README.md                       |  20 ++++
+ patches/stone/README.md                            |  19 +++
+ patches/sweet/README.md                            |  16 +++
+ pyproject.toml                                     |  60 ++++++++++
+ scripts/apply_patches.sh                           |  99 ++++++++++++++++
+ scripts/install_contracts.sh                       |  60 ++++++++++
+ scripts/setup_submodules.sh                        |  63 ++++++++++
+ shims/bench_shims/.gitkeep                         |   0
+ src/bench/__init__.py                              |   3 +
+ src/bench/py.typed                                 |   0
+ tests/__init__.py                                  |   0
+ tests/conftest.py                                  |  27 +++++
+ tests/contract/__init__.py                         |   0
+ tests/contract/test_envs.py                        |  81 +++++++++++++
+ tests/fixtures/tiny/.gitkeep                       |   0
+ tests/integration/.gitkeep                         |   0
+ tests/oracle/.gitkeep                              |   0
+ tests/property/.gitkeep                            |   0
+ tests/unit/__init__.py                             |   0
+ tests/unit/test_contracts_jsonl.py                 |  65 +++++++++++
+ tests/unit/test_contracts_schema.py                | 104 +++++++++++++++++
+ tests/unit/test_contracts_seeds.py                 |  26 +++++
+ third_party/ACW                                    |   1 +
+ third_party/ClassEval                              |   1 +
+ third_party/MCGMT                                  |   1 +
+ third_party/PromptMark                             |   1 +
+ third_party/STONE-watermarking                     |   1 +
+ third_party/bigcode-evaluation-harness             |   1 +
+ third_party/code_acrostic                          |   1 +
+ third_party/lm-watermarking                        |   1 +
+ third_party/sweet-watermark                        |   1 +
+ tools/cpp/.gitkeep                                 |   0
+ tools/java/.gitkeep                                |   0
+ tools/js/.gitkeep                                  |   0
+ 56 files changed, 1333 insertions(+), 36 deletions(-)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitmodules
+ create mode 100644 .pre-commit-config.yaml
+ create mode 100644 README.md
+ create mode 100644 configs/envs/envs.yaml
+ create mode 100644 containers/.gitkeep
+ create mode 100644 docs/audit/.gitkeep
+ create mode 100644 docs/decisions/ADR-002-submodules-and-patched-copies.md
+ create mode 100644 docs/deviations.md
+ create mode 100644 packages/bench-contracts/bench_contracts/__init__.py
+ create mode 100644 packages/bench-contracts/bench_contracts/enums.py
+ create mode 100644 packages/bench-contracts/bench_contracts/jsonl.py
+ create mode 100644 packages/bench-contracts/bench_contracts/py.typed
+ create mode 100644 packages/bench-contracts/bench_contracts/schema.py
+ create mode 100644 packages/bench-contracts/bench_contracts/seeds.py
+ create mode 100644 packages/bench-contracts/pyproject.toml
+ create mode 100644 patches/_deps/README.md
+ create mode 100644 patches/acrostic/README.md
+ create mode 100644 patches/acw/README.md
+ create mode 100644 patches/mcgmark/README.md
+ create mode 100644 patches/promptmark/README.md
+ create mode 100644 patches/stone/README.md
+ create mode 100644 patches/sweet/README.md
+ create mode 100644 pyproject.toml
+ create mode 100755 scripts/apply_patches.sh
+ create mode 100755 scripts/install_contracts.sh
+ create mode 100755 scripts/setup_submodules.sh
+ create mode 100644 shims/bench_shims/.gitkeep
+ create mode 100644 src/bench/__init__.py
+ create mode 100644 src/bench/py.typed
+ create mode 100644 tests/__init__.py
+ create mode 100644 tests/conftest.py
+ create mode 100644 tests/contract/__init__.py
+ create mode 100644 tests/contract/test_envs.py
+ create mode 100644 tests/fixtures/tiny/.gitkeep
+ create mode 100644 tests/integration/.gitkeep
+ create mode 100644 tests/oracle/.gitkeep
+ create mode 100644 tests/property/.gitkeep
+ create mode 100644 tests/unit/__init__.py
+ create mode 100644 tests/unit/test_contracts_jsonl.py
+ create mode 100644 tests/unit/test_contracts_schema.py
+ create mode 100644 tests/unit/test_contracts_seeds.py
+ create mode 160000 third_party/ACW
+ create mode 160000 third_party/ClassEval
+ create mode 160000 third_party/MCGMT
+ create mode 160000 third_party/PromptMark
+ create mode 160000 third_party/STONE-watermarking
+ create mode 160000 third_party/bigcode-evaluation-harness
+ create mode 160000 third_party/code_acrostic
+ create mode 160000 third_party/lm-watermarking
+ create mode 160000 third_party/sweet-watermark
+ create mode 100644 tools/cpp/.gitkeep
+ create mode 100644 tools/java/.gitkeep
+ create mode 100644 tools/js/.gitkeep
+##### 0. confronto patch
+PATCH IDENTICHE
+ee307d5 docs: cluster_info aggiornato (QoS, limiti, dataset, snapshot, MarkLLM)
+fdba9b5 [M0] docs: deviazioni D1-D9 e ADR-002
+50b8343 [M0] scripts: setup_submodules, apply_patches, install_contracts
+7f06d77 [M0] contracts: pacchetto bench-contracts e test unit/contratto
+475af15 [M0] patches: README delle patch preesistenti
+abf71a4 [M0] third_party: submodule fissati ai commit di cluster_info §9
+5ccae30 [M0] repo: scheletro, pyproject, pre-commit, envs.yaml
+6ce40ee Aggiunta delle patches
+e036c70 Aggiunta CLAUDE.md
+d598f9d Commit cluster_info.md e gitignore
+##### 1. submodule
+[setup_submodules] sync + update --init
+Submodule 'third_party/ACW' (https://github.com/Noelle1831-k/ACW) registered for path 'third_party/ACW'
+Submodule 'third_party/ClassEval' (https://github.com/FudanSELab/ClassEval) registered for path 'third_party/ClassEval'
+Submodule 'third_party/MCGMT' (https://github.com/KevinHeiwa/MCGMT) registered for path 'third_party/MCGMT'
+Submodule 'third_party/PromptMark' (https://github.com/ahmedfahad04/promptmark) registered for path 'third_party/PromptMark'
+Submodule 'third_party/STONE-watermarking' (https://github.com/inistory/STONE-watermarking) registered for path 'third_party/STONE-watermarking'
+Submodule 'third_party/bigcode-evaluation-harness' (https://github.com/bigcode-project/bigcode-evaluation-harness) registered for path 'third_party/bigcode-evaluation-harness'
+Submodule 'third_party/code_acrostic' (https://github.com/XHLin-gamer/code_acrostic) registered for path 'third_party/code_acrostic'
+Submodule 'third_party/lm-watermarking' (https://github.com/jwkirchenbauer/lm-watermarking) registered for path 'third_party/lm-watermarking'
+Submodule 'third_party/sweet-watermark' (https://github.com/hongcheki/sweet-watermark) registered for path 'third_party/sweet-watermark'
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/ACW'...
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/ClassEval'...
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/MCGMT'...
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/PromptMark'...
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/STONE-watermarking'...
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/bigcode-evaluation-harness'...
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/code_acrostic'...
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/lm-watermarking'...
+Cloning into '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/sweet-watermark'...
+Submodule path 'third_party/ACW': checked out '2236dc304478a31fe7cc7cc393527375024428db'
+Submodule path 'third_party/ClassEval': checked out 'eaeac44d0d5dcd8a95feec50726d66fedc73a98f'
+Submodule path 'third_party/MCGMT': checked out 'eefa27b68747f5027c3121abcc506f3488eae990'
+Submodule path 'third_party/PromptMark': checked out 'c04c8f61db1f0ec7ba2f213f4aa1a15787af484e'
+Submodule path 'third_party/STONE-watermarking': checked out 'bb5d809c0c494a219411e861f2313cca2b9fd7b4'
+Submodule path 'third_party/bigcode-evaluation-harness': checked out '8fc5bae6479c4fbbb28c3f8b644f6a15b3f3b5bd'
+Submodule path 'third_party/code_acrostic': checked out '83823697f01d6250e7fccd9fa7005bdcfb967ded'
+Submodule path 'third_party/lm-watermarking': checked out '82922516930c02f8aa322765defdb5863d07a00e'
+Submodule path 'third_party/sweet-watermark': checked out '853b47eb064c180beebd383302d09491fc98a565'
+[OK] third_party/sweet-watermark @ 853b47eb064c180beebd383302d09491fc98a565
+[OK] third_party/ACW @ 2236dc304478a31fe7cc7cc393527375024428db
+[OK] third_party/STONE-watermarking @ bb5d809c0c494a219411e861f2313cca2b9fd7b4
+[OK] third_party/code_acrostic @ 83823697f01d6250e7fccd9fa7005bdcfb967ded
+[OK] third_party/PromptMark @ c04c8f61db1f0ec7ba2f213f4aa1a15787af484e
+[OK] third_party/MCGMT @ eefa27b68747f5027c3121abcc506f3488eae990
+[OK] third_party/bigcode-evaluation-harness @ 8fc5bae6479c4fbbb28c3f8b644f6a15b3f3b5bd
+[OK] third_party/ClassEval @ eaeac44d0d5dcd8a95feec50726d66fedc73a98f
+[OK] third_party/lm-watermarking @ 82922516930c02f8aa322765defdb5863d07a00e
+[setup_submodules] all submodules pinned and clean
+##### 2. apply_patches
+[apply_patches] sweet: applied 0000-modifiche-preesistenti.patch
+[OK] sweet -> build/patched/sweet (853b47eb064c180beebd383302d09491fc98a565, 1 patch(es))
+[apply_patches] acw: applied 0000-modifiche-preesistenti.patch
+[OK] acw -> build/patched/acw (2236dc304478a31fe7cc7cc393527375024428db, 1 patch(es))
+patches/stone/0000-modifiche-preesistenti.patch:33: trailing whitespace.
+                unwatermarked_codes.append({"task_id": task_id, "completion": completion})            
+warning: 1 line adds whitespace errors.
+[apply_patches] stone: applied 0000-modifiche-preesistenti.patch
+[OK] stone -> build/patched/stone (bb5d809c0c494a219411e861f2313cca2b9fd7b4, 1 patch(es))
+[apply_patches] acrostic: applied 0000-aggiunge-CC-json-dal-fork.patch
+[OK] acrostic -> build/patched/acrostic (83823697f01d6250e7fccd9fa7005bdcfb967ded, 1 patch(es))
+[apply_patches] promptmark: applied 0000-modifiche-preesistenti.patch
+[OK] promptmark -> build/patched/promptmark (c04c8f61db1f0ec7ba2f213f4aa1a15787af484e, 1 patch(es))
+[apply_patches] mcgmark: applied 0000-modifiche-preesistenti.patch
+[OK] mcgmark -> build/patched/mcgmark (eefa27b68747f5027c3121abcc506f3488eae990, 1 patch(es))
+acrostic
+acrostic.patches.sha256
+acrostic.source_commit
+acw
+acw.patches.sha256
+acw.source_commit
+mcgmark
+mcgmark.patches.sha256
+mcgmark.source_commit
+promptmark
+promptmark.patches.sha256
+promptmark.source_commit
+stone
+stone.patches.sha256
+stone.source_commit
+sweet
+sweet.patches.sha256
+sweet.source_commit
+##### 3. install_contracts
+=== bench-core (/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/python)
+pip 26.2.1 from /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/pip (python 3.11)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench-contracts
+  Building editable for bench-contracts (pyproject.toml): started
+  Building editable for bench-contracts (pyproject.toml): finished with status 'done'
+  Created wheel for bench-contracts: filename=bench_contracts-1.0.0-0.editable-py3-none-any.whl size=2852 sha256=5cf0d7106d81813b4bf91222cef6bfc4e89d34e00e3da40374b8a2f15c385adb
+  Stored in directory: /tmp/pip-ephem-wheel-cache-x1hept9l/wheels/1a/d6/56/705e34995aa1f9dd3c15d3fead09f54dcde8d54f8f549723f7
+Successfully built bench-contracts
+Installing collected packages: bench-contracts
+Successfully installed bench-contracts-1.0.0
+[OK] 3.11.16 1.0.0 /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts/bench_contracts/__init__.py
+=== sweet (/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/sweet/bin/python)
+pip 26.2.1 from /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/sweet/lib/python3.10/site-packages/pip (python 3.10)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench-contracts
+  Building editable for bench-contracts (pyproject.toml): started
+  Building editable for bench-contracts (pyproject.toml): finished with status 'done'
+  Created wheel for bench-contracts: filename=bench_contracts-1.0.0-0.editable-py3-none-any.whl size=2852 sha256=d6029470ad41a0226cf8036c6f898bd85b6f7cb0701f488361efab0faf3e3fce
+  Stored in directory: /tmp/pip-ephem-wheel-cache-cxia7_aq/wheels/49/fd/b4/49b5e6b7235aa948d669480949c3acdff18f1a0f0bebf68977
+Successfully built bench-contracts
+Installing collected packages: bench-contracts
+Successfully installed bench-contracts-1.0.0
+[OK] 3.10.21 1.0.0 /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts/bench_contracts/__init__.py
+=== acw (/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python)
+pip 26.2.1 from /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/lib/python3.10/site-packages/pip (python 3.10)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench-contracts
+  Building editable for bench-contracts (pyproject.toml): started
+  Building editable for bench-contracts (pyproject.toml): finished with status 'done'
+  Created wheel for bench-contracts: filename=bench_contracts-1.0.0-0.editable-py3-none-any.whl size=2852 sha256=2caa82750ada25d3cb9ee889c24ea9e20f1f8defa2ef05e4c918a8ba778dca17
+  Stored in directory: /tmp/pip-ephem-wheel-cache-emctsmj3/wheels/49/fd/b4/49b5e6b7235aa948d669480949c3acdff18f1a0f0bebf68977
+Successfully built bench-contracts
+Installing collected packages: bench-contracts
+Successfully installed bench-contracts-1.0.0
+[OK] 3.10.21 1.0.0 /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts/bench_contracts/__init__.py
+=== stone (/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/stone/bin/python)
+pip 25.2 from /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/stone/lib/python3.9/site-packages/pip (python 3.9)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench-contracts
+  Building editable for bench-contracts (pyproject.toml): started
+  Building editable for bench-contracts (pyproject.toml): finished with status 'done'
+  Created wheel for bench-contracts: filename=bench_contracts-1.0.0-0.editable-py3-none-any.whl size=2850 sha256=bcb2f0594605dff3c3f2c923d6d9cd5b3a51c2d36da3039c2eb7279e69d8ffa3
+  Stored in directory: /tmp/pip-ephem-wheel-cache-2hhydqi4/wheels/98/d1/1e/54ba9dac7cb11d66e60c6befbd6ee90e90f32c8b40975ab776
+Successfully built bench-contracts
+Installing collected packages: bench-contracts
+Successfully installed bench-contracts-1.0.0
+[OK] 3.9.19 1.0.0 /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts/bench_contracts/__init__.py
+=== code_acrostic (/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/code_acrostic/bin/python)
+pip 26.2.1 from /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/code_acrostic/lib/python3.10/site-packages/pip (python 3.10)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench-contracts
+  Building editable for bench-contracts (pyproject.toml): started
+  Building editable for bench-contracts (pyproject.toml): finished with status 'done'
+  Created wheel for bench-contracts: filename=bench_contracts-1.0.0-0.editable-py3-none-any.whl size=2852 sha256=030cc265035da49809290fb53610e0c0897f50b75334dd9997a66d47404cdfc8
+  Stored in directory: /tmp/pip-ephem-wheel-cache-b8pn5wl7/wheels/49/fd/b4/49b5e6b7235aa948d669480949c3acdff18f1a0f0bebf68977
+Successfully built bench-contracts
+Installing collected packages: bench-contracts
+Successfully installed bench-contracts-1.0.0
+[OK] 3.10.21 1.0.0 /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts/bench_contracts/__init__.py
+=== promptmark (/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/promptmark/bin/python)
+pip 26.2.1 from /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/promptmark/lib/python3.10/site-packages/pip (python 3.10)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench-contracts
+  Building editable for bench-contracts (pyproject.toml): started
+  Building editable for bench-contracts (pyproject.toml): finished with status 'done'
+  Created wheel for bench-contracts: filename=bench_contracts-1.0.0-0.editable-py3-none-any.whl size=2852 sha256=26b8d4c73a326b3b9c4e7d5ba30071f2e0d13a859434b2649f6d5b5b04ca43fe
+  Stored in directory: /tmp/pip-ephem-wheel-cache-b1dnhxtm/wheels/49/fd/b4/49b5e6b7235aa948d669480949c3acdff18f1a0f0bebf68977
+Successfully built bench-contracts
+Installing collected packages: bench-contracts
+Successfully installed bench-contracts-1.0.0
+[OK] 3.10.21 1.0.0 /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts/bench_contracts/__init__.py
+=== mcgmark (/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/mcgmark/bin/python)
+pip 26.2.1 from /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/mcgmark/lib/python3.10/site-packages/pip (python 3.10)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench-contracts
+  Building editable for bench-contracts (pyproject.toml): started
+  Building editable for bench-contracts (pyproject.toml): finished with status 'done'
+  Created wheel for bench-contracts: filename=bench_contracts-1.0.0-0.editable-py3-none-any.whl size=2852 sha256=dda515768c8a54fa57deaf6156675ad361ea65350656b9dc59e6707536c3902f
+  Stored in directory: /tmp/pip-ephem-wheel-cache-a3v_nf99/wheels/49/fd/b4/49b5e6b7235aa948d669480949c3acdff18f1a0f0bebf68977
+Successfully built bench-contracts
+Installing collected packages: bench-contracts
+Successfully installed bench-contracts-1.0.0
+[OK] 3.10.21 1.0.0 /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/packages/bench-contracts/bench_contracts/__init__.py
+[install_contracts] done
+##### 4. bench-core
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench
+  Building editable for bench (pyproject.toml): started
+  Building editable for bench (pyproject.toml): finished with status 'done'
+  Created wheel for bench: filename=bench-0.0.0-0.editable-py3-none-any.whl size=1241 sha256=9f7bd2dca0a0354614cf586847f4444eff376a7cc76b5347f81b74b9179d63fd
+  Stored in directory: /tmp/pip-ephem-wheel-cache-kyrpw8is/wheels/e6/2d/d6/4f5189108c1bcee4f1a107f63abd0d2e53804a75c808f17e17
+Successfully built bench
+Installing collected packages: bench
+Successfully installed bench-0.0.0
+No broken requirements found.
+  159 requirements-bench-core.lock
+  111 conda-bench-core.lock
+  270 total
+##### 5. test di contratto
+============================= test session starts ==============================
+platform linux -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0 -- /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+configfile: pyproject.toml
+plugins: platformdirs-4.12.2, hydra-core-1.3.2, hypothesis-6.168.3, cov-7.1.0, anyio-4.15.1, timeout-2.4.0
+collecting ... collected 8 items
+
+tests/contract/test_envs.py::test_envs_yaml_lists_all_seven_envs PASSED  [ 12%]
+tests/contract/test_envs.py::test_env_imports_contracts[acw] PASSED      [ 25%]
+tests/contract/test_envs.py::test_env_imports_contracts[bench-core] PASSED [ 37%]
+tests/contract/test_envs.py::test_env_imports_contracts[code_acrostic] PASSED [ 50%]
+tests/contract/test_envs.py::test_env_imports_contracts[mcgmark] PASSED  [ 62%]
+tests/contract/test_envs.py::test_env_imports_contracts[promptmark] PASSED [ 75%]
+tests/contract/test_envs.py::test_env_imports_contracts[stone] PASSED    [ 87%]
+tests/contract/test_envs.py::test_env_imports_contracts[sweet] PASSED    [100%]
+
+============================== 8 passed in 14.65s ==============================
+##### 5. test unitari
+....................                                                     [100%]
+20 passed in 2.10s
+##### 5. pre-commit
+[INFO] Initializing environment for https://github.com/pre-commit/pre-commit-hooks.
+[INFO] Installing environment for https://github.com/pre-commit/pre-commit-hooks.
+[INFO] Once installed this environment will be reused.
+[INFO] This may take a few minutes...
+check for added large files..............................................Passed
+check for merge conflicts................................................Passed
+check yaml...............................................................Passed
+ruff.....................................................................Passed
+ruff-format..............................................................Passed
+mypy --strict............................................................Passed
+vietato versionare artifacts/........................(no files to check)Skipped
+##### 5. file modificati da pre-commit
+?? conda-bench-core.lock
+?? packages/bench-contracts/bench_contracts.egg-info/
+?? requirements-bench-core.lock
+?? src/bench.egg-info/
