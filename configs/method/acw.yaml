@@ -1,0 +1,7 @@
+# Configurazione statica del metodo (SPEC §16.2; cluster_info §1).
+name: acw
+env: acw
+family: post_hoc
+submodule: third_party/ACW
+patched_dir: build/patched/acw
+worker_timeout_s: 18000        # 5 h: sotto il limite di 7 h delle partizioni GPU (cluster_info §1)

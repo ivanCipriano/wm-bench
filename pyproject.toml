@@ -13,6 +13,9 @@ description = "Framework unificato di benchmark per watermarking di codice gener
 requires-python = ">=3.11,<3.12"
 dependencies = []
 
+[project.scripts]
+bench = "bench.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
@@ -20,7 +23,7 @@ where = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["third_party", "build", "artifacts", "patches"]
+extend-exclude = ["third_party", "build", "artifacts", "patches", ".local_wmb"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "RUF", "PL"]
@@ -28,6 +31,8 @@ ignore = [
     "RUF001",  # caratteri ambigui: prosa e docstring sono in italiano
     "RUF002",
     "RUF003",
+    "N818",    # i nomi delle eccezioni sono fissati da SPEC §17 (es. InvariantViolation)
+    "PLR0913", # firme imposte da SPEC (es. sample_id, §5.3): argomenti keyword-only
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -42,14 +47,21 @@ keep-runtime-typing = true
 [tool.mypy]
 strict = true
 python_version = "3.11"
+plugins = ["pydantic.mypy"]
 files = ["src/bench", "packages/bench-contracts/bench_contracts"]
+mypy_path = "packages/bench-contracts"
+
+[[tool.mypy.overrides]]
+# pyarrow non distribuisce annotazioni di tipo.
+module = ["pyarrow", "pyarrow.*"]
+ignore_missing_imports = true
 
 # ---------------------------------------------------------------- pytest (SPEC §21.1)
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # "packages/bench-contracts" permette i test unitari anche senza installazione; il test di
 # contratto lancia invece ogni interprete senza PYTHONPATH e verifica l'installazione reale.
-pythonpath = [".", "packages/bench-contracts"]
+pythonpath = [".", "src", "packages/bench-contracts"]
 addopts = "-ra --strict-markers"
 markers = [
     "contract: test di contratto tra orchestratore e ambienti dei metodi",

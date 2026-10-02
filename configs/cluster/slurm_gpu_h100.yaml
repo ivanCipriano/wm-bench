@@ -1,0 +1,10 @@
+# Profilo GPU alternativo: aiq, H100 (cluster_info §4). timeout 330 min = 5,5 h (80% di 7 h).
+name: slurm_gpu_h100
+kind: slurm
+partition: aiq
+account: did_tesi_nlp_330
+qos: did_tesi_nlp_330_aiq_qos
+gres: gpu:1
+cpus_per_task: 8
+mem_gb: 64
+timeout_min: 330

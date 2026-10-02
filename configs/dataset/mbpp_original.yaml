@@ -1,0 +1,8 @@
+# Dataset mbpp_original: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+name: mbpp_original
+version: null
+files:
+  - ${paths.datasets}/mbpp/full/train-00000-of-00001.parquet
+  - ${paths.datasets}/mbpp/full/test-00000-of-00001.parquet
+  - ${paths.datasets}/mbpp/full/validation-00000-of-00001.parquet
+  - ${paths.datasets}/mbpp/full/prompt-00000-of-00001.parquet

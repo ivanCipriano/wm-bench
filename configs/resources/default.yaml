@@ -1,0 +1,10 @@
+# Regole della ResourcePolicy (SPEC §15.2, §16.3; cluster_info §4).
+gpu_stages: [generate_baseline, imperceptibility]
+gpu_methods_by_stage:
+  watermark: {sweet: true, acw: false, stone: true, promptmark: true, mcgmark: true}
+  # Rilevazione: GPU solo per SWEET; gli altri metodi vanno confermati dagli audit (M5, M6).
+  detect: {sweet: true, acw: false, stone: false, promptmark: false, mcgmark: false}
+gpu_attack_groups: [T2, T3]    # T1 e T4 su CPU (defq), T2 e T3 su GPU (gpuq)
+profiles:
+  CPU: slurm_cpu
+  GPU_NVIDIA: slurm_gpu

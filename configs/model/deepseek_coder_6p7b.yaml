@@ -1,0 +1,9 @@
+# deepseek-ai/deepseek-coder-6.7b-instruct dalla cache HF condivisa, snapshot fissata (cluster_info §7).
+model_id: deepseek_coder_6p7b
+hf_repo: deepseek-ai/deepseek-coder-6.7b-instruct
+snapshot: e5d64addd26a6a1db0f9b863abf6ee3141936807
+path: ${paths.hf_hub_cache}/models--deepseek-ai--deepseek-coder-6.7b-instruct/snapshots/${.snapshot}
+tokenizer_path: ${.path}
+dtype: bfloat16
+chat_template: native
+role: "generator"

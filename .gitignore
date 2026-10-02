@@ -9,3 +9,4 @@ containers/sandbox_dir/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.local_wmb/

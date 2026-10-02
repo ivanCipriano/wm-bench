@@ -1,0 +1,5 @@
+# Decoding dei Livelli 2, 3 e 4 (SPEC §2.1).
+temperature: 0.2
+top_p: 0.95
+max_new_tokens: 1024
+n: 6

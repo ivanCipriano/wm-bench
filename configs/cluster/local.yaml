@@ -1,0 +1,5 @@
+# Esecuzione locale, senza SLURM.
+name: local
+kind: local
+cpus_per_task: 4
+mem_gb: 16

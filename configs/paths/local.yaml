@@ -1,0 +1,7 @@
+# Radici per prove locali: tutto sotto $WMB_LOCAL_ROOT (default: <repo>/.local_wmb, ignorata da git).
+repo: ${wmb_repo:}
+wmb: ${oc.env:WMB_LOCAL_ROOT,${paths.repo}/.local_wmb}
+artifacts: ${.wmb}/artifacts
+tmp: ${.wmb}/tmp
+datasets: ${.wmb}/datasets
+hf_hub_cache: ${.wmb}/hf_cache/hub

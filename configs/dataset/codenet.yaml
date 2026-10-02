@@ -1,0 +1,12 @@
+# Dataset codenet: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+name: codenet
+version: "1.0.0"
+files:
+  - ${paths.datasets}/Project_CodeNet.tar.gz
+  - ${paths.datasets}/Project_CodeNet/derived/input_output/no_solutions.txt
+  - ${paths.datasets}/Project_CodeNet/derived/input_output/unverified_accepted_solutions.txt
+  - ${paths.datasets}/Project_CodeNet/derived/duplicates/identical_problem_clusters
+dirs:
+  - ${paths.datasets}/Project_CodeNet/metadata
+  - ${paths.datasets}/Project_CodeNet/problem_descriptions
+  - ${paths.datasets}/Project_CodeNet/derived/input_output/data

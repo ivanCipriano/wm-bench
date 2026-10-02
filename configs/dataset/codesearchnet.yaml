@@ -1,0 +1,13 @@
+# Dataset codesearchnet: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+name: codesearchnet
+version: null
+files:
+  - ${paths.datasets}/codesearchnet/python/train-00000-of-00001.parquet
+  - ${paths.datasets}/codesearchnet/python/validation-00000-of-00001.parquet
+  - ${paths.datasets}/codesearchnet/python/test-00000-of-00001.parquet
+  - ${paths.datasets}/codesearchnet/java/train-00000-of-00001.parquet
+  - ${paths.datasets}/codesearchnet/java/validation-00000-of-00001.parquet
+  - ${paths.datasets}/codesearchnet/java/test-00000-of-00001.parquet
+  - ${paths.datasets}/codesearchnet/javascript/train-00000-of-00001.parquet
+  - ${paths.datasets}/codesearchnet/javascript/validation-00000-of-00001.parquet
+  - ${paths.datasets}/codesearchnet/javascript/test-00000-of-00001.parquet

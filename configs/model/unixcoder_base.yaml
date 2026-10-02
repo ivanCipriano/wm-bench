@@ -1,0 +1,9 @@
+# microsoft/unixcoder-base dalla cache HF condivisa, snapshot fissata (cluster_info §7).
+model_id: unixcoder_base
+hf_repo: microsoft/unixcoder-base
+snapshot: 5604afdc964f6c53782a6813140ade5216b99006
+path: ${paths.hf_hub_cache}/models--microsoft--unixcoder-base/snapshots/${.snapshot}
+tokenizer_path: ${.path}
+dtype: float32
+chat_template: null
+role: "adversarial classifier"

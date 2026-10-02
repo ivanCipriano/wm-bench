@@ -1,0 +1,7 @@
+# Radici dei percorsi sul cluster (cluster_info §1, §2; artefatti fuori dal repository).
+repo: /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+wmb: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench
+artifacts: ${.wmb}/artifacts
+tmp: ${.wmb}/tmp
+datasets: ${.wmb}/datasets
+hf_hub_cache: ${.wmb}/hf_cache/hub

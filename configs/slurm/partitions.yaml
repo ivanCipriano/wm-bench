@@ -1,0 +1,18 @@
+# Partizioni SLURM, QoS e limiti di tempo (cluster_info §4).
+account: did_tesi_nlp_330
+timeout_target_fraction: 0.8   # obiettivo: ogni job entro l'80% del limite della partizione
+partitions:
+  gpuq: {gpu: nvidia, qos: did_tesi_nlp_330_gpuq_qos, max_time_min: 420, usable: true}
+  aiq: {gpu: nvidia, qos: did_tesi_nlp_330_aiq_qos, max_time_min: 420, usable: true}
+  defq:
+    gpu: amd
+    qos: did_tesi_nlp_330_defq_qos
+    max_time_min: 540
+    usable: true
+    note: CPU jobs only (AMD GPUs, torch is CUDA-only)
+  fatq:
+    gpu: none
+    qos: null
+    max_time_min: 240
+    usable: false
+    note: no QoS for account did_tesi_nlp_330

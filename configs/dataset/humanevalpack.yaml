@@ -1,0 +1,8 @@
+# Dataset humanevalpack: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+name: humanevalpack
+version: null
+files:
+  - ${paths.datasets}/humanevalpack/python/test-00000-of-00001.parquet
+  - ${paths.datasets}/humanevalpack/js/test-00000-of-00001.parquet
+  - ${paths.datasets}/humanevalpack/java/test-00000-of-00001.parquet
+  - ${paths.datasets}/humanevalpack/cpp/test-00000-of-00001.parquet

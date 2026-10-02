@@ -1,0 +1,6 @@
+# Dataset thestack_cpp: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+name: thestack_cpp
+version: "the-stack-dedup v1"
+files:
+  - ${paths.datasets}/thestack/data/cpp/data-00000-of-00110.parquet
+  - ${paths.datasets}/thestack/data/cpp/data-00001-of-00110.parquet

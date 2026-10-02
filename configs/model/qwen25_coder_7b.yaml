@@ -1,0 +1,9 @@
+# Qwen/Qwen2.5-Coder-7B-Instruct dalla cache HF condivisa, snapshot fissata (cluster_info §7).
+model_id: qwen25_coder_7b
+hf_repo: Qwen/Qwen2.5-Coder-7B-Instruct
+snapshot: c03e6d358207e414f1eca0bb1891e29f1db0e242
+path: ${paths.hf_hub_cache}/models--Qwen--Qwen2.5-Coder-7B-Instruct/snapshots/${.snapshot}
+tokenizer_path: ${.path}
+dtype: bfloat16
+chat_template: native
+role: "generator"

@@ -1,0 +1,5 @@
+# Dataset mbppplus: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+name: mbppplus
+version: v0.2.0
+files:
+  - ${paths.datasets}/evalplus/MbppPlus-v0.2.0.jsonl

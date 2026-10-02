@@ -1,0 +1,9 @@
+# bigcode/starcoder2-7b dalla cache HF condivisa, snapshot fissata (cluster_info §7).
+model_id: starcoder2_7b
+hf_repo: bigcode/starcoder2-7b
+snapshot: bb9afde76d7945da5745592525db122d4d729eb1
+path: ${paths.hf_hub_cache}/models--bigcode--starcoder2-7b/snapshots/${.snapshot}
+tokenizer_path: ${.path}
+dtype: bfloat16
+chat_template: null
+role: "perplexity observer"

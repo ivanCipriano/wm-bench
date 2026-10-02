@@ -1,0 +1,5 @@
+# Decoding del Livello 1 (SPEC §2.1).
+temperature: 0.2
+top_p: 0.95
+max_new_tokens: 512
+n: 6

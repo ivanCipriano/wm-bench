@@ -1,0 +1,9 @@
+# meta-llama/Llama-3.1-8B-Instruct dalla cache HF condivisa, snapshot fissata (cluster_info §7).
+model_id: llama31_8b_attacker
+hf_repo: meta-llama/Llama-3.1-8B-Instruct
+snapshot: 0e9e39f249a16976918f6564b8830bc894c89659
+path: ${paths.hf_hub_cache}/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/${.snapshot}
+tokenizer_path: ${.path}
+dtype: bfloat16
+chat_template: native
+role: "attacker (T2.2, T2.3)"

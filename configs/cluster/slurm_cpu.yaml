@@ -1,0 +1,12 @@
+# Profilo CPU: defq senza GPU (cluster_info §4). timeout 420 min = 7 h (80% di 9 h).
+# CPU e memoria provvisori (decisione dell'utente, M1): da tarare in Milestone 4.
+name: slurm_cpu
+kind: slurm
+partition: defq
+account: did_tesi_nlp_330
+qos: did_tesi_nlp_330_defq_qos
+gres: null
+cpus_per_task: 16
+mem_gb: 64
+timeout_min: 420
+provisional: true

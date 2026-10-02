@@ -1,0 +1,54 @@
+# Configurazione principale (SPEC §16.1; prevale docs/cluster_info.md).
+defaults:
+  - paths: cluster
+  - envs: envs
+  - cluster: local
+  - slurm: partitions
+  - resources: default
+  - decoding@decoding.level1: level1
+  - decoding@decoding.level234: level234
+  - model@models_catalog.qwen25_coder_7b: qwen25_coder_7b
+  - model@models_catalog.deepseek_coder_6p7b: deepseek_coder_6p7b
+  - model@models_catalog.llama31_8b_attacker: llama31_8b_attacker
+  - model@models_catalog.starcoder2_7b: starcoder2_7b
+  - model@models_catalog.unixcoder_base: unixcoder_base
+  - method@methods_catalog.sweet: sweet
+  - method@methods_catalog.acw: acw
+  - method@methods_catalog.stone: stone
+  - method@methods_catalog.promptmark: promptmark
+  - method@methods_catalog.mcgmark: mcgmark
+  - dataset@datasets.humanevalplus: humanevalplus
+  - dataset@datasets.mbppplus: mbppplus
+  - dataset@datasets.mbpp_original: mbpp_original
+  - dataset@datasets.humanevalpack: humanevalpack
+  - dataset@datasets.codesearchnet: codesearchnet
+  - dataset@datasets.thestack_cpp: thestack_cpp
+  - dataset@datasets.codenet: codenet
+  - dataset@datasets.classeval: classeval
+  - _self_
+
+global_seed: 20261001          # fissato dall'utente (cluster_info §10): ogni altro valore è rifiutato
+stage: ???                     # obbligatorio: nome della fase
+methods: [sweet, acw, stone, promptmark, mcgmark]
+models: [qwen25_coder_7b, deepseek_coder_6p7b]
+languages: [python, java, cpp, javascript]
+levels: [L1, L2]
+splits: [dev]
+attacks: []
+force: false
+log_level: INFO
+hpo:
+  use_selected: true           # false durante lo sweep
+  max_pass1_drop_pp: 3.0       # provvisorio (protocollo)
+detection:
+  target_fpr: 0.01
+  min_negatives: 1000
+
+hydra:
+  run:
+    dir: ${paths.artifacts}/_hydra/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: ${paths.artifacts}/_hydra/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}
+  job:
+    chdir: false
