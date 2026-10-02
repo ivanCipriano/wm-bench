@@ -4,7 +4,8 @@ build/
 artifacts/
 .cache/
 *.sif
-containers/sandbox_dir/*.egg-info/
+containers/sandbox_dir/
+*.egg-info/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
