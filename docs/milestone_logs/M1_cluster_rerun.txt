@@ -1,0 +1,135 @@
+##### aggiornamento e installazione senza rete
+From https://github.com/ivanCipriano/wm-bench
+   3a89c5b..d2060de  main       -> origin/main
+Updating 3a89c5b..d2060de
+Fast-forward
+ README.md                                     |  6 ++++--
+ docs/cluster_info.md                          |  2 +-
+ docs/decisions/ADR-003-core-store-pipeline.md |  4 +++-
+ src/bench/doctor.py                           | 22 +++++++++++++++++++++-
+ tests/unit/test_doctor.py                     | 20 ++++++++++++++++++--
+ 5 files changed, 47 insertions(+), 7 deletions(-)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench
+  Building editable for bench (pyproject.toml): started
+  Building editable for bench (pyproject.toml): finished with status 'done'
+  Created wheel for bench: filename=bench-0.0.0-0.editable-py3-none-any.whl size=1479 sha256=535e88d9e04367a65e31187d34cb17ecde0ee38edc002b94df40a3a655f564df
+  Stored in directory: /tmp/pip-ephem-wheel-cache-0kw3lm54/wheels/e6/2d/d6/4f5189108c1bcee4f1a107f63abd0d2e53804a75c808f17e17
+Successfully built bench
+Installing collected packages: bench
+  Attempting uninstall: bench
+    Found existing installation: bench 0.0.0
+    Uninstalling bench-0.0.0:
+      Successfully uninstalled bench-0.0.0
+Successfully installed bench-0.0.0
+Name: bench
+Version: 0.0.0
+Summary: Framework unificato di benchmark per watermarking di codice generato da LLM
+ERROR: Pipe to stdout was broken
+##### test
+........................................................................ [ 53%]
+...............................................................          [100%]
+135 passed in 380.96s (0:06:20)
+..............                                                           [100%]
+14 passed in 16.68s
+##### selftest pulito: scrive / SKIPPED / force=true
+[2026-10-02 18:45:11,131][bench.pipeline.observers][INFO] - stage selftest cell all: start
+[2026-10-02 18:45:33,605][bench.pipeline.observers][INFO] - stage selftest cell all: done in 22.40s
+RAN      selftest [all] 22.40s
+total: 1 ran, 0 skipped
+[2026-10-02 18:45:48,211][bench.pipeline.observers][INFO] - stage selftest cell all: SKIPPED (outputs already complete)
+SKIPPED  selftest [all] 0.00s
+total: 0 ran, 1 skipped
+[2026-10-02 18:46:04,198][bench.pipeline.observers][INFO] - stage selftest cell all: start
+[2026-10-02 18:46:17,930][bench.pipeline.observers][INFO] - stage selftest cell all: done in 13.70s
+RAN      selftest [all] 13.70s
+total: 1 ran, 0 skipped
+##### bench doctor --gpu su gpuq
+bench doctor
+============
+
+[environments]
+  OK    acw                                     Python 3.10.21, bench_contracts 1.0.0
+  OK    bench-core                              Python 3.11.16, bench_contracts 1.0.0
+  OK    mcgmark                                 Python 3.10.21, bench_contracts 1.0.0
+  OK    promptmark                              Python 3.10.21, bench_contracts 1.0.0
+  OK    stone                                   Python 3.9.19, bench_contracts 1.0.0
+  OK    sweet                                   Python 3.10.21, bench_contracts 1.0.0
+
+[submodules]
+  WARN  repository                              d2060de07190 (dirty)
+  OK    count                                   8 declared, expected 8
+  OK    third_party/ACW                         2236dc304478
+  OK    third_party/ClassEval                   eaeac44d0d5d
+  OK    third_party/MCGMT                       eefa27b68747
+  OK    third_party/PromptMark                  c04c8f61db1f
+  OK    third_party/STONE-watermarking          bb5d809c0c49
+  OK    third_party/bigcode-evaluation-harness  8fc5bae6479c
+  OK    third_party/lm-watermarking             82922516930c
+  OK    third_party/sweet-watermark             853b47eb064c
+
+[patched]
+  OK    acw                                     1 patch(es) applied
+  OK    mcgmark                                 1 patch(es) applied
+  OK    promptmark                              1 patch(es) applied
+  OK    stone                                   1 patch(es) applied
+  OK    sweet                                   1 patch(es) applied
+
+[apptainer]
+  OK    version                                 1.1.9 (expected 1.1.9)
+  SKIP  sandbox image                           built in Milestone 4
+
+[models]
+  OK    deepseek_coder_6p7b                     deepseek-ai/deepseek-coder-6.7b-instruct@e5d64addd26a
+  OK    llama31_8b_attacker                     meta-llama/Llama-3.1-8B-Instruct@0e9e39f249a1
+  OK    qwen25_coder_7b                         Qwen/Qwen2.5-Coder-7B-Instruct@c03e6d358207
+  OK    starcoder2_7b                           bigcode/starcoder2-7b@bb9afde76d79
+  OK    unixcoder_base                          microsoft/unixcoder-base@5604afdc964f
+
+[datasets]
+  OK    classeval                               1 path(s) present
+  OK    codenet                                 7 path(s) present
+  OK    codesearchnet                           9 path(s) present
+  OK    humanevalpack                           4 path(s) present
+  OK    humanevalplus                           1 path(s) present
+  OK    mbpp_original                           4 path(s) present
+  OK    mbppplus                                1 path(s) present
+  OK    thestack_cpp                            2 path(s) present
+  SKIP  tests4py                                deferred to Milestone 13
+
+[secrets]
+  WARN  SOURCERY_TOKEN                          not set (required by the ACW worker)
+
+[slurm]
+  OK    slurm_cpu                               defq, qos did_tesi_nlp_330_defq_qos, gres -, 420 min [provisional]
+  OK    slurm_gpu                               gpuq, qos did_tesi_nlp_330_gpuq_qos, gres gpu:1, 330 min
+  OK    slurm_gpu_h100                          aiq, qos did_tesi_nlp_330_aiq_qos, gres gpu:1, 330 min
+  OK    policy CPU                              -> slurm_cpu
+  OK    policy GPU_NVIDIA                       -> slurm_gpu
+  OK    timeout acw                             worker_timeout_s 18000
+  OK    timeout mcgmark                         worker_timeout_s 18000
+  OK    timeout promptmark                      worker_timeout_s 18000
+  OK    timeout stone                           worker_timeout_s 18000
+  OK    timeout sweet                           worker_timeout_s 18000
+
+[paths]
+  OK    artifacts                               /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts (writable)
+  OK    tmp                                     /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp (writable)
+
+[gpu]
+  SKIP  acw                                     CPU-only method (resources): CUDA not required
+  OK    bench-core                              torch 2.4.1+cu121, CUDA 12.1, 1 device(s)
+  OK    mcgmark                                 torch 2.4.1+cu121, CUDA 12.1, 1 device(s)
+  OK    promptmark                              torch 2.4.1+cu121, CUDA 12.1, 1 device(s)
+  OK    stone                                   torch 2.4.1+cu121, CUDA 12.1, 1 device(s)
+  OK    sweet                                   torch 2.4.0+cu121, CUDA 12.1, 1 device(s)
+
+[attack tools]
+  SKIP  tools                                   installed in Milestone 10
+
+summary: 51 OK, 2 WARN, 0 FAIL, 4 SKIP -> OK
+doctor --gpu exit code: 0
