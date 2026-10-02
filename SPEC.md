@@ -21,14 +21,13 @@
 
 ## 1. Contesto e obiettivo
 
-Il framework valuta **6 metodi di watermarking training-free** per codice generato da LLM, in modo equo e riproducibile, secondo il *Protocollo Sperimentale Benchmark* (di seguito "protocollo").
+Il framework valuta **5 metodi di watermarking training-free** per codice generato da LLM, in modo equo e riproducibile, secondo il *Protocollo Sperimentale Benchmark* (di seguito "protocollo").
 
 | Metodo | Famiglia | Repository originale |
 |---|---|---|
 | SWEET | logit processor (entropia selettiva) | `hongcheki/sweet-watermark` |
 | ACW (Li) | post-hoc, trasformazioni di codice | `Noelle1831-k/ACW` |
 | STONE | logit processor (token non sintattici) | `inistory/STONE-watermarking` |
-| Code Acrostic | logit processor | `XHLin-gamer/code_acrostic` (originale; vedi §9.4) |
 | PromptMark | black-box: prompt + feedback iterativo | `ahmedfahad04/PromptMark` |
 | MCGMark | logit processor multi-bit | `KevinHeiwa/MCGMT` |
 
@@ -44,7 +43,7 @@ Il framework valuta **6 metodi di watermarking training-free** per codice genera
 | Vincolo | Valore |
 |---|---|
 | Scheduler | SLURM |
-| Ambienti Python | **7 ambienti Miniforge**: `bench-core` (orchestratore) + uno per metodo (`env-sweet`, `env-acw`, `env-stone`, `env-acrostic`, `env-promptmark`, `env-mcgmark`). Gli ambienti dei metodi sono **già configurati** dall'utente e non vanno modificati salvo aggiunta della dipendenza stdlib-only `bench-contracts` (§5.1). |
+| Ambienti Python | **6 ambienti Miniforge**: `bench-core` (orchestratore) + uno per metodo (`env-sweet`, `env-acw`, `env-stone`, `env-promptmark`, `env-mcgmark`). Gli ambienti dei metodi sono **già configurati** dall'utente e non vanno modificati salvo aggiunta della dipendenza stdlib-only `bench-contracts` (§5.1). |
 | GPU | Cluster con NVIDIA e AMD; **tutti gli ambienti hanno torch solo CUDA** ⇒ ogni job GPU va su partizioni **NVIDIA**. |
 | Container | **Apptainer 1.1.9** (Singularity non disponibile). Usato solo per eseguire codice generato (sandbox dei test). |
 | Modelli | Pesi locali sul cluster; percorsi in `configs/model/*.yaml`. Nessun download a runtime. |
@@ -112,8 +111,8 @@ wm-bench/
 │   ├── model/{qwen25_coder_7b,deepseek_coder_6p7b,llama31_8b_attacker,starcoder2_7b,unixcoder_base}.yaml
 │   ├── decoding/{level1,level234}.yaml
 │   ├── prompt/{system.txt, user/<dataset>_<lang>.j2, attacks/*.txt}
-│   ├── method/{sweet,acw,stone,acrostic,promptmark,mcgmark}.yaml
-│   ├── hpo/{sweet,acw,stone,acrostic,promptmark,mcgmark}.yaml
+│   ├── method/{sweet,acw,stone,promptmark,mcgmark}.yaml
+│   ├── hpo/{sweet,acw,stone,promptmark,mcgmark}.yaml
 │   ├── dataset/{humanevalplus,mbppplus,mbpp_original,humanevalpack,codenet,classeval,codesearchnet,thestack_cpp,tests4py}.yaml
 │   ├── split/default.yaml
 │   ├── attack/{t1_1_format,t1_2_lint,t1_3_comments,t1_4_rename,t1_5_local,t2_1_refactor,t2_2_llm_rewrite,t2_3_roundtrip,t2_4_truncate,t3_1_remark,t4_1_minify,t4_2_bundle}.yaml
@@ -122,7 +121,7 @@ wm-bench/
 │   └── experiment/{smoke,l1_dev_sweep,full_test}.yaml
 │
 ├── packages/
-│   └── bench-contracts/              # SOLO stdlib, Python >= 3.8; installato in tutti e 7 gli ambienti
+│   └── bench-contracts/              # SOLO stdlib, Python >= 3.8; installato in tutti e 6 gli ambienti
 │       ├── pyproject.toml
 │       └── bench_contracts/
 │           ├── __init__.py
@@ -147,7 +146,7 @@ wm-bench/
 │   │   ├── base.py                   # MethodAdapter + capacità
 │   │   ├── worker_client.py
 │   │   ├── hparams.py
-│   │   └── adapters/{sweet,acw,stone,acrostic,promptmark,mcgmark}.py
+│   │   └── adapters/{sweet,acw,stone,promptmark,mcgmark}.py
 │   ├── execution/
 │   │   ├── sandbox.py                # ApptainerSandbox
 │   │   └── executors/{base,evalplus,humanevalpack,codenet,classeval,tests4py,syntax}.py
@@ -168,13 +167,12 @@ wm-bench/
 │   │   └── stages/{prepare_data,generate_baseline,watermark,execute,detect,calibrate,tune,attack,imperceptibility,metrics,report}.py
 │   └── report/{tables,plots}.py
 │
-├── shims/                            # gira nei 6 ambienti dei metodi; Python >= 3.8
+├── shims/                            # gira nei 5 ambienti dei metodi; Python >= 3.8
 │   └── bench_shims/
 │       ├── _common/{base.py,runner.py,decoding.py,chat.py}
 │       ├── sweet/{__init__.py,__main__.py,shim.py}
 │       ├── acw/...
 │       ├── stone/...
-│       ├── acrostic/...
 │       ├── promptmark/...
 │       └── mcgmark/...
 │
@@ -182,7 +180,6 @@ wm-bench/
 │   ├── sweet-watermark/
 │   ├── ACW/
 │   ├── STONE-watermarking/
-│   ├── code_acrostic/
 │   ├── PromptMark/
 │   ├── MCGMT/
 │   ├── bigcode-evaluation-harness/   # esecuzione HumanEvalPack
@@ -465,7 +462,6 @@ Matrice delle capacità (da confermare con l'audit §9.0):
 | `SweetAdapter` | ✓ | ✓ | | ✓ | | da audit | ✓ | ✓ |
 | `AcwAdapter` | ✓ | | ✓ | ✓ | | **solo Python** | ✗ | ✗ |
 | `StoneAdapter` | ✓ | ✓ | | ✓ | | da audit | ✓ | ✗ (solo tokenizer) |
-| `AcrosticAdapter` | ✓ | ✓ | | ✓ | | da audit | ✓ | da audit |
 | `PromptMarkAdapter` | ✓ | ✓ | | ✓ | | da audit | ✓ | ✗ |
 | `McgmarkAdapter` | ✓ | ✓ | | ✓ | ✓ | da audit | ✓ | da audit |
 
@@ -735,7 +731,7 @@ Utilità comuni in `_common/`:
 
 ---
 
-## 9. Integrazione dei sei metodi
+## 9. Integrazione dei cinque metodi
 
 ### 9.0 Audit obbligatorio (prima di ogni adapter)
 
@@ -778,18 +774,11 @@ L'audit va **mostrato all'utente** prima di implementare l'adapter.
 
 - **Famiglia:** logit processor sui soli token non sintattici. **Ambiente:** `env-stone`.
 - **Iperparametri:** γ, δ. Chiave = `hash_key` nativo.
-- **Punto d'innesto:** `stone_implementation/` (basato su MarkLLM). Il notebook `AUROC_perplexity.ipynb` e la valutazione su Colab **non** si usano: il framework fa rilevazione e metriche per conto proprio.
+- **Punto d'innesto:** `stone_implementation/` (basato su un framework esterno di watermarking incluso nel repository). Il notebook `AUROC_perplexity.ipynb` e la valutazione su Colab **non** si usano: il framework fa rilevazione e metriche per conto proprio.
 - **Rilevazione:** solo tokenizer. **Punteggio:** z-score sui token non sintattici.
 - **Nota:** il repository include processori di altri metodi (baseline). Non usarli al posto delle implementazioni ufficiali degli altri cinque metodi.
 
-### 9.4 Code Acrostic
-
-- **Repository:** l'**originale** `XHLin-gamer/code_acrostic`. **Primo compito della Milestone 0:** aggiungi entrambi i remote e lancia `git log --oneline upstream/main..fork/main` (fork = `xhaughearl/code_acrostic`). Se il fork non ha commit propri, usa l'originale e annotalo nell'audit. Se li ha, elencali con il loro diff e **fermati** per far decidere l'utente (eventuale deviazione da registrare).
-- **Ambiente:** `env-acrostic`. **Iperparametri:** dimensione della lista di suggerimento, γ, δ.
-- **Particolarità:** il codice è in `CC.ipynb`. Estrai le funzioni necessarie in un **modulo patch** (`patches/acrostic/0001-extract-notebook-to-module.patch`, che crea `third_party/code_acrostic/acrostic_core.py` in una copia di lavoro) generato da uno script riproducibile (`nbconvert` + rimozione delle celle di demo e di installazione). Lo shim importa solo quel modulo. Nessuna modifica alla logica algoritmica.
-- **`CC.json`:** verificare nell'audit se è configurazione o dati e se va caricato.
-
-### 9.5 PromptMark
+### 9.4 PromptMark
 
 - **Famiglia:** black-box (prompt + feedback). **Ambiente:** `env-promptmark`.
 - **Iperparametri:** dimensione della green list delle iniziali, numero massimo di iterazioni di feedback, soglia di forza del watermark (parametro del **loop di inserimento**, quindi resta nella griglia).
@@ -799,7 +788,7 @@ L'audit va **mostrato all'utente** prima di implementare l'adapter.
 - **Punteggio:** statistica del test sulle iniziali (orientata in modo che più alto = più marcato; se il rilevatore produce un p-value, usare `-log10(p)`).
 - **FAILED:** nessun codice prodotto o nessun identificatore estraibile.
 
-### 9.6 MCGMark
+### 9.5 MCGMark
 
 - **Famiglia:** logit processor multi-bit. **Ambiente:** `env-mcgmark`.
 - **Iperparametri:** intensità del bias, soglia per la ridistribuzione dei token molto probabili. **Lunghezza del messaggio fissata a 24 bit** (decisione dell'utente) ⇒ esclusa dalla griglia. **Deviazione D1.**
@@ -809,7 +798,7 @@ L'audit va **mostrato all'utente** prima di implementare l'adapter.
 - **Metriche di capacità:** §13.5.
 - **Nota:** il README dichiara una "versione preliminare" e richiede modello e parametri da configurare a mano in `watermark.py`. Lo shim deve passare tutti i parametri esplicitamente, eventualmente con una patch che sostituisca le costanti cablate con argomenti.
 
-### 9.7 Chiavi segrete
+### 9.6 Chiavi segrete
 
 `key(method, key_id) = derive_seed(global_seed, "wm-key", method, key_id) % 2**31`. `k1` per tutti gli esperimenti; `k2` solo per T3.1. Se il metodo richiede un formato diverso (es. stringa), la conversione avviene in `to_native_hparams` ed è documentata nell'audit.
 
@@ -1103,7 +1092,7 @@ defaults:
 
 global_seed: 20260101          # TODO(user): valore definitivo, poi non più modificabile
 stage: ???                     # obbligatorio: nome della fase
-methods: [sweet, acw, stone, acrostic, promptmark, mcgmark]
+methods: [sweet, acw, stone, promptmark, mcgmark]
 models: [qwen25_coder_7b, deepseek_coder_6p7b]
 languages: [python, java, cpp, javascript]
 levels: [L1, L2]
@@ -1173,7 +1162,7 @@ bench doctor
 bench +experiment=smoke stage=all
 ```
 
-`bench doctor` controlla: esistenza e versione degli interpreti dei 7 ambienti; `import bench_contracts` in ognuno; disponibilità di CUDA negli ambienti GPU (solo su nodo con GPU); versioni dei tool degli attacchi; `apptainer --version` = 1.1.9 e presenza del `.sif`; percorsi di modelli e dataset; variabile `SOURCERY_TOKEN` (solo presenza); stato dei submodule e delle patch.
+`bench doctor` controlla: esistenza e versione degli interpreti dei 6 ambienti; `import bench_contracts` in ognuno; disponibilità di CUDA negli ambienti GPU (solo su nodo con GPU); versioni dei tool degli attacchi; `apptainer --version` = 1.1.9 e presenza del `.sif`; percorsi di modelli e dataset; variabile `SOURCERY_TOKEN` (solo presenza); stato dei submodule e delle patch.
 
 ---
 
@@ -1275,7 +1264,7 @@ Negli ambienti dei metodi l'**unica** aggiunta consentita è `pip install -e pac
 
 - I campi delle dataclass di `bench_contracts.schema` coincidono con quelli dei modelli Pydantic corrispondenti.
 - Round-trip JSONL: orchestratore → worker fittizio → orchestratore senza perdita.
-- Per ognuno dei 6 ambienti: `python -c "import bench_contracts"` e `python -m bench_shims.<metodo> --introspect` terminano con exit code 0.
+- Per ognuno dei 5 ambienti dei metodi: `python -c "import bench_contracts"` e `python -m bench_shims.<metodo> --introspect` terminano con exit code 0.
 - Un worker che riceve una `schema_version` diversa termina con exit code 3.
 
 ### 21.3 Test di proprietà e unit (minimo richiesto)
@@ -1310,13 +1299,13 @@ Ogni milestone termina con test verdi, riepilogo all'utente e commit `[M<n>]`.
 
 | # | Milestone | Contenuto | Criteri di accettazione |
 |---|---|---|---|
-| **M0** | Bootstrap | struttura di §4; `pyproject.toml`; pre-commit; submodule fissati (inclusi `bigcode-evaluation-harness`, `ClassEval`); confronto fork/originale di Code Acrostic (§9.4); `bench-contracts`; installazione negli ambienti; lockfile di `bench-core` | `pip check` pulito; lockfile versionati; `pytest tests/contract -m contract` verde sull'import; rapporto sul fork consegnato |
+| **M0** | Bootstrap | struttura di §4; `pyproject.toml`; pre-commit; submodule fissati (inclusi `bigcode-evaluation-harness`, `ClassEval`); `bench-contracts`; installazione negli ambienti; lockfile di `bench-core` | `pip check` pulito; lockfile versionati; `pytest tests/contract -m contract` verde sull'import |
 | **M1** | Nucleo | dominio, registri, `ArtifactStore` con manifest e scrittura atomica, `ExperimentBuilder`, CLI Hydra, `Pipeline`, osservatori, `bench doctor` | unit verdi; una fase fittizia scrive, salta al secondo lancio e rilancia con `force=true`; `bench doctor` produce un report leggibile |
 | **M2** | Dati L1 | loader HumanEval+, MBPP+, MBPP originale, HumanEvalPack; `ProblemSplitter`; `line_counter`; negativi L1 + integrazione dev | conteggi di §10.2 per L1; statistiche righe di §10.3; I4 verificato |
 | **M3** | Baseline | `PromptBuilder`, template chat, `CodeExtractor`, `HFBaselineGenerator`; fase `generate_baseline` su SLURM GPU | L1 completo per entrambi i modelli: 6 campioni per prompt, I1 verificato, tasso di estrazione riportato |
 | **M4** | Sandbox ed esecuzione L1 | `sandbox.def`, build, `ApptainerSandbox`, executor `evalplus`, `humanevalpack`, `syntax`; ADR sulla rete | Pass@1 delle soluzioni canoniche = 100% (o casi anomali documentati); Pass@1 della baseline L1 per modello e linguaggio con IC |
 | **M5** | Protocollo worker + primo metodo | `WorkerClient`, `ShimBase`, runner, audit e shim **STONE** (il repository più strutturato), test oracle | oracle STONE verde; ripresa dopo kill del worker verificata; I1 verificato |
-| **M6** | Metodi restanti | audit e shim di SWEET, MCGMark, Code Acrostic, PromptMark, ACW (in quest'ordine); patch documentate | oracle verdi per ciascuno; audit approvati dall'utente; ACW `NOT_APPLICABLE` fuori da Python |
+| **M6** | Metodi restanti | audit e shim di SWEET, MCGMark, PromptMark, ACW (in quest'ordine); patch documentate | oracle verdi per ciascuno; audit approvati dall'utente; ACW `NOT_APPLICABLE` fuori da Python |
 | **M7** | Rilevazione e calibrazione | fase `detect` (positivi, negativi umani, negativi LLM), `ThresholdCalibrator`, metriche di rilevabilità e funzionali, incertezza | soglie congelate per una configurazione di default per metodo; TPR@1%FPR, AUROC, Pass@1 e ΔPass@1 con IC su L1 dev |
 | **M8** | HPO | griglie approvate dall'utente, sweep come array SLURM, `ConstrainedTprCriterion`, fase `tune` | file di configurazioni selezionate per ogni (metodo, modello, linguaggio); casi senza configurazione ammissibile segnalati |
 | **M9** | Livello 2 | loader CodeNet, selezione dei 250 problemi, executor `codenet`; integrazione in calibrazione e HPO (rilanciare M7–M8 con L2 dev) | conteggi L2; Pass@1 baseline L2; HPO aggiornato |
@@ -1330,7 +1319,7 @@ Ogni milestone termina con test verdi, riepilogo all'utente e commit `[M<n>]`.
 
 ## 23. Deviazioni note dal protocollo e punti aperti
 
-Da riportare in `docs/deviations.md` all'inizio della Milestone 0.
+Da riportare in `docs/deviations.md` all'inizio della Milestone 0. Gli ID delle deviazioni sono stabili: un ID ritirato non viene riassegnato.
 
 | ID | Descrizione | Stato |
 |---|---|---|
@@ -1338,7 +1327,6 @@ Da riportare in `docs/deviations.md` all'inizio della Milestone 0.
 | D2 | La "soglia di rilevamento" di ACW (e qualunque soglia nativa) non è un iperparametro: tutte le soglie di decisione si calibrano all'1% di FPR sui negativi umani di sviluppo | proposta, da confermare |
 | D3 | SWEET: per i negativi senza prompt (CodeSearchNet, The Stack) l'entropia è calcolata con contesto vuoto | proposta, da confermare |
 | D4 | Il codice viene estratto dall'output chat con una regola unica per tutti i metodi (§10.6) | proposta, da confermare |
-| D5 | Code Acrostic: uso del repository originale; eventuale ricorso al fork solo dopo analisi dei commit | in attesa dell'esito di M0 |
 | D6 | ACW applicato solo a Python | decisa dall'utente |
 | D7 | Assegnazione dev/test delle soluzioni MBPP originali senza corrispettivo in MBPP+ | `TODO(user)` |
 | D8 | Liste di frequenza di PromptMark calcolate da split di training disgiunti (CodeSearchNet train, campione separato di The Stack) | proposta, da confermare |
