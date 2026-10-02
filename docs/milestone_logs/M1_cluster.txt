@@ -1,0 +1,249 @@
+##### 0. aggiornamento (include la pulizia del metodo rimosso, se non ancora fatta)
+Already up to date.
+Synchronizing submodule url for 'third_party/ACW'
+Synchronizing submodule url for 'third_party/ClassEval'
+Synchronizing submodule url for 'third_party/MCGMT'
+Synchronizing submodule url for 'third_party/PromptMark'
+Synchronizing submodule url for 'third_party/STONE-watermarking'
+Synchronizing submodule url for 'third_party/bigcode-evaluation-harness'
+Synchronizing submodule url for 'third_party/lm-watermarking'
+Synchronizing submodule url for 'third_party/sweet-watermark'
+[setup_submodules] sync + update --init
+[OK] third_party/sweet-watermark @ 853b47eb064c180beebd383302d09491fc98a565
+[OK] third_party/ACW @ 2236dc304478a31fe7cc7cc393527375024428db
+[OK] third_party/STONE-watermarking @ bb5d809c0c494a219411e861f2313cca2b9fd7b4
+[OK] third_party/PromptMark @ c04c8f61db1f0ec7ba2f213f4aa1a15787af484e
+[OK] third_party/MCGMT @ eefa27b68747f5027c3121abcc506f3488eae990
+[OK] third_party/bigcode-evaluation-harness @ 8fc5bae6479c4fbbb28c3f8b644f6a15b3f3b5bd
+[OK] third_party/ClassEval @ eaeac44d0d5dcd8a95feec50726d66fedc73a98f
+[OK] third_party/lm-watermarking @ 82922516930c02f8aa322765defdb5863d07a00e
+[setup_submodules] all submodules pinned and clean
+[apply_patches] sweet: applied 0000-modifiche-preesistenti.patch
+[OK] sweet -> build/patched/sweet (853b47eb064c180beebd383302d09491fc98a565, 1 patch(es))
+[apply_patches] acw: applied 0000-modifiche-preesistenti.patch
+[OK] acw -> build/patched/acw (2236dc304478a31fe7cc7cc393527375024428db, 1 patch(es))
+patches/stone/0000-modifiche-preesistenti.patch:33: trailing whitespace.
+                unwatermarked_codes.append({"task_id": task_id, "completion": completion})            
+warning: 1 line adds whitespace errors.
+[apply_patches] stone: applied 0000-modifiche-preesistenti.patch
+[OK] stone -> build/patched/stone (bb5d809c0c494a219411e861f2313cca2b9fd7b4, 1 patch(es))
+[apply_patches] promptmark: applied 0000-modifiche-preesistenti.patch
+[OK] promptmark -> build/patched/promptmark (c04c8f61db1f0ec7ba2f213f4aa1a15787af484e, 1 patch(es))
+[apply_patches] mcgmark: applied 0000-modifiche-preesistenti.patch
+[OK] mcgmark -> build/patched/mcgmark (eefa27b68747f5027c3121abcc506f3488eae990, 1 patch(es))
+##### 1. installazione del pacchetto bench (registra il comando 'bench')
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'error'
+  error: subprocess-exited-with-error
+  
+  × installing build dependencies did not run successfully.
+  │ exit code: 1
+  ╰─> [8 lines of output]
+      WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)'))': /simple/setuptools/
+      WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)'))': /simple/setuptools/
+      WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)'))': /simple/setuptools/
+      WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)'))': /simple/setuptools/
+      WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)'))': /simple/setuptools/
+      Could not fetch URL https://pypi.org/simple/setuptools/: There was a problem confirming the ssl certificate: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016) - skipping
+      ERROR: Could not find a version that satisfies the requirement setuptools>=64 (from versions: none)
+      ERROR: No matching distribution found for setuptools>=64
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+ERROR: Failed to build 'file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench' when installing build dependencies
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/bench
+##### 2. test
+........................................................................ [ 53%]
+..............................................................           [100%]
+134 passed in 67.65s (0:01:07)
+..............                                                           [100%]
+14 passed in 1.57s
+##### 3. bench doctor (nodo di login)
+bench doctor
+============
+
+[environments]
+  OK    acw                                     Python 3.10.21, bench_contracts 1.0.0
+  OK    bench-core                              Python 3.11.16, bench_contracts 1.0.0
+  OK    mcgmark                                 Python 3.10.21, bench_contracts 1.0.0
+  OK    promptmark                              Python 3.10.21, bench_contracts 1.0.0
+  OK    stone                                   Python 3.9.19, bench_contracts 1.0.0
+  OK    sweet                                   Python 3.10.21, bench_contracts 1.0.0
+
+[submodules]
+  OK    repository                              b23be2283206 (clean)
+  OK    count                                   8 declared, expected 8
+  OK    third_party/ACW                         2236dc304478
+  OK    third_party/ClassEval                   eaeac44d0d5d
+  OK    third_party/MCGMT                       eefa27b68747
+  OK    third_party/PromptMark                  c04c8f61db1f
+  OK    third_party/STONE-watermarking          bb5d809c0c49
+  OK    third_party/bigcode-evaluation-harness  8fc5bae6479c
+  OK    third_party/lm-watermarking             82922516930c
+  OK    third_party/sweet-watermark             853b47eb064c
+
+[patched]
+  OK    acw                                     1 patch(es) applied
+  OK    mcgmark                                 1 patch(es) applied
+  OK    promptmark                              1 patch(es) applied
+  OK    stone                                   1 patch(es) applied
+  OK    sweet                                   1 patch(es) applied
+
+[apptainer]
+  OK    version                                 1.1.9 (expected 1.1.9)
+  SKIP  sandbox image                           built in Milestone 4
+
+[models]
+  OK    deepseek_coder_6p7b                     deepseek-ai/deepseek-coder-6.7b-instruct@e5d64addd26a
+  OK    llama31_8b_attacker                     meta-llama/Llama-3.1-8B-Instruct@0e9e39f249a1
+  OK    qwen25_coder_7b                         Qwen/Qwen2.5-Coder-7B-Instruct@c03e6d358207
+  OK    starcoder2_7b                           bigcode/starcoder2-7b@bb9afde76d79
+  OK    unixcoder_base                          microsoft/unixcoder-base@5604afdc964f
+
+[datasets]
+  OK    classeval                               1 path(s) present
+  OK    codenet                                 7 path(s) present
+  OK    codesearchnet                           9 path(s) present
+  OK    humanevalpack                           4 path(s) present
+  OK    humanevalplus                           1 path(s) present
+  OK    mbpp_original                           4 path(s) present
+  OK    mbppplus                                1 path(s) present
+  OK    thestack_cpp                            2 path(s) present
+  SKIP  tests4py                                deferred to Milestone 13
+
+[secrets]
+  WARN  SOURCERY_TOKEN                          not set (required by the ACW worker)
+
+[slurm]
+  OK    slurm_cpu                               defq, qos did_tesi_nlp_330_defq_qos, gres -, 420 min [provisional]
+  OK    slurm_gpu                               gpuq, qos did_tesi_nlp_330_gpuq_qos, gres gpu:1, 330 min
+  OK    slurm_gpu_h100                          aiq, qos did_tesi_nlp_330_aiq_qos, gres gpu:1, 330 min
+  OK    policy CPU                              -> slurm_cpu
+  OK    policy GPU_NVIDIA                       -> slurm_gpu
+  OK    timeout acw                             worker_timeout_s 18000
+  OK    timeout mcgmark                         worker_timeout_s 18000
+  OK    timeout promptmark                      worker_timeout_s 18000
+  OK    timeout stone                           worker_timeout_s 18000
+  OK    timeout sweet                           worker_timeout_s 18000
+
+[paths]
+  OK    artifacts                               /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts (writable)
+  OK    tmp                                     /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp (writable)
+
+[gpu]
+  SKIP  cuda                                    use 'bench doctor --gpu' on a GPU node
+
+[attack tools]
+  SKIP  tools                                   installed in Milestone 10
+
+summary: 47 OK, 1 WARN, 0 FAIL, 4 SKIP -> OK
+doctor exit code: 0
+##### 4. selftest: scrive / SKIPPED / force=true
+[2026-10-02 18:15:58,398][bench.pipeline.observers][INFO] - stage selftest cell all: SKIPPED (outputs already complete)
+SKIPPED  selftest [all] 0.00s
+total: 0 ran, 1 skipped
+[2026-10-02 18:16:00,951][bench.pipeline.observers][INFO] - stage selftest cell all: SKIPPED (outputs already complete)
+SKIPPED  selftest [all] 0.00s
+total: 0 ran, 1 skipped
+[2026-10-02 18:16:03,382][bench.pipeline.observers][INFO] - stage selftest cell all: start
+[2026-10-02 18:16:05,716][bench.pipeline.observers][INFO] - stage selftest cell all: done in 2.32s
+RAN      selftest [all] 2.32s
+total: 1 ran, 0 skipped
+total 24
+-rw-rw----+ 1 i.cipriano1@studenti.unisa.it did_tesi_nlp_330  3132 Oct  2 18:16 selftest.parquet
+-rw-rw----+ 1 i.cipriano1@studenti.unisa.it did_tesi_nlp_330 20485 Oct  2 18:16 selftest.parquet.manifest.json
+##### 5. pre-commit
+check for added large files..............................................Passed
+check for merge conflicts................................................Passed
+check yaml...............................................................Passed
+ruff.....................................................................Passed
+ruff-format..............................................................Passed
+mypy --strict............................................................Passed
+vietato versionare artifacts/........................(no files to check)Skipped
+##### 6. bench doctor --gpu su gpuq
+bench doctor
+============
+
+[environments]
+  OK    acw                                     Python 3.10.21, bench_contracts 1.0.0
+  OK    bench-core                              Python 3.11.16, bench_contracts 1.0.0
+  OK    mcgmark                                 Python 3.10.21, bench_contracts 1.0.0
+  OK    promptmark                              Python 3.10.21, bench_contracts 1.0.0
+  OK    stone                                   Python 3.9.19, bench_contracts 1.0.0
+  OK    sweet                                   Python 3.10.21, bench_contracts 1.0.0
+
+[submodules]
+  OK    repository                              b23be2283206 (clean)
+  OK    count                                   8 declared, expected 8
+  OK    third_party/ACW                         2236dc304478
+  OK    third_party/ClassEval                   eaeac44d0d5d
+  OK    third_party/MCGMT                       eefa27b68747
+  OK    third_party/PromptMark                  c04c8f61db1f
+  OK    third_party/STONE-watermarking          bb5d809c0c49
+  OK    third_party/bigcode-evaluation-harness  8fc5bae6479c
+  OK    third_party/lm-watermarking             82922516930c
+  OK    third_party/sweet-watermark             853b47eb064c
+
+[patched]
+  OK    acw                                     1 patch(es) applied
+  OK    mcgmark                                 1 patch(es) applied
+  OK    promptmark                              1 patch(es) applied
+  OK    stone                                   1 patch(es) applied
+  OK    sweet                                   1 patch(es) applied
+
+[apptainer]
+  OK    version                                 1.1.9 (expected 1.1.9)
+  SKIP  sandbox image                           built in Milestone 4
+
+[models]
+  OK    deepseek_coder_6p7b                     deepseek-ai/deepseek-coder-6.7b-instruct@e5d64addd26a
+  OK    llama31_8b_attacker                     meta-llama/Llama-3.1-8B-Instruct@0e9e39f249a1
+  OK    qwen25_coder_7b                         Qwen/Qwen2.5-Coder-7B-Instruct@c03e6d358207
+  OK    starcoder2_7b                           bigcode/starcoder2-7b@bb9afde76d79
+  OK    unixcoder_base                          microsoft/unixcoder-base@5604afdc964f
+
+[datasets]
+  OK    classeval                               1 path(s) present
+  OK    codenet                                 7 path(s) present
+  OK    codesearchnet                           9 path(s) present
+  OK    humanevalpack                           4 path(s) present
+  OK    humanevalplus                           1 path(s) present
+  OK    mbpp_original                           4 path(s) present
+  OK    mbppplus                                1 path(s) present
+  OK    thestack_cpp                            2 path(s) present
+  SKIP  tests4py                                deferred to Milestone 13
+
+[secrets]
+  WARN  SOURCERY_TOKEN                          not set (required by the ACW worker)
+
+[slurm]
+  OK    slurm_cpu                               defq, qos did_tesi_nlp_330_defq_qos, gres -, 420 min [provisional]
+  OK    slurm_gpu                               gpuq, qos did_tesi_nlp_330_gpuq_qos, gres gpu:1, 330 min
+  OK    slurm_gpu_h100                          aiq, qos did_tesi_nlp_330_aiq_qos, gres gpu:1, 330 min
+  OK    policy CPU                              -> slurm_cpu
+  OK    policy GPU_NVIDIA                       -> slurm_gpu
+  OK    timeout acw                             worker_timeout_s 18000
+  OK    timeout mcgmark                         worker_timeout_s 18000
+  OK    timeout promptmark                      worker_timeout_s 18000
+  OK    timeout stone                           worker_timeout_s 18000
+  OK    timeout sweet                           worker_timeout_s 18000
+
+[paths]
+  OK    artifacts                               /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts (writable)
+  OK    tmp                                     /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp (writable)
+
+[gpu]
+  FAIL  acw                                     torch probe failed: ModuleNotFoundError: No module named 'torch'
+  OK    bench-core                              torch 2.4.1+cu121, CUDA 12.1, 1 device(s)
+  OK    mcgmark                                 torch 2.4.1+cu121, CUDA 12.1, 1 device(s)
+  OK    promptmark                              torch 2.4.1+cu121, CUDA 12.1, 1 device(s)
+  OK    stone                                   torch 2.4.1+cu121, CUDA 12.1, 1 device(s)
+  OK    sweet                                   torch 2.4.0+cu121, CUDA 12.1, 1 device(s)
+
+[attack tools]
+  SKIP  tools                                   installed in Milestone 10
+
+summary: 52 OK, 1 WARN, 1 FAIL, 3 SKIP -> FAILED
+srun: error: gnode04: task 0: Exited with exit code 1
+doctor --gpu exit code: 1
