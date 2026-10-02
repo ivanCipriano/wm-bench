@@ -1,0 +1,123 @@
+##### M1 - verifica locale (Windows, Python 3.11 con le versioni del lockfile, senza torch)
+##### data: 2026-10-02T15:36:16Z   commit di partenza: 690b5f3
+
+##### pytest (unit + property + contract; i 6 test sugli interpreti del cluster sono saltati in locale)
+.ssssss................................................................. [ 48%]
+........................................................................ [ 97%]
+....                                                                     [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] tests\contract\test_envs.py:63: acw: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: bench-core: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: mcgmark: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/mcgmark/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: promptmark: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/promptmark/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: stone: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/stone/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: sweet: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/sweet/bin/python
+142 passed, 6 skipped in 76.66s (0:01:16)
+
+##### ruff check / ruff format --check
+All checks passed!
+51 files already formatted
+
+##### mypy --strict (src/bench, packages/bench-contracts)
+Success: no issues found in 30 source files
+
+##### test unitari di bench-contracts con Python 3.9 (come l'ambiente stone)
+....................                                                     [100%]
+20 passed in 0.17s
+
+##### bench stage=selftest paths=local (3 lanci: scrive / SKIPPED / force=true); stdout
+[2026-10-02 17:37:39,789][bench.pipeline.observers][INFO] - stage selftest cell all: start
+[2026-10-02 17:37:42,118][bench.pipeline.observers][INFO] - stage selftest cell all: done in 2.33s
+RAN      selftest [all] 2.33s
+total: 1 ran, 0 skipped
+(exit code 0)
+[2026-10-02 17:37:44,675][bench.pipeline.observers][INFO] - stage selftest cell all: SKIPPED (outputs already complete)
+SKIPPED  selftest [all] 0.00s
+total: 0 ran, 1 skipped
+(exit code 0)
+[2026-10-02 17:37:47,161][bench.pipeline.observers][INFO] - stage selftest cell all: start
+[2026-10-02 17:37:49,442][bench.pipeline.observers][INFO] - stage selftest cell all: done in 2.28s
+RAN      selftest [all] 2.28s
+total: 1 ran, 0 skipped
+(exit code 0)
+
+##### bench doctor paths=local (in locale mancano interpreti, modelli, dataset e apptainer del cluster: FAIL attesi)
+bench doctor
+============
+
+[environments]
+  FAIL  acw                                     interpreter not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\miniforge3\envs\acw\bin\python
+  FAIL  bench-core                              interpreter not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\bench-core\bin\python
+  FAIL  mcgmark                                 interpreter not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\miniforge3\envs\mcgmark\bin\python
+  FAIL  promptmark                              interpreter not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\miniforge3\envs\promptmark\bin\python
+  FAIL  stone                                   interpreter not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\miniforge3\envs\stone\bin\python
+  FAIL  sweet                                   interpreter not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\miniforge3\envs\sweet\bin\python
+
+[submodules]
+  WARN  repository                              690b5f38d109 (dirty)
+  OK    count                                   8 declared, expected 8
+  OK    third_party/ACW                         2236dc304478
+  OK    third_party/ClassEval                   eaeac44d0d5d
+  OK    third_party/MCGMT                       eefa27b68747
+  OK    third_party/PromptMark                  c04c8f61db1f
+  OK    third_party/STONE-watermarking          bb5d809c0c49
+  OK    third_party/bigcode-evaluation-harness  8fc5bae6479c
+  OK    third_party/lm-watermarking             82922516930c
+  OK    third_party/sweet-watermark             853b47eb064c
+
+[patched]
+  OK    acw                                     1 patch(es) applied
+  OK    mcgmark                                 1 patch(es) applied
+  OK    promptmark                              1 patch(es) applied
+  OK    stone                                   1 patch(es) applied
+  OK    sweet                                   1 patch(es) applied
+
+[apptainer]
+  FAIL  version                                 command not found: apptainer
+  SKIP  sandbox image                           built in Milestone 4
+
+[models]
+  FAIL  deepseek_coder_6p7b                     snapshot not found: <hub>/models--deepseek-ai--deepseek-coder-6.7b-instruct/snapshots/e5d64addd26a6a1db0f9b863abf6ee3141936807
+  FAIL  llama31_8b_attacker                     snapshot not found: <hub>/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659
+  FAIL  qwen25_coder_7b                         snapshot not found: <hub>/models--Qwen--Qwen2.5-Coder-7B-Instruct/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242
+  FAIL  starcoder2_7b                           snapshot not found: <hub>/models--bigcode--starcoder2-7b/snapshots/bb9afde76d7945da5745592525db122d4d729eb1
+  FAIL  unixcoder_base                          snapshot not found: <hub>/models--microsoft--unixcoder-base/snapshots/5604afdc964f6c53782a6813140ade5216b99006
+
+[datasets]
+  OK    classeval                               1 path(s) present
+  FAIL  codenet                                 7/7 missing: <datasets>/Project_CodeNet.tar.gz, <datasets>/Project_CodeNet/derived/input_output/no_solutions.txt, <datasets>/Project_CodeNet/derived/input_output/unverified_accepted_solutions.txt (+4 more)
+  FAIL  codesearchnet                           9/9 missing: <datasets>/codesearchnet/python/train-00000-of-00001.parquet, <datasets>/codesearchnet/python/validation-00000-of-00001.parquet, <datasets>/codesearchnet/python/test-00000-of-00001.parquet (+6 more)
+  FAIL  humanevalpack                           4/4 missing: <datasets>/humanevalpack/python/test-00000-of-00001.parquet, <datasets>/humanevalpack/js/test-00000-of-00001.parquet, <datasets>/humanevalpack/java/test-00000-of-00001.parquet (+1 more)
+  FAIL  humanevalplus                           1/1 missing: <datasets>/evalplus/HumanEvalPlus-v0.1.10.jsonl
+  FAIL  mbpp_original                           4/4 missing: <datasets>/mbpp/full/train-00000-of-00001.parquet, <datasets>/mbpp/full/test-00000-of-00001.parquet, <datasets>/mbpp/full/validation-00000-of-00001.parquet (+1 more)
+  FAIL  mbppplus                                1/1 missing: <datasets>/evalplus/MbppPlus-v0.2.0.jsonl
+  FAIL  thestack_cpp                            2/2 missing: <datasets>/thestack/data/cpp/data-00000-of-00110.parquet, <datasets>/thestack/data/cpp/data-00001-of-00110.parquet
+  SKIP  tests4py                                deferred to Milestone 13
+
+[secrets]
+  WARN  SOURCERY_TOKEN                          not set (required by the ACW worker)
+
+[slurm]
+  OK    slurm_cpu                               defq, qos did_tesi_nlp_330_defq_qos, gres -, 420 min [provisional]
+  OK    slurm_gpu                               gpuq, qos did_tesi_nlp_330_gpuq_qos, gres gpu:1, 330 min
+  OK    slurm_gpu_h100                          aiq, qos did_tesi_nlp_330_aiq_qos, gres gpu:1, 330 min
+  OK    policy CPU                              -> slurm_cpu
+  OK    policy GPU_NVIDIA                       -> slurm_gpu
+  OK    timeout acw                             worker_timeout_s 18000
+  OK    timeout mcgmark                         worker_timeout_s 18000
+  OK    timeout promptmark                      worker_timeout_s 18000
+  OK    timeout stone                           worker_timeout_s 18000
+  OK    timeout sweet                           worker_timeout_s 18000
+
+[paths]
+  OK    artifacts                               <scratchpad>\m1_cli_wmb\artifacts (writable)
+  OK    tmp                                     <scratchpad>\m1_cli_wmb\tmp (writable)
+
+[gpu]
+  SKIP  cuda                                    use 'bench doctor --gpu' on a GPU node
+
+[attack tools]
+  SKIP  tools                                   installed in Milestone 10
+
+summary: 27 OK, 2 WARN, 19 FAIL, 4 SKIP -> FAILED
+(exit code 1)

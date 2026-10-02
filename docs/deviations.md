@@ -18,8 +18,10 @@ decisioni dell'utente in `docs/cluster_info.md` §10 (1° ottobre 2026).
 
 ## Differenze di implementazione rispetto a SPEC (non sono deviazioni dal protocollo)
 
-Derivano da `docs/cluster_info.md` §1, che prevale su SPEC, e sono motivate in `docs/decisions/ADR-002-submodules-and-patched-copies.md`:
+Derivano da `docs/cluster_info.md` §1, che prevale su SPEC, e sono motivate in `docs/decisions/ADR-002-submodules-and-patched-copies.md` e `ADR-003-core-store-pipeline.md`:
 
 - i worker eseguono la copia patchata `build/patched/<metodo>/`, non `third_party/<repo>`;
 - Python minimo dei worker 3.9 (non 3.8); nomi degli ambienti `sweet, acw, stone, promptmark, mcgmark`;
 - `bigcode-evaluation-harness` e `ClassEval` fissati all'HEAD del 1° ottobre 2026 (commit non indicati in cluster_info).
+- `worker_timeout_s` = 18000 s (5 h) invece di 86400 s: i job SLURM durano al massimo 7 h su gpuq/aiq e 9 h su defq (cluster_info §1, §4);
+- job CPU su `defq` senza GPU invece di una partizione CPU dedicata (`fatq` non ha QoS per l'account, cluster_info §4).

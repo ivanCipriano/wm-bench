@@ -9,12 +9,13 @@ di codice generato da LLM (SWEET, ACW, STONE, PromptMark, MCGMark).
 - Decisioni architetturali: [`docs/decisions/`](docs/decisions/)
 - Log di chiusura delle milestone (eseguiti sul cluster): [`docs/milestone_logs/`](docs/milestone_logs/)
 
-## Struttura (Milestone 0)
+## Struttura
 
 | Percorso | Contenuto |
 |---|---|
 | `packages/bench-contracts/` | contratti stdlib-only tra orchestratore e worker, installati in tutti e 6 gli ambienti |
-| `src/bench/` | orchestratore (ambiente `bench-core`, Python 3.11) |
+| `src/bench/` | orchestratore (ambiente `bench-core`, Python 3.11): dominio, store, configurazione, pipeline, doctor, CLI |
+| `configs/` | configurazione Hydra (percorsi, ambienti, profili SLURM, modelli, metodi, dataset) |
 | `third_party/` | repository originali dei metodi e dipendenze, come submodule fissati (ADR-002) |
 | `patches/<metodo>/` | modifiche al codice dei metodi, come patch numerate con README |
 | `build/patched/<metodo>/` | copie patchate eseguite dai worker (non versionate) |
@@ -32,3 +33,18 @@ bash scripts/apply_patches.sh
 bash scripts/install_contracts.sh
 WMB_REQUIRE_ENVS=1 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/python -m pytest tests/contract -m contract
 ```
+
+## CLI `bench` (Milestone 1)
+
+Dopo `pip install --no-deps -e .` nell'ambiente `bench-core`:
+
+```bash
+bench doctor                      # diagnostica dal nodo di login (exit code 1 se c'è un FAIL)
+bench doctor --gpu                # anche i controlli CUDA: solo su un nodo GPU NVIDIA (gpuq/aiq)
+bench doctor --json report.json   # report anche in JSON
+bench stage=selftest              # fase di autoverifica: scrive, poi SKIPPED; force=true per rieseguire
+bench stage=selftest paths=local  # prove locali sotto $WMB_LOCAL_ROOT (default: <repo>/.local_wmb)
+```
+
+Gli artefatti stanno in `$WMB/artifacts` (fuori dal repository), con un manifest accanto a ogni file
+(ADR-003). Log per fase e cella in `artifacts/_logs/`, tempi in `artifacts/_timing/timings.jsonl`.
