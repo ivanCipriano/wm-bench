@@ -20,6 +20,8 @@
 | Account e QoS SLURM | non previsti | obbligatori: `-A did_tesi_nlp_330 --qos=<qos della partizione>` | Campi `account` e `qos` nei profili `configs/cluster/*.yaml` |
 | Montaggio delle immagini Apptainer | implicito | `squashfuse` assente: ogni `exec` su `.sif` converte l'immagine in una sandbox temporanea | Vedi §5: usare un'immagine in formato directory (`--sandbox`) per l'esecuzione dei test |
 | Percorsi dei modelli | percorso locale per modello | modelli nella cache Hugging Face condivisa | Vedi §7 |
+| Durata massima dei job SLURM | timeout del worker 24 h (`worker_timeout_s: 86400`) | **7 h** su `gpuq` e `aiq`, **9 h** su `defq` (partizione CPU) | Ogni cella deve stare comodamente nel limite (obiettivo ≤ 80%: 5,5 h GPU, 7 h CPU). Le celle troppo grandi vanno divise in blocchi (shard) di prompt o campioni; `worker_timeout_s` e `timeout_min` dei profili SLURM vanno impostati sotto il limite. La ripresa dei worker (SPEC §8.2) è obbligatoria, non opzionale |
+| Numerazione delle patch | SPEC §9.4 cita `0001` per l'estrazione del notebook di Code Acrostic | i numeri si assegnano in ordine di creazione, per metodo | Code Acrostic: `0000` = CC.json dal fork; `0001` = estrazione del notebook in modulo. Il numero in SPEC era solo un esempio |
 | Dipendenze patchate degli ambienti | non previste | `human-eval` e `mxeval` installati in modalità editable con `setup.py` modificato | Patch in `patches/_deps/<dipendenza>/`; sono solo documentazione (gli ambienti sono già installati), `apply_patches.sh` non le applica |
 
 ---
@@ -86,16 +88,29 @@ Installazioni editable negli ambienti (da non rompere: le cartelle in `deps/` no
 | Partizione | GPU | Nodi | Uso nel progetto |
 |---|---|---|---|
 | `gpuq` | 4 × NVIDIA A100 per nodo | gnode[01-14] | **Partizione GPU principale** (generazione, rilevazione SWEET, attacchi T2/T3, impercettibilità) |
-| `aiq` | 8 × NVIDIA H100 per nodo | ainode[01-02] | GPU NVIDIA alternativa, solo se l'account vi ha accesso (`DA COMPLETARE`) |
-| `fatq` | nessuna | fnode[01-05] | **Partizione CPU principale** (esecuzione dei test, attacchi T1/T4, metriche, report) |
-| `defq` (predefinita) | 4 × AMD MI100 per nodo | tnode[01-16] | **Mai per job GPU** (torch solo CUDA). Ammessa per job solo CPU se `fatq` è congestionata |
+| `aiq` | 8 × NVIDIA H100 per nodo | ainode[01-02] | GPU NVIDIA alternativa (l'account ha la QoS `did_tesi_nlp_330_aiq_qos`) |
+| `defq` (predefinita) | 4 × AMD MI100 per nodo | tnode[01-16] | **Partizione CPU principale** (esecuzione dei test, attacchi T1/T4, metriche, report), **senza richiedere GPU**. **Mai per job GPU** (torch solo CUDA) |
+| `fatq` | nessuna | fnode[01-05] | **Non utilizzabile** con l'account `did_tesi_nlp_330` salvo verifica contraria: l'account non ha una QoS per `fatq` (vedi sotto) |
 
-- Account: `did_tesi_nlp_330`.
-- QoS verificata: `did_tesi_nlp_330_defq_qos` per `defq`.
-- QoS per `gpuq`, `fatq`, `aiq`: `DA COMPLETARE` (probabile schema `did_tesi_nlp_330_<partizione>_qos`, da confermare con `sacctmgr`).
-- Limiti di tempo massimi per partizione: `DA COMPLETARE`.
+- Account da usare: **`did_tesi_nlp_330`**. L'utente ha anche altre associazioni (`did_generative_ai_336`, `did_tesi_di_laurea_437`, `usershpc`) che **non** vanno usate per questo progetto.
+- QoS dell'account (da `sacctmgr -P`): `did_tesi_nlp_330_aiq_qos`, `did_tesi_nlp_330_defq_qos`, `did_tesi_nlp_330_gpuq_qos`, `did_tesi_nlp_330_thinq_qos`, `normal`.
 
-Profili Hydra attesi: `configs/cluster/slurm_gpu.yaml` → `gpuq`; `configs/cluster/slurm_cpu.yaml` → `fatq`. La `ResourcePolicy` deve rifiutare qualsiasi configurazione che mandi un job GPU su `defq`.
+| Partizione | QoS da usare |
+|---|---|
+| `gpuq` | `did_tesi_nlp_330_gpuq_qos` |
+| `aiq` | `did_tesi_nlp_330_aiq_qos` |
+| `defq` | `did_tesi_nlp_330_defq_qos` |
+| `fatq` | nessuna QoS dedicata: non usare |
+| `thinq` | QoS presente, ma la partizione non compare in `sinfo`: non usare |
+
+| Partizione | Limite di tempo per job |
+|---|---|
+| `aiq` | 7:00:00 |
+| `gpuq` | 7:00:00 |
+| `fatq` | 4:00:00 |
+| `defq` | 9:00:00 |
+
+Profili Hydra attesi: `configs/cluster/slurm_gpu.yaml` → `gpuq` con `did_tesi_nlp_330_gpuq_qos` (alternativa `slurm_gpu_h100.yaml` → `aiq` con `did_tesi_nlp_330_aiq_qos`); `configs/cluster/slurm_cpu.yaml` → `defq` con `did_tesi_nlp_330_defq_qos` e **nessuna** richiesta di GPU (`gres` assente). La `ResourcePolicy` deve rifiutare qualsiasi configurazione che mandi un job GPU su `defq`.
 
 ---
 
@@ -107,14 +122,14 @@ Profili Hydra attesi: `configs/cluster/slurm_gpu.yaml` → `gpuq`; `configs/clus
 - `squashfuse` e `fuse2fs` **assenti**: a ogni `apptainer exec` su un file `.sif` l'immagine viene convertita in una sandbox temporanea. Con migliaia di esecuzioni questo costo è inaccettabile.
   - **Decisione richiesta all'agente (Milestone 4):** costruire l'immagine anche in formato directory (`apptainer build --sandbox containers/sandbox_dir containers/sandbox.def`) ed eseguire i test su quella; in alternativa eseguire più test per singola invocazione del container. Documentare la scelta in `docs/decisions/ADR-001-sandbox-network.md` insieme all'esito di `--network none`.
   - L'hash registrato negli `ExecutionRecord` resta quello del `.sif` da cui è derivata la directory.
-- Da verificare in Milestone 4 anche sui nodi di calcolo `fnode` (partizione `fatq`), perché le prove sono state fatte solo sul nodo di login.
+- Da verificare in Milestone 4 anche sui nodi di calcolo `tnode` (partizione `defq`, usata per i job CPU), perché le prove sono state fatte solo sul nodo di login.
 
 ---
 
 ## 6. Rete
 
 - I nodi di calcolo hanno accesso a internet in uscita: verificato su `defq` (`curl https://pypi.org` → HTTP 200).
-- Conseguenza: Sourcery (ACW) può girare sui nodi di calcolo. Da riverificare su `gpuq` e `fatq` in Milestone 6.
+- Conseguenza: Sourcery (ACW) può girare sui nodi di calcolo. Da riverificare su `gpuq` in Milestone 6 (su `defq` è già verificato).
 - Nonostante l'accesso a internet, i job devono girare con `HF_HUB_OFFLINE=1`, `TRANSFORMERS_OFFLINE=1` e `HF_DATASETS_OFFLINE=1` (riproducibilità). L'unica eccezione è Sourcery nel worker ACW.
 
 ---
@@ -125,13 +140,15 @@ I modelli sono nella cache Hugging Face condivisa (`HF_HUB_CACHE=/mnt/beegfs/did
 
 | `model_id` nel framework | Repository Hugging Face | Cartella in cache | Snapshot | Ruolo |
 |---|---|---|---|---|
-| `qwen25_coder_7b` | `Qwen/Qwen2.5-Coder-7B-Instruct` | `models--Qwen--Qwen2.5-Coder-7B-Instruct` | `DA COMPLETARE` | generatore |
-| `deepseek_coder_6p7b` | `deepseek-ai/deepseek-coder-6.7b-instruct` | `models--deepseek-ai--deepseek-coder-6.7b-instruct` | `DA COMPLETARE` | generatore |
-| `llama31_8b_attacker` | `meta-llama/Llama-3.1-8B-Instruct` | `models--meta-llama--Llama-3.1-8B-Instruct` | `DA COMPLETARE` | attaccante T2.2 / T2.3 |
-| `starcoder2_7b` | `bigcode/starcoder2-7b` | `models--bigcode--starcoder2-7b` | `DA COMPLETARE` | osservatore per la perplexity |
-| `unixcoder_base` | `microsoft/unixcoder-base` | `models--microsoft--unixcoder-base` | `DA COMPLETARE` | classificatore avversario |
+| `qwen25_coder_7b` | `Qwen/Qwen2.5-Coder-7B-Instruct` | `models--Qwen--Qwen2.5-Coder-7B-Instruct` | `c03e6d358207e414f1eca0bb1891e29f1db0e242` | generatore |
+| `deepseek_coder_6p7b` | `deepseek-ai/deepseek-coder-6.7b-instruct` | `models--deepseek-ai--deepseek-coder-6.7b-instruct` | `e5d64addd26a6a1db0f9b863abf6ee3141936807` | generatore |
+| `llama31_8b_attacker` | `meta-llama/Llama-3.1-8B-Instruct` | `models--meta-llama--Llama-3.1-8B-Instruct` | `0e9e39f249a16976918f6564b8830bc894c89659` | attaccante T2.2 / T2.3 |
+| `starcoder2_7b` | `bigcode/starcoder2-7b` | `models--bigcode--starcoder2-7b` | `bb9afde76d7945da5745592525db122d4d729eb1` | osservatore per la perplexity |
+| `unixcoder_base` | `microsoft/unixcoder-base` | `models--microsoft--unixcoder-base` | `5604afdc964f6c53782a6813140ade5216b99006` | classificatore avversario |
 
 **Regola per l'agente:** nei file `configs/model/*.yaml` il campo `path` deve essere il percorso della **snapshot** (`<HF_HUB_CACHE>/<cartella in cache>/snapshots/<hash>`), in modo che tutti gli ambienti (anche quelli dei metodi, che non condividono la configurazione HF dell'orchestratore) carichino esattamente gli stessi pesi da un percorso locale. L'hash di snapshot va registrato nei manifest.
+
+Esempio: `path: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/hf_cache/hub/models--Qwen--Qwen2.5-Coder-7B-Instruct/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242`
 
 ---
 
@@ -145,15 +162,15 @@ datasets/
 ├── humanevalpack/{python,js,java,cpp,go,rust}/
 ├── mbpp/{full,sanitized}/
 ├── thestack/data/cpp/
-├── evalplus/                      # DA CREARE (copia da ~/.cache/evalplus)
-└── Project_CodeNet/               # download in corso
+├── evalplus/                      # HumanEvalPlus-v0.1.10.jsonl, MbppPlus-v0.2.0.jsonl
+├── Project_CodeNet.tar.gz         # archivio completo (7,8 GB), da conservare
+└── Project_CodeNet/               # estrazione parziale: metadata/, problem_descriptions/, derived/
 ```
 
 ### 8.1 HumanEval+ e MBPP+ (EvalPlus)
 
 - Versioni: `HumanEvalPlus-v0.1.10.jsonl` (164 problemi), `MbppPlus-v0.2.0.jsonl` (378 problemi). Conteggi verificati.
-- Posizione attuale: `~/.cache/evalplus/` di `i.cipriano1` (**non** condivisa).
-- Posizione da usare: `$DATA/evalplus/`. Copia: `DA COMPLETARE`.
+- Posizione: `$DATA/evalplus/HumanEvalPlus-v0.1.10.jsonl` (7,7 MB) e `$DATA/evalplus/MbppPlus-v0.2.0.jsonl` (2,6 MB). Copiati dalla cache di `i.cipriano1`.
 - Il loader legge i file da `$DATA/evalplus/` (variabili d'ambiente di override di EvalPlus o lettura diretta del JSONL), **mai** dalla cache nella home. Le versioni `v0.1.10` e `v0.2.0` sono fissate nella configurazione.
 
 ### 8.2 HumanEvalPack
@@ -173,21 +190,56 @@ datasets/
 
 - Fonte: `code-search-net/code_search_net`, ramo `main`, file Parquet.
 - File: `$DATA/codesearchnet/{python,java,javascript}/{train,validation,test}-00000-of-00001.parquet`.
-- Righe di test attese: python 22.176, java 26.909, javascript 6.483. Verifica e nomi delle colonne: `DA COMPLETARE`.
+- Righe verificate:
+
+| Linguaggio | train | validation | test |
+|---|---|---|---|
+| python | 412.178 | 23.107 | **22.176** |
+| java | 454.451 | 15.328 | **26.909** |
+| javascript | 123.889 | 8.253 | **6.483** |
+
+  Gli split di test coincidono con il protocollo.
+- Colonne: `repository_name`, `func_path_in_repository`, `func_name`, `whole_func_string`, `language`, `func_code_string`, `func_code_tokens`, `func_documentation_string`, `func_documentation_tokens`, `split_name`, `func_code_url`.
+- Il loader deve verificare quale tra `whole_func_string` e `func_code_string` contiene la funzione completa così come scritta nel repository, e usare quella come codice dei negativi (decisione da documentare nel loader). `repository_name` permette di controllare la disgiunzione tra campioni usati per scopi diversi.
 - Uso degli split: `test` → Livello 3 e negativi di test di L1 per Java/JS; `validation` → negativi aggiuntivi della parte di sviluppo; `train` → liste di frequenza di PromptMark e nomi "naturali" dell'attacco T1.4.
 
 ### 8.5 The Stack (campione C++)
 
 - Fonte: `bigcode/the-stack-dedup` (v1, deduplicata), accesso controllato già accettato.
 - Cartella: `$DATA/thestack/data/cpp/` (nel repository Hugging Face la cartella si chiama `cpp`).
-- Nomi dei file scaricati, righe e colonne: `DA COMPLETARE`.
+- File scaricati: `data-00000-of-00110.parquet` (57.982 righe) e `data-00001-of-00110.parquet` (57.982 righe), totale 115.964 **file** sorgente (non funzioni).
+- Colonne principali: `content` (sorgente), `ext`, `lang`, `size`, `hexsha`, `max_stars_repo_name`, `max_stars_repo_path`, `max_stars_repo_licenses`, `avg_line_length`, `max_line_length`, `alphanum_fraction` (più le varianti `max_issues_*` e `max_forks_*`).
+- Le funzioni vanno estratte da `content` con tree-sitter. I diversi usi (prompt di test, negativi di test, negativi di sviluppo, liste PromptMark) devono essere **disgiunti per repository** (`max_stars_repo_name`), non solo per file, per evitare che codice quasi identico dello stesso progetto finisca in parti diverse.
 - Uso: 500 prompt e 10.000 negativi di test del Livello 3; negativi aggiuntivi della parte di sviluppo e liste di frequenza PromptMark per C++ da campioni **disgiunti** da quelli di test.
 
 ### 8.6 Project CodeNet
 
 - URL: `https://codait-cos-dax.s3.us.cloud-object-storage.appdomain.cloud/dax-project-codenet/1.0.0/Project_CodeNet.tar.gz` (circa 7,8 GB).
-- Stato: **download in corso**. Esito di `gzip -t`, cartelle estratte e nomi esatti delle sottocartelle di `derived/`: `DA COMPLETARE`.
-- **Non** estrarre `Project_CodeNet/data/` per intero (circa 14 milioni di file): in Milestone 9 l'agente fornisce l'elenco dei 250 problemi da estrarre. Non serve prima della Milestone 9.
+- Archivio: `$DATA/Project_CodeNet.tar.gz`, 7,8 GB, `gzip -t` superato. Da conservare: servirà per l'estrazione selettiva.
+- Estratto in `$DATA/Project_CodeNet/`:
+
+```
+Project_CodeNet/
+├── metadata/                      # 4.054 voci: un CSV per problema + problem_list.csv
+├── problem_descriptions/          # pXXXXX.html
+└── derived/
+    ├── duplicates/
+    │   ├── C/  C++/  Java/  Python/
+    │   ├── README
+    │   └── identical_problem_clusters
+    └── input_output/
+        ├── data/                  # casi di input/output per problema
+        ├── no_solutions.txt
+        ├── README.md
+        └── unverified_accepted_solutions.txt
+```
+
+- **Non** estrarre `Project_CodeNet/data/` per intero (circa 14 milioni di file): in Milestone 9 l'agente fornisce l'elenco dei 250 problemi da estrarre.
+- Regole per la selezione dei 250 problemi (Milestone 9):
+  - escludere i problemi elencati in `no_solutions.txt` e quelli senza casi in `input_output/data/`;
+  - non usare come negativi le sottomissioni elencate in `unverified_accepted_solutions.txt`;
+  - **i problemi dello stesso cluster in `identical_problem_clusters` sono lo stesso problema ai fini dello split (I4)**: vanno nella stessa parte e se ne seleziona al massimo uno per cluster;
+  - `duplicates/` (C, C++, Java, Python; manca JavaScript) va usata per escludere sottomissioni quasi duplicate dai negativi umani; per JavaScript la deduplicazione va fatta dall'agente (per esempio con hash del codice normalizzato) e documentata.
 
 ### 8.7 ClassEval e Tests4Py
 
@@ -206,7 +258,7 @@ I submodule in `third_party/` vanno fissati **esattamente** ai commit qui sotto.
 | SWEET | https://github.com/hongcheki/sweet-watermark | `853b47eb064c180beebd383302d09491fc98a565` | `0000`: `lm_eval/generation.py` | — |
 | ACW | https://github.com/Noelle1831-k/ACW | `2236dc304478a31fe7cc7cc393527375024428db` | `0000`: 5 file in `source/` (`RQ4-get-results.py`, `folder_list.py`, `folder_to_jsonl.py`, `one_rule_format.py`, `refactor.py`) + `source/.sourcery.yaml` (regole Sourcery usate da ACW) | `source/G/` (codice generato dagli autori con GPT-4/GPT-4o/Qwen su APPS, HumanEval, MBPP), `source/apps/` (copia del dataset APPS), `__pycache__` |
 | STONE | https://github.com/inistory/STONE-watermarking | `bb5d809c0c494a219411e861f2313cca2b9fd7b4` | `0000`: `stone_implementation/run.py`, `stone_implementation/evaluation/stem.py` | — |
-| Code Acrostic | https://github.com/XHLin-gamer/code_acrostic (**originale**) | `83823697f01d6250e7fccd9fa7005bdcfb967ded` | `0000`: aggiunge `CC.json` preso dal fork; `0001` (solo se esiste): modifiche locali a `CC.json` | file accessori del fork (LICENSE, immagini, `.gitignore`, README) |
+| Code Acrostic | https://github.com/XHLin-gamer/code_acrostic (**originale**) | `83823697f01d6250e7fccd9fa7005bdcfb967ded` | `0000`: aggiunge `CC.json` preso dal fork (identico alla copia locale: nessuna patch di modifiche locali). `0001` riservata all'estrazione del notebook in modulo (Milestone 6) | file accessori del fork (LICENSE, immagini, `.gitignore`, README) |
 | PromptMark | https://github.com/ahmedfahad04/promptmark | `c04c8f61db1f0ec7ba2f213f4aa1a15787af484e` | `0000`: `requirements.txt`, `scripts/evals/*` (7 file), `scripts/robustness/program_perturb_rename_comments.py`, `src/run_experiments.sh` | notebook `*.ipynb`, `datasets/core`, `datasets/humaneval_164.json`, `datasets/sanitized-mbpp-sample-100.json`, `output/`, `__pycache__` |
 | MCGMark | https://github.com/KevinHeiwa/MCGMT | `eefa27b68747f5027c3121abcc506f3488eae990` | `0000`: 6 file in `Watermark/` (`Detection_Only.py`, `Watermark-MBPP.py`, `logs_counter.py`, `watermark.py`, `watermark_global.py`, `watermark_processor.py`) + `homoglyphs.py`, `normalizers.py`, `homoglyph_data/` (copiati da lm-watermarking) | `__pycache__` |
 
@@ -215,14 +267,17 @@ I submodule in `third_party/` vanno fissati **esattamente** ai commit qui sotto.
 - Fork: https://github.com/xhaughearl/code_acrostic, commit `698479462548ed44919e7eba791298f1a161cc72`, nessuna modifica locale.
 - `CC.ipynb` del fork è **identico** a quello dell'originale. Il fork aggiunge solo `CC.json`, `LICENSE`, `.gitattributes`, `.gitignore`, due immagini e un README diverso.
 - Decisione: submodule = originale; dal fork si prende solo `CC.json` tramite patch documentata.
-- Nella cartella di lavoro dell'utente (`repos/shared/code_acrostic_ws/`) c'è anche un clone di MarkLLM (vedi §9.2): il ruolo di MarkLLM e di `CC.json` va chiarito nell'audit di Code Acrostic (Milestone 6).
+- `CC.json` della cartella di lavoro è identico a quello del fork.
+- Il notebook `CC.ipynb` **usa** `CC.json` (2 occorrenze) e **importa MarkLLM** (`MarkLLM.utils.transformers_config`, `MarkLLM.watermark.kgw.kgw`): Code Acrostic è costruito sopra l'implementazione KGW di MarkLLM. MarkLLM è quindi una dipendenza **obbligatoria** (§9.2).
 
 ### 9.2 Dipendenze collegate
 
 | Dipendenza | URL | Commit | Usata da | Gestione nel framework |
 |---|---|---|---|---|
 | lm-watermarking | https://github.com/jwkirchenbauer/lm-watermarking | `82922516930c02f8aa322765defdb5863d07a00e` | MCGMark (origine dei file homoglyph) | submodule di riferimento in `third_party/lm-watermarking` (solo tracciabilità; i file usati sono già nella patch di MCGMark) |
-| MarkLLM | https://github.com/THU-BPM/MarkLLM | `e43009f3d197f8d10e865e2ff731ba1006d1c7d1` | Code Acrostic (cartella di lavoro) | ruolo da chiarire nell'audit; se necessario, submodule in `third_party/MarkLLM` a questo commit |
+| MarkLLM | https://github.com/THU-BPM/MarkLLM | `e43009f3d197f8d10e865e2ff731ba1006d1c7d1` | Code Acrostic (importato da `CC.ipynb`) | **submodule obbligatorio** in `third_party/MarkLLM` a questo commit; il `PYTHONPATH` del worker di Code Acrostic deve renderlo importabile come `MarkLLM` (verificare nell'audit come lo importa il notebook) |
+| bigcode-evaluation-harness | https://github.com/bigcode-project/bigcode-evaluation-harness | `8fc5bae6…` (HEAD del 1° ottobre 2026; hash completo in `.gitmodules` e ADR-002) | executor `humanevalpack` (SPEC §11.3) | submodule in `third_party/` |
+| ClassEval | https://github.com/FudanSELab/ClassEval | `eaeac44d…` (HEAD del 1° ottobre 2026; hash completo in `.gitmodules` e ADR-002) | loader ed executor di ClassEval (Livello 3) | submodule in `third_party/` |
 | human-eval | https://github.com/openai/human-eval | `6d43fb980f9fee3c892a914eda09951f772ad10d` | ambiente `code_acrostic` (editable) | `patches/_deps/human-eval/0000-setup.patch` (solo `setup.py`) |
 | mxeval | https://github.com/amazon-science/mxeval | `e09974f990eeaf0c0e8f2b5eaff4be66effb2c86` | ambienti `acw` e `promptmark` (editable) | `patches/_deps/mxeval/0000-setup.patch` (solo `setup.py`) |
 | nltk_data | — | — | da verificare nell'audit | cartella di dati in `wm_bench/deps/nltk_data`, non versionata |
@@ -266,12 +321,5 @@ Vincolo dell'utente: nessuna fuga di informazione tra sviluppo e test.
 
 | # | Voce | Bloccante per |
 |---|---|---|
-| 1 | QoS di `gpuq`, `fatq`, `aiq`; limiti di tempo | Milestone 3 (primi job SLURM) |
-| 2 | Copia di EvalPlus in `$DATA/evalplus/` | Milestone 2 |
-| 3 | Verifica conteggi e colonne di CodeSearchNet | Milestone 2 (negativi di sviluppo) |
-| 4 | The Stack: nomi dei file, righe, colonne | Milestone 2 |
-| 5 | Project CodeNet: download, integrità, cartelle estratte | Milestone 9 |
-| 6 | Hash delle snapshot dei modelli (§7) | Milestone 3 |
-| 7 | Code Acrostic: `CC.json` uguale o diverso tra fork e cartella di lavoro; uso nel notebook | Milestone 6 |
-
-Nessuna di queste voci blocca la Milestone 0 e la Milestone 1.
+| 1 | Selezione dei 250 problemi CodeNet ed estrazione selettiva di `data/` | Milestone 9 |
+| 2 | Motivazioni delle modifiche preesistenti ad ACW (`source/refactor.py`) e MCGMark (`Watermark/watermark_global.py`) | Milestone 6 (audit) |
