@@ -22,6 +22,7 @@ third_party/MCGMT                      eefa27b68747f5027c3121abcc506f3488eae990
 third_party/bigcode-evaluation-harness 8fc5bae6479c4fbbb28c3f8b644f6a15b3f3b5bd
 third_party/ClassEval                  eaeac44d0d5dcd8a95feec50726d66fedc73a98f
 third_party/lm-watermarking            82922516930c02f8aa322765defdb5863d07a00e
+third_party/MarkLLM                    e43009f3d197f8d10e865e2ff731ba1006d1c7d1
 "
 
 echo "[setup_submodules] sync + update --init"

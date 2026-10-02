@@ -25,3 +25,6 @@
 [submodule "third_party/lm-watermarking"]
 	path = third_party/lm-watermarking
 	url = https://github.com/jwkirchenbauer/lm-watermarking
+[submodule "third_party/MarkLLM"]
+	path = third_party/MarkLLM
+	url = https://github.com/THU-BPM/MarkLLM
