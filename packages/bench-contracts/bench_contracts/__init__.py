@@ -1,7 +1,7 @@
 """Contratti condivisi tra l'orchestratore wm-bench e i worker dei metodi (SPEC §5.1).
 
 Vincoli: solo libreria standard, Python >= 3.9, niente ``match`` né ``X | Y`` nei tipi
-valutati a runtime. Lo stesso codice gira in tutti e 7 gli ambienti.
+valutati a runtime. Lo stesso codice gira in tutti e 6 gli ambienti.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 """Test di contratto sugli ambienti (SPEC §21.2, criterio di accettazione M0).
 
-Per ognuno dei 7 interpreti di ``configs/envs/envs.yaml``:
+Per ognuno dei 6 interpreti di ``configs/envs/envs.yaml``:
 - ``import bench_contracts`` termina con exit code 0;
 - la versione di Python è >= 3.9 (cluster_info §1);
 - ``derive_seed`` dà gli stessi valori attesi (stabilità tra versioni, SPEC §21.3).
@@ -25,7 +25,7 @@ from tests.conftest import REPO_ROOT, SEED_VECTORS
 
 pytestmark = pytest.mark.contract
 
-EXPECTED_ENVS = {"bench-core", "sweet", "acw", "stone", "code_acrostic", "promptmark", "mcgmark"}
+EXPECTED_ENVS = {"bench-core", "sweet", "acw", "stone", "promptmark", "mcgmark"}
 
 _PROBE = r"""
 import json, sys
@@ -50,7 +50,7 @@ def _load_envs() -> dict[str, str]:
 ENVS = _load_envs()
 
 
-def test_envs_yaml_lists_all_seven_envs() -> None:
+def test_envs_yaml_lists_all_six_envs() -> None:
     assert set(ENVS) == EXPECTED_ENVS
 
 

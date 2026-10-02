@@ -4,7 +4,7 @@
 # È l'UNICA modifica consentita agli ambienti dei metodi.
 #
 # Uso:
-#   bash scripts/install_contracts.sh                 # tutti e 7 gli ambienti
+#   bash scripts/install_contracts.sh                 # tutti e 6 gli ambienti
 #   bash scripts/install_contracts.sh stone sweet     # solo alcuni
 #
 # Richiede accesso in uscita a PyPI (pip scarica setuptools per la build isolata):

@@ -7,9 +7,6 @@
 [submodule "third_party/STONE-watermarking"]
 	path = third_party/STONE-watermarking
 	url = https://github.com/inistory/STONE-watermarking
-[submodule "third_party/code_acrostic"]
-	path = third_party/code_acrostic
-	url = https://github.com/XHLin-gamer/code_acrostic
 [submodule "third_party/PromptMark"]
 	path = third_party/PromptMark
 	url = https://github.com/ahmedfahad04/promptmark
@@ -25,6 +22,3 @@
 [submodule "third_party/lm-watermarking"]
 	path = third_party/lm-watermarking
 	url = https://github.com/jwkirchenbauer/lm-watermarking
-[submodule "third_party/MarkLLM"]
-	path = third_party/MarkLLM
-	url = https://github.com/THU-BPM/MarkLLM

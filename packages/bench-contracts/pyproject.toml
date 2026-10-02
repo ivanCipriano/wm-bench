@@ -1,6 +1,6 @@
 # Contratti condivisi tra orchestratore e worker (SPEC §5.1).
 # Solo libreria standard, compatibile con Python >= 3.9 (cluster_info §1).
-# Installazione in tutti e 7 gli ambienti: scripts/install_contracts.sh
+# Installazione in tutti e 6 gli ambienti: scripts/install_contracts.sh
 
 [build-system]
 requires = ["setuptools>=64"]

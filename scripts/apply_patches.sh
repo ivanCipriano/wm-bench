@@ -11,21 +11,20 @@
 # solo documentazione (gli ambienti sono già installati) e NON vengono applicate.
 #
 # Uso:
-#   bash scripts/apply_patches.sh                 # tutti e sei i metodi
+#   bash scripts/apply_patches.sh                 # tutti e cinque i metodi
 #   bash scripts/apply_patches.sh stone mcgmark   # solo alcuni
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-ALL_METHODS=(sweet acw stone acrostic promptmark mcgmark)
+ALL_METHODS=(sweet acw stone promptmark mcgmark)
 
 submodule_of() {
     case "$1" in
         sweet)      echo third_party/sweet-watermark ;;
         acw)        echo third_party/ACW ;;
         stone)      echo third_party/STONE-watermarking ;;
-        acrostic)   echo third_party/code_acrostic ;;
         promptmark) echo third_party/PromptMark ;;
         mcgmark)    echo third_party/MCGMT ;;
         *)          return 1 ;;
