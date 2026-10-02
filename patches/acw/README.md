@@ -11,7 +11,7 @@ La patch ha fine riga **misti** (alcune righe CRLF, come nei file originali): va
 | File | Modifica | Impatto |
 |---|---|---|
 | `source/.sourcery.yaml` (nuovo) | elenco delle regole Sourcery abilitate | definisce il catalogo di trasformazioni: **rilevante** per l'inserimento; da confrontare con il paper nell'audit (M6) |
-| `source/refactor.py` | `apply_pep8_rule` importato da `one_rule_format.reformatting_process` invece che da `formatting_pep8` | cambia la funzione di riformattazione usata; motivazione e impatto da documentare nell'audit (M6) |
+| `source/refactor.py` | `apply_pep8_rule` importato da `one_rule_format.reformatting_process` invece che da `formatting_pep8` | cambia la funzione di riformattazione usata (`formatting_pep8.py` esiste nel repository). Motivazione non nota: **punto da verificare nell'audit di ACW (M6)** |
 | `source/one_rule_format.py` | le funzioni `transform_*` sono chiamate una volta con il solo percorso del file invece che per ogni nodo dell'AST | adegua le chiamate alla firma `transform_operations_add(file_path)` di `base_ast.py`; da verificare nell'audit |
 | `source/folder_list.py` | rimosse le cartelle `H/APPS_H`, `H/HE_H`, `H/MBPP_H` | cartelle assenti nel repository; solo script degli esperimenti originali |
 | `source/folder_to_jsonl.py` | `HumanEvalN` → `HumanEval/N` nei `task_id` | solo formato degli ID negli script originali |

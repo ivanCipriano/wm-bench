@@ -23,7 +23,9 @@ Il confronto è stato fatto dall'utente prima della Milestone 0 (cluster_info §
 - fork: `https://github.com/xhaughearl/code_acrostic` @ `698479462548ed44919e7eba791298f1a161cc72`, senza modifiche locali;
 - `CC.ipynb` del fork è **identico** a quello dell'originale;
 - il fork aggiunge solo `CC.json`, `LICENSE`, `.gitattributes`, `.gitignore`, due immagini e un README diverso;
-- decisione: submodule = originale; `CC.json` aggiunto con la patch `0000`. Il ruolo di `CC.json` e di MarkLLM va chiarito nell'audit (M6).
+- decisione: submodule = originale; `CC.json` aggiunto con la patch `0000`;
+- `CC.json` della cartella di lavoro è identico a quello del fork: nessuna patch di modifiche locali;
+- `CC.ipynb` usa `CC.json` e importa MarkLLM (KGW): MarkLLM è una dipendenza obbligatoria, submodule `third_party/MarkLLM` @ `e43009f3d197f8d10e865e2ff731ba1006d1c7d1` (ADR-002).
 
 ## Differenze di implementazione rispetto a SPEC (non sono deviazioni dal protocollo)
 
