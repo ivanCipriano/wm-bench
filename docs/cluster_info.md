@@ -308,3 +308,4 @@ Vincolo dell'utente: nessuna fuga di informazione tra sviluppo e test.
 |---|---|---|
 | 1 | Selezione dei 250 problemi CodeNet ed estrazione selettiva di `data/` | Milestone 9 |
 | 2 | Motivazioni delle modifiche preesistenti ad ACW (`source/refactor.py`) e MCGMark (`Watermark/watermark_global.py`) | Milestone 6 (audit) |
+| 3 | Ricalcolare l'integrazione dei negativi di sviluppo sulla distribuzione combinata L1+L2, quando si aggiungono le sottomissioni CodeNet di sviluppo (decisione dell'utente del 3 ottobre 2026, ADR-004) | Milestone 9 |

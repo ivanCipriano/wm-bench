@@ -1,0 +1,75 @@
+##### M2 - verifica locale (Windows, Python 3.11 con le versioni del lockfile e le grammatiche di ADR-005)
+##### data: 2026-10-03T10:36:07Z   commit di partenza: c0d2242
+##### dati: file pubblici scaricati in locale (EvalPlus, MBPP, HumanEvalPack, CodeSearchNet);
+#####       The Stack e' ad accesso controllato: C++ si verifica solo sul cluster
+
+##### pytest (unit + property + contract; saltati: 6 interpreti e 8 test 'data' con paths=cluster)
+.ssssss.......ssssssss.................................................. [ 34%]
+........................................................................ [ 68%]
+...................................................................      [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] tests\contract\test_envs.py:63: acw: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: bench-core: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: mcgmark: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/mcgmark/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: promptmark: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/promptmark/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: stone: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/stone/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: sweet: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/sweet/bin/python
+SKIPPED [1] tests\integration\test_l1_data.py:51: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:60: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:72: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:80: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:93: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:101: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\conftest.py:28: humanevalplus file not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\datasets\evalplus\HumanEvalPlus-v0.1.10.jsonl
+SKIPPED [1] tests\integration\conftest.py:28: mbppplus file not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\datasets\evalplus\MbppPlus-v0.2.0.jsonl
+197 passed, 14 skipped in 84.55s (0:01:24)
+
+##### ruff check / ruff format --check
+All checks passed!
+78 files already formatted
+
+##### mypy --strict
+Success: no issues found in 45 source files
+
+##### bench stage=prepare_data paths=local levels=[L1] languages=[python,java,javascript] (dati reali)
+[2026-10-03 12:37:35,149][bench.pipeline.observers][INFO] - stage prepare_data cell all: start
+[2026-10-03 12:38:20,037][bench.pipeline.stages.prepare_data][WARNING] - javascript/test: 24 samples moved between adjacent bins
+[2026-10-03 12:38:20,336][bench.pipeline.observers][INFO] - stage prepare_data cell all: done in 45.19s
+RAN      prepare_data [all] 45.19s
+total: 1 ran, 0 skipped
+(exit code 0)
+
+##### seconda esecuzione (attesa SKIPPED)
+[2026-10-03 12:38:22,209][bench.pipeline.observers][INFO] - stage prepare_data cell all: SKIPPED (outputs already complete)
+SKIPPED  prepare_data [all] 0.00s
+total: 0 ran, 1 skipped
+(exit code 0)
+
+##### artefatti: righe, attese, divisione e diagnostica dai manifest
+data/negatives/L1_java_integration_dev.parquet: rows=1976 expected=1976 split={'dev': 1976}
+    reference={'n': 24, 'mean': 10.375, 'pstdev': 3.5333} selected={'n': 1976, 'mean': 10.211, 'pstdev': 3.8098} moved=0 range=[3.0, 19.0] out_of_range=2559 whole==code=1.0
+data/negatives/L1_java_integration_test.parquet: rows=788 expected=788 split={'test': 788}
+    reference={'n': 140, 'mean': 12.8357, 'pstdev': 7.3423} selected={'n': 788, 'mean': 12.4734, 'pstdev': 7.1909} moved=0 range=[3.0, 38.0] out_of_range=1706 whole==code=1.0
+data/negatives/L1_java_native.parquet: rows=164 expected=164 split={'dev': 24, 'test': 140}
+data/negatives/L1_javascript_integration_dev.parquet: rows=1976 expected=1976 split={'dev': 1976}
+    reference={'n': 24, 'mean': 9.5, 'pstdev': 3.2914} selected={'n': 1976, 'mean': 9.3892, 'pstdev': 2.905} moved=0 range=[3.0, 16.0] out_of_range=2970 whole==code=1.0
+data/negatives/L1_javascript_integration_test.parquet: rows=788 expected=788 split={'test': 788}
+    reference={'n': 140, 'mean': 11.9929, 'pstdev': 8.1587} selected={'n': 788, 'mean': 12.401, 'pstdev': 9.0166} moved=24 range=[3.0, 54.0] out_of_range=395 whole==code=1.0
+data/negatives/L1_javascript_native.parquet: rows=164 expected=164 split={'dev': 24, 'test': 140}
+data/negatives/L1_python_integration_dev.parquet: rows=1790 expected=1790 split={'dev': 1790}
+    reference={'n': 210, 'mean': 6.4429, 'pstdev': 4.4528} selected={'n': 1790, 'mean': 6.3821, 'pstdev': 4.5137} moved=0 range=[2.0, 24.0] out_of_range=3570 whole==code=1.0
+data/negatives/L1_python_native.parquet: rows=1138 expected=1138 split={'dev': 210, 'test': 928}
+data/problems/L1_java.parquet: rows=164 expected=164 split={'dev': 24, 'test': 140}
+    loc_to_generate: {'humanevalpack': {'n': 164, 'mean': 12.2439, 'pstdev': 6.9362}}
+data/problems/L1_javascript.parquet: rows=164 expected=164 split={'dev': 24, 'test': 140}
+    loc_to_generate: {'humanevalpack': {'n': 164, 'mean': 10.4695, 'pstdev': 7.7116}}
+data/problems/L1_python.parquet: rows=542 expected=542 split={'dev': 96, 'test': 446}
+    loc_to_generate: {'humanevalplus': {'n': 164, 'mean': 5.1159, 'pstdev': 4.4412}, 'mbppplus': {'n': 378, 'mean': 4.0106, 'pstdev': 3.6753}}
+data/splits/split.parquet: rows=1138 expected=1138 split={'dev': 210, 'test': 928}
+    counts: {'humaneval/prompt/dev': 24, 'humaneval/prompt/test': 140, 'mbpp/negative_only/dev': 114, 'mbpp/negative_only/test': 482, 'mbpp/prompt/dev': 72, 'mbpp/prompt/test': 306}
+parser_versions: {'tree-sitter': '0.22.3', 'tree-sitter-python': '0.21.0', 'tree-sitter-java': '0.21.0', 'tree-sitter-cpp': '0.22.3', 'tree-sitter-javascript': '0.21.4'}
+
+##### test di integrazione (marker data) sui dati locali, senza C++
+........                                                                 [100%]
+8 passed in 1.91s
+(exit code 0)
