@@ -1,0 +1,302 @@
+##### 0. aggiornamento e pulizia
+From https://github.com/ivanCipriano/wm-bench
+   c0d2242..9df164f  main       -> origin/main
+Updating c0d2242..9df164f
+Fast-forward
+ README.md                                          |   1 +
+ configs/config.yaml                                |   2 +
+ configs/dataset/classeval.yaml                     |   4 +-
+ configs/dataset/codenet.yaml                       |  16 +-
+ configs/dataset/codesearchnet.yaml                 |  30 +-
+ configs/dataset/humanevalpack.yaml                 |  15 +-
+ configs/dataset/humanevalplus.yaml                 |   6 +-
+ configs/dataset/mbpp_original.yaml                 |  16 +-
+ configs/dataset/mbppplus.yaml                      |   6 +-
+ configs/dataset/thestack_cpp.yaml                  |   9 +-
+ configs/negatives/default.yaml                     |  16 +
+ configs/split/default.yaml                         |  10 +
+ docs/cluster_info.md                               |   1 +
+ docs/decisions/ADR-004-l1-data.md                  |  76 ++++
+ docs/decisions/ADR-005-tree-sitter-grammars.md     |  41 +++
+ docs/deviations.md                                 |   2 +-
+ docs/milestone_logs/M2_local.txt                   |  75 ++++
+ environment-bench-core.yml                         |   9 +-
+ pyproject.toml                                     |   1 +
+ src/bench/config/schema.py                         |  65 +++-
+ src/bench/data/__init__.py                         |   1 +
+ src/bench/data/loaders/__init__.py                 |   8 +
+ src/bench/data/loaders/base.py                     | 173 +++++++++
+ src/bench/data/loaders/humanevalpack.py            | 107 ++++++
+ src/bench/data/loaders/humanevalplus.py            |  80 +++++
+ src/bench/data/loaders/mbpp_original.py            |  60 ++++
+ src/bench/data/loaders/mbppplus.py                 |  59 ++++
+ src/bench/data/negatives.py                        | 193 +++++++++++
+ src/bench/data/sources.py                          | 189 ++++++++++
+ src/bench/data/splitter.py                         | 109 ++++++
+ src/bench/doctor.py                                |   4 +-
+ src/bench/domain/errors.py                         |   4 +
+ src/bench/domain/models.py                         |   4 +-
+ src/bench/lang/__init__.py                         |   1 +
+ src/bench/lang/functions.py                        | 119 +++++++
+ src/bench/lang/line_counter.py                     |  90 +++++
+ src/bench/lang/parsers.py                          |  71 ++++
+ src/bench/pipeline/facade.py                       |   2 +-
+ src/bench/pipeline/stage.py                        |   9 +-
+ src/bench/pipeline/stages/__init__.py              |   4 +-
+ src/bench/pipeline/stages/prepare_data.py          | 386 +++++++++++++++++++++
+ src/bench/registry.py                              |   6 +-
+ src/bench/store/manifest.py                        |  26 ++
+ tests/datafix.py                                   | 164 +++++++++
+ tests/fixtures/tiny/README.md                      |  15 +
+ tests/fixtures/tiny/humanevalpack.jsonl            |  20 ++
+ tests/fixtures/tiny/humanevalplus.jsonl            |   5 +
+ tests/fixtures/tiny/mbpp_original.jsonl            |  12 +
+ tests/fixtures/tiny/mbppplus.jsonl                 |   5 +
+ tests/integration/.gitkeep                         |   0
+ .../tiny/.gitkeep => integration/__init__.py}      |   0
+ tests/integration/conftest.py                      |  43 +++
+ tests/integration/test_l1_data.py                  | 113 ++++++
+ tests/integration/test_loc_oracle.py               |  31 ++
+ tests/unit/test_doctor.py                          |   2 +-
+ tests/unit/test_lang.py                            | 105 ++++++
+ tests/unit/test_loaders.py                         | 101 ++++++
+ tests/unit/test_negatives.py                       |  79 +++++
+ tests/unit/test_prepare_data.py                    | 116 +++++++
+ tests/unit/test_sources.py                         |  58 ++++
+ tests/unit/test_splitter.py                        | 111 ++++++
+ tests/unit/test_treesitter_regression.py           |  70 ++++
+ 62 files changed, 3103 insertions(+), 53 deletions(-)
+ create mode 100644 configs/negatives/default.yaml
+ create mode 100644 configs/split/default.yaml
+ create mode 100644 docs/decisions/ADR-004-l1-data.md
+ create mode 100644 docs/decisions/ADR-005-tree-sitter-grammars.md
+ create mode 100644 docs/milestone_logs/M2_local.txt
+ create mode 100644 src/bench/data/__init__.py
+ create mode 100644 src/bench/data/loaders/__init__.py
+ create mode 100644 src/bench/data/loaders/base.py
+ create mode 100644 src/bench/data/loaders/humanevalpack.py
+ create mode 100644 src/bench/data/loaders/humanevalplus.py
+ create mode 100644 src/bench/data/loaders/mbpp_original.py
+ create mode 100644 src/bench/data/loaders/mbppplus.py
+ create mode 100644 src/bench/data/negatives.py
+ create mode 100644 src/bench/data/sources.py
+ create mode 100644 src/bench/data/splitter.py
+ create mode 100644 src/bench/lang/__init__.py
+ create mode 100644 src/bench/lang/functions.py
+ create mode 100644 src/bench/lang/line_counter.py
+ create mode 100644 src/bench/lang/parsers.py
+ create mode 100644 src/bench/pipeline/stages/prepare_data.py
+ create mode 100644 tests/datafix.py
+ create mode 100644 tests/fixtures/tiny/README.md
+ create mode 100644 tests/fixtures/tiny/humanevalpack.jsonl
+ create mode 100644 tests/fixtures/tiny/humanevalplus.jsonl
+ create mode 100644 tests/fixtures/tiny/mbpp_original.jsonl
+ create mode 100644 tests/fixtures/tiny/mbppplus.jsonl
+ delete mode 100644 tests/integration/.gitkeep
+ rename tests/{fixtures/tiny/.gitkeep => integration/__init__.py} (100%)
+ create mode 100644 tests/integration/conftest.py
+ create mode 100644 tests/integration/test_l1_data.py
+ create mode 100644 tests/integration/test_loc_oracle.py
+ create mode 100644 tests/unit/test_lang.py
+ create mode 100644 tests/unit/test_loaders.py
+ create mode 100644 tests/unit/test_negatives.py
+ create mode 100644 tests/unit/test_prepare_data.py
+ create mode 100644 tests/unit/test_sources.py
+ create mode 100644 tests/unit/test_splitter.py
+ create mode 100644 tests/unit/test_treesitter_regression.py
+?? docs/milestone_logs/M2_cluster.txt
+?? re
+[setup_submodules] sync + update --init
+[OK] third_party/sweet-watermark @ 853b47eb064c180beebd383302d09491fc98a565
+[OK] third_party/ACW @ 2236dc304478a31fe7cc7cc393527375024428db
+[OK] third_party/STONE-watermarking @ bb5d809c0c494a219411e861f2313cca2b9fd7b4
+[OK] third_party/PromptMark @ c04c8f61db1f0ec7ba2f213f4aa1a15787af484e
+[OK] third_party/MCGMT @ eefa27b68747f5027c3121abcc506f3488eae990
+[OK] third_party/bigcode-evaluation-harness @ 8fc5bae6479c4fbbb28c3f8b644f6a15b3f3b5bd
+[OK] third_party/ClassEval @ eaeac44d0d5dcd8a95feec50726d66fedc73a98f
+[OK] third_party/lm-watermarking @ 82922516930c02f8aa322765defdb5863d07a00e
+[setup_submodules] all submodules pinned and clean
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench
+  Building editable for bench (pyproject.toml): started
+  Building editable for bench (pyproject.toml): finished with status 'done'
+  Created wheel for bench: filename=bench-0.0.0-0.editable-py3-none-any.whl size=1479 sha256=bf5eca6e87c6c0321764c34bbd2cef851966bfe7a9514c8ab13f141a41db724b
+  Stored in directory: /tmp/pip-ephem-wheel-cache-jkmejy0e/wheels/e6/2d/d6/4f5189108c1bcee4f1a107f63abd0d2e53804a75c808f17e17
+Successfully built bench
+Installing collected packages: bench
+  Attempting uninstall: bench
+    Found existing installation: bench 0.0.0
+    Uninstalling bench-0.0.0:
+      Successfully uninstalled bench-0.0.0
+Successfully installed bench-0.0.0
+##### 1. grammatiche tree-sitter (ADR-005)
+Requirement already satisfied: tree-sitter==0.22.3 in /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages (0.22.3)
+Collecting tree-sitter-python==0.21.0
+  Downloading tree_sitter_python-0.21.0-cp38-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.8 kB)
+Collecting tree-sitter-java==0.21.0
+  Downloading tree_sitter_java-0.21.0-cp38-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.8 kB)
+Collecting tree-sitter-cpp==0.22.3
+  Downloading tree_sitter_cpp-0.22.3-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.8 kB)
+Collecting tree-sitter-javascript==0.21.4
+  Downloading tree_sitter_javascript-0.21.4-cp38-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.9 kB)
+Downloading tree_sitter_python-0.21.0-cp38-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (130 kB)
+Downloading tree_sitter_java-0.21.0-cp38-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (116 kB)
+Downloading tree_sitter_cpp-0.22.3-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (296 kB)
+Downloading tree_sitter_javascript-0.21.4-cp38-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (76 kB)
+Installing collected packages: tree-sitter-python, tree-sitter-javascript, tree-sitter-java, tree-sitter-cpp
+  Attempting uninstall: tree-sitter-python
+    Found existing installation: tree-sitter-python 0.25.0
+    Uninstalling tree-sitter-python-0.25.0:
+      Successfully uninstalled tree-sitter-python-0.25.0
+  Attempting uninstall: tree-sitter-javascript
+    Found existing installation: tree-sitter-javascript 0.25.0
+    Uninstalling tree-sitter-javascript-0.25.0:
+      Successfully uninstalled tree-sitter-javascript-0.25.0
+  Attempting uninstall: tree-sitter-java
+    Found existing installation: tree-sitter-java 0.23.5
+    Uninstalling tree-sitter-java-0.23.5:
+      Successfully uninstalled tree-sitter-java-0.23.5
+  Attempting uninstall: tree-sitter-cpp
+    Found existing installation: tree-sitter-cpp 0.23.4
+    Uninstalling tree-sitter-cpp-0.23.4:
+      Successfully uninstalled tree-sitter-cpp-0.23.4
+
+Successfully installed tree-sitter-cpp-0.22.3 tree-sitter-java-0.21.0 tree-sitter-javascript-0.21.4 tree-sitter-python-0.21.0
+Name: tree-sitter
+Version: 0.22.3
+Name: tree-sitter-python
+Version: 0.21.0
+Name: tree-sitter-java
+Version: 0.21.0
+Name: tree-sitter-cpp
+Version: 0.22.3
+Name: tree-sitter-javascript
+Version: 0.21.4
+No broken requirements found.
+##### 2. lockfile rigenerati
+ requirements-bench-core.lock | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+tree-sitter==0.22.3
+tree-sitter-c==0.24.2
+tree-sitter-c-sharp==0.23.5
+tree-sitter-cpp==0.22.3
+tree-sitter-go==0.25.0
+tree-sitter-java==0.21.0
+tree-sitter-javascript==0.21.4
+tree-sitter-php==0.24.1
+tree-sitter-python==0.21.0
+tree-sitter-ruby==0.23.1
+tree-sitter-rust==0.24.2
+##### 3. test di regressione e test unitari
+.............                                                            [100%]
+13 passed in 2.63s
+........................................................................ [ 38%]
+........................................................................ [ 76%]
+.............................................                            [100%]
+189 passed in 105.11s (0:01:45)
+..............                                                           [100%]
+14 passed in 1.52s
+##### 4. prepare_data (job CPU su defq)
+[2026-10-03 12:47:33,587][bench.pipeline.observers][INFO] - stage prepare_data cell all: start
+[2026-10-03 12:50:52,186][bench.pipeline.stages.prepare_data][WARNING] - javascript/test: 24 samples moved between adjacent bins
+[2026-10-03 12:50:52,240][bench.pipeline.observers][INFO] - stage prepare_data cell all: done in 198.65s
+RAN      prepare_data [all] 198.65s
+total: 1 ran, 0 skipped
+exit code: 0
+##### 5. seconda esecuzione (attesa SKIPPED)
+[2026-10-03 12:50:54,976][bench.pipeline.observers][INFO] - stage prepare_data cell all: SKIPPED (outputs already complete)
+SKIPPED  prepare_data [all] 0.00s
+total: 0 ran, 1 skipped
+##### 6. criteri di accettazione sui dati reali
+........                                                                 [100%]
+8 passed in 2.53s
+##### 7. doctor e pre-commit
+bench doctor
+============
+
+[environments]
+  OK    acw                                     Python 3.10.21, bench_contracts 1.0.0
+  OK    bench-core                              Python 3.11.16, bench_contracts 1.0.0
+  OK    mcgmark                                 Python 3.10.21, bench_contracts 1.0.0
+  OK    promptmark                              Python 3.10.21, bench_contracts 1.0.0
+  OK    stone                                   Python 3.9.19, bench_contracts 1.0.0
+  OK    sweet                                   Python 3.10.21, bench_contracts 1.0.0
+
+[submodules]
+  WARN  repository                              9df164f45c2a (dirty)
+  OK    count                                   8 declared, expected 8
+  OK    third_party/ACW                         2236dc304478
+  OK    third_party/ClassEval                   eaeac44d0d5d
+  OK    third_party/MCGMT                       eefa27b68747
+  OK    third_party/PromptMark                  c04c8f61db1f
+  OK    third_party/STONE-watermarking          bb5d809c0c49
+  OK    third_party/bigcode-evaluation-harness  8fc5bae6479c
+  OK    third_party/lm-watermarking             82922516930c
+  OK    third_party/sweet-watermark             853b47eb064c
+
+[patched]
+  OK    acw                                     1 patch(es) applied
+  OK    mcgmark                                 1 patch(es) applied
+  OK    promptmark                              1 patch(es) applied
+  OK    stone                                   1 patch(es) applied
+  OK    sweet                                   1 patch(es) applied
+
+[apptainer]
+  FAIL  version                                 command not found: apptainer
+  SKIP  sandbox image                           built in Milestone 4
+
+[models]
+  OK    deepseek_coder_6p7b                     deepseek-ai/deepseek-coder-6.7b-instruct@e5d64addd26a
+  OK    llama31_8b_attacker                     meta-llama/Llama-3.1-8B-Instruct@0e9e39f249a1
+  OK    qwen25_coder_7b                         Qwen/Qwen2.5-Coder-7B-Instruct@c03e6d358207
+  OK    starcoder2_7b                           bigcode/starcoder2-7b@bb9afde76d79
+  OK    unixcoder_base                          microsoft/unixcoder-base@5604afdc964f
+
+[datasets]
+  OK    classeval                               1 path(s) present
+  OK    codenet                                 7 path(s) present
+  OK    codesearchnet                           9 path(s) present
+  OK    humanevalpack                           4 path(s) present
+  OK    humanevalplus                           1 path(s) present
+  OK    mbpp_original                           4 path(s) present
+  OK    mbppplus                                1 path(s) present
+  OK    thestack_cpp                            2 path(s) present
+  SKIP  tests4py                                deferred to Milestone 13
+
+[secrets]
+  WARN  SOURCERY_TOKEN                          not set (required by the ACW worker)
+
+[slurm]
+  OK    slurm_cpu                               defq, qos did_tesi_nlp_330_defq_qos, gres -, 420 min [provisional]
+  OK    slurm_gpu                               gpuq, qos did_tesi_nlp_330_gpuq_qos, gres gpu:1, 330 min
+  OK    slurm_gpu_h100                          aiq, qos did_tesi_nlp_330_aiq_qos, gres gpu:1, 330 min
+  OK    policy CPU                              -> slurm_cpu
+  OK    policy GPU_NVIDIA                       -> slurm_gpu
+  OK    timeout acw                             worker_timeout_s 18000
+  OK    timeout mcgmark                         worker_timeout_s 18000
+  OK    timeout promptmark                      worker_timeout_s 18000
+  OK    timeout stone                           worker_timeout_s 18000
+  OK    timeout sweet                           worker_timeout_s 18000
+
+[paths]
+  OK    artifacts                               /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts (writable)
+  OK    tmp                                     /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp (writable)
+
+[gpu]
+  SKIP  cuda                                    use 'bench doctor --gpu' on a GPU node
+
+[attack tools]
+  SKIP  tools                                   installed in Milestone 10
+
+summary: 45 OK, 2 WARN, 1 FAIL, 4 SKIP -> FAILED
+check for added large files..............................................Passed
+check for merge conflicts................................................Passed
+check yaml...............................................................Passed
+ruff.....................................................................Passed
+ruff-format..............................................................Passed
+mypy --strict............................................................Passed
+vietato versionare artifacts/........................(no files to check)Skipped
