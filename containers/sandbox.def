@@ -1,0 +1,60 @@
+# Immagine della sandbox dei test (SPEC §11.1, ADR-001). Build: scripts/build_sandbox.sh.
+# Contiene solo ciò che serve a eseguire il codice generato e i test di L1:
+#   Python 3.11 + EvalPlus 0.3.1 (stessa versione di bench-core) per HumanEval+ e MBPP+;
+#   g++ (con OpenSSL e Boost, richiesti dai test C++ di HumanEvalPack), OpenJDK 17, Node.js
+#   (con js-md5, richiesto dal test JavaScript 162) per HumanEvalPack;
+#   il runner del progetto in /opt/wmb.
+Bootstrap: docker
+From: python:3.11-slim-bookworm
+
+%files
+    containers/runner/wmb_runner.py /opt/wmb/wmb_runner.py
+
+%post
+    set -eu
+    export DEBIAN_FRONTEND=noninteractive
+    # openjdk su immagini slim: senza questa cartella la configurazione del pacchetto fallisce.
+    mkdir -p /usr/share/man/man1
+    apt-get update
+    apt-get install -y --no-install-recommends \
+        g++ make libssl-dev libboost-dev openjdk-17-jdk-headless nodejs npm ca-certificates
+    rm -rf /var/lib/apt/lists/*
+    npm install -g js-md5@0.8.3
+    pip install --no-cache-dir evalplus==0.3.1
+    chmod 0755 /opt/wmb /opt/wmb/wmb_runner.py
+    python3 - <<'PYEOF'
+import hashlib, json, platform, subprocess
+def out(cmd):
+    p = subprocess.run(cmd, capture_output=True, text=True)
+    return (p.stdout + p.stderr).strip().splitlines()[0]
+freeze = subprocess.run(["pip", "freeze"], capture_output=True, text=True).stdout
+versions = {
+    "image": "wm-bench sandbox 1",
+    "debian": open("/etc/debian_version").read().strip(),
+    "python": platform.python_version(),
+    "gcc": out(["g++", "--version"]),
+    "javac": out(["javac", "-version"]),
+    "java": out(["java", "-version"]),
+    "node": out(["node", "--version"]),
+    "js-md5": json.load(open("/usr/local/lib/node_modules/js-md5/package.json"))["version"],
+    "evalplus": subprocess.run(["pip", "show", "evalplus"], capture_output=True, text=True).stdout.split("Version: ")[1].split()[0],
+    "pip_freeze_sha256": hashlib.sha256(freeze.encode()).hexdigest(),
+}
+json.dump(versions, open("/opt/wmb/versions.json", "w"), indent=2, sort_keys=True)
+open("/opt/wmb/pip_freeze.txt", "w").write(freeze)
+print(json.dumps(versions, indent=2))
+PYEOF
+    chmod 0644 /opt/wmb/versions.json /opt/wmb/pip_freeze.txt
+
+%environment
+    export LC_ALL=C.UTF-8
+    export PYTHONDONTWRITEBYTECODE=1
+    export NODE_PATH=/usr/local/lib/node_modules
+    export HF_HUB_OFFLINE=1
+    export HF_DATASETS_OFFLINE=1
+
+%labels
+    wm-bench.sandbox.version 1
+
+%help
+    Sandbox di wm-bench: python3 /opt/wmb/wmb_runner.py /work/job.json

@@ -55,3 +55,19 @@ bench submit --jobs 3 --share 1/2 stage=generate_baseline levels=[L1] splits=[de
 
 Gli artefatti stanno in `$WMB/artifacts` (fuori dal repository), con un manifest accanto a ogni file
 (ADR-003). Log per fase e cella in `artifacts/_logs/`, tempi in `artifacts/_timing/timings.jsonl`.
+
+## Script per il cluster (Milestone 3 e 4)
+
+Gli argomenti di Hydra sono scritti negli script: niente copia-incolla (spazi non separabili).
+
+```bash
+bash scripts/submit_baseline_l1.sh 1/2                 # baseline L1, metà delle celle (l'altra persona: 2/2)
+python scripts/show_samples.py --model qwen25_coder_7b --lang python --split dev --n 2   # campioni leggibili
+python scripts/report_baseline.py                      # estrazione, troncamenti, decoding (M3)
+bash scripts/build_sandbox.sh                          # immagine della sandbox, una volta, nodo di login (ADR-001)
+bash scripts/check_sandbox.sh                          # verifica della sandbox su un nodo defq (srun)
+bash scripts/submit_execute_l1.sh groundtruth          # ground truth di EvalPlus (1 job defq)
+bash scripts/submit_execute_l1.sh execute 1/1          # test di canoniche e baseline (job defq)
+python scripts/report_execution.py                     # Pass@1 con IC, stati, canoniche fallite (M4)
+bash scripts/close_m3.sh / close_m4.sh                 # verifica finale della milestone, output nel log
+```

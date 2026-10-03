@@ -122,3 +122,17 @@ def test_pasted_non_breaking_space_gives_a_clear_error(local_root: Path) -> None
     glued = "levels=[L1] splits=[dev,test]"
     with pytest.raises(ConfigError, match="non-breaking space"):
         load_experiment(["paths=local", "stage=selftest", glued])
+
+
+def test_execution_config_needs_every_language(cfg: ExperimentConfig) -> None:
+    data = cfg.model_dump(mode="json")
+    assert data["execution"]["sandbox"] == "apptainer"
+    assert data["execution"]["timeouts_s"] == {
+        "python": 10,
+        "java": 20,
+        "cpp": 20,
+        "javascript": 10,
+    }
+    del data["execution"]["timeouts_s"]["cpp"]
+    with pytest.raises(ConfigError, match="timeouts_s is missing languages"):
+        ExperimentBuilder.from_dict(data).build()

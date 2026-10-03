@@ -1,0 +1,21 @@
+# Esecuzione dei test nella sandbox (SPEC §11, ADR-001, cluster_info §5).
+# apptainer: immagine in formato directory derivata dal .sif (niente squashfuse sul cluster).
+# local: solo per i test sul PC (sottoprocessi senza container).
+sandbox: apptainer
+image_dir: ${paths.wmb}/containers/sandbox_dir
+image_sif: ${paths.wmb}/containers/sandbox.sif
+network_none: true
+apptainer_module: apptainer/apptainer.module
+sources: [canonical, llm_baseline]
+# Esecuzione di un campione (SPEC §11.2: 10 s Python, 20 s Java/C++; JavaScript come Python).
+timeouts_s: {python: 10, java: 20, cpp: 20, javascript: 10}
+compile_timeout_s: 30
+# Memoria virtuale per campione; null = nessun limite per processo (JVM e V8, vedi ADR-001).
+# Python: passato a EvalPlus come EVALPLUS_MAX_MEMORY_BYTES (suo default: 4 GB).
+mem_mb: {python: 4096, cpp: 4096, java: null, javascript: null}
+groundtruth_timeout_s: 10800
+max_workers: null              # null = SLURM_CPUS_PER_TASK (o i core della macchina)
+stderr_tail_chars: 2000
+evalplus:                      # default di EvalPlus 0.3.1 (evalplus/config.py)
+  min_time_limit: 1.0
+  gt_time_limit_factor: 4.0

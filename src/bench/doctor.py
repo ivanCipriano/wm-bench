@@ -392,7 +392,64 @@ class ApptainerCheck(DoctorCheck):
             version_result = self.result(
                 "version", status, f"{found} (expected {EXPECTED_APPTAINER})"
             )
-        return [version_result, self.result("sandbox image", Status.SKIP, "built in Milestone 4")]
+        return [version_result, *self._image(ctx, proc.returncode == 0)]
+
+    def _image(self, ctx: DoctorContext, apptainer_ok: bool) -> list[CheckResult]:
+        """Immagine della sandbox: ``.sif`` con hash, directory derivata, esecuzione senza rete."""
+        execution = ctx.cfg.execution
+        sif, image_dir = execution.image_sif, execution.image_dir
+        sha_file = Path(f"{sif}.sha256")
+        if not sif.is_file() or not sha_file.is_file():
+            return [
+                self.result(
+                    "sandbox image", Status.FAIL, f"{sif} not built: run scripts/build_sandbox.sh"
+                )
+            ]
+        recorded = sha_file.read_text(encoding="utf-8").split()[0]
+        digest = hashlib.sha256()
+        with open(sif, "rb") as handle:
+            for chunk in iter(lambda: handle.read(1 << 20), b""):
+                digest.update(chunk)
+        same = digest.hexdigest() == recorded
+        results = [
+            self.result(
+                "sandbox image",
+                Status.OK if same else Status.FAIL,
+                f"sha256 {recorded[:12]}"
+                if same
+                else "sandbox.sif does not match sandbox.sif.sha256",
+            )
+        ]
+        runner = image_dir / "opt" / "wmb" / "wmb_runner.py"
+        if not runner.is_file():
+            results.append(
+                self.result("sandbox dir", Status.FAIL, f"{image_dir} missing: rebuild the image")
+            )
+            return results
+        if not apptainer_ok:
+            results.append(self.result("sandbox exec", Status.SKIP, "apptainer not available"))
+            return results
+        # La rete deve risultare assente (--network none, ADR-001).
+        probe = (
+            "import socket\n"
+            "try:\n"
+            "    socket.create_connection(('pypi.org', 443), 5); print('network')\n"
+            "except OSError:\n"
+            "    print('no-network')\n"
+        )
+        cmd = ["apptainer", "exec", "--containall", "--cleanenv", "--no-home"]
+        if execution.network_none:
+            cmd += ["--net", "--network", "none"]
+        proc = ctx.run([*cmd, str(image_dir), "python3", "-c", probe], 300, None, None)
+        output = proc.stdout.strip()
+        if proc.returncode != 0:
+            status, detail = Status.FAIL, (proc.stderr.strip() or output)[-300:]
+        elif output == "no-network":
+            status, detail = Status.OK, "runs, network disabled"
+        else:
+            status, detail = Status.FAIL, f"unexpected output: {output[-200:]}"
+        results.append(self.result("sandbox exec", status, detail))
+        return results
 
 
 class ModelsCheck(DoctorCheck):

@@ -33,6 +33,7 @@ class Cell:
     config_hash: str | None = None
     attack_id: str | None = None
     attack_params_hash: str | None = None
+    source: str | None = None  # origine dei campioni (fase execute): canonical, llm_baseline
 
     def as_dict(self) -> dict[str, str | None]:
         """Campi della cella come dizionario."""
@@ -129,6 +130,14 @@ class Stage(ABC):
         """Istanzia la fase; le fasi che dipendono dalla configurazione lo ridefiniscono."""
         return cls()
 
+    @classmethod
+    def normalize_cell(cls, cell: Cell) -> Cell | None:
+        """Adatta una cella del prodotto cartesiano (es. azzera gli assi che non servono).
+
+        ``None`` scarta la cella; le celle uguali dopo la normalizzazione si contano una volta.
+        """
+        return cell
+
     @abstractmethod
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
         """Artefatti richiesti dalla fase per la cella."""
@@ -157,6 +166,7 @@ class CellPlanner:
             "level": [str(x) for x in config.levels],
             "split": [str(x) for x in config.splits],
             "attack_id": list(config.attacks),
+            "source": list(config.execution.sources),
         }
 
     def cells_for(self, stage: type[Stage]) -> list[Cell]:
@@ -169,7 +179,9 @@ class CellPlanner:
         if unknown:
             raise ConfigError(f"stage '{stage.name}': cannot plan axes {unknown}")
         values = [self._axes[a] for a in stage.cell_axes]
-        return [
-            Cell(**dict(zip(stage.cell_axes, combo, strict=True)))
-            for combo in itertools.product(*values)
-        ]
+        cells: list[Cell] = []
+        for combo in itertools.product(*values):
+            cell = stage.normalize_cell(Cell(**dict(zip(stage.cell_axes, combo, strict=True))))
+            if cell is not None and cell not in cells:
+                cells.append(cell)
+        return cells

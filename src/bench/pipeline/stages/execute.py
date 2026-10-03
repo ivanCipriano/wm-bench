@@ -1,0 +1,330 @@
+"""Fase ``execute``: esecuzione dei test nella sandbox (SPEC §11, §15.2; ADR-001).
+
+Celle:
+
+- ``source=canonical``: soluzioni canoniche di un livello e linguaggio (tutti i problemi,
+  senza modello né parte), per verificare l'executor (atteso Pass@1 = 100%);
+- ``source=llm_baseline``: campioni della baseline di (modello, livello, linguaggio, parte).
+
+Output: ``execution/canonical/<L>_<lang>.parquet`` e
+``execution/llm_baseline/<modello>/<L>_<lang>_<parte>.parquet``; una riga per campione in
+input (I1) con i campi di ``ExecutionRecord`` più ``problem_key``, ``sample_index`` e
+``dataset``. Un'invocazione della sandbox per problema; i problemi girano in parallelo su
+``max_workers`` thread (il lavoro è nei sottoprocessi della sandbox).
+
+**Ripresa** (cluster_info §1): ogni problema completato va in un file parziale JSONL
+(``execution/.../_partial/``); al rilancio si eseguono solo i problemi mancanti.
+"""
+
+from __future__ import annotations
+
+import logging
+import os
+import statistics
+import threading
+import time
+from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+from typing import Any, ClassVar
+
+import pandas as pd
+from bench_contracts import append_jsonl, iter_jsonl
+
+from bench.config.resources import ResourceClass
+from bench.config.schema import ExperimentConfig
+from bench.domain.enums import ExecStatus, Language, Source
+from bench.domain.errors import ConfigError
+from bench.domain.ids import sample_id
+from bench.domain.models import ExecutionRecord, Problem
+from bench.execution import sandbox as sandbox_mod
+from bench.execution.executors import (
+    EXECUTORS,
+    EvalPlusExecutor,
+    Executor,
+    SampleToRun,
+    executor_name,
+)
+from bench.execution.sandbox import Sandbox
+from bench.pipeline.stage import Cell, Stage, StageContext
+from bench.pipeline.stages.evalplus_groundtruth import groundtruth_ref, load_groundtruth
+from bench.pipeline.stages.generate_baseline import baseline_ref, problems_ref
+from bench.registry import STAGES
+from bench.store.hashing import sha256_json
+from bench.store.refs import ArtifactRef
+
+logger = logging.getLogger(__name__)
+
+EXTRA_COLUMNS = ["problem_key", "sample_index", "dataset"]
+OUTPUT_COLUMNS = [*EXTRA_COLUMNS, *ExecutionRecord.model_fields]
+
+
+def execution_ref(cell: Cell) -> ArtifactRef:
+    """Esiti dell'esecuzione di una cella."""
+    if cell.source == "canonical":
+        return ArtifactRef.of(
+            "execution", f"execution/canonical/{cell.level}_{cell.language}.parquet"
+        )
+    return ArtifactRef.of(
+        "execution",
+        f"execution/{cell.source}/{cell.model_id}/{cell.level}_{cell.language}_{cell.split}.parquet",
+    )
+
+
+def max_workers(cfg: ExperimentConfig) -> int:
+    """Thread paralleli: configurazione, poi ``SLURM_CPUS_PER_TASK``, poi i core."""
+    if cfg.execution.max_workers:
+        return cfg.execution.max_workers
+    slurm = os.environ.get("SLURM_CPUS_PER_TASK")
+    return int(slurm) if slurm else max(1, os.cpu_count() or 1)
+
+
+@STAGES.register("execute")
+class ExecuteStage(Stage):
+    """Esecuzione dei test di soluzioni canoniche e campioni."""
+
+    name: ClassVar[str] = "execute"
+    resources: ClassVar[ResourceClass] = ResourceClass.CPU
+    output_kinds: ClassVar[frozenset[str]] = frozenset({"execution"})
+    cell_axes: ClassVar[tuple[str, ...]] = ("source", "model_id", "level", "language", "split")
+
+    def __init__(self, config: ExperimentConfig | None = None) -> None:
+        self.config = config
+
+    @classmethod
+    def create(cls, config: ExperimentConfig) -> Stage:
+        return cls(config)
+
+    @classmethod
+    def normalize_cell(cls, cell: Cell) -> Cell | None:
+        if cell.source == "canonical":
+            return Cell(source="canonical", level=cell.level, language=cell.language)
+        return cell
+
+    def _cfg(self) -> ExperimentConfig:
+        if self.config is None:
+            raise ConfigError("execute needs the experiment configuration")
+        return self.config
+
+    @staticmethod
+    def _check(cell: Cell) -> None:
+        if cell.source == "canonical" and cell.level and cell.language:
+            return
+        if (
+            cell.source == "llm_baseline"
+            and cell.model_id
+            and cell.level
+            and cell.language
+            and cell.split
+        ):
+            return
+        raise ConfigError(f"execute: incomplete or unknown cell {cell.key()}")
+
+    def inputs(self, cell: Cell) -> list[ArtifactRef]:
+        self._check(cell)
+        refs = [problems_ref(str(cell.level), str(cell.language))]
+        if cell.source == "llm_baseline":
+            refs.append(
+                baseline_ref(
+                    str(cell.model_id), str(cell.level), str(cell.language), str(cell.split)
+                )
+            )
+        if cell.language == str(Language.PYTHON):
+            refs.append(groundtruth_ref())
+        return refs
+
+    def outputs(self, cell: Cell) -> list[ArtifactRef]:
+        self._check(cell)
+        return [execution_ref(cell)]
+
+    # ------------------------------------------------------------------ campioni
+    def _problems(self, ctx: StageContext, cell: Cell) -> list[Problem]:
+        table = ctx.store.read_table(problems_ref(str(cell.level), str(cell.language)))
+        if cell.split is not None:
+            table = table[table["split"] == cell.split]
+        problems = [Problem.model_validate(r) for r in table.to_dict(orient="records")]
+        return sorted(problems, key=lambda p: p.problem_key)
+
+    def _samples(
+        self, ctx: StageContext, cell: Cell, problems: list[Problem], executors: dict[str, Executor]
+    ) -> dict[str, list[SampleToRun]]:
+        if cell.source == "canonical":
+            return {
+                p.problem_key: [
+                    SampleToRun(
+                        sample_id=sample_id(
+                            source=Source.HUMAN, problem_key=p.problem_key, language=p.language
+                        ),
+                        problem_key=p.problem_key,
+                        sample_index=None,
+                        code=executors[p.dataset].canonical(p),
+                    )
+                ]
+                for p in problems
+            }
+        table = ctx.store.read_table(
+            baseline_ref(str(cell.model_id), str(cell.level), str(cell.language), str(cell.split))
+        )
+        by_problem: dict[str, list[SampleToRun]] = {p.problem_key: [] for p in problems}
+        table = table.sort_values(["problem_key", "sample_index"])
+        for row in table.to_dict(orient="records"):
+            key = str(row["problem_key"])
+            if key not in by_problem:
+                raise ConfigError(f"baseline sample for unknown problem {key}")
+            by_problem[key].append(
+                SampleToRun(
+                    sample_id=str(row["sample_id"]),
+                    problem_key=key,
+                    sample_index=int(row["sample_index"]),
+                    code=str(row["code"]),
+                    extraction_ok=bool(row["extraction_ok"]),
+                )
+            )
+        return by_problem
+
+    def _executors(
+        self, ctx: StageContext, cell: Cell, problems: list[Problem], sandbox: Sandbox
+    ) -> dict[str, Executor]:
+        cfg = self._cfg()
+        language = Language(str(cell.language))
+        root = cfg.paths.tmp / "execute"
+        root.mkdir(parents=True, exist_ok=True)
+        groundtruth = None
+        if language is Language.PYTHON:
+            groundtruth = load_groundtruth(ctx.store.read_table(groundtruth_ref()))
+        executors: dict[str, Executor] = {}
+        for dataset in sorted({p.dataset for p in problems}):
+            cls = EXECUTORS.get(executor_name(dataset))
+            if cls is EvalPlusExecutor:
+                executors[dataset] = EvalPlusExecutor(cfg, sandbox, language, root, groundtruth)
+            else:
+                executors[dataset] = cls(cfg, sandbox, language, root)
+        return executors
+
+    # ------------------------------------------------------------------ esecuzione
+    def run(self, cell: Cell, ctx: StageContext) -> None:
+        cfg = self._cfg()
+        problems = self._problems(ctx, cell)
+        # Attributo letto a ogni lancio: i test lo sostituiscono con una sandbox finta.
+        sandbox = sandbox_mod.make_sandbox(cfg.execution)
+        executors = self._executors(ctx, cell, problems, sandbox)
+        samples = self._samples(ctx, cell, problems, executors)
+
+        input_hashes = {
+            str(ref.path): (m.data_sha256 if (m := ctx.store.read_manifest(ref)) else None)
+            for ref in self.inputs(cell)
+        }
+        fingerprint = sha256_json(
+            {
+                "execution": cfg.execution.model_dump(mode="json"),
+                "image": sandbox.image_hash,
+                "inputs": input_hashes,
+            }
+        )
+        ref = execution_ref(cell)
+        partial = ctx.store.root / ref.path.parent / "_partial" / f"{ref.path.stem}.jsonl"
+        done = self._load_partial(partial, fingerprint)
+        todo = [p for p in problems if p.problem_key not in done]
+        workers = max_workers(cfg)
+        logger.info(
+            "%s: %d problems, %d already done, %d to run with %d workers",
+            cell.key(),
+            len(problems),
+            len(done),
+            len(todo),
+            workers,
+        )
+        lock = threading.Lock()
+        versions: dict[str, str] = {}
+
+        def work(problem: Problem) -> None:
+            start = time.perf_counter()
+            executor = executors[problem.dataset]
+            records = executor.run_problem(problem, samples[problem.problem_key])
+            entry = {
+                "problem_key": problem.problem_key,
+                "elapsed_s": time.perf_counter() - start,
+                "records": [r.model_dump(mode="json") for r in records],
+            }
+            with lock:
+                append_jsonl(partial, entry)
+                done[problem.problem_key] = entry
+                versions.update(executor.last_versions)
+
+        if todo:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                futures = [pool.submit(work, p) for p in todo]
+                for i, future in enumerate(as_completed(futures), start=1):
+                    future.result()
+                    if i % 50 == 0 or i == len(futures):
+                        logger.info("%s: %d/%d problems executed", cell.key(), i, len(futures))
+        self._write(ctx, cell, problems, samples, done, sandbox, versions, partial)
+
+    @staticmethod
+    def _load_partial(path: Path, fingerprint: str) -> dict[str, dict[str, Any]]:
+        done: dict[str, dict[str, Any]] = {}
+        if path.is_file():
+            records = list(iter_jsonl(path))
+            if records and records[0].get("fingerprint") == fingerprint:
+                for record in records[1:]:
+                    done[str(record["problem_key"])] = record
+                return done
+            logger.warning("partial file %s has a different configuration: starting over", path)
+            path.unlink()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        append_jsonl(path, {"fingerprint": fingerprint})
+        return done
+
+    def _write(
+        self,
+        ctx: StageContext,
+        cell: Cell,
+        problems: list[Problem],
+        samples: dict[str, list[SampleToRun]],
+        done: dict[str, dict[str, Any]],
+        sandbox: Sandbox,
+        versions: dict[str, str],
+        partial: Path,
+    ) -> None:
+        rows = []
+        for problem in problems:
+            records = done[problem.problem_key]["records"]
+            for sample, record in zip(samples[problem.problem_key], records, strict=True):
+                rows.append(
+                    {
+                        "problem_key": problem.problem_key,
+                        "sample_index": sample.sample_index,
+                        "dataset": problem.dataset,
+                        **ExecutionRecord.model_validate(record).model_dump(mode="json"),
+                    }
+                )
+        df = pd.DataFrame(rows, columns=OUTPUT_COLUMNS)
+        df["sample_index"] = df["sample_index"].astype("Int64")
+        n_expected = sum(len(v) for v in samples.values())
+        statuses = Counter(df["status"])
+        elapsed = [float(done[p.problem_key]["elapsed_s"]) for p in problems]
+        n = len(df)
+        extra = {
+            "status_counts": {s.value: int(statuses.get(s.value, 0)) for s in ExecStatus},
+            "passed_fraction": round(statuses.get(ExecStatus.PASSED.value, 0) / n, 6)
+            if n
+            else None,
+            "sandbox_versions": versions,
+            "seconds_per_problem": {
+                "mean": round(statistics.fmean(elapsed), 3) if elapsed else None,
+                "max": round(max(elapsed), 3) if elapsed else None,
+            },
+            "workers": max_workers(self._cfg()),
+        }
+        ref = execution_ref(cell)
+        manifest = ctx.make_manifest(
+            ref,
+            inputs=self.inputs(cell),
+            n_rows_in=n_expected,
+            n_rows_out=n,
+            n_rows_expected=n_expected,
+            extra=extra,
+        ).model_copy(update={"sandbox_image_hash": sandbox.image_hash})
+        ctx.store.write_table(ref, df, manifest)
+        partial.unlink(missing_ok=True)
+        logger.info("%s: %d records, status %s", cell.key(), n, dict(statuses))

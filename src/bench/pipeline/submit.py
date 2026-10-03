@@ -109,8 +109,10 @@ def executor_parameters(
         "slurm_qos": profile.qos,
         "slurm_wckey": None,  # submitit aggiungerebbe --wckey=submitit
         # umask 002: i file restano scrivibili dal gruppo (due utenti condividono gli artefatti).
+        # Poi i comandi del profilo (es. module load apptainer per i job CPU).
         "slurm_setup": [
             "umask 002",
+            *profile.setup,
             *(f"export {k}={v}" for k, v in sorted(job_environment(cfg).items())),
         ],
     }
@@ -155,8 +157,13 @@ class SubmittedJob:
 
 
 def cell_weight(cfg: ExperimentConfig, cell: Cell) -> int:
-    """Peso di una cella per il bilanciamento: problemi della parte (1 se non noto)."""
-    if not (cell.level and cell.language and cell.split):
+    """Peso di una cella per il bilanciamento: campioni da trattare (1 se non noto).
+
+    Problemi della parte (tutti, se la cella non ha parte) per i campioni per problema:
+    uno per le soluzioni canoniche, N (decoding del livello) altrimenti. Un fattore comune a
+    tutte le celle non cambia la divisione.
+    """
+    if not (cell.level and cell.language):
         return 1
     path = Path(cfg.paths.artifacts) / "data" / "problems" / f"{cell.level}_{cell.language}.parquet"
     if not path.is_file():
@@ -164,7 +171,15 @@ def cell_weight(cfg: ExperimentConfig, cell: Cell) -> int:
     import pyarrow.parquet as pq
 
     splits = pq.read_table(path, columns=["split"]).column("split").to_pylist()
-    return max(1, sum(1 for s in splits if s == cell.split))
+    n_problems = sum(1 for s in splits if cell.split is None or s == cell.split)
+    per_problem = 1 if cell.source == "canonical" else _samples_per_problem(cfg, cell.level)
+    return max(1, n_problems * per_problem)
+
+
+def _samples_per_problem(cfg: ExperimentConfig, level: str) -> int:
+    key = "level1" if level == "L1" else "level234"
+    decoding = cfg.decoding.get(key)
+    return decoding.n if decoding is not None else 1
 
 
 def split_into_lanes(

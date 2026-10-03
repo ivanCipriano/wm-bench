@@ -234,7 +234,33 @@ def test_apptainer(cfg: ExperimentConfig, result: CommandResult, expected: Statu
     runner = FakeRunner(responses={("apptainer", "--version"): result})
     results = _statuses(ApptainerCheck().run(_ctx(cfg, runner)))
     assert results["version"] is expected
-    assert results["sandbox image"] is Status.SKIP
+    assert results["sandbox image"] is Status.FAIL  # immagine non costruita
+
+
+def test_apptainer_image(cfg: ExperimentConfig) -> None:
+    sif, image_dir = cfg.execution.image_sif, cfg.execution.image_dir
+    sif.parent.mkdir(parents=True, exist_ok=True)
+    sif.write_bytes(b"fake image")
+    Path(f"{sif}.sha256").write_text(hashlib.sha256(b"fake image").hexdigest(), encoding="utf-8")
+    (image_dir / "opt" / "wmb").mkdir(parents=True)
+    (image_dir / "opt" / "wmb" / "wmb_runner.py").write_text("", encoding="utf-8")
+    version = CommandResult(0, "apptainer version 1.1.9\n", "")
+    output = {"exec": "no-network\n"}
+
+    def fallback(cmd: tuple[str, ...]) -> CommandResult | None:
+        if cmd[:2] == ("apptainer", "exec"):
+            assert cmd[5:8] == ("--net", "--network", "none")
+            return CommandResult(0, output["exec"], "")
+        return None
+
+    runner = FakeRunner(responses={("apptainer", "--version"): version}, fallback=fallback)
+    results = _statuses(ApptainerCheck().run(_ctx(cfg, runner)))
+    assert results["sandbox image"] is Status.OK
+    assert results["sandbox exec"] is Status.OK
+    output["exec"] = "network\n"
+    assert _statuses(ApptainerCheck().run(_ctx(cfg, runner)))["sandbox exec"] is Status.FAIL
+    sif.write_bytes(b"changed")
+    assert _statuses(ApptainerCheck().run(_ctx(cfg, runner)))["sandbox image"] is Status.FAIL
 
 
 def test_models(cfg: ExperimentConfig) -> None:

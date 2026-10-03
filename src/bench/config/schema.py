@@ -180,6 +180,8 @@ class ClusterProfile(_Frozen):
     mem_gb: int = Field(gt=0)
     timeout_min: int | None = Field(default=None, gt=0)
     provisional: bool = False
+    # Comandi eseguiti all'avvio di ogni job SLURM del profilo (es. ``module load``).
+    setup: list[str] = Field(default_factory=list)
 
     @property
     def requests_gpu(self) -> bool:
@@ -202,6 +204,45 @@ class PromptConfig(_Frozen):
     system_prompt_file: Path
     system_prompt_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     template_dir: Path
+
+
+class EvalPlusConfig(_Frozen):
+    """Parametri di EvalPlus (valori di default di EvalPlus 0.3.1)."""
+
+    min_time_limit: float = Field(gt=0)
+    gt_time_limit_factor: float = Field(gt=0)
+
+
+class ExecutionConfig(_Frozen):
+    """Esecuzione dei test nella sandbox (``configs/execution/default.yaml``, SPEC §11, ADR-001).
+
+    ``timeouts_s`` limita l'esecuzione di un campione, ``compile_timeout_s`` la sua
+    compilazione; ``mem_mb`` è il limite di memoria virtuale per campione (``None`` = nessun
+    limite per processo: JVM e V8 riservano spazio di indirizzi ben oltre l'uso reale).
+    """
+
+    sandbox: Literal["apptainer", "local"]
+    image_dir: Path
+    image_sif: Path
+    network_none: bool = True
+    apptainer_module: str
+    sources: list[Literal["canonical", "llm_baseline"]]
+    timeouts_s: dict[str, float]
+    compile_timeout_s: float = Field(gt=0)
+    mem_mb: dict[str, int | None]
+    groundtruth_timeout_s: float = Field(gt=0)
+    max_workers: int | None = Field(default=None, gt=0)
+    stderr_tail_chars: int = Field(gt=0)
+    evalplus: EvalPlusConfig
+
+    @model_validator(mode="after")
+    def _languages(self) -> ExecutionConfig:
+        expected = {str(x) for x in Language}
+        for name, table in (("timeouts_s", self.timeouts_s), ("mem_mb", self.mem_mb)):
+            missing = sorted(expected - set(table))
+            if missing:
+                raise ValueError(f"execution.{name} is missing languages {missing}")
+        return self
 
 
 class DetectionConfig(_Frozen):
@@ -245,6 +286,7 @@ class ExperimentConfig(_Frozen):
     split: SplitConfig
     negatives: NegativesConfig
     prompt: PromptConfig
+    execution: ExecutionConfig
 
     @field_validator("global_seed")
     @classmethod

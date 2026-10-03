@@ -83,6 +83,13 @@
      identico.
    - I log di SLURM vanno in `artifacts/_slurm/<fase>/<job_id>/`.
 
+## Nota (Milestone 4): provenienza e log delle milestone
+
+I log `docs/milestone_logs/*.txt` vengono scritti con `tee` mentre i job girano. Per questo in M3 alcuni manifest
+hanno `repo_dirty: true` anche con il codice pulito. Da M4 il controllo ignora `docs/milestone_logs/`
+(`bench.store.manifest.dirty_paths`), e il manifest registra in `repo_dirty_paths` quali file erano modificati.
+La baseline di M3 resta valida: in tutte le celle il codice di generazione era quello dei commit registrati.
+
 ## Conseguenze
 
 - Cambiare system prompt, template, regola di estrazione o decoding invalida le baseline e ogni confronto

@@ -1,0 +1,6 @@
+# Soluzioni canoniche che non passano i propri test nella sandbox, con il motivo (criterio M4:
+# "Pass@1 delle canoniche = 100% o casi anomali documentati"). Si compila dopo la prima
+# esecuzione sul cluster; ogni voce va anche in docs/deviations.md se dipende dal dataset.
+# Formato:
+#   - {language: cpp, problem_key: humaneval/0, reason: "..."}
+anomalies: []

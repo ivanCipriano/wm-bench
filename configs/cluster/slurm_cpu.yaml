@@ -10,3 +10,6 @@ cpus_per_task: 16
 mem_gb: 64
 timeout_min: 420
 provisional: true
+# La sandbox usa Apptainer, disponibile solo dopo il module load (cluster_info §5).
+setup:
+  - module load apptainer/apptainer.module

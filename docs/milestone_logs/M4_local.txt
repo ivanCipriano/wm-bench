@@ -1,0 +1,37 @@
+##### M4 verifica locale (2026-10-03 18:54, Windows, Python 3.11; javac presente, node e apptainer assenti)
+##### ruff
+All checks passed!
+106 files already formatted
+##### mypy
+Success: no issues found in 60 source files
+##### pytest
+.ssssss.......ssssssssssssssssssssssssssssssssssssssssssssssssssss...... [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 63%]
+........................................................................ [ 84%]
+....................................................                     [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] tests\contract\test_envs.py:63: acw: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: bench-core: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: mcgmark: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/mcgmark/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: promptmark: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/promptmark/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: stone: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/stone/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: sweet: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/sweet/bin/python
+SKIPPED [1] tests\integration\test_baseline_gpu.py:28: CUDA not available
+SKIPPED [16] tests\integration\test_l1_baseline.py:35: prepare_data artifacts not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\problems\L1_python.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:51: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:60: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:72: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:80: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:93: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:101: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [4] tests\integration\test_l1_execution.py:39: prepare_data artifacts not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\problems\L1_python.parquet.manifest.json
+SKIPPED [16] tests\integration\test_l1_execution.py:55: prepare_data artifacts not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\problems\L1_python.parquet.manifest.json
+SKIPPED [1] tests\integration\conftest.py:28: humanevalplus file not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\datasets\evalplus\HumanEvalPlus-v0.1.10.jsonl
+SKIPPED [1] tests\integration\conftest.py:28: mbppplus file not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\datasets\evalplus\MbppPlus-v0.2.0.jsonl
+SKIPPED [1] tests\integration\test_sandbox_apptainer.py:58: apptainer not in PATH
+SKIPPED [1] tests\integration\test_sandbox_apptainer.py:69: apptainer not in PATH
+SKIPPED [1] tests\integration\test_sandbox_apptainer.py:82: apptainer not in PATH
+SKIPPED [1] tests\integration\test_sandbox_apptainer.py:91: apptainer not in PATH
+SKIPPED [3] tests\integration\test_sandbox_apptainer.py:96: apptainer not in PATH
+282 passed, 58 skipped in 386.52s (0:06:26)

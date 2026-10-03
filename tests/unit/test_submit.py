@@ -161,3 +161,26 @@ def test_parse_share() -> None:
     for bad in ("0/2", "3/2", "1-2", "a/b"):
         with pytest.raises(ConfigError):
             parse_share(bad)
+
+
+def test_cpu_jobs_load_apptainer(cfg: ExperimentConfig) -> None:
+    params = executor_parameters(cfg, PROFILES["slurm_cpu"], "execute")
+    assert params["slurm_setup"][:2] == ["umask 002", "module load apptainer/apptainer.module"]
+    assert "slurm_gres" not in params
+    gpu = executor_parameters(cfg, PROFILES["slurm_gpu"], "generate_baseline")
+    assert not any(line.startswith("module load") for line in gpu["slurm_setup"])
+
+
+def test_cell_weight_counts_samples(cfg: ExperimentConfig) -> None:
+    import pandas as pd
+
+    from bench.pipeline.stage import Cell
+    from bench.pipeline.submit import cell_weight
+
+    path = cfg.paths.artifacts / "data" / "problems" / "L1_java.parquet"
+    path.parent.mkdir(parents=True)
+    pd.DataFrame({"split": ["dev"] * 3 + ["test"] * 7}).to_parquet(path)
+    n = cfg.decoding["level1"].n
+    assert cell_weight(cfg, Cell(model_id="m", level="L1", language="java", split="test")) == 7 * n
+    assert cell_weight(cfg, Cell(source="canonical", level="L1", language="java")) == 10
+    assert cell_weight(cfg, Cell(source="canonical", level="L1", language="cpp")) == 1  # ignoto

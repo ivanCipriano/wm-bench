@@ -8,6 +8,7 @@ defaults:
   - split: default
   - negatives: default
   - prompt: default
+  - execution: default
   - decoding@decoding.level1: level1
   - decoding@decoding.level234: level234
   - model@models_catalog.qwen25_coder_7b: qwen25_coder_7b
