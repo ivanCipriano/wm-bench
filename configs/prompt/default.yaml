@@ -1,0 +1,5 @@
+# Prompt della generazione (SPEC §2.1; decisioni dell'utente del 3 ottobre 2026, ADR-006).
+# system.txt è bloccato: il suo SHA-256 deve coincidere con questo valore, altrimenti ConfigError.
+system_prompt_file: ${paths.repo}/configs/prompt/system.txt
+system_prompt_sha256: 1598d00e2c894a83cfa32a93c37623b59811a6144afbcfd98e20c9ddab122c6e
+template_dir: ${paths.repo}/configs/prompt/user   # user/<dataset>_<lang>.j2, approvati dall'utente

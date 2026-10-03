@@ -196,6 +196,14 @@ class ResourceRules(_Frozen):
     profiles: dict[Literal["CPU", "GPU_NVIDIA"], str]
 
 
+class PromptConfig(_Frozen):
+    """Prompt della generazione (``configs/prompt/default.yaml``, ADR-006)."""
+
+    system_prompt_file: Path
+    system_prompt_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    template_dir: Path
+
+
 class DetectionConfig(_Frozen):
     """Calibrazione delle soglie (SPEC §13.2)."""
 
@@ -236,6 +244,7 @@ class ExperimentConfig(_Frozen):
     hpo: HpoConfig
     split: SplitConfig
     negatives: NegativesConfig
+    prompt: PromptConfig
 
     @field_validator("global_seed")
     @classmethod
