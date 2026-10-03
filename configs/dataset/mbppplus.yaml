@@ -1,5 +1,7 @@
-# Dataset mbppplus: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+# Dataset mbppplus: file per ruolo e righe attese (cluster_info §8).
 name: mbppplus
 version: v0.2.0
 files:
-  - ${paths.datasets}/evalplus/MbppPlus-v0.2.0.jsonl
+  data: ${paths.datasets}/evalplus/MbppPlus-v0.2.0.jsonl
+expected_rows:
+  data: 378

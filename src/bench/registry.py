@@ -1,8 +1,8 @@
 """Registri dei componenti estendibili (Registry + Factory, SPEC §6, §7.1).
 
 I registri si popolano solo all'import dei moduli che definiscono i componenti
-(import espliciti, niente scoperta dinamica dal filesystem). In M1 esiste solo
-``STAGES``; gli altri registri arrivano con le rispettive classi base (ADR-003).
+(import espliciti, niente scoperta dinamica dal filesystem). Esistono ``STAGES``
+(M1) e ``LOADERS`` (M2); gli altri arrivano con le rispettive classi base (ADR-003).
 """
 
 from __future__ import annotations
@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from bench.domain.errors import ConfigError
 
 if TYPE_CHECKING:
+    from bench.data.loaders.base import DatasetLoader
     from bench.pipeline.stage import Stage
 
 T = TypeVar("T")
@@ -65,3 +66,4 @@ class Registry(Generic[T]):
 
 
 STAGES: Registry[Stage] = Registry("stage")
+LOADERS: Registry[DatasetLoader] = Registry("loader")

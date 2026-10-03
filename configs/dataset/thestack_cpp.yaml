@@ -1,6 +1,9 @@
-# Dataset thestack_cpp: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+# Dataset thestack_cpp: file per ruolo e righe attese (cluster_info §8).
 name: thestack_cpp
 version: "the-stack-dedup v1"
 files:
-  - ${paths.datasets}/thestack/data/cpp/data-00000-of-00110.parquet
-  - ${paths.datasets}/thestack/data/cpp/data-00001-of-00110.parquet
+  shard0: ${paths.datasets}/thestack/data/cpp/data-00000-of-00110.parquet
+  shard1: ${paths.datasets}/thestack/data/cpp/data-00001-of-00110.parquet
+expected_rows:
+  shard0: 57982
+  shard1: 57982

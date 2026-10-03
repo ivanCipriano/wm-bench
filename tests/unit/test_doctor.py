@@ -250,7 +250,7 @@ def test_models(cfg: ExperimentConfig) -> None:
 
 
 def test_datasets(cfg: ExperimentConfig) -> None:
-    for path in cfg.datasets["humanevalplus"].files:
+    for path in cfg.datasets["humanevalplus"].files.values():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("{}", encoding="utf-8")
     results = _statuses(DatasetsCheck().run(_ctx(cfg)))

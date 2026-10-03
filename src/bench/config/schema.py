@@ -73,12 +73,69 @@ class DecodingConfig(_Frozen):
 
 
 class DatasetSpec(_Frozen):
-    """Dataset locale: per ora solo i percorsi attesi (si estende in M2)."""
+    """Dataset locale (cluster_info §8): file e cartelle per ruolo, righe attese per ruolo."""
 
     name: str
     version: str | None = None
-    files: list[Path] = Field(default_factory=list)
-    dirs: list[Path] = Field(default_factory=list)
+    files: dict[str, Path] = Field(default_factory=dict)
+    dirs: dict[str, Path] = Field(default_factory=dict)
+    expected_rows: dict[str, int] = Field(default_factory=dict)
+
+    def file(self, role: str) -> Path:
+        """File con un dato ruolo (es. ``"java"``, ``"test"``, ``"java/validation"``).
+
+        Raises:
+            KeyError: se il ruolo non è configurato.
+        """
+        if role not in self.files:
+            raise KeyError(f"dataset {self.name}: no file for role '{role}' ({sorted(self.files)})")
+        return self.files[role]
+
+
+class SplitFamily(_Frozen):
+    """Famiglia di problemi con prompt: quanti in sviluppo su quanti totali (SPEC §10.4)."""
+
+    dev: int = Field(ge=0)
+    total: int = Field(gt=0)
+
+    @model_validator(mode="after")
+    def _dev_le_total(self) -> SplitFamily:
+        if self.dev > self.total:
+            raise ValueError(f"dev {self.dev} > total {self.total}")
+        return self
+
+
+class SplitConfig(_Frozen):
+    """Divisione per problema (``configs/split/default.yaml``)."""
+
+    families: dict[str, SplitFamily]
+    mbpp_extra_assignment: Literal["proportional", "dev", "test"]
+    mbpp_extra_reference: str = "mbpp"
+
+
+_SUM_TOLERANCE = 1e-9
+
+
+class NegativesConfig(_Frozen):
+    """Negativi umani e integrazione (``configs/negatives/default.yaml``)."""
+
+    min_dev_negatives: int = Field(gt=0)
+    l1_test_total: int = Field(gt=0)
+    n_bins: int = Field(default=10, gt=0)
+    sources: dict[Language, dict[Literal["dev", "test"], str]]
+    thestack_partition: dict[str, float]
+
+    @model_validator(mode="after")
+    def _partition(self) -> NegativesConfig:
+        total = sum(self.thestack_partition.values())
+        if abs(total - 1.0) > _SUM_TOLERANCE or any(
+            v <= 0 for v in self.thestack_partition.values()
+        ):
+            raise ValueError(f"thestack_partition must be positive and sum to 1, got {total}")
+        missing = {"l1_test", "dev"} - set(self.thestack_partition)
+        if missing:
+            raise ValueError(f"thestack_partition misses {sorted(missing)}")
+        return self
 
 
 class MethodConfig(_Frozen):
@@ -177,6 +234,8 @@ class ExperimentConfig(_Frozen):
     methods_catalog: dict[str, MethodConfig]
     detection: DetectionConfig
     hpo: HpoConfig
+    split: SplitConfig
+    negatives: NegativesConfig
 
     @field_validator("global_seed")
     @classmethod

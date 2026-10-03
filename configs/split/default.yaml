@@ -1,0 +1,10 @@
+# Divisione per problema (SPEC §10.4, invariante I4).
+# Si ordinano i problem_key per derive_seed(global_seed, "split", problem_key) e i primi `dev`
+# vanno in sviluppo. HumanEval vale per HumanEval+ e per i tre linguaggi di HumanEvalPack.
+families:
+  humaneval: {dev: 24, total: 164}
+  mbpp: {dev: 72, total: 378}          # problemi di MBPP+
+# Soluzioni MBPP originali senza problema in MBPP+ (D7, cluster_info §10.1): solo negativi,
+# assegnati con la proporzione di MBPP+ (596 -> 114 dev / 482 test).
+mbpp_extra_assignment: proportional
+mbpp_extra_reference: mbpp

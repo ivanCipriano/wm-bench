@@ -44,3 +44,7 @@ class InvariantViolation(BenchError):
 
 class ContractVersionError(BenchError):
     """Versione dello schema dei contratti diversa da quella attesa."""
+
+
+class DataError(BenchError):
+    """Dati di ingresso non conformi alle attese (schema, conteggi, identificativi)."""

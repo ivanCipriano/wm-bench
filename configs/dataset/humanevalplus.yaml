@@ -1,5 +1,7 @@
-# Dataset humanevalplus: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+# Dataset humanevalplus: file per ruolo e righe attese (cluster_info §8).
 name: humanevalplus
 version: v0.1.10
 files:
-  - ${paths.datasets}/evalplus/HumanEvalPlus-v0.1.10.jsonl
+  data: ${paths.datasets}/evalplus/HumanEvalPlus-v0.1.10.jsonl
+expected_rows:
+  data: 164

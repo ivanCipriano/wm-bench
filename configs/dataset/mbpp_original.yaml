@@ -1,8 +1,14 @@
-# Dataset mbpp_original: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+# Dataset mbpp_original: file per ruolo e righe attese (cluster_info §8).
 name: mbpp_original
 version: null
 files:
-  - ${paths.datasets}/mbpp/full/train-00000-of-00001.parquet
-  - ${paths.datasets}/mbpp/full/test-00000-of-00001.parquet
-  - ${paths.datasets}/mbpp/full/validation-00000-of-00001.parquet
-  - ${paths.datasets}/mbpp/full/prompt-00000-of-00001.parquet
+  train: ${paths.datasets}/mbpp/full/train-00000-of-00001.parquet
+  test: ${paths.datasets}/mbpp/full/test-00000-of-00001.parquet
+  validation: ${paths.datasets}/mbpp/full/validation-00000-of-00001.parquet
+  prompt: ${paths.datasets}/mbpp/full/prompt-00000-of-00001.parquet
+expected_rows:
+  train: 374
+  test: 500
+  validation: 90
+  prompt: 10
+  all: 974

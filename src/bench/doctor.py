@@ -429,8 +429,8 @@ class DatasetsCheck(DoctorCheck):
         results: list[CheckResult] = []
         for name, spec in sorted(ctx.cfg.datasets.items()):
             root = ctx.cfg.paths.datasets
-            missing = [_short(p, root) for p in spec.files if not p.is_file()]
-            missing += [_short(p, root) for p in spec.dirs if not p.is_dir()]
+            missing = [_short(p, root) for p in spec.files.values() if not p.is_file()]
+            missing += [_short(p, root) for p in spec.dirs.values() if not p.is_dir()]
             total = len(spec.files) + len(spec.dirs)
             if not total:
                 results.append(self.result(name, Status.SKIP, "no files declared"))

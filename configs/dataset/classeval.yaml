@@ -1,5 +1,5 @@
-# ClassEval dal submodule third_party/ClassEval (cluster_info §8.7); si estende in Milestone 13.
+# ClassEval dal submodule third_party/ClassEval (cluster_info §8.7); usato dalla Milestone 13.
 name: classeval
 version: null
 files:
-  - ${paths.repo}/third_party/ClassEval/data/ClassEval_data.json
+  data: ${paths.repo}/third_party/ClassEval/data/ClassEval_data.json

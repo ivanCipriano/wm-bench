@@ -1,8 +1,13 @@
-# Dataset humanevalpack: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+# HumanEvalPack (cluster_info §8.2): la cartella di JavaScript si chiama js.
 name: humanevalpack
 version: null
 files:
-  - ${paths.datasets}/humanevalpack/python/test-00000-of-00001.parquet
-  - ${paths.datasets}/humanevalpack/js/test-00000-of-00001.parquet
-  - ${paths.datasets}/humanevalpack/java/test-00000-of-00001.parquet
-  - ${paths.datasets}/humanevalpack/cpp/test-00000-of-00001.parquet
+  python: ${paths.datasets}/humanevalpack/python/test-00000-of-00001.parquet
+  js: ${paths.datasets}/humanevalpack/js/test-00000-of-00001.parquet
+  java: ${paths.datasets}/humanevalpack/java/test-00000-of-00001.parquet
+  cpp: ${paths.datasets}/humanevalpack/cpp/test-00000-of-00001.parquet
+expected_rows:
+  python: 164
+  js: 164
+  java: 164
+  cpp: 164

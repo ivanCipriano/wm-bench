@@ -1,13 +1,23 @@
-# Dataset codesearchnet: percorsi attesi (cluster_info §8); si estende in Milestone 2.
+# Dataset codesearchnet: file per ruolo e righe attese (cluster_info §8).
 name: codesearchnet
 version: null
 files:
-  - ${paths.datasets}/codesearchnet/python/train-00000-of-00001.parquet
-  - ${paths.datasets}/codesearchnet/python/validation-00000-of-00001.parquet
-  - ${paths.datasets}/codesearchnet/python/test-00000-of-00001.parquet
-  - ${paths.datasets}/codesearchnet/java/train-00000-of-00001.parquet
-  - ${paths.datasets}/codesearchnet/java/validation-00000-of-00001.parquet
-  - ${paths.datasets}/codesearchnet/java/test-00000-of-00001.parquet
-  - ${paths.datasets}/codesearchnet/javascript/train-00000-of-00001.parquet
-  - ${paths.datasets}/codesearchnet/javascript/validation-00000-of-00001.parquet
-  - ${paths.datasets}/codesearchnet/javascript/test-00000-of-00001.parquet
+  python/train: ${paths.datasets}/codesearchnet/python/train-00000-of-00001.parquet
+  python/validation: ${paths.datasets}/codesearchnet/python/validation-00000-of-00001.parquet
+  python/test: ${paths.datasets}/codesearchnet/python/test-00000-of-00001.parquet
+  java/train: ${paths.datasets}/codesearchnet/java/train-00000-of-00001.parquet
+  java/validation: ${paths.datasets}/codesearchnet/java/validation-00000-of-00001.parquet
+  java/test: ${paths.datasets}/codesearchnet/java/test-00000-of-00001.parquet
+  javascript/train: ${paths.datasets}/codesearchnet/javascript/train-00000-of-00001.parquet
+  javascript/validation: ${paths.datasets}/codesearchnet/javascript/validation-00000-of-00001.parquet
+  javascript/test: ${paths.datasets}/codesearchnet/javascript/test-00000-of-00001.parquet
+expected_rows:
+  python/train: 412178
+  python/validation: 23107
+  python/test: 22176
+  java/train: 454451
+  java/validation: 15328
+  java/test: 26909
+  javascript/train: 123889
+  javascript/validation: 8253
+  javascript/test: 6483

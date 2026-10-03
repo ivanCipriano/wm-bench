@@ -1,0 +1,16 @@
+# Negativi umani e integrazione (SPEC §10.4; decisioni dell'utente del 3 ottobre 2026, ADR-004).
+min_dev_negatives: 2000        # negativi di sviluppo per linguaggio, integrazione compresa
+l1_test_total: 928             # negativi di test L1 per linguaggio = negativi umani di test L1 Python
+n_bins: 10                     # campionamento stratificato per decili di righe
+sources:                       # da dove viene l'integrazione, per linguaggio e parte
+  python: {dev: codesearchnet}
+  java: {dev: codesearchnet, test: codesearchnet}
+  javascript: {dev: codesearchnet, test: codesearchnet}
+  cpp: {dev: thestack_cpp, test: thestack_cpp}
+# Partizione fissa di The Stack per repository (max_stars_repo_name), stabile tra milestone:
+# usi diversi non condividono mai un repository (cluster_info §8.5).
+thestack_partition:
+  l3_test: 0.4                 # prompt e negativi del Livello 3 (Milestone 13)
+  l1_test: 0.2                 # integrazione dei negativi di test L1 C++
+  dev: 0.2                     # integrazione dei negativi di sviluppo C++
+  promptmark: 0.2              # liste di frequenza di PromptMark (Milestone 6)

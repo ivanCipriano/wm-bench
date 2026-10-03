@@ -29,7 +29,7 @@ class Problem(FrozenModel):
     dataset: str
     level: Level
     language: Language
-    split: Split
+    split: Split | None  # None solo prima dell'assegnazione (ProblemSplitter); mai negli artefatti
     prompt_text: str
     entry_point: str | None
     canonical_solution: str | None
@@ -46,7 +46,7 @@ class CodeSample(FrozenModel):
     dataset: str
     language: Language
     level: Level
-    split: Split
+    split: Split | None  # None solo prima dell'assegnazione (ProblemSplitter); mai negli artefatti
     source: Source
     model_id: str | None
     method: str | None
