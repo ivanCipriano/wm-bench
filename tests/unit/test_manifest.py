@@ -62,3 +62,11 @@ def test_not_a_repository(tmp_path: Path) -> None:
 def test_provenance_is_cached(git_repo: Path) -> None:
     collector = ProvenanceCollector(git_repo)
     assert collector.provenance is collector.provenance
+
+
+def test_dirty_paths_ignore_milestone_logs() -> None:
+    from bench.store.manifest import dirty_paths
+
+    porcelain = " M docs/milestone_logs/M3_cluster.txt\n M src/bench/cli.py\nR  a.py -> b.py\n"
+    assert dirty_paths(porcelain) == ["b.py", "src/bench/cli.py"]
+    assert dirty_paths(" M docs/milestone_logs/M4_cluster.txt\n") == []

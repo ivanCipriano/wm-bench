@@ -281,11 +281,14 @@ class SubmodulesCheck(DoctorCheck):
         if head.returncode != 0:
             results.append(self.result("repository", Status.FAIL, "not a git repository"))
         else:
-            state = "dirty" if dirty.stdout.strip() else "clean"
+            from bench.store.manifest import dirty_paths
+
+            changed = dirty_paths(dirty.stdout)
+            state = f"dirty: {', '.join(changed[:5])}" if changed else "clean"
             results.append(
                 self.result(
                     "repository",
-                    Status.WARN if state == "dirty" else Status.OK,
+                    Status.WARN if changed else Status.OK,
                     f"{head.stdout.strip()[:12]} ({state})",
                 )
             )

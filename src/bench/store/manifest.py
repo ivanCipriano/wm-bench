@@ -26,6 +26,22 @@ logger = logging.getLogger(__name__)
 MANIFEST_VERSION = "1"
 ManifestStatus = Literal["running", "complete", "failed"]
 _STATUS_MIN_FIELDS = 2  # "<sha> <path> [(describe)]" in git submodule status
+# Cartelle versionate che non sono codice: modificarle non rende "sporco" il repository
+# (i log delle milestone vengono scritti con tee mentre i job girano).
+NON_CODE_PREFIXES = ("docs/milestone_logs/",)
+_PORCELAIN_PREFIX = 3  # "XY " prima del percorso
+
+
+def dirty_paths(porcelain: str) -> list[str]:
+    """File modificati da ``git status --porcelain``, esclusi quelli in ``NON_CODE_PREFIXES``."""
+    paths = []
+    for line in porcelain.splitlines():
+        if len(line) <= _PORCELAIN_PREFIX:
+            continue
+        path = line[3:].split(" -> ")[-1].strip().strip('"')
+        if not path.startswith(NON_CODE_PREFIXES):
+            paths.append(path)
+    return sorted(paths)
 
 
 class Provenance(BaseModel):
@@ -35,6 +51,7 @@ class Provenance(BaseModel):
 
     repo_commit: str | None
     repo_dirty: bool | None
+    repo_dirty_paths: list[str] = Field(default_factory=list)
     submodules: dict[str, str] = Field(default_factory=dict)
     patches: dict[str, dict[str, str]] = Field(default_factory=dict)
     patched_source_commits: dict[str, str] = Field(default_factory=dict)
@@ -173,7 +190,8 @@ class ProvenanceCollector:
         packages = self._packages()
         return Provenance(
             repo_commit=head.strip() if head else None,
-            repo_dirty=None if status is None else bool(status.strip()),
+            repo_dirty=None if status is None else bool(dirty_paths(status)),
+            repo_dirty_paths=[] if status is None else dirty_paths(status),
             submodules=self._submodules(),
             patches=patches,
             patched_source_commits=patched_commits,
