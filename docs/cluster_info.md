@@ -310,3 +310,4 @@ Vincolo dell'utente: nessuna fuga di informazione tra sviluppo e test.
 | 1 | Selezione dei 250 problemi CodeNet ed estrazione selettiva di `data/` | Milestone 9 |
 | 2 | Motivazioni delle modifiche preesistenti ad ACW (`source/refactor.py`) e MCGMark (`Watermark/watermark_global.py`) | Milestone 6 (audit) |
 | 3 | Ricalcolare l'integrazione dei negativi di sviluppo sulla distribuzione combinata L1+L2, quando si aggiungono le sottomissioni CodeNet di sviluppo (decisione dell'utente del 3 ottobre 2026, ADR-004) | Milestone 9 |
+| 4 | Gli shim dei metodi in generazione devono usare la stessa configurazione di decoding neutra della baseline (`bench.generation.decoding.neutral_settings`: top_k disattivato, repetition_penalty 1.0, no_repeat_ngram_size 0, campionamento attivo, `generation_config.json` dei modelli ignorati; decisione dell'utente del 3 ottobre 2026, ADR-006) e lo stesso seme per problema | Milestone 5 e 6 |

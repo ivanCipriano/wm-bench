@@ -1,0 +1,68 @@
+##### M3 - verifica locale (Windows, Python 3.11, torch 2.4.1 CPU, transformers 4.46.3, submitit 1.5.4)
+##### data: 2026-10-03T11:40:54Z   commit di partenza: 3da3fdb
+##### nessuna GPU e nessun modello in locale: la generazione reale si verifica sul cluster
+
+##### pytest (saltati: interpreti, dati, artefatti e GPU del cluster)
+.ssssss.......sssssssssssssssssssssssss................................. [ 27%]
+........................................................................ [ 54%]
+........................................................................ [ 82%]
+..............................................                           [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] tests\contract\test_envs.py:63: acw: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: bench-core: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: mcgmark: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/mcgmark/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: promptmark: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/promptmark/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: stone: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/stone/bin/python
+SKIPPED [1] tests\contract\test_envs.py:63: sweet: interpreter not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/sweet/bin/python
+SKIPPED [1] tests\integration\test_baseline_gpu.py:28: CUDA not available
+SKIPPED [16] tests\integration\test_l1_baseline.py:35: prepare_data artifacts not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\problems\L1_python.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:51: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:60: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:72: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:80: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:93: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\test_l1_data.py:101: prepare_data artifacts (run 'bench stage=prepare_data levels=[L1]') not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\artifacts\data\splits\split.parquet.manifest.json
+SKIPPED [1] tests\integration\conftest.py:28: humanevalplus file not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\datasets\evalplus\HumanEvalPlus-v0.1.10.jsonl
+SKIPPED [1] tests\integration\conftest.py:28: mbppplus file not found: \mnt\beegfs\did_tesi_nlp_330\icipriano\wm_bench\datasets\evalplus\MbppPlus-v0.2.0.jsonl
+231 passed, 31 skipped in 321.93s (0:05:21)
+(exit code 0)
+
+##### ruff / mypy --strict
+All checks passed!
+(exit code 0)
+92 files already formatted
+(exit code 0)
+Success: no issues found in 52 source files
+(exit code 0)
+
+##### bench submit --dry-run stage=generate_baseline levels=[L1] splits=[dev,test] (paths=cluster)
+job array parameters: {"cpus_per_task": 8, "mem_gb": 64, "name": "wmb-generate_baseline", "slurm_account": "did_tesi_nlp_330", "slurm_array_parallelism": 16, "slurm_gres": "gpu:1", "slurm_partition": "gpuq", "slurm_qos": "did_tesi_nlp_330_gpuq_qos", "slurm_setup": ["export HF_DATASETS_OFFLINE=1", "export HF_HOME=\\mnt\\beegfs\\did_tesi_nlp_330\\icipriano\\wm_bench\\hf_cache", "export HF_HUB_CACHE=\\mnt\\beegfs\\did_tesi_nlp_330\\icipriano\\wm_bench\\hf_cache\\hub", "export HF_HUB_OFFLINE=1", "export PYTHONHASHSEED=0", "export TOKENIZERS_PARALLELISM=false", "export TRANSFORMERS_OFFLINE=1"], "slurm_wckey": null, "timeout_min": 330}
+dry-run	slurm_gpu	model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+dry-run	slurm_gpu	model_id=qwen25_coder_7b__language=python__level=L1__split=test
+dry-run	slurm_gpu	model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+dry-run	slurm_gpu	model_id=qwen25_coder_7b__language=java__level=L1__split=test
+dry-run	slurm_gpu	model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+dry-run	slurm_gpu	model_id=qwen25_coder_7b__language=cpp__level=L1__split=test
+dry-run	slurm_gpu	model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+dry-run	slurm_gpu	model_id=qwen25_coder_7b__language=javascript__level=L1__split=test
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=python__level=L1__split=test
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=java__level=L1__split=test
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=test
+16 job(s) planned (dry run)
+(exit code 0)
+
+##### test_l1_baseline.py su una baseline finta (backend senza modello, configurazione neutra reale), solo Python
+RAN      generate_baseline [model_id=qwen25_coder_7b__language=python__level=L1__split=dev] 7.85s
+RAN      generate_baseline [model_id=qwen25_coder_7b__language=python__level=L1__split=test] 2.52s
+RAN      generate_baseline [model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev] 0.54s
+RAN      generate_baseline [model_id=deepseek_coder_6p7b__language=python__level=L1__split=test] 2.57s
+total: 4 ran, 0 skipped
+(exit code 0)
+....                                                                     [100%]
+4 passed in 1.36s
+(exit code 0)
