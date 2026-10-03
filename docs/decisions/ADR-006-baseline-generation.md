@@ -51,16 +51,24 @@
      cambia, il file parziale si scarta.
    - A fine cella si scrive il Parquet con il manifest e il file parziale si cancella.
 
-7. **SLURM** (`bench submit`).
-   - Una cella (modello, livello, linguaggio, parte) corrisponde a un job, e i job sono inviati come job array.
-   - Si usa **submitit** direttamente, non `hydra-submitit-launcher` (SPEC §16.3): il launcher applica un solo
-     profilo a tutto il multirun, mentre qui il profilo viene dalla `ResourcePolicy` per ogni cella (GPU →
-     `slurm_gpu` su gpuq, CPU → `slurm_cpu` su defq). La libreria sottostante è la stessa.
+7. **SLURM** (`bench submit`). Aggiornato il 3 ottobre 2026 dopo il primo tentativo sul cluster.
+   - **Un solo job SLURM per fase, che esegue le celle (modello, livello, linguaggio, parte) in sequenza.**
+     Il primo invio, un job array di 16 job, è stato rifiutato da `sbatch` (`AssocMaxSubmitJobLimit`): il
+     cluster universitario è condiviso e limita i job per utente. Su richiesta dell'utente gira un job alla volta.
+   - Se le celle di una fase richiedono profili diversi (es. CPU e GPU), si invia un job per profilo, incatenati
+     con `--dependency=afterany`: ne gira sempre uno solo.
+   - Si usa **submitit** direttamente, non `hydra-submitit-launcher` (SPEC §16.3): il profilo viene dalla
+     `ResourcePolicy` (GPU → `slurm_gpu` su gpuq, CPU → `slurm_cpu` su defq), mentre il launcher ne applica uno
+     solo a tutto il multirun. La libreria sottostante è la stessa.
    - Nei job: `HF_HUB_OFFLINE=1`, `TRANSFORMERS_OFFLINE=1`, `HF_DATASETS_OFFLINE=1`, `HF_HOME`, `HF_HUB_CACHE`,
      `TOKENIZERS_PARALLELISM=false`, `PYTHONHASHSEED=0`.
-   - `--wckey` è disattivato. I job sono `Checkpointable`: al timeout submitit li rimette in coda (al massimo
-     3 volte) e la fase riparte dal file parziale.
-   - I log di SLURM vanno in `artifacts/_slurm/<fase>/`.
+   - `--wckey` è disattivato.
+   - Il job è `Checkpointable`: al segnale che precede il timeout (5,5 h) submitit lo rimette in coda, al massimo
+     30 volte. Le 16 celle di L1 non stanno in un solo job. Al riavvio le celle complete si saltano e quella in
+     corso riprende dal file parziale.
+   - Se il cluster non permettesse la rimessa in coda, basta rilanciare lo stesso `bench submit`: il risultato è
+     identico.
+   - I log di SLURM vanno in `artifacts/_slurm/<fase>/<job_id>/`.
 
 ## Conseguenze
 

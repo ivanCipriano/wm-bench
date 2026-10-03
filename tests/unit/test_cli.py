@@ -103,7 +103,9 @@ def test_submit_dry_run(tmp_path: Path) -> None:
     assert result.returncode == 0, result.stderr
     assert '"slurm_partition": "gpuq"' in result.stdout
     assert '"slurm_qos": "did_tesi_nlp_330_gpuq_qos"' in result.stdout
-    assert "8 job(s) planned (dry run)" in result.stdout  # 2 modelli x 2 linguaggi x 2 parti
+    # Un solo job SLURM con 8 celle in sequenza (2 modelli x 2 linguaggi x 2 parti).
+    assert "1 SLURM job(s) for 8 cell(s) planned (dry run)" in result.stdout
+    assert "slurm_array_parallelism" not in result.stdout
 
 
 def test_submit_requires_stage(tmp_path: Path) -> None:

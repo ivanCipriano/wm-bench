@@ -63,17 +63,18 @@ def _submit(args: Sequence[str]) -> int:
         cfg = load_experiment(ns.overrides)
         # Profili del codice in esecuzione (non di paths.repo, che indica il clone sul cluster).
         profiles = load_cluster_profiles(config_dir() / "cluster")
-        jobs, params = submit(cfg, cfg.stage, profiles, dry_run=ns.dry_run)
+        jobs = submit(cfg, cfg.stage, profiles, dry_run=ns.dry_run)
     except BenchError as exc:
         sys.stderr.write(f"bench submit: {exc}\n")
         return 2
-    for group in params:
-        shown = {k: v for k, v in group.items() if k != "cells"}
-        sys.stdout.write(f"job array parameters: {json.dumps(shown, sort_keys=True)}\n")
     for job in jobs:
-        sys.stdout.write(f"{job.job_id}\t{job.profile}\t{job.cell}\n")
+        sys.stdout.write(f"SLURM job {job.job_id} ({job.profile}), cells run in sequence:\n")
+        sys.stdout.write(f"  parameters: {json.dumps(job.params, sort_keys=True)}\n")
+        for i, cell in enumerate(job.cells, start=1):
+            sys.stdout.write(f"  {i:3d}. {cell}\n")
     status = "planned (dry run)" if ns.dry_run else "submitted"
-    sys.stdout.write(f"{len(jobs)} job(s) {status}\n")
+    n_cells = sum(len(j.cells) for j in jobs)
+    sys.stdout.write(f"{len(jobs)} SLURM job(s) for {n_cells} cell(s) {status}\n")
     return 0
 
 

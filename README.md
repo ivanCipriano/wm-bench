@@ -47,8 +47,8 @@ bench doctor --json report.json   # report anche in JSON
 bench stage=selftest              # fase di autoverifica: scrive, poi SKIPPED; force=true per rieseguire
 bench stage=selftest paths=local  # prove locali sotto $WMB_LOCAL_ROOT (default: <repo>/.local_wmb)
 bench stage=prepare_data levels=[L1]  # problemi, divisione e negativi di L1 (job CPU su defq, ADR-004)
-bench submit --dry-run stage=generate_baseline levels=[L1] splits=[dev,test]  # mostra i job SLURM
-bench submit stage=generate_baseline levels=[L1] splits=[dev,test]  # baseline: un job gpuq per cella (ADR-006)
+bench submit --dry-run stage=generate_baseline levels=[L1] splits=[dev,test]  # mostra il job e le celle
+bench submit stage=generate_baseline levels=[L1] splits=[dev,test]  # baseline: UN job gpuq, celle in sequenza (ADR-006)
 ```
 
 Gli artefatti stanno in `$WMB/artifacts` (fuori dal repository), con un manifest accanto a ogni file

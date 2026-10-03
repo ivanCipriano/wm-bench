@@ -30,17 +30,19 @@ def test_generate_baseline_goes_to_gpuq(cfg: ExperimentConfig) -> None:
 
 
 def test_executor_parameters(cfg: ExperimentConfig) -> None:
-    params = executor_parameters(cfg, PROFILES["slurm_gpu"], "generate_baseline", 16)
+    params = executor_parameters(cfg, PROFILES["slurm_gpu"], "generate_baseline")
     assert params["slurm_partition"] == "gpuq"
     assert params["slurm_account"] == "did_tesi_nlp_330"
     assert params["slurm_qos"] == "did_tesi_nlp_330_gpuq_qos"
     assert params["slurm_gres"] == "gpu:1"
     assert params["timeout_min"] == 330
-    assert params["slurm_array_parallelism"] == 16
+    assert "slurm_array_parallelism" not in params  # nessun job array
+    assert "slurm_dependency" not in params
     assert "export HF_HUB_OFFLINE=1" in params["slurm_setup"]
     assert "export TRANSFORMERS_OFFLINE=1" in params["slurm_setup"]
-    cpu = executor_parameters(cfg, PROFILES["slurm_cpu"], "prepare_data", 1)
+    cpu = executor_parameters(cfg, PROFILES["slurm_cpu"], "prepare_data", after="123")
     assert cpu["slurm_partition"] == "defq" and "slurm_gres" not in cpu
+    assert cpu["slurm_dependency"] == "afterany:123"
 
 
 def test_job_environment(cfg: ExperimentConfig) -> None:
@@ -51,9 +53,10 @@ def test_job_environment(cfg: ExperimentConfig) -> None:
 
 def test_dry_run_submits_nothing(cfg: ExperimentConfig) -> None:
     c = rebuild(cfg, levels=["L1"], splits=["dev"], languages=["python"])
-    jobs, params = submit(c, "generate_baseline", PROFILES, dry_run=True)
-    assert [j.job_id for j in jobs] == ["dry-run", "dry-run"]
-    assert params[0]["cells"] == [
+    jobs = submit(c, "generate_baseline", PROFILES, dry_run=True)
+    assert len(jobs) == 1  # un solo job SLURM: celle in sequenza
+    assert jobs[0].job_id == "dry-run"
+    assert jobs[0].cells == [
         "model_id=qwen25_coder_7b__language=python__level=L1__split=dev",
         "model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev",
     ]
@@ -63,3 +66,11 @@ def test_dry_run_submits_nothing(cfg: ExperimentConfig) -> None:
 def test_job_body_runs_one_cell(cfg: ExperimentConfig) -> None:
     summary = run_cell(cfg.model_dump(mode="json"), "selftest", {})
     assert "RAN      selftest [all]" in summary
+
+
+def test_sequential_job_runs_cells_in_order(cfg: ExperimentConfig) -> None:
+    from bench.pipeline.submit import SequentialJob
+
+    out = SequentialJob()(cfg.model_dump(mode="json"), "selftest", [{}, {}])
+    assert out.count("selftest [all]") == 2
+    assert out.splitlines()[0].startswith("RAN") and "SKIPPED  selftest" in out
