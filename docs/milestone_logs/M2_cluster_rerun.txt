@@ -1,0 +1,17 @@
+##### apptainer
+apptainer is /cm/local/apps/apptainer/current/bin/apptainer
+Currently Loaded Modulefiles:
+ 1) shared   2) slurm/slurm/23.11.10   3) gcc/64/4.1.7rc1   4) apptainer/apptainer.module  
+apptainer/apptainer.module  clang/16.0.0        cm-bios-tools  cmd    dot              gcc/14.1.0       ipmitool/1.8.19  mariadb-libs  module-info  null      python3   sedutil/1.16.0  slurm/slurm/23.11.10  
+##### prepare_data con force=true (clone pulito)
+Already up to date.
+?? docs/milestone_logs/M2_cluster_rerun.txt
+[2026-10-03 12:59:31,254][bench.pipeline.observers][INFO] - stage prepare_data cell all: start
+[2026-10-03 13:02:45,333][bench.pipeline.stages.prepare_data][WARNING] - javascript/test: 24 samples moved between adjacent bins
+[2026-10-03 13:02:45,377][bench.pipeline.observers][INFO] - stage prepare_data cell all: done in 194.12s
+RAN      prepare_data [all] 194.12s
+total: 1 ran, 0 skipped
+DATI IDENTICI (fase deterministica)
+     16     "repo_dirty": false,
+........                                                                 [100%]
+8 passed in 2.45s
