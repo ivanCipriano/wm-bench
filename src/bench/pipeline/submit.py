@@ -175,8 +175,12 @@ def submit(
         )
         params.pop("slurm_array_parallelism", None)
         executor.update_parameters(**params)
-        job = executor.submit(SequentialJob(), cfg_data, stage, [c.as_dict() for c in group.cells])
-        jobs += [SubmittedJob(str(job.job_id), c.key(), group.profile.name) for c in group.cells]
+        slurm_job = executor.submit(
+            SequentialJob(), cfg_data, stage, [c.as_dict() for c in group.cells]
+        )
+        jobs += [
+            SubmittedJob(str(slurm_job.job_id), c.key(), group.profile.name) for c in group.cells
+        ]
     by_profile: dict[str, int] = defaultdict(int)
     for job in jobs:
         by_profile[job.profile] += 1
