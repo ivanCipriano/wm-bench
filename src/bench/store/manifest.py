@@ -41,6 +41,7 @@ class Provenance(BaseModel):
     core_python: str
     core_packages: list[str] = Field(default_factory=list)
     core_packages_sha256: str
+    parser_versions: dict[str, str] = Field(default_factory=dict)
     slurm_job_id: str | None
     node: str
     gpu: str | None
@@ -64,6 +65,9 @@ class Manifest(BaseModel):
     worker_packages_sha256: str | None = None
     sandbox_image_hash: str | None = None
     inputs: dict[str, str] = Field(default_factory=dict)
+    extra: dict[str, Any] = Field(
+        default_factory=dict
+    )  # diagnostica della fase (es. campionamento)
     started_at: datetime
     finished_at: datetime | None = None
     n_rows_in: int | None = None
@@ -72,6 +76,27 @@ class Manifest(BaseModel):
     data_sha256: str | None = None
     data_size: int | None = None
     status: ManifestStatus = "running"
+
+
+# Pacchetti da cui dipendono i conteggi di righe e nodi (ADR-005): registrati esplicitamente.
+PARSER_PACKAGES = (
+    "tree-sitter",
+    "tree-sitter-python",
+    "tree-sitter-java",
+    "tree-sitter-cpp",
+    "tree-sitter-javascript",
+)
+
+
+def parser_versions() -> dict[str, str]:
+    """Versioni installate di tree-sitter e delle 4 grammatiche (``"missing"`` se assenti)."""
+    versions: dict[str, str] = {}
+    for name in PARSER_PACKAGES:
+        try:
+            versions[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            versions[name] = "missing"
+    return versions
 
 
 class ProvenanceCollector:
@@ -155,6 +180,7 @@ class ProvenanceCollector:
             core_python=platform.python_version(),
             core_packages=packages,
             core_packages_sha256=sha256_bytes("\n".join(packages).encode("utf-8")),
+            parser_versions=parser_versions(),
             slurm_job_id=os.environ.get("SLURM_JOB_ID"),
             node=os.environ.get("SLURMD_NODENAME") or socket.gethostname(),
             gpu=os.environ.get("CUDA_VISIBLE_DEVICES"),
