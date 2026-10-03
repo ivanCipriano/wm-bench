@@ -116,6 +116,23 @@ class CellJob:
         return DelayedSubmission(self, cfg_data, stage, cell_data)
 
 
+# Rimesse in coda massime del job sequenziale (16 celle L1 non stanno in 5,5 h).
+MAX_REQUEUES = 30
+
+
+class SequentialJob:
+    """Un solo job SLURM che esegue le celle una dopo l'altra (``Checkpointable``)."""
+
+    def __call__(self, cfg_data: dict[str, Any], stage: str, cells: list[dict[str, Any]]) -> str:
+        return "\n".join(run_cell(cfg_data, stage, cell) for cell in cells)
+
+    def checkpoint(self, cfg_data: dict[str, Any], stage: str, cells: list[dict[str, Any]]) -> Any:
+        """Stessa chiamata, rimessa in coda al segnale di timeout."""
+        from submitit.helpers import DelayedSubmission
+
+        return DelayedSubmission(self, cfg_data, stage, cells)
+
+
 @dataclass(frozen=True)
 class SubmittedJob:
     """Job inviato (o pianificato in dry-run)."""
@@ -150,17 +167,16 @@ def submit(
         import submitit
 
         folder = Path(cfg.paths.artifacts) / "_slurm" / stage / "%j"
-        # Al timeout il job viene rimesso in coda (al massimo 3 volte) e riprende dal file parziale.
+        # Cluster condiviso con limite di job per utente: UN solo job che esegue le celle in
+        # sequenza. Al timeout viene rimesso in coda e riprende (celle complete saltate, cella
+        # in corso ripresa dal file parziale).
         executor = submitit.AutoExecutor(
-            folder=str(folder), cluster="slurm", slurm_max_num_timeout=3
+            folder=str(folder), cluster="slurm", slurm_max_num_timeout=MAX_REQUEUES
         )
+        params.pop("slurm_array_parallelism", None)
         executor.update_parameters(**params)
-        args = [(cfg_data, stage, c.as_dict()) for c in group.cells]
-        submitted = executor.map_array(CellJob(), *zip(*args, strict=True))
-        jobs += [
-            SubmittedJob(str(job.job_id), c.key(), group.profile.name)
-            for job, c in zip(submitted, group.cells, strict=True)
-        ]
+        job = executor.submit(SequentialJob(), cfg_data, stage, [c.as_dict() for c in group.cells])
+        jobs += [SubmittedJob(str(job.job_id), c.key(), group.profile.name) for c in group.cells]
     by_profile: dict[str, int] = defaultdict(int)
     for job in jobs:
         by_profile[job.profile] += 1
