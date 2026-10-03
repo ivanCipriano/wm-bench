@@ -58,8 +58,14 @@
    - **Parallelismo limitato (`--jobs N`)**: l'utente può tenere 2–3 job in parallelo. Le celle si dividono in N
      job sequenziali con celle **disgiunte**, bilanciati sul numero di problemi (LPT), quindi due job non lavorano
      mai sulla stessa cella. Il default è 1.
-   - `bench submit` **rifiuta un nuovo invio** se ci sono già job `wmb-<fase>` in coda o in esecuzione
-     (`squeue`), perché un secondo invio rilancerebbe le stesse celle in parallelo e due job scriverebbero lo
+   - **Due persone (`--share K/M`)**: i due utenti del progetto (cluster_info §2) possono tenere 3 job ciascuno.
+     Le celle si dividono prima in M quote bilanciate e deterministiche (lo stesso comando dà le stesse quote a
+     chiunque lo lanci) e ognuno invia la propria (`--share 1/2`, `--share 2/2`), eventualmente divisa in
+     `--jobs N`. I nomi dei job includono la quota (`wmb-<fase>-s1of2`). Ogni job parte con `umask 002`, così
+     i file restano scrivibili dal gruppo `did_tesi_nlp_330`.
+   - `bench submit` **rifiuta un nuovo invio** se nell'account di progetto (tutti gli utenti, `squeue -A`) ci
+     sono job della stessa fase che possono sovrapporsi: il job senza quota, la stessa quota, oppure quote di una
+     divisione diversa, perché un secondo invio rilancerebbe le stesse celle in parallelo e due job scriverebbero lo
      stesso file parziale. Per cambiare il numero di job si cancellano quelli in coda (`scancel`) e si reinvia:
      i problemi completati restano nel file parziale e vengono ripresi. `--allow-concurrent` scavalca il controllo.
    - Se le celle di una fase richiedono profili diversi (es. CPU e GPU), si invia un job per profilo, incatenati

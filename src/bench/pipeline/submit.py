@@ -10,8 +10,9 @@ Il profilo (partizione, account, QoS, gres, CPU, memoria, timeout) viene dalla
 si invia un job per profilo, incatenati con ``--dependency=afterany``.
 
 Con ``--jobs N`` le celle si dividono in N job sequenziali con celle **disgiunte**, bilanciati
-sul numero di problemi: N job girano in parallelo senza mai toccare la stessa cella. Un nuovo
-invio è rifiutato se ci sono già job della fase in coda (eviterebbe celle duplicate).
+sul numero di problemi: N job girano in parallelo senza mai toccare la stessa cella. Con
+``--share K/M`` più persone si spartiscono le celle (quote disgiunte e deterministiche). Un
+nuovo invio è rifiutato se la stessa quota ha già job in coda nell'account di progetto.
 
 SPEC §16.3 prevede ``hydra-submitit-launcher``: si usa submitit direttamente (la stessa
 libreria) perché il profilo dipende dalla cella.
@@ -20,6 +21,7 @@ libreria) perché il profilo dipende dalla cella.
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -34,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 # Rimesse in coda massime del job (le 16 celle di L1 non stanno in un solo job da 5,5 h).
 MAX_REQUEUES = 30
+_SQUEUE_FIELDS = 4
 
 
 def job_environment(cfg: ExperimentConfig) -> dict[str, str]:
@@ -79,7 +82,11 @@ def plan_submission(
 
 
 def executor_parameters(
-    cfg: ExperimentConfig, profile: ClusterProfile, stage: str, after: str | None = None
+    cfg: ExperimentConfig,
+    profile: ClusterProfile,
+    stage: str,
+    after: str | None = None,
+    name: str | None = None,
 ) -> dict[str, Any]:
     """Parametri di ``submitit.AutoExecutor.update_parameters`` per un profilo.
 
@@ -88,11 +95,12 @@ def executor_parameters(
         profile: profilo SLURM.
         stage: nome della fase (per il nome del job).
         after: job da attendere prima di partire (``--dependency=afterany``).
+        name: nome del job (default ``wmb-<fase>``).
     """
     if profile.kind != "slurm" or profile.timeout_min is None:
         raise ConfigError(f"profile '{profile.name}' is not a SLURM profile")
     params: dict[str, Any] = {
-        "name": f"wmb-{stage}",
+        "name": name or job_name(stage),
         "timeout_min": profile.timeout_min,
         "cpus_per_task": profile.cpus_per_task,
         "mem_gb": profile.mem_gb,
@@ -100,7 +108,11 @@ def executor_parameters(
         "slurm_account": profile.account,
         "slurm_qos": profile.qos,
         "slurm_wckey": None,  # submitit aggiungerebbe --wckey=submitit
-        "slurm_setup": [f"export {k}={v}" for k, v in sorted(job_environment(cfg).items())],
+        # umask 002: i file restano scrivibili dal gruppo (due utenti condividono gli artefatti).
+        "slurm_setup": [
+            "umask 002",
+            *(f"export {k}={v}" for k, v in sorted(job_environment(cfg).items())),
+        ],
     }
     if profile.gres:
         params["slurm_gres"] = profile.gres
@@ -155,11 +167,14 @@ def cell_weight(cfg: ExperimentConfig, cell: Cell) -> int:
     return max(1, sum(1 for s in splits if s == cell.split))
 
 
-def split_into_lanes(cells: list[Cell], weights: list[int], n_lanes: int) -> list[list[Cell]]:
+def split_into_lanes(
+    cells: list[Cell], weights: list[int], n_lanes: int, keep_empty: bool = False
+) -> list[list[Cell]]:
     """Divide le celle in ``n_lanes`` gruppi disgiunti di peso simile (LPT).
 
     Le celle più pesanti vanno per prime nel gruppo più leggero; dentro ogni gruppo si
-    mantiene l'ordine originale. Gruppi vuoti vengono scartati.
+    mantiene l'ordine originale. Il risultato è deterministico. I gruppi vuoti vengono
+    scartati, salvo ``keep_empty`` (serve a indicizzare le quote in modo stabile).
     """
     if n_lanes < 1:
         raise ConfigError("the number of jobs must be at least 1")
@@ -169,20 +184,37 @@ def split_into_lanes(cells: list[Cell], weights: list[int], n_lanes: int) -> lis
         lane = min(range(n_lanes), key=lambda k: (loads[k], k))
         lanes[lane].append(index)
         loads[lane] += weights[index]
-    return [[cells[i] for i in sorted(lane)] for lane in lanes if lane]
+    return [[cells[i] for i in sorted(lane)] for lane in lanes if lane or keep_empty]
 
 
-def active_jobs(name: str) -> list[str]:
-    """Job SLURM dell'utente con questo nome ancora in coda o in esecuzione.
+def parse_share(text: str) -> tuple[int, int]:
+    """Quota ``"K/M"`` (la K-esima di M parti) -> ``(K, M)``.
+
+    Raises:
+        ConfigError: se il formato non è valido.
+    """
+    head, sep, tail = text.partition("/")
+    if not sep or not head.isdigit() or not tail.isdigit() or not 1 <= int(head) <= int(tail):
+        raise ConfigError(f"invalid share {text!r}: expected K/M with 1 <= K <= M (e.g. 1/2)")
+    return int(head), int(tail)
+
+
+def job_name(stage: str, share: tuple[int, int] = (1, 1)) -> str:
+    """Nome dei job SLURM di una fase (con la quota, se le quote sono più di una)."""
+    k, m = share
+    return f"wmb-{stage}" if m == 1 else f"wmb-{stage}-s{k}of{m}"
+
+
+def queued_jobs(account: str) -> list[tuple[str, str, str, str]]:
+    """Job in coda o in esecuzione di **tutti** gli utenti dell'account: (id, utente, stato, nome).
 
     Senza ``squeue`` (es. in locale) restituisce una lista vuota.
     """
-    import getpass
     import subprocess
 
     try:
         out = subprocess.run(
-            ["squeue", "-h", "-u", getpass.getuser(), "-n", name, "-o", "%i %T"],
+            ["squeue", "-h", "-A", account, "-o", "%i|%u|%T|%j"],
             capture_output=True,
             text=True,
             timeout=60,
@@ -190,7 +222,33 @@ def active_jobs(name: str) -> list[str]:
         )
     except (OSError, subprocess.TimeoutExpired):
         return []
-    return [line.strip() for line in out.stdout.splitlines() if line.strip()]
+    rows = []
+    for line in out.stdout.splitlines():
+        parts = line.strip().split("|")
+        if len(parts) == _SQUEUE_FIELDS:
+            rows.append((parts[0], parts[1], parts[2], parts[3]))
+    return rows
+
+
+def conflicting_jobs(stage: str, share: tuple[int, int], account: str) -> list[str]:
+    """Job della stessa fase che potrebbero lavorare sulle stesse celle.
+
+    Sono in conflitto: il job senza quota (tutte le celle), la stessa quota, e qualunque quota
+    di una divisione diversa (es. ``1/3`` contro ``1/2``). Quote diverse della stessa
+    divisione (``1/2`` e ``2/2``) sono disgiunte e possono girare insieme.
+    """
+    k, m = share
+    base = f"wmb-{stage}"
+    pattern = re.compile(rf"^{re.escape(base)}(?:-s(\d+)of(\d+))?$")
+    conflicts = []
+    for job_id, user, state, name in queued_jobs(account):
+        match = pattern.match(name)
+        if match is None:
+            continue
+        other = (int(match.group(1)), int(match.group(2))) if match.group(1) else (1, 1)
+        if other == share or other[1] != m or m == 1:
+            conflicts.append(f"{job_id} {name} ({user}, {state})")
+    return conflicts
 
 
 def submit(
@@ -200,10 +258,14 @@ def submit(
     dry_run: bool = False,
     n_jobs: int = 1,
     allow_concurrent: bool = False,
+    share: tuple[int, int] = (1, 1),
 ) -> list[SubmittedJob]:
     """Invia ``n_jobs`` job sequenziali per profilo, con celle disgiunte.
 
     Ogni cella appartiene a un solo job, quindi due job non lavorano mai sulla stessa cella.
+    Con ``share=(K, M)`` le celle si dividono prima in M quote bilanciate e deterministiche
+    (uguali per chiunque lanci lo stesso comando) e si invia solo la quota K: due persone
+    possono così spartirsi il lavoro con ``--share 1/2`` e ``--share 2/2``.
     Con più profili, i job di un profilo partono dopo quelli del precedente
     (``--dependency=afterany``).
 
@@ -216,23 +278,27 @@ def submit(
     """
     import bench.pipeline.stages  # noqa: F401  (popola STAGES)
 
-    name = f"wmb-{stage}"
+    k, m = share
+    name = job_name(stage, share)
     if not dry_run and not allow_concurrent:
-        running = active_jobs(name)
+        running = conflicting_jobs(stage, share, cfg.slurm.account)
         if running:
             raise ConfigError(
-                f"jobs named {name} are already queued or running ({', '.join(running)}): "
-                "cancel them with scancel first (completed problems are kept and resumed)"
+                f"jobs that may run the same cells are already queued or running: "
+                f"{'; '.join(running)}. Cancel them with scancel first (completed problems "
+                "are kept and resumed)"
             )
     jobs: list[SubmittedJob] = []
     cfg_data = cfg.model_dump(mode="json")
     previous: list[str] = []
     for group in plan_submission(cfg, stage, profiles):
-        weights = [cell_weight(cfg, c) for c in group.cells]
+        all_weights = [cell_weight(cfg, c) for c in group.cells]
+        mine = split_into_lanes(group.cells, all_weights, m, keep_empty=True)[k - 1]
+        weights = [all_weights[group.cells.index(c)] for c in mine]
         after = ":".join(previous) or None
         current: list[str] = []
-        for lane in split_into_lanes(group.cells, weights, n_jobs):
-            params = executor_parameters(cfg, group.profile, stage, after=after)
+        for lane in split_into_lanes(mine, weights, n_jobs):
+            params = executor_parameters(cfg, group.profile, stage, after=after, name=name)
             cells = [c.key() for c in lane]
             if dry_run:
                 jobs.append(SubmittedJob("dry-run", group.profile.name, cells, params))

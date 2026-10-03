@@ -108,7 +108,56 @@ def test_refuses_when_jobs_are_already_queued(
 ) -> None:
     import bench.pipeline.submit as sub
 
-    monkeypatch.setattr(sub, "active_jobs", lambda name: ["4242 RUNNING"])
+    rows = [("4242", "i.cipriano1", "RUNNING", "wmb-generate_baseline")]
+    monkeypatch.setattr(sub, "queued_jobs", lambda account: rows)
     c = rebuild(cfg, levels=["L1"], splits=["dev"], languages=["python"])
     with pytest.raises(ConfigError, match="already queued or running"):
         sub.submit(c, "generate_baseline", PROFILES)
+    # Il vecchio job con tutte le celle blocca anche le quote.
+    with pytest.raises(ConfigError, match="4242"):
+        sub.submit(c, "generate_baseline", PROFILES, share=(1, 2))
+
+
+def test_two_people_split_the_cells(cfg: ExperimentConfig) -> None:
+    c = rebuild(cfg, levels=["L1"], splits=["dev", "test"])
+    first = submit(c, "generate_baseline", PROFILES, dry_run=True, n_jobs=3, share=(1, 2))
+    second = submit(c, "generate_baseline", PROFILES, dry_run=True, n_jobs=3, share=(2, 2))
+    a = {k for j in first for k in j.cells}
+    b = {k for j in second for k in j.cells}
+    assert not a & b  # nessuna cella in entrambe le quote
+    assert len(a | b) == 16
+    assert len(first) == 3 and len(second) == 3
+    assert {j.params["name"] for j in first} == {"wmb-generate_baseline-s1of2"}
+    assert {j.params["name"] for j in second} == {"wmb-generate_baseline-s2of2"}
+    # Deterministico: lo stesso comando dà le stesse celle.
+    again = submit(c, "generate_baseline", PROFILES, dry_run=True, n_jobs=3, share=(1, 2))
+    assert [j.cells for j in again] == [j.cells for j in first]
+
+
+def test_conflicts_between_shares(monkeypatch: pytest.MonkeyPatch) -> None:
+    import bench.pipeline.submit as sub
+
+    rows = [
+        ("1", "s.faraulo", "RUNNING", "wmb-generate_baseline-s2of2"),
+        ("2", "x", "PENDING", "wmb-prepare_data"),
+        ("3", "x", "PENDING", "other-job"),
+    ]
+    monkeypatch.setattr(sub, "queued_jobs", lambda account: rows)
+    assert sub.conflicting_jobs("generate_baseline", (1, 2), "acc") == []  # quota disgiunta
+    assert len(sub.conflicting_jobs("generate_baseline", (2, 2), "acc")) == 1  # stessa quota
+    assert len(sub.conflicting_jobs("generate_baseline", (1, 3), "acc")) == 1  # altra divisione
+    assert len(sub.conflicting_jobs("generate_baseline", (1, 1), "acc")) == 1  # tutte le celle
+
+
+def test_jobs_start_with_group_writable_umask(cfg: ExperimentConfig) -> None:
+    params = executor_parameters(cfg, PROFILES["slurm_gpu"], "generate_baseline")
+    assert params["slurm_setup"][0] == "umask 002"
+
+
+def test_parse_share() -> None:
+    from bench.pipeline.submit import parse_share
+
+    assert parse_share("1/2") == (1, 2)
+    for bad in ("0/2", "3/2", "1-2", "a/b"):
+        with pytest.raises(ConfigError):
+            parse_share(bad)
