@@ -55,6 +55,13 @@
    - **Un solo job SLURM per fase, che esegue le celle (modello, livello, linguaggio, parte) in sequenza.**
      Il primo invio, un job array di 16 job, è stato rifiutato da `sbatch` (`AssocMaxSubmitJobLimit`): il
      cluster universitario è condiviso e limita i job per utente. Su richiesta dell'utente gira un job alla volta.
+   - **Parallelismo limitato (`--jobs N`)**: l'utente può tenere 2–3 job in parallelo. Le celle si dividono in N
+     job sequenziali con celle **disgiunte**, bilanciati sul numero di problemi (LPT), quindi due job non lavorano
+     mai sulla stessa cella. Il default è 1.
+   - `bench submit` **rifiuta un nuovo invio** se ci sono già job `wmb-<fase>` in coda o in esecuzione
+     (`squeue`), perché un secondo invio rilancerebbe le stesse celle in parallelo e due job scriverebbero lo
+     stesso file parziale. Per cambiare il numero di job si cancellano quelli in coda (`scancel`) e si reinvia:
+     i problemi completati restano nel file parziale e vengono ripresi. `--allow-concurrent` scavalca il controllo.
    - Se le celle di una fase richiedono profili diversi (es. CPU e GPU), si invia un job per profilo, incatenati
      con `--dependency=afterany`: ne gira sempre uno solo.
    - Si usa **submitit** direttamente, non `hydra-submitit-launcher` (SPEC §16.3): il profilo viene dalla

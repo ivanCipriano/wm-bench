@@ -49,6 +49,7 @@ bench stage=selftest paths=local  # prove locali sotto $WMB_LOCAL_ROOT (default:
 bench stage=prepare_data levels=[L1]  # problemi, divisione e negativi di L1 (job CPU su defq, ADR-004)
 bench submit --dry-run stage=generate_baseline levels=[L1] splits=[dev,test]  # mostra il job e le celle
 bench submit stage=generate_baseline levels=[L1] splits=[dev,test]  # baseline: UN job gpuq, celle in sequenza (ADR-006)
+bench submit --jobs 3 stage=generate_baseline levels=[L1] splits=[dev,test]  # 3 job paralleli, celle disgiunte
 ```
 
 Gli artefatti stanno in `$WMB/artifacts` (fuori dal repository), con un manifest accanto a ogni file

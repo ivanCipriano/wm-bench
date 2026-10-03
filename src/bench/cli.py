@@ -53,6 +53,17 @@ def _submit(args: Sequence[str]) -> int:
         prog="bench submit", description="Submit one SLURM job per cell of a stage."
     )
     parser.add_argument("--dry-run", action="store_true", help="print the jobs without submitting")
+    parser.add_argument(
+        "--jobs",
+        type=int,
+        default=1,
+        help="number of parallel SLURM jobs; each runs a disjoint set of cells in sequence",
+    )
+    parser.add_argument(
+        "--allow-concurrent",
+        action="store_true",
+        help="submit even if jobs of the same stage are already queued (may duplicate cells)",
+    )
     parser.add_argument("overrides", nargs="*", help="Hydra overrides; stage=<name> is required")
     ns = parser.parse_args(list(args))
 
@@ -63,7 +74,14 @@ def _submit(args: Sequence[str]) -> int:
         cfg = load_experiment(ns.overrides)
         # Profili del codice in esecuzione (non di paths.repo, che indica il clone sul cluster).
         profiles = load_cluster_profiles(config_dir() / "cluster")
-        jobs = submit(cfg, cfg.stage, profiles, dry_run=ns.dry_run)
+        jobs = submit(
+            cfg,
+            cfg.stage,
+            profiles,
+            dry_run=ns.dry_run,
+            n_jobs=ns.jobs,
+            allow_concurrent=ns.allow_concurrent,
+        )
     except BenchError as exc:
         sys.stderr.write(f"bench submit: {exc}\n")
         return 2

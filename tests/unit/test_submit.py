@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import pytest
+
 from bench.config.resources import ResourceClass
 from bench.config.schema import ExperimentConfig
 from bench.doctor import load_cluster_profiles
+from bench.domain.errors import ConfigError
 from bench.pipeline.submit import (
     executor_parameters,
     job_environment,
@@ -74,3 +77,38 @@ def test_sequential_job_runs_cells_in_order(cfg: ExperimentConfig) -> None:
     out = SequentialJob()(cfg.model_dump(mode="json"), "selftest", [{}, {}])
     assert out.count("selftest [all]") == 2
     assert out.splitlines()[0].startswith("RAN") and "SKIPPED  selftest" in out
+
+
+def test_lanes_are_disjoint_and_balanced() -> None:
+    from bench.pipeline.stage import Cell
+    from bench.pipeline.submit import split_into_lanes
+
+    cells = [Cell(model_id=m, language=lang) for m in ("a", "b") for lang in ("py", "j", "c", "js")]
+    weights = [542 if c.language == "py" else 164 for c in cells]
+    lanes = split_into_lanes(cells, weights, 3)
+    assert len(lanes) == 3
+    flat = [c for lane in lanes for c in lane]
+    assert sorted(c.key() for c in flat) == sorted(c.key() for c in cells)  # ogni cella una volta
+    loads = [sum(weights[cells.index(c)] for c in lane) for lane in lanes]
+    assert max(loads) - min(loads) <= 542
+    assert split_into_lanes(cells[:2], weights[:2], 3) == [[cells[0]], [cells[1]]]
+
+
+def test_dry_run_with_three_jobs(cfg: ExperimentConfig) -> None:
+    c = rebuild(cfg, levels=["L1"], splits=["dev", "test"])
+    jobs = submit(c, "generate_baseline", PROFILES, dry_run=True, n_jobs=3)
+    assert len(jobs) == 3
+    keys = [k for j in jobs for k in j.cells]
+    assert len(keys) == 16 and len(set(keys)) == 16
+    assert all("slurm_dependency" not in j.params for j in jobs)
+
+
+def test_refuses_when_jobs_are_already_queued(
+    cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import bench.pipeline.submit as sub
+
+    monkeypatch.setattr(sub, "active_jobs", lambda name: ["4242 RUNNING"])
+    c = rebuild(cfg, levels=["L1"], splits=["dev"], languages=["python"])
+    with pytest.raises(ConfigError, match="already queued or running"):
+        sub.submit(c, "generate_baseline", PROFILES)
