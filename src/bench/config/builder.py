@@ -49,10 +49,26 @@ def config_dir() -> Path:
 
 
 def compose_config(overrides: Sequence[str] = (), config_name: str = "config") -> DictConfig:
-    """Compone la configurazione Hydra fuori da ``@hydra.main`` (doctor, test, notebook)."""
+    """Compone la configurazione Hydra fuori da ``@hydra.main`` (doctor, test, notebook).
+
+    Raises:
+        ConfigError: se un override non è valido (con un suggerimento per gli spazi incollati).
+    """
+    from hydra.errors import HydraException
+
     GlobalHydra.instance().clear()
-    with initialize_config_dir(config_dir=str(config_dir()), version_base="1.3"):
-        return compose(config_name=config_name, overrides=list(overrides))
+    try:
+        with initialize_config_dir(config_dir=str(config_dir()), version_base="1.3"):
+            return compose(config_name=config_name, overrides=list(overrides))
+    except HydraException as exc:
+        spaced = [o for o in overrides if any(ch.isspace() for ch in o)]
+        hint = ""
+        if spaced:
+            hint = (
+                f"; these overrides contain spaces: {spaced!r}. Usually two arguments were "
+                "pasted with a non-breaking space between them: retype the spaces by hand"
+            )
+        raise ConfigError(f"invalid Hydra override(s) {list(overrides)!r}: {exc}{hint}") from exc
 
 
 def _format_validation_error(exc: ValidationError) -> str:

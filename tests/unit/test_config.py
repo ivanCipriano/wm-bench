@@ -116,3 +116,9 @@ def test_cluster_profiles_load() -> None:
 def test_empty_cluster_profile_dir_is_an_error(tmp_path: Path) -> None:
     with pytest.raises(ConfigError, match="no cluster profiles"):
         load_cluster_profiles(tmp_path)
+
+
+def test_pasted_non_breaking_space_gives_a_clear_error(local_root: Path) -> None:
+    glued = "levels=[L1] splits=[dev,test]"
+    with pytest.raises(ConfigError, match="non-breaking space"):
+        load_experiment(["paths=local", "stage=selftest", glued])
