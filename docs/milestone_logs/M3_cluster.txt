@@ -1,0 +1,606 @@
+##### 1. aggiornamento e test
+From https://github.com/ivanCipriano/wm-bench
+   3da3fdb..fd0fdde  main       -> origin/main
+Updating 3da3fdb..fd0fdde
+Fast-forward
+ README.md                                       |   2 +
+ configs/config.yaml                             |   1 +
+ configs/prompt/default.yaml                     |   5 +
+ configs/prompt/system.txt                       |   4 +
+ configs/prompt/user/humanevalpack_cpp.j2        |   6 +
+ configs/prompt/user/humanevalpack_java.j2       |   6 +
+ configs/prompt/user/humanevalpack_javascript.j2 |   6 +
+ configs/prompt/user/humanevalplus_python.j2     |   6 +
+ configs/prompt/user/mbppplus_python.j2          |   6 +
+ docs/cluster_info.md                            |   1 +
+ docs/decisions/ADR-006-baseline-generation.md   |  69 +++++++
+ docs/milestone_logs/M3_local.txt                |  68 +++++++
+ pyproject.toml                                  |   2 +-
+ src/bench/cli.py                                |  34 +++-
+ src/bench/config/schema.py                      |   9 +
+ src/bench/doctor.py                             |  11 +-
+ src/bench/generation/__init__.py                |   1 +
+ src/bench/generation/code_extractor.py          | 134 ++++++++++++++
+ src/bench/generation/decoding.py                |  93 ++++++++++
+ src/bench/generation/hf_generator.py            | 211 ++++++++++++++++++++++
+ src/bench/generation/prompt_builder.py          | 105 +++++++++++
+ src/bench/pipeline/stages/__init__.py           |   4 +-
+ src/bench/pipeline/stages/generate_baseline.py  | 231 ++++++++++++++++++++++++
+ src/bench/pipeline/submit.py                    | 168 +++++++++++++++++
+ tests/integration/test_baseline_gpu.py          |  51 ++++++
+ tests/integration/test_l1_baseline.py           |  65 +++++++
+ tests/unit/test_cli.py                          |  25 ++-
+ tests/unit/test_code_extractor.py               |  98 ++++++++++
+ tests/unit/test_config.py                       |   5 +
+ tests/unit/test_decoding.py                     |  98 ++++++++++
+ tests/unit/test_generate_baseline.py            | 124 +++++++++++++
+ tests/unit/test_prompt_builder.py               | 102 +++++++++++
+ tests/unit/test_submit.py                       |  65 +++++++
+ 33 files changed, 1805 insertions(+), 11 deletions(-)
+ create mode 100644 configs/prompt/default.yaml
+ create mode 100644 configs/prompt/system.txt
+ create mode 100644 configs/prompt/user/humanevalpack_cpp.j2
+ create mode 100644 configs/prompt/user/humanevalpack_java.j2
+ create mode 100644 configs/prompt/user/humanevalpack_javascript.j2
+ create mode 100644 configs/prompt/user/humanevalplus_python.j2
+ create mode 100644 configs/prompt/user/mbppplus_python.j2
+ create mode 100644 docs/decisions/ADR-006-baseline-generation.md
+ create mode 100644 docs/milestone_logs/M3_local.txt
+ create mode 100644 src/bench/generation/__init__.py
+ create mode 100644 src/bench/generation/code_extractor.py
+ create mode 100644 src/bench/generation/decoding.py
+ create mode 100644 src/bench/generation/hf_generator.py
+ create mode 100644 src/bench/generation/prompt_builder.py
+ create mode 100644 src/bench/pipeline/stages/generate_baseline.py
+ create mode 100644 src/bench/pipeline/submit.py
+ create mode 100644 tests/integration/test_baseline_gpu.py
+ create mode 100644 tests/integration/test_l1_baseline.py
+ create mode 100644 tests/unit/test_code_extractor.py
+ create mode 100644 tests/unit/test_decoding.py
+ create mode 100644 tests/unit/test_generate_baseline.py
+ create mode 100644 tests/unit/test_prompt_builder.py
+ create mode 100644 tests/unit/test_submit.py
+?? docs/milestone_logs/M3_cluster.txt
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench
+  Building editable for bench (pyproject.toml): started
+  Building editable for bench (pyproject.toml): finished with status 'done'
+  Created wheel for bench: filename=bench-0.0.0-0.editable-py3-none-any.whl size=1479 sha256=4a7f8f005b596bf4a1bf004a42ebe52620a94a9a65bffc3a794d8e9095b68521
+  Stored in directory: /tmp/pip-ephem-wheel-cache-wk7lhbu_/wheels/e6/2d/d6/4f5189108c1bcee4f1a107f63abd0d2e53804a75c808f17e17
+Successfully built bench
+Installing collected packages: bench
+  Attempting uninstall: bench
+    Found existing installation: bench 0.0.0
+    Uninstalling bench-0.0.0:
+      Successfully uninstalled bench-0.0.0
+Successfully installed bench-0.0.0
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+........................................................................ [ 96%]
+.......                                                                  [100%]
+223 passed in 190.51s (0:03:10)
+..............                                                           [100%]
+14 passed in 1.48s
+  SKIP  tools                                   installed in Milestone 10
+
+summary: 48 OK, 0 WARN, 0 FAIL, 4 SKIP -> OK
+##### 2. test GPU: configurazione neutra e seme riproducibile con Qwen
+.                                                                        [100%]
+1 passed in 58.04s
+##### 3. invio della baseline L1 (16 job su gpuq)
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+dry-run	slurm_gpu	model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=test
+16 job(s) planned (dry run)
+sbatch: error: AssocMaxSubmitJobLimit
+sbatch: error: Batch job submission failed: Job violates accounting/QOS policy (job submit limit, user's size and/or time limits)
+subprocess.CalledProcessError: Command '['sbatch', '/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_slurm/generate_baseline/.submission_file_9ca7e7e1ffae4136a81462f15940f353.sh']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/bench", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/cli.py", line 108, in main
+    return _submit(args[1:])
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/cli.py", line 66, in _submit
+    jobs, params = submit(cfg, cfg.stage, profiles, dry_run=ns.dry_run)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/pipeline/submit.py", line 159, in submit
+    submitted = executor.map_array(CellJob(), *zip(*args, strict=True))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/core.py", line 771, in map_array
+    return self._internal_process_submissions(submissions)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/auto/auto.py", line 218, in _internal_process_submissions
+    return self._executor._internal_process_submissions(delayed_submissions)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/slurm/slurm.py", line 344, in _internal_process_submissions
+    first_job: core.Job[tp.Any] = array_ex._submit_command(self._submitit_command_str)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/core.py", line 954, in _submit_command
+    output = utils.CommandFunction(command_list, verbose=False)()  # explicit errors
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/utils.py", line 359, in __call__
+    raise FailedJobError(stderr) from subprocess_error
+submitit.core.utils.FailedJobError: sbatch: error: AssocMaxSubmitJobLimit
+sbatch: error: Batch job submission failed: Job violates accounting/QOS policy (job submit limit, user's size and/or time limits)
+##### 4. criterio di accettazione e tassi di estrazione
+FFFFFFFFFFFFFFFF                                                         [100%]
+=================================== FAILURES ===================================
+________________ test_baseline_cell[qwen25_coder_7b-python-dev] ________________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'qwen25_coder_7b', lang = <Language.PYTHON: 'python'>, split = 'dev'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_python_dev.parquet.manifest.json')
+what = 'baseline baseline/qwen25_coder_7b/L1_python_dev.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/qwen25_coder_7b/L1_python_dev.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_python_dev.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_______________ test_baseline_cell[qwen25_coder_7b-python-test] ________________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'qwen25_coder_7b', lang = <Language.PYTHON: 'python'>, split = 'test'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_python_test.parquet.manifest.json')
+what = 'baseline baseline/qwen25_coder_7b/L1_python_test.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/qwen25_coder_7b/L1_python_test.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_python_test.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_________________ test_baseline_cell[qwen25_coder_7b-java-dev] _________________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'qwen25_coder_7b', lang = <Language.JAVA: 'java'>, split = 'dev'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_java_dev.parquet.manifest.json')
+what = 'baseline baseline/qwen25_coder_7b/L1_java_dev.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/qwen25_coder_7b/L1_java_dev.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_java_dev.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+________________ test_baseline_cell[qwen25_coder_7b-java-test] _________________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'qwen25_coder_7b', lang = <Language.JAVA: 'java'>, split = 'test'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_java_test.parquet.manifest.json')
+what = 'baseline baseline/qwen25_coder_7b/L1_java_test.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/qwen25_coder_7b/L1_java_test.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_java_test.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_________________ test_baseline_cell[qwen25_coder_7b-cpp-dev] __________________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'qwen25_coder_7b', lang = <Language.CPP: 'cpp'>, split = 'dev'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_cpp_dev.parquet.manifest.json')
+what = 'baseline baseline/qwen25_coder_7b/L1_cpp_dev.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/qwen25_coder_7b/L1_cpp_dev.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_cpp_dev.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_________________ test_baseline_cell[qwen25_coder_7b-cpp-test] _________________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'qwen25_coder_7b', lang = <Language.CPP: 'cpp'>, split = 'test'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_cpp_test.parquet.manifest.json')
+what = 'baseline baseline/qwen25_coder_7b/L1_cpp_test.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/qwen25_coder_7b/L1_cpp_test.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_cpp_test.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+______________ test_baseline_cell[qwen25_coder_7b-javascript-dev] ______________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'qwen25_coder_7b', lang = <Language.JAVASCRIPT: 'javascript'>
+split = 'dev'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_javascript_dev.parquet.manifest.json')
+what = 'baseline baseline/qwen25_coder_7b/L1_javascript_dev.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/qwen25_coder_7b/L1_javascript_dev.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_javascript_dev.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_____________ test_baseline_cell[qwen25_coder_7b-javascript-test] ______________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'qwen25_coder_7b', lang = <Language.JAVASCRIPT: 'javascript'>
+split = 'test'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_javascript_test.parquet.manifest.json')
+what = 'baseline baseline/qwen25_coder_7b/L1_javascript_test.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/qwen25_coder_7b/L1_javascript_test.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/L1_javascript_test.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+______________ test_baseline_cell[deepseek_coder_6p7b-python-dev] ______________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'deepseek_coder_6p7b', lang = <Language.PYTHON: 'python'>, split = 'dev'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_python_dev.parquet.manifest.json')
+what = 'baseline baseline/deepseek_coder_6p7b/L1_python_dev.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/deepseek_coder_6p7b/L1_python_dev.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_python_dev.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_____________ test_baseline_cell[deepseek_coder_6p7b-python-test] ______________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'deepseek_coder_6p7b', lang = <Language.PYTHON: 'python'>
+split = 'test'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_python_test.parquet.manifest.json')
+what = 'baseline baseline/deepseek_coder_6p7b/L1_python_test.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/deepseek_coder_6p7b/L1_python_test.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_python_test.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_______________ test_baseline_cell[deepseek_coder_6p7b-java-dev] _______________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'deepseek_coder_6p7b', lang = <Language.JAVA: 'java'>, split = 'dev'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_java_dev.parquet.manifest.json')
+what = 'baseline baseline/deepseek_coder_6p7b/L1_java_dev.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/deepseek_coder_6p7b/L1_java_dev.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_java_dev.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+______________ test_baseline_cell[deepseek_coder_6p7b-java-test] _______________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'deepseek_coder_6p7b', lang = <Language.JAVA: 'java'>, split = 'test'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_java_test.parquet.manifest.json')
+what = 'baseline baseline/deepseek_coder_6p7b/L1_java_test.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/deepseek_coder_6p7b/L1_java_test.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_java_test.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_______________ test_baseline_cell[deepseek_coder_6p7b-cpp-dev] ________________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'deepseek_coder_6p7b', lang = <Language.CPP: 'cpp'>, split = 'dev'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_cpp_dev.parquet.manifest.json')
+what = 'baseline baseline/deepseek_coder_6p7b/L1_cpp_dev.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/deepseek_coder_6p7b/L1_cpp_dev.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_cpp_dev.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+_______________ test_baseline_cell[deepseek_coder_6p7b-cpp-test] _______________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'deepseek_coder_6p7b', lang = <Language.CPP: 'cpp'>, split = 'test'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_cpp_test.parquet.manifest.json')
+what = 'baseline baseline/deepseek_coder_6p7b/L1_cpp_test.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/deepseek_coder_6p7b/L1_cpp_test.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_cpp_test.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+____________ test_baseline_cell[deepseek_coder_6p7b-javascript-dev] ____________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'deepseek_coder_6p7b', lang = <Language.JAVASCRIPT: 'javascript'>
+split = 'dev'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_javascript_dev.parquet.manifest.json')
+what = 'baseline baseline/deepseek_coder_6p7b/L1_javascript_dev.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/deepseek_coder_6p7b/L1_javascript_dev.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_javascript_dev.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+___________ test_baseline_cell[deepseek_coder_6p7b-javascript-test] ____________
+
+store = <bench.store.artifact_store.ArtifactStore object at 0x1555215025d0>
+data_cfg = ExperimentConfig(global_seed=20261001, stage='prepare_data', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'...8e20c9ddab122c6e', template_dir=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/configs/prompt/user')))
+model = 'deepseek_coder_6p7b', lang = <Language.JAVASCRIPT: 'javascript'>
+split = 'test'
+
+    @pytest.mark.parametrize(("model", "lang", "split"), CELLS)
+    def test_baseline_cell(
+        store: ArtifactStore, data_cfg: ExperimentConfig, model: str, lang: Language, split: str
+    ) -> None:
+        ref = baseline_ref(model, "L1", lang, split)
+>       require(store.manifest_of(ref), f"baseline {ref.path} (run generate_baseline)")
+
+tests/integration/test_l1_baseline.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_javascript_test.parquet.manifest.json')
+what = 'baseline baseline/deepseek_coder_6p7b/L1_javascript_test.parquet (run generate_baseline)'
+
+    def require(path: Path, what: str) -> None:
+        """Salta (o fallisce con ``WMB_REQUIRE_DATA=1``) se ``path`` non esiste."""
+        if path.exists():
+            return
+        message = f"{what} not found: {path}"
+        if os.environ.get("WMB_REQUIRE_DATA") == "1":
+>           pytest.fail(message)
+E           Failed: baseline baseline/deepseek_coder_6p7b/L1_javascript_test.parquet (run generate_baseline) not found: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/L1_javascript_test.parquet.manifest.json
+
+tests/integration/conftest.py:27: Failed
+16 failed in 3.16s
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  8.18it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00, 10.58it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 11.47it/s]
