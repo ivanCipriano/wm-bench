@@ -2,6 +2,7 @@
 
 - ``bench doctor [--gpu] [--json PATH] [override Hydra ...]``: diagnostica.
 - ``bench stage=<fase> [override Hydra ...]``: esegue una fase tramite ``@hydra.main``.
+- ``bench submit [--dry-run] stage=<fase> [override ...]``: un job SLURM per cella (ADR-006).
 
 Il report del doctor e il riepilogo delle fasi si scrivono su stdout; tutto il resto
 passa da ``logging``.
@@ -10,6 +11,7 @@ passa da ``logging``.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from collections.abc import Sequence
@@ -46,6 +48,35 @@ def _doctor(args: Sequence[str]) -> int:
     return report.exit_code
 
 
+def _submit(args: Sequence[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="bench submit", description="Submit one SLURM job per cell of a stage."
+    )
+    parser.add_argument("--dry-run", action="store_true", help="print the jobs without submitting")
+    parser.add_argument("overrides", nargs="*", help="Hydra overrides; stage=<name> is required")
+    ns = parser.parse_args(list(args))
+
+    from bench.doctor import load_cluster_profiles
+    from bench.pipeline.submit import submit
+
+    try:
+        cfg = load_experiment(ns.overrides)
+        # Profili del codice in esecuzione (non di paths.repo, che indica il clone sul cluster).
+        profiles = load_cluster_profiles(config_dir() / "cluster")
+        jobs, params = submit(cfg, cfg.stage, profiles, dry_run=ns.dry_run)
+    except BenchError as exc:
+        sys.stderr.write(f"bench submit: {exc}\n")
+        return 2
+    for group in params:
+        shown = {k: v for k, v in group.items() if k != "cells"}
+        sys.stdout.write(f"job array parameters: {json.dumps(shown, sort_keys=True)}\n")
+    for job in jobs:
+        sys.stdout.write(f"{job.job_id}\t{job.profile}\t{job.cell}\n")
+    status = "planned (dry run)" if ns.dry_run else "submitted"
+    sys.stdout.write(f"{len(jobs)} job(s) {status}\n")
+    return 0
+
+
 def _run_stage(cfg: DictConfig) -> None:
     from bench.pipeline.facade import BenchmarkFacade
 
@@ -74,8 +105,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args and args[0] == "doctor":
         return _doctor(args[1:])
     if args and args[0] == "submit":
-        sys.stderr.write("bench submit: available from Milestone 3\n")
-        return 2
+        return _submit(args[1:])
     _hydra(args)
     return 0
 

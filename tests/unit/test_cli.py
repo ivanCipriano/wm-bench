@@ -87,7 +87,26 @@ def test_doctor_report_and_json(tmp_path: Path) -> None:
     assert data["exit_code"] == 1
 
 
-def test_submit_not_yet_available(tmp_path: Path) -> None:
-    result = _bench(["submit"], tmp_path / "wmb")
+def test_submit_dry_run(tmp_path: Path) -> None:
+    result = _bench(
+        [
+            "submit",
+            "--dry-run",
+            "stage=generate_baseline",
+            "paths=local",
+            "levels=[L1]",
+            "splits=[dev,test]",
+            "languages=[python,java]",
+        ],
+        tmp_path / "wmb",
+    )
+    assert result.returncode == 0, result.stderr
+    assert '"slurm_partition": "gpuq"' in result.stdout
+    assert '"slurm_qos": "did_tesi_nlp_330_gpuq_qos"' in result.stdout
+    assert "8 job(s) planned (dry run)" in result.stdout  # 2 modelli x 2 linguaggi x 2 parti
+
+
+def test_submit_requires_stage(tmp_path: Path) -> None:
+    result = _bench(["submit", "--dry-run", "paths=local"], tmp_path / "wmb")
     assert result.returncode == 2
-    assert "Milestone 3" in result.stderr
+    assert "bench submit" in result.stderr

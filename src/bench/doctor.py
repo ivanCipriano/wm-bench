@@ -23,6 +23,7 @@ from typing import ClassVar
 import bench_contracts
 from omegaconf import OmegaConf
 
+from bench.config.builder import config_dir
 from bench.config.resources import ResourceClass, ResourcePolicy, validate_profile
 from bench.config.schema import ClusterProfile, ExperimentConfig
 from bench.domain.errors import ConfigError
@@ -125,10 +126,13 @@ def load_cluster_profiles(cluster_dir: Path) -> dict[str, ClusterProfile]:
     """Carica tutti i profili ``configs/cluster/*.yaml``.
 
     Raises:
-        ConfigError: se un profilo non è valido.
+        ConfigError: se la cartella non contiene profili o un profilo non è valido.
     """
+    paths = sorted(cluster_dir.glob("*.yaml"))
+    if not paths:
+        raise ConfigError(f"no cluster profiles in {cluster_dir}")
     profiles: dict[str, ClusterProfile] = {}
-    for path in sorted(cluster_dir.glob("*.yaml")):
+    for path in paths:
         data = OmegaConf.to_container(OmegaConf.load(path), resolve=True)
         try:
             profile = ClusterProfile.model_validate(data)
@@ -146,7 +150,8 @@ def build_doctor_context(
     return DoctorContext(
         cfg=cfg,
         repo=repo,
-        profiles=load_cluster_profiles(repo / "configs" / "cluster"),
+        # Profili del codice in esecuzione: sono quelli che userà ``bench submit``.
+        profiles=load_cluster_profiles(config_dir() / "cluster"),
         run=run,
         gpu=gpu,
     )

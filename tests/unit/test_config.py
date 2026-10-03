@@ -111,3 +111,8 @@ def test_cluster_profiles_load() -> None:
     assert profiles["slurm_cpu"].gres is None
     assert profiles["slurm_cpu"].partition == "defq"
     assert profiles["slurm_gpu"].partition == "gpuq"
+
+
+def test_empty_cluster_profile_dir_is_an_error(tmp_path: Path) -> None:
+    with pytest.raises(ConfigError, match="no cluster profiles"):
+        load_cluster_profiles(tmp_path)
