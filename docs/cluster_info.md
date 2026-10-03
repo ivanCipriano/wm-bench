@@ -115,6 +115,7 @@ Profili Hydra attesi: `configs/cluster/slurm_gpu.yaml` → `gpuq` con `did_tesi_
 ## 5. Apptainer
 
 - Versione: **1.1.9**.
+- Disponibile tramite il modulo **`apptainer/apptainer.module`** (eseguibile `/cm/local/apps/apptainer/current/bin/apptainer`). Se il modulo non è caricato, `apptainer` non è nel `PATH` (successo il 3 ottobre 2026: `bench doctor` dava FAIL). Gli script e i job che usano la sandbox devono eseguire `module load apptainer/apptainer.module`.
 - Build con `--fakeroot`: **funziona** (utente non presente in `/etc/subuid`; Apptainer usa uno spazio dei nomi con mappatura su root). Verificato sul nodo di login `lnode01`.
 - `--net --network none`: **funziona** (verificato su `lnode01`).
 - `squashfuse` e `fuse2fs` **assenti**: a ogni `apptainer exec` su un file `.sif` l'immagine viene convertita in una sandbox temporanea. Con migliaia di esecuzioni questo costo è inaccettabile.
