@@ -604,3 +604,190 @@ E           Failed: baseline baseline/deepseek_coder_6p7b/L1_javascript_test.par
 tests/integration/conftest.py:27: Failed
 16 failed in 3.16s
 Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  8.18it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00, 10.58it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 11.47it/s]
+job array parameters: {"cpus_per_task": 8, "mem_gb": 64, "name": "wmb-generate_baseline", "slurm_account": "did_tesi_nlp_330", "slurm_array_parallelism": 16, "slurm_gres": "gpu:1", "slurm_partition": "gpuq", "slurm_qos": "did_tesi_nlp_330_gpuq_qos", "slurm_setup": ["export HF_DATASETS_OFFLINE=1", "export HF_HOME=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/hf_cache", "export HF_HUB_CACHE=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/hf_cache/hub", "export HF_HUB_OFFLINE=1", "export PYTHONHASHSEED=0", "export TOKENIZERS_PARALLELISM=false", "export TRANSFORMERS_OFFLINE=1"], "slurm_wckey": null, "timeout_min": 330}
+781723	slurm_gpu	model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+781723	slurm_gpu	model_id=qwen25_coder_7b__language=python__level=L1__split=test
+781723	slurm_gpu	model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+781723	slurm_gpu	model_id=qwen25_coder_7b__language=java__level=L1__split=test
+781723	slurm_gpu	model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+781723	slurm_gpu	model_id=qwen25_coder_7b__language=cpp__level=L1__split=test
+781723	slurm_gpu	model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+781723	slurm_gpu	model_id=qwen25_coder_7b__language=javascript__level=L1__split=test
+781723	slurm_gpu	model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+781723	slurm_gpu	model_id=deepseek_coder_6p7b__language=python__level=L1__split=test
+781723	slurm_gpu	model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+781723	slurm_gpu	model_id=deepseek_coder_6p7b__language=java__level=L1__split=test
+781723	slurm_gpu	model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+781723	slurm_gpu	model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test
+781723	slurm_gpu	model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+781723	slurm_gpu	model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=test
+16 job(s) submitted
+##### 6. baseline divisa tra due utenti: quota 1/2 (i.cipriano1@studenti.unisa.it)
+From https://github.com/ivanCipriano/wm-bench
+   46a4567..c66e1b5  main       -> origin/main
+Updating 46a4567..c66e1b5
+Fast-forward
+ README.md                                     |   6 +-
+ docs/decisions/ADR-006-baseline-generation.md |  37 +++-
+ src/bench/cli.py                              |  40 +++-
+ src/bench/pipeline/submit.py                  | 272 +++++++++++++++++++-------
+ tests/unit/test_cli.py                        |   4 +-
+ tests/unit/test_submit.py                     | 110 ++++++++++-
+ 6 files changed, 376 insertions(+), 93 deletions(-)
+Obtaining file:///mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bench
+  Building editable for bench (pyproject.toml): started
+  Building editable for bench (pyproject.toml): finished with status 'done'
+  Created wheel for bench: filename=bench-0.0.0-0.editable-py3-none-any.whl size=1479 sha256=14cd3bcb9759b365a1dba76054cc672c0404ee3b25f8cf9b7d131c5b740d1f86
+  Stored in directory: /tmp/pip-ephem-wheel-cache-0mpxtqf4/wheels/e6/2d/d6/4f5189108c1bcee4f1a107f63abd0d2e53804a75c808f17e17
+Successfully built bench
+Installing collected packages: bench
+  Attempting uninstall: bench
+    Found existing installation: bench 0.0.0
+    Uninstalling bench-0.0.0:
+      Successfully uninstalled bench-0.0.0
+Successfully installed bench-0.0.0
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/bench", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/cli.py", line 134, in main
+    return _submit(args[1:])
+           ^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/cli.py", line 80, in _submit
+    cfg = load_experiment(ns.overrides)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/config/builder.py", line 132, in load_experiment
+    return ExperimentBuilder.from_hydra(compose_config(overrides)).build()
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/config/builder.py", line 55, in compose_config
+    return compose(config_name=config_name, overrides=list(overrides))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/hydra/compose.py", line 38, in compose
+    cfg = gh.hydra.compose_config(
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 594, in compose_config
+    cfg = self.config_loader.load_configuration(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py", line 142, in load_configuration
+    return self._load_configuration_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py", line 244, in _load_configuration_impl
+    parsed_overrides, caching_repo = self._parse_overrides_and_create_caching_repo(
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/hydra/_internal/config_loader_impl.py", line 228, in _parse_overrides_and_create_caching_repo
+    parsed_overrides = parser.parse_overrides(overrides=overrides)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/hydra/core/override_parser/overrides_parser.py", line 96, in parse_overrides
+    raise OverrideParseException(
+hydra.errors.OverrideParseException: mismatched input ' ' expecting <EOF>
+See https://hydra.cc/docs/1.2/advanced/override_grammar/basic for details
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+            781597       aiq qwen-2gp g.marott  R    5:20:03      1 ainode02
+##### piano (dry run): quota 1/2, 3 job
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. model_id=qwen25_coder_7b__language=python__level=L1__split=test
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. model_id=qwen25_coder_7b__language=java__level=L1__split=test
+    2. model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+    3. model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. model_id=qwen25_coder_7b__language=javascript__level=L1__split=test
+3 SLURM job(s) for 8 cell(s) planned (dry run)
+##### invio: quota 1/2
+SLURM job 781783 (slurm_gpu), cells run in sequence:
+    1. model_id=qwen25_coder_7b__language=python__level=L1__split=test
+SLURM job 781784 (slurm_gpu), cells run in sequence:
+    1. model_id=qwen25_coder_7b__language=java__level=L1__split=test
+    2. model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+    3. model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test
+SLURM job 781785 (slurm_gpu), cells run in sequence:
+    1. model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. model_id=qwen25_coder_7b__language=javascript__level=L1__split=test
+3 SLURM job(s) for 8 cell(s) submitted
+             JOBID         USER                               NAME    STATE       TIME
+            781597 g.marotta31@                    qwen-2gpu-final  RUNNING    5:27:23
+            781785 i.cipriano1@        wmb-generate_baseline-s1of2  PENDING       0:00
+            781784 i.cipriano1@        wmb-generate_baseline-s1of2  PENDING       0:00
+            781783 i.cipriano1@        wmb-generate_baseline-s1of2  PENDING       0:00
+##### 7. chiusura della Milestone 3 (2026-10-03 18:02, i.cipriano1@studenti.unisa.it)
+ae5f734 [M3] scripts: report_baseline.py e close_m3.sh per la verifica finale sul cluster
+ M docs/milestone_logs/M3_cluster.txt
+##### job della baseline di oggi (entrambi gli utenti)
+         JobID                   User                            JobName          State ExitCode    Elapsed     NodeList 
+        781723 i.cipriano1@studenti.+              wmb-generate_baseline CANCELLED by +      0:0   01:44:48      gnode07 
+        781783 i.cipriano1@studenti.+        wmb-generate_baseline-s1of2      COMPLETED      0:0   00:00:09      gnode07 
+        781784 i.cipriano1@studenti.+        wmb-generate_baseline-s1of2      COMPLETED      0:0   00:04:30      gnode14 
+        781785 i.cipriano1@studenti.+        wmb-generate_baseline-s1of2      COMPLETED      0:0   00:00:08      gnode12 
+        781787 s.faraulo@studenti.un+        wmb-generate_baseline-s2of2      COMPLETED      0:0   00:00:39      gnode07 
+        781788 s.faraulo@studenti.un+        wmb-generate_baseline-s2of2      COMPLETED      0:0   00:14:58      gnode12 
+        781789 s.faraulo@studenti.un+        wmb-generate_baseline-s2of2      COMPLETED      0:0   00:00:36      gnode13 
+##### job ancora in coda (atteso: nessuno della baseline)
+             JOBID         USER                               NAME    STATE       TIME
+            781597 g.marotta31@                    qwen-2gpu-final  RUNNING    5:48:02
+##### artefatti (attesi: 16 parquet, nessun file parziale)
+16
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/_partial/:
+total 1
+drwxrws---+ 2 i.cipriano1@studenti.unisa.it did_tesi_nlp_330  0 Oct  3 17:59 .
+drwxrws---+ 3 i.cipriano1@studenti.unisa.it did_tesi_nlp_330 17 Oct  3 17:59 ..
+
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/_partial/:
+total 1
+drwxrws---+ 2 i.cipriano1@studenti.unisa.it did_tesi_nlp_330  0 Oct  3 17:34 .
+drwxrws---+ 3 i.cipriano1@studenti.unisa.it did_tesi_nlp_330 17 Oct  3 17:34 ..
+##### criteri di accettazione M3 (e controlli M2 sugli stessi dati)
+........................                                                 [100%]
+24 passed in 6.10s
+##### riepilogo della baseline
+cell                                          rows   exp  extract  open``` distinct  s/prob  by_dataset
+deepseek_coder_6p7b/cpp/dev                    144   144   1.0000   0.0417     2.79    3.41  {'humanevalpack': 1.0}
+deepseek_coder_6p7b/cpp/test                   840   840   1.0000   0.0226     3.19    3.86  {'humanevalpack': 1.0}
+deepseek_coder_6p7b/java/dev                   144   144   1.0000   0.0000     2.62    4.09  {'humanevalpack': 1.0}
+deepseek_coder_6p7b/java/test                  840   840   1.0000   0.0048     3.04    4.49  {'humanevalpack': 1.0}
+deepseek_coder_6p7b/javascript/dev             144   144   1.0000   0.0000     2.92    7.03  {'humanevalpack': 1.0}
+deepseek_coder_6p7b/javascript/test            840   840   1.0000   0.0024     3.40    3.42  {'humanevalpack': 1.0}
+deepseek_coder_6p7b/python/dev                 576   576   1.0000   0.0000     2.33    2.39  {'humanevalplus': 1.0, 'mbppplus': 1.0}
+deepseek_coder_6p7b/python/test               2676  2676   1.0000   0.0004     2.34    2.38  {'humanevalplus': 1.0, 'mbppplus': 1.0}
+qwen25_coder_7b/cpp/dev                        144   144   1.0000   0.0000     2.83    3.33  {'humanevalpack': 1.0}
+qwen25_coder_7b/cpp/test                       840   840   1.0000   0.0048     2.62    3.36  {'humanevalpack': 1.0}
+qwen25_coder_7b/java/dev                       144   144   1.0000   0.0000     2.12    5.91  {'humanevalpack': 1.0}
+qwen25_coder_7b/java/test                      840   840   1.0000   0.0107     2.14    6.43  {'humanevalpack': 1.0}
+qwen25_coder_7b/javascript/dev                 144   144   1.0000   0.0000     1.58    2.54  {'humanevalpack': 1.0}
+qwen25_coder_7b/javascript/test                840   840   1.0000   0.0012     1.81    2.71  {'humanevalpack': 1.0}
+qwen25_coder_7b/python/dev                     576   576   1.0000   0.0000     2.84    2.99  {'humanevalplus': 1.0, 'mbppplus': 1.0}
+qwen25_coder_7b/python/test                   2676  2676   1.0000   0.0022     2.84    3.20  {'humanevalplus': 1.0, 'mbppplus': 1.0}
+
+cells: 16, problems: 2068, samples: 12408, extraction rate: 1.0000
+
+extraction rate per model and language (dev+test):
+  deepseek_coder_6p7b    cpp         1.0000  (0 failed of 984)
+  deepseek_coder_6p7b    java        1.0000  (0 failed of 984)
+  deepseek_coder_6p7b    javascript  1.0000  (0 failed of 984)
+  deepseek_coder_6p7b    python      1.0000  (0 failed of 3252)
+  qwen25_coder_7b        cpp         1.0000  (0 failed of 984)
+  qwen25_coder_7b        java        1.0000  (0 failed of 984)
+  qwen25_coder_7b        javascript  1.0000  (0 failed of 984)
+  qwen25_coder_7b        python      1.0000  (0 failed of 3252)
+
+decoding and system prompt (one line per distinct value):
+  16 cells: system_prompt=1598d00e2c894a83cfa32a93c37623b59811a6144afbcfd98e20c9ddab122c6e
+  16 cells: {"do_sample": true, "max_new_tokens": 512, "no_repeat_ngram_size": 0, "repetition_penalty": 1.0, "temperature": 0.2, "top_k": 0, "top_p": 0.95}
+  neutral decoding everywhere: yes
+
+examples of failed extraction (first 400 characters):
+##### completezza (atteso: total: 0 ran, 16 skipped; nessun modello caricato)
+total: 0 ran, 16 skipped
+##### doctor
+  SKIP  tools                                   installed in Milestone 10
+
+summary: 47 OK, 1 WARN, 0 FAIL, 4 SKIP -> OK
