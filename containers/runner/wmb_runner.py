@@ -201,6 +201,7 @@ def _prepare_evalplus_env(root: Path, mem_mb: int | None) -> None:
     """Variabili lette da EvalPlus all'import: vanno impostate prima di importarlo."""
     os.environ.setdefault("HOME", str(root))
     os.environ["XDG_CACHE_HOME"] = str(root / "_cache")
+    os.environ["HF_HOME"] = str(root / "_cache" / "huggingface")  # import di datasets
     os.environ["EVALPLUS_MAX_MEMORY_BYTES"] = str(-1 if mem_mb is None else mem_mb * 1024 * 1024)
 
 

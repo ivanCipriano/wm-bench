@@ -20,18 +20,20 @@ def test_command_matches_the_spec(cfg: ExperimentConfig, tmp_path: Path) -> None
         None,
         tmp_path / "data",
     )
-    assert cmd[:7] == [
+    assert cmd[:9] == [
         "apptainer",
         "exec",
         "--containall",
         "--cleanenv",
         "--no-home",
+        "--no-mount",
+        "bind-paths",
         "--pwd",
         "/work",
     ]
-    assert ["--bind", f"{tmp_path}:/work:rw"] == cmd[7:9]
-    assert ["--bind", f"{tmp_path / 'data'}:/data:ro"] == cmd[9:11]
-    assert cmd[11:14] == ["--net", "--network", "none"]
+    assert cmd[9:11] == ["--bind", f"{tmp_path}:/work:rw"]
+    assert cmd[11:13] == ["--bind", f"{tmp_path / 'data'}:/data:ro"]
+    assert cmd[13:16] == ["--net", "--network", "none"]
     i = cmd.index(str(cfg.execution.image_dir))
     assert cmd[i + 1 : i + 4] == ["timeout", "--kill-after=5", "120"]
     assert cmd[-3:] == ["python3", "/opt/wmb/wmb_runner.py", "/work/job.json"]

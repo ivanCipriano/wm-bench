@@ -167,6 +167,9 @@ class ApptainerSandbox(Sandbox):
             "--containall",
             "--cleanenv",
             "--no-home",
+            # Niente bind path di apptainer.conf (es. /mnt/beegfs): solo /work e /data.
+            "--no-mount",
+            "bind-paths",
             "--pwd",
             WORK_MOUNT,
             "--bind",

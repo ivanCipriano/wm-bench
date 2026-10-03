@@ -32,7 +32,9 @@
 
 4. **Rete: `--net --network none` sempre.** Funziona da utente non privilegiato sul nodo di login (cluster_info §5);
    il doctor e `tests/integration/test_sandbox_apptainer.py` verificano che dal container non si apra una
-   connessione. Le opzioni restanti sono quelle di SPEC §11.2: `--containall --cleanenv --no-home`, sola
+   connessione. Le opzioni restanti sono quelle di SPEC §11.2: `--containall --cleanenv --no-home`, più
+   `--no-mount bind-paths` (i bind path di `apptainer.conf`, es. `/mnt/beegfs`, resterebbero visibili anche con
+   `--containall`: il codice generato non deve poter leggere o scrivere gli artefatti); sola
    `/work` montata in scrittura, `timeout --kill-after=5` sull'intera invocazione.
 
 5. **Memoria.** Il limite di SPEC §11.2 (`prlimit --as`) si applica **per campione** dentro il runner:

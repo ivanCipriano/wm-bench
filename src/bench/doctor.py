@@ -438,6 +438,7 @@ class ApptainerCheck(DoctorCheck):
             "    print('no-network')\n"
         )
         cmd = ["apptainer", "exec", "--containall", "--cleanenv", "--no-home"]
+        cmd += ["--no-mount", "bind-paths"]
         if execution.network_none:
             cmd += ["--net", "--network", "none"]
         proc = ctx.run([*cmd, str(image_dir), "python3", "-c", probe], 300, None, None)
