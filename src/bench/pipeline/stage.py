@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass, fields
 from datetime import UTC, datetime
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from bench.config.resources import ResourceClass
 from bench.config.schema import ExperimentConfig
@@ -83,6 +83,7 @@ class StageContext:
         n_rows_expected: int | None,
         inputs: Sequence[ArtifactRef] = (),
         config_hash: str | None = None,
+        extra: dict[str, Any] | None = None,
     ) -> Manifest:
         """Prepara il manifest di un output; lo store aggiunge hash, dimensione e stato."""
         config_dump = self.config.model_dump(mode="json")
@@ -97,6 +98,7 @@ class StageContext:
             config=config_dump,
             config_sha256=sha256_json(config_dump),
             config_hash=config_hash,
+            extra=dict(extra or {}),
             global_seed=self.config.global_seed,
             provenance=self.provenance.provenance,
             inputs=input_hashes,
@@ -121,6 +123,11 @@ class Stage(ABC):
     resources: ClassVar[ResourceClass]
     output_kinds: ClassVar[frozenset[str]]
     cell_axes: ClassVar[tuple[str, ...]] = ()
+
+    @classmethod
+    def create(cls, config: ExperimentConfig) -> Stage:
+        """Istanzia la fase; le fasi che dipendono dalla configurazione lo ridefiniscono."""
+        return cls()
 
     @abstractmethod
     def inputs(self, cell: Cell) -> list[ArtifactRef]:

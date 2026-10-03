@@ -58,7 +58,7 @@ class BenchmarkFacade:
         stage_cls = STAGES.get(name)
         planned = list(cells) if cells is not None else CellPlanner(self.cfg).cells_for(stage_cls)
         pipeline = Pipeline(
-            [stage_cls()],
+            [stage_cls.create(self.cfg)],
             self.store,
             self.observers,
             config=self.cfg,

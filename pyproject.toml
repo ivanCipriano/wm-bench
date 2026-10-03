@@ -69,4 +69,5 @@ markers = [
     "oracle: test di fedeltà degli shim rispetto al codice originale",
     "apptainer: richiede Apptainer e l'immagine della sandbox",
     "slurm: richiede SLURM",
+    "data: richiede i dataset reali (cluster_info §8); obbligatorio con WMB_REQUIRE_DATA=1",
 ]

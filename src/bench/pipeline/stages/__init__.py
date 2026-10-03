@@ -3,6 +3,6 @@
 Gli import sono espliciti (niente scoperta dal filesystem, SPEC §7.1).
 """
 
-from bench.pipeline.stages import selftest
+from bench.pipeline.stages import prepare_data, selftest
 
-__all__ = ["selftest"]
+__all__ = ["prepare_data", "selftest"]
