@@ -79,6 +79,27 @@ def test_sequential_job_runs_cells_in_order(cfg: ExperimentConfig) -> None:
     assert out.splitlines()[0].startswith("RAN") and "SKIPPED  selftest" in out
 
 
+def test_sequential_job_continues_after_a_failed_cell(
+    cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import bench.pipeline.submit as sub
+
+    done: list[str] = []
+
+    def fake_run_cell(cfg_data: dict, stage: str, cell: dict) -> str:  # type: ignore[type-arg]
+        if cell.get("language") == "python":
+            raise sub.ConfigError("missing ground truth")
+        done.append(cell["language"])
+        return f"RAN {cell['language']}"
+
+    monkeypatch.setattr(sub, "run_cell", fake_run_cell)
+    cells = [{"language": "python"}, {"language": "java"}, {"language": "cpp"}]
+    with pytest.raises(RuntimeError, match="1 of 3 cell") as info:
+        sub.SequentialJob()({}, "execute", cells)
+    assert done == ["java", "cpp"]  # le celle dopo quella fallita vengono eseguite
+    assert "language=python: ConfigError: missing ground truth" in str(info.value)
+
+
 def test_lanes_are_disjoint_and_balanced() -> None:
     from bench.pipeline.stage import Cell
     from bench.pipeline.submit import split_into_lanes

@@ -24,6 +24,12 @@ case "$WHAT" in
         ;;
     execute)
         SHARE="${2:?usage: submit_execute_l1.sh execute K/M [--dry-run]}"; MODE="${3:-}"
+        # Le celle Python leggono la ground truth: senza, quelle celle fallirebbero.
+        GT="${WMB:-/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench}/artifacts/execution/_groundtruth/evalplus.parquet.manifest.json"
+        if ! grep -q '"status": "complete"' "$GT" 2>/dev/null; then
+            echo "EvalPlus ground truth not complete ($GT): run 'submit_execute_l1.sh groundtruth' and wait for it" >&2
+            exit 2
+        fi
         ARGS=(--jobs "${JOBS:-2}" --share "$SHARE" "stage=execute" "levels=[L1]" "splits=[dev,test]")
         ;;
     *) echo "unknown step: $WHAT" >&2; exit 2 ;;

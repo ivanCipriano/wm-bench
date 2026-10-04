@@ -134,10 +134,27 @@ def run_cell(cfg_data: dict[str, Any], stage: str, cell_data: dict[str, Any]) ->
 
 
 class SequentialJob:
-    """Corpo del job SLURM: le celle una dopo l'altra (``Checkpointable`` per submitit)."""
+    """Corpo del job SLURM: le celle una dopo l'altra (``Checkpointable`` per submitit).
+
+    Una cella che fallisce non ferma le successive: l'errore viene registrato e, a fine job,
+    si solleva un'eccezione con l'elenco delle celle fallite (il job risulta FAILED).
+    """
 
     def __call__(self, cfg_data: dict[str, Any], stage: str, cells: list[dict[str, Any]]) -> str:
-        return "\n".join(run_cell(cfg_data, stage, cell) for cell in cells)
+        summaries: list[str] = []
+        failures: list[str] = []
+        for cell in cells:
+            try:
+                summaries.append(run_cell(cfg_data, stage, cell))
+            except Exception as exc:  # una cella non deve bloccare le altre
+                key = Cell(**cell).key()
+                logger.exception("cell %s failed; continuing with the next cells", key)
+                failures.append(f"{key}: {type(exc).__name__}: {exc}")
+        if failures:
+            raise RuntimeError(
+                f"{len(failures)} of {len(cells)} cell(s) failed:\n" + "\n".join(failures)
+            )
+        return "\n".join(summaries)
 
     def checkpoint(self, cfg_data: dict[str, Any], stage: str, cells: list[dict[str, Any]]) -> Any:
         """Stessa chiamata, rimessa in coda al segnale di timeout."""
