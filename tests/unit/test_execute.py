@@ -47,16 +47,11 @@ class FakeSandbox(sb.Sandbox):
     def runner_command(self, workdir: Path) -> list[str]:
         return ["runner", str(workdir / "job.json")]
 
-    def data_path(self, host_path: Path) -> str:
-        return str(host_path)
+    def work_path(self, workdir: Path, name: str) -> str:
+        return str(workdir / name)
 
     def run(
-        self,
-        cmd: list[str],
-        workdir: Path,
-        timeout_s: float,
-        mem_mb: int | None = None,
-        data_dir: Path | None = None,
+        self, cmd: list[str], workdir: Path, timeout_s: float, mem_mb: int | None = None
     ) -> sb.SandboxResult:
         job = json.loads((workdir / "job.json").read_text(encoding="utf-8"))
         if job["mode"] == "samples":
@@ -87,6 +82,7 @@ class FakeSandbox(sb.Sandbox):
             entries = []
             (workdir / job["out_dir"]).mkdir()
             for name, path in job["datasets"].items():
+                assert Path(path).parent == workdir  # copiati nella cartella di lavoro
                 for row in (
                     json.loads(x) for x in Path(path).read_text(encoding="utf-8").splitlines()
                 ):

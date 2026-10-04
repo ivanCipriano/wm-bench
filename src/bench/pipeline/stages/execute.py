@@ -187,7 +187,7 @@ class ExecuteStage(Stage):
     ) -> dict[str, Executor]:
         cfg = self._cfg()
         language = Language(str(cell.language))
-        root = cfg.paths.tmp / "execute"
+        root = sandbox.workdir_root(cfg.paths.tmp / "execute")
         root.mkdir(parents=True, exist_ok=True)
         groundtruth = None
         if language is Language.PYTHON:

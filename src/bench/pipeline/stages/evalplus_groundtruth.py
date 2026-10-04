@@ -65,15 +65,20 @@ class EvalPlusGroundTruthStage(Stage):
         cfg = self.config
         he = cfg.datasets["humanevalplus"].file("data")
         mbpp = cfg.datasets["mbppplus"].file("data")
-        if he.parent != mbpp.parent:
-            raise ConfigError(f"HumanEval+ and MBPP+ must be in the same folder: {he}, {mbpp}")
         sandbox = sandbox_mod.make_sandbox(cfg.execution)
-        workdir = cfg.paths.tmp / "evalplus_groundtruth" / uuid.uuid4().hex[:12]
+        root = sandbox.workdir_root(cfg.paths.tmp / "evalplus_groundtruth")
+        workdir = root / f"groundtruth_{uuid.uuid4().hex[:12]}"
         workdir.mkdir(parents=True)
         try:
+            # I file JSONL vanno nella cartella di lavoro (niente bind di beegfs, ADR-001).
+            for source in (he, mbpp):
+                shutil.copyfile(source, workdir / source.name)
             job = {
                 "mode": "groundtruth",
-                "datasets": {"humaneval": sandbox.data_path(he), "mbpp": sandbox.data_path(mbpp)},
+                "datasets": {
+                    "humaneval": sandbox.work_path(workdir, he.name),
+                    "mbpp": sandbox.work_path(workdir, mbpp.name),
+                },
                 "out_dir": "gt",
                 "mem_mb": cfg.execution.mem_mb["python"],
             }
@@ -83,7 +88,6 @@ class EvalPlusGroundTruthStage(Stage):
                 sandbox.runner_command(workdir),
                 workdir,
                 cfg.execution.groundtruth_timeout_s,
-                data_dir=he.parent,
             )
             out = workdir / "result.json"
             if not out.is_file():

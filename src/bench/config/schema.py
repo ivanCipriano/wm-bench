@@ -225,6 +225,7 @@ class ExecutionConfig(_Frozen):
     image_dir: Path
     image_sif: Path
     network_none: bool = True
+    node_local: bool = True  # immagine e cartelle di lavoro sul disco locale del nodo
     apptainer_module: str
     sources: list[Literal["canonical", "llm_baseline"]]
     timeouts_s: dict[str, float]

@@ -5,6 +5,9 @@ sandbox: apptainer
 image_dir: ${paths.wmb}/containers/sandbox_dir
 image_sif: ${paths.wmb}/containers/sandbox.sif
 network_none: true
+# Immagine (estratta dal .sif, hash verificato) e cartelle di lavoro sul disco locale del nodo
+# ($TMPDIR o /tmp): su beegfs apptainer exec si blocca a intermittenza (ADR-001).
+node_local: true
 apptainer_module: apptainer/apptainer.module
 sources: [canonical, llm_baseline]
 # Esecuzione di un campione (SPEC §11.2: 10 s Python, 20 s Java/C++; JavaScript come Python).

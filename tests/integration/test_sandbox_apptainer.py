@@ -35,15 +35,15 @@ def box(data_cfg: ExperimentConfig) -> ApptainerSandbox:
         if os.environ.get("WMB_REQUIRE_DATA") == "1":
             pytest.fail("apptainer not in PATH: module load apptainer/apptainer.module")
         pytest.skip("apptainer not in PATH")
-    require(data_cfg.execution.image_dir / "opt" / "wmb" / "wmb_runner.py", "sandbox image")
+    require(data_cfg.execution.image_sif, "sandbox image")
     sandbox = ApptainerSandbox(data_cfg.execution)
     sandbox.check()
     return sandbox
 
 
 @pytest.fixture
-def workdir(data_cfg: ExperimentConfig) -> Iterator[Path]:
-    path = data_cfg.paths.tmp / "test_sandbox" / uuid.uuid4().hex[:8]
+def workdir(box: ApptainerSandbox, data_cfg: ExperimentConfig) -> Iterator[Path]:
+    path = box.workdir_root(data_cfg.paths.tmp) / "test_sandbox" / uuid.uuid4().hex[:8]
     path.mkdir(parents=True)
     yield path
     shutil.rmtree(path, ignore_errors=True)
@@ -91,6 +91,18 @@ def test_image_versions(box: ApptainerSandbox, workdir: Path) -> None:
 def test_timeout_kills_the_invocation(box: ApptainerSandbox, workdir: Path) -> None:
     result = box.run(["python3", "-c", "import time; time.sleep(60)"], workdir, 2)
     assert result.timed_out
+    assert result.duration_s < 30  # ucciso dal timeout interno, non dal tetto esterno
+
+
+def test_invocations_never_hang(box: ApptainerSandbox, workdir: Path) -> None:
+    # Su beegfs alcune invocazioni si bloccavano (diagnosi del 4 ottobre 2026, ADR-001).
+    durations = []
+    for _ in range(20):
+        result = box.run(["python3", "-c", "print('ok')"], workdir, 30)
+        assert result.returncode == 0 and result.stdout.strip() == "ok", result
+        durations.append(result.duration_s)
+    print(f"exec durations: max {max(durations):.2f}s, mean {sum(durations) / 20:.2f}s")
+    assert max(durations) < 10
 
 
 @pytest.mark.parametrize("language", [Language.CPP, Language.JAVA, Language.JAVASCRIPT])
@@ -108,7 +120,7 @@ def test_humanevalpack_canonicals(
         for r in table[table["problem_key"].isin(keys)].to_dict(orient="records")
     ]
     assert len(problems) == len(keys)
-    root = data_cfg.paths.tmp / "test_sandbox"
+    root = box.workdir_root(data_cfg.paths.tmp) / "test_sandbox"
     root.mkdir(parents=True, exist_ok=True)
     executor = HumanEvalPackExecutor(data_cfg, box, language, root)
     for problem in problems:

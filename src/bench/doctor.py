@@ -374,6 +374,9 @@ class PatchedCopiesCheck(DoctorCheck):
         return results
 
 
+TIMEOUT_EXIT = 124  # codice di run_command allo scadere del tempo
+
+
 class ApptainerCheck(DoctorCheck):
     """Versione di Apptainer (cluster_info §5)."""
 
@@ -438,12 +441,14 @@ class ApptainerCheck(DoctorCheck):
             "    print('no-network')\n"
         )
         cmd = ["apptainer", "exec", "--containall", "--cleanenv", "--no-home"]
-        cmd += ["--no-mount", "bind-paths"]
         if execution.network_none:
             cmd += ["--net", "--network", "none"]
-        proc = ctx.run([*cmd, str(image_dir), "python3", "-c", probe], 300, None, None)
+        proc = ctx.run([*cmd, str(image_dir), "python3", "-c", probe], 120, None, None)
         output = proc.stdout.strip()
-        if proc.returncode != 0:
+        if proc.returncode == TIMEOUT_EXIT:
+            # Su beegfs exec può bloccarsi; i job usano la copia sul disco del nodo (ADR-001).
+            status, detail = Status.WARN, "timed out on beegfs (jobs use a node-local copy)"
+        elif proc.returncode != 0:
             status, detail = Status.FAIL, (proc.stderr.strip() or output)[-300:]
         elif output == "no-network":
             status, detail = Status.OK, "runs, network disabled"

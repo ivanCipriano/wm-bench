@@ -35,9 +35,7 @@
 
 4. **Rete: `--net --network none` sempre.** Funziona da utente non privilegiato sul nodo di login (cluster_info §5);
    il doctor e `tests/integration/test_sandbox_apptainer.py` verificano che dal container non si apra una
-   connessione. Le opzioni restanti sono quelle di SPEC §11.2: `--containall --cleanenv --no-home`, più
-   `--no-mount bind-paths` (i bind path di `apptainer.conf`, es. `/mnt/beegfs`, resterebbero visibili anche con
-   `--containall`: il codice generato non deve poter leggere o scrivere gli artefatti); sola
+   connessione. Le opzioni restanti sono quelle di SPEC §11.2: `--containall --cleanenv --no-home`, sola
    `/work` montata in scrittura, `timeout --kill-after=5` sull'intera invocazione.
 
 5. **Memoria.** Il limite di SPEC §11.2 (`prlimit --as`) si applica **per campione** dentro il runner:
@@ -103,5 +101,21 @@
 
 ## Verifica sul cluster
 
-Da compilare dopo `scripts/check_sandbox.sh` (nodo defq): rete assente, isolamento, versioni, canoniche di
-prova; tempo di avvio di un `exec` sulla directory.
+**Diagnosi del 4 ottobre 2026** (`scripts/diagnose_sandbox.sh`, tnode03, log in `M4_cluster.txt`).
+- Con l'immagine directory su beegfs `apptainer exec` si blocca a intermittenza, anche un semplice `true` senza
+  opzioni: 2 prove su 5 uccise dopo 90 s. Quando non si blocca, l'avvio di `python3` richiede 15–25 s.
+- Con `--debug` il blocco avviene durante i mount della sessione. Anche il bind di una cartella di lavoro su
+  beegfs si blocca a intermittenza; con la cartella sul disco locale del nodo (`/tmp`, xfs) le 5 prove durano 0,1 s.
+- `--no-mount bind-paths` non esiste in Apptainer 1.1.9: viene ignorato con un avviso, quindi è stato rimosso.
+  Non serve: con `--contain` Apptainer salta i bind path di `apptainer.conf` (`Skipping bind mounts as contain
+  was requested`) e non monta i file system dell'host.
+- DNS senza rete: `gaierror` immediato, quindi `--network none` funziona anche sul tnode.
+
+**Decisione 10.** Sui nodi di calcolo l'immagine viene estratta dal `.sif` sul disco locale (`$TMPDIR` o `/tmp`)
+con `apptainer build --sandbox`, **dopo averne verificato lo SHA-256**: una volta per nodo e utente, con lock e
+marcatore. Anche le cartelle di lavoro stanno sul disco locale (`execution.node_local: true`). I file JSONL della
+ground truth vengono copiati nella cartella di lavoro invece di montare beegfs. L'hash registrato resta quello del
+`.sif`. La directory su beegfs prodotta da `build_sandbox.sh` serve solo al doctor dal nodo di login; lì un
+blocco dà WARN.
+
+Esito della verifica dopo la correzione: da aggiungere dopo `scripts/check_sandbox.sh`.

@@ -249,7 +249,7 @@ def test_apptainer_image(cfg: ExperimentConfig) -> None:
 
     def fallback(cmd: tuple[str, ...]) -> CommandResult | None:
         if cmd[:2] == ("apptainer", "exec"):
-            assert cmd[5:10] == ("--no-mount", "bind-paths", "--net", "--network", "none")
+            assert cmd[5:8] == ("--net", "--network", "none")
             return CommandResult(0, output["exec"], "")
         return None
 
