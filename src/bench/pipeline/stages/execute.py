@@ -18,6 +18,7 @@ input (I1) con i campi di ``ExecutionRecord`` più ``problem_key``, ``sample_ind
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import statistics
@@ -327,4 +328,6 @@ class ExecuteStage(Stage):
         ).model_copy(update={"sandbox_image_hash": sandbox.image_hash})
         ctx.store.write_table(ref, df, manifest)
         partial.unlink(missing_ok=True)
+        with contextlib.suppress(OSError):  # cartella _partial vuota
+            partial.parent.rmdir()
         logger.info("%s: %d records, status %s", cell.key(), n, dict(statuses))

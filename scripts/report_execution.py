@@ -81,7 +81,8 @@ def baseline_report(root: Path, level: str, resamples: int) -> None:
     if not frames:
         sys.stdout.write("  no baseline execution artifacts\n")
         return
-    allx = pd.concat(frames, ignore_index=True)
+    # Colonne tutte vuote (es. n_tests di HumanEvalPack) escluse: evita l'avviso di pandas.
+    allx = pd.concat([f.dropna(axis=1, how="all") for f in frames], ignore_index=True)
     sys.stdout.write(
         f"  {'model':22s} {'language':11s} {'split':8s} {'problems':>8s} {'pass@1':>7s}  "
         f"{'95% CI':17s} statuses\n"
