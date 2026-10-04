@@ -3365,3 +3365,14 @@ apptainer version 1.1.9
 
 [models]
 summary: 50 OK, 0 WARN, 0 FAIL, 3 SKIP -> OK
+node: tnode05
+apptainer version 1.1.9
+........                                                                 [100%]
+8 passed in 17.49s
+[apptainer]
+  OK    version                                 1.1.9 (expected 1.1.9)
+  OK    sandbox image                           sha256 a05d2f9ff095
+  OK    sandbox exec                            runs, network disabled
+
+[models]
+summary: 50 OK, 0 WARN, 0 FAIL, 3 SKIP -> OK
