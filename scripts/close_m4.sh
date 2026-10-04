@@ -56,7 +56,7 @@ bench stage=execute "levels=[L1]" "splits=[dev,test]" 2>&1 | tail -n 1
 
 echo "##### doctor"
 module load apptainer/apptainer.module 2>/dev/null
-bench doctor | grep -E "apptainer|summary"
+bench doctor > /tmp/wmb_doctor_$$.txt; grep -F -A5 '[apptainer]' /tmp/wmb_doctor_$$.txt; tail -n 1 /tmp/wmb_doctor_$$.txt; rm -f /tmp/wmb_doctor_$$.txt
 } 2>&1 | tee -a "$LOG"
 
 echo

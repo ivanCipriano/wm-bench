@@ -21,5 +21,5 @@ srun -p defq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_defq_qos -c 4 --mem 16G 
         echo \"node: \$(hostname)\"
         apptainer --version
         WMB_REQUIRE_DATA=1 python -m pytest -q -rs -m apptainer tests/integration/test_sandbox_apptainer.py
-        bench doctor | grep -E 'apptainer|summary'
+        bench doctor > /tmp/wmb_doctor_\$\$.txt; grep -F -A5 '[apptainer]' /tmp/wmb_doctor_\$\$.txt; tail -n 1 /tmp/wmb_doctor_\$\$.txt; rm -f /tmp/wmb_doctor_\$\$.txt
     "

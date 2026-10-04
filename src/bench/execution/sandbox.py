@@ -87,6 +87,7 @@ def _run(
             cmd,
             cwd=cwd,
             capture_output=True,
+            stdin=subprocess.DEVNULL,  # mai lo stdin del job (srun lo inoltra)
             text=True,
             errors="replace",
             timeout=timeout_s + KILL_AFTER_S + 5,
