@@ -269,3 +269,25 @@ total: 0 ran, 20 skipped
 
 [models]
 summary: 50 OK, 0 WARN, 0 FAIL, 3 SKIP -> OK
+##### diagnosi canoniche Python: nodo tnode05
+===== humaneval/32
+-- alone, run 1: {"task_id": "HumanEval/32", "atol": 0.0001, "base": {"status": "fail", "n": 100, "n_checked": 0, "n_failed": 0, "first_failures": []}, "plus": {"status": "fail", "n": 788, "n_checked": 0, "n_failed": 0, "first_failures": []}}
+-- alone, run 2: {"task_id": "HumanEval/32", "atol": 0.0001, "base": {"status": "fail", "n": 100, "n_checked": 0, "n_failed": 0, "first_failures": []}, "plus": {"status": "fail", "n": 788, "n_checked": 0, "n_failed": 0, "first_failures": []}}
+-- alone, run 3: {"task_id": "HumanEval/32", "atol": 0.0001, "base": {"status": "fail", "n": 100, "n_checked": 0, "n_failed": 0, "first_failures": []}, "plus": {"status": "fail", "n": 788, "n_checked": 0, "n_failed": 0, "first_failures": []}}
+-- under load x16, base failed tests per run: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+-- under load x16, plus failed tests per run: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+-- under load, first run: {"task_id": "HumanEval/32", "atol": 0.0001, "base": {"status": "fail", "n": 100, "n_checked": 0, "n_failed": 0, "first_failures": []}, "plus": {"status": "fail", "n": 788, "n_checked": 0, "n_failed": 0, "first_failures": []}}
+===== humaneval/139
+-- alone, run 1: {"task_id": "HumanEval/139", "atol": 0, "base": {"status": "pass", "n": 4, "n_checked": 4, "n_failed": 0, "first_failures": []}, "plus": {"status": "pass", "n": 127, "n_checked": 127, "n_failed": 0, "first_failures": []}}
+-- alone, run 2: {"task_id": "HumanEval/139", "atol": 0, "base": {"status": "pass", "n": 4, "n_checked": 4, "n_failed": 0, "first_failures": []}, "plus": {"status": "pass", "n": 127, "n_checked": 127, "n_failed": 0, "first_failures": []}}
+-- alone, run 3: {"task_id": "HumanEval/139", "atol": 0, "base": {"status": "pass", "n": 4, "n_checked": 4, "n_failed": 0, "first_failures": []}, "plus": {"status": "pass", "n": 127, "n_checked": 127, "n_failed": 0, "first_failures": []}}
+-- under load x16, base failed tests per run: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+-- under load x16, plus failed tests per run: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+-- under load, first run: {"task_id": "HumanEval/139", "atol": 0, "base": {"status": "pass", "n": 4, "n_checked": 4, "n_failed": 0, "first_failures": []}, "plus": {"status": "pass", "n": 127, "n_checked": 127, "n_failed": 0, "first_failures": []}}
+===== mbpp/255
+-- alone, run 1: {"task_id": "Mbpp/255", "atol": 0, "base": {"status": "pass", "n": 3, "n_checked": 3, "n_failed": 0, "first_failures": []}, "plus": {"status": "fail", "n": 109, "n_checked": 109, "n_failed": 1, "first_failures": [{"index": 85, "seconds": 1.2219, "limit": 4.8116, "gt_seconds": 1.2029, "error": null, "check": "equal"}]}}
+-- alone, run 2: {"task_id": "Mbpp/255", "atol": 0, "base": {"status": "pass", "n": 3, "n_checked": 3, "n_failed": 0, "first_failures": []}, "plus": {"status": "fail", "n": 109, "n_checked": 109, "n_failed": 1, "first_failures": [{"index": 85, "seconds": 1.2283, "limit": 4.8116, "gt_seconds": 1.2029, "error": null, "check": "equal"}]}}
+-- alone, run 3: {"task_id": "Mbpp/255", "atol": 0, "base": {"status": "pass", "n": 3, "n_checked": 3, "n_failed": 0, "first_failures": []}, "plus": {"status": "fail", "n": 109, "n_checked": 109, "n_failed": 1, "first_failures": [{"index": 85, "seconds": 1.1964, "limit": 4.8116, "gt_seconds": 1.2029, "error": null, "check": "equal"}]}}
+-- under load x16, base failed tests per run: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+-- under load x16, plus failed tests per run: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+-- under load, first run: {"task_id": "Mbpp/255", "atol": 0, "base": {"status": "pass", "n": 3, "n_checked": 3, "n_failed": 0, "first_failures": []}, "plus": {"status": "fail", "n": 109, "n_checked": 109, "n_failed": 1, "first_failures": [{"index": 85, "seconds": 1.2314, "limit": 4.8116, "gt_seconds": 1.2029, "error": null, "check": "equal"}]}}
