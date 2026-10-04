@@ -1,11 +1,13 @@
 # Immagine della sandbox dei test (SPEC §11.1, ADR-001). Build: scripts/build_sandbox.sh.
 # Contiene solo ciò che serve a eseguire il codice generato e i test di L1:
 #   Python 3.11 + EvalPlus 0.3.1 (stessa versione di bench-core) per HumanEval+ e MBPP+;
-#   g++ (con OpenSSL e Boost, richiesti dai test C++ di HumanEvalPack), OpenJDK 17, Node.js
+#   g++ (con OpenSSL e Boost, richiesti dai test C++ di HumanEvalPack), OpenJDK 21, Node.js
 #   (con js-md5, richiesto dal test JavaScript 162) per HumanEvalPack;
 #   il runner del progetto in /opt/wmb.
+# Base Debian 13 (trixie, glibc 2.41): con --fakeroot senza /etc/subuid Apptainer inietta nel
+# %post la libfakeroot dell'host, che richiede glibc >= 2.38 (bookworm ha la 2.36: build fallita).
 Bootstrap: docker
-From: python:3.11-slim-bookworm
+From: python:3.11-slim-trixie
 
 %files
     containers/runner/wmb_runner.py /opt/wmb/wmb_runner.py
@@ -17,7 +19,7 @@ From: python:3.11-slim-bookworm
     mkdir -p /usr/share/man/man1
     apt-get update
     apt-get install -y --no-install-recommends \
-        g++ make libssl-dev libboost-dev openjdk-17-jdk-headless nodejs npm ca-certificates
+        g++ make libssl-dev libboost-dev openjdk-21-jdk-headless nodejs npm ca-certificates
     rm -rf /var/lib/apt/lists/*
     npm install -g js-md5@0.8.3
     pip install --no-cache-dir evalplus==0.3.1

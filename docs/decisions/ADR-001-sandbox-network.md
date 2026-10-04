@@ -7,9 +7,12 @@
 
 ## Decisioni
 
-1. **Immagine** `containers/sandbox.def` su `python:3.11-slim-bookworm`.
+1. **Immagine** `containers/sandbox.def` su `python:3.11-slim-trixie` (Debian 13).
+   - Non bookworm: senza `/etc/subuid` la build `--fakeroot` usa uno spazio dei nomi con mappatura su root e
+     inietta nel `%post` la `libfakeroot.so` dell'host, che richiede glibc ≥ 2.38. Bookworm ha la 2.36 e la build
+     falliva (`GLIBC_2.38 not found`, 4 ottobre 2026); trixie ha la 2.41. OpenJDK 17 non è in trixie: si usa il 21.
    - Contiene: EvalPlus 0.3.1 (stessa versione di bench-core); g++ con `libssl-dev` e `libboost-dev`, perché i test
-     C++ di HumanEvalPack includono `boost/any.hpp` (problema 22) e `openssl/md5.h` (162); OpenJDK 17; Node.js con
+     C++ di HumanEvalPack includono `boost/any.hpp` (problema 22) e `openssl/md5.h` (162); OpenJDK 21; Node.js con
      `js-md5` 0.8.3 (richiesto dal problema JavaScript 162); il runner del progetto in `/opt/wmb/`.
    - Le versioni effettive (gcc, javac, node, js-md5, evalplus, hash di `pip freeze`) sono scritte dalla build in
      `/opt/wmb/versions.json` e copiate nel manifest di ogni artefatto (`sandbox_versions`).
