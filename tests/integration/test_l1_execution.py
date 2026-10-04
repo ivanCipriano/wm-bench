@@ -37,14 +37,18 @@ def known_anomalies() -> set[tuple[str, str]]:
 
 
 @pytest.mark.parametrize("lang", languages_under_test())
-def test_canonical_solutions_pass(store: ArtifactStore, lang: Language) -> None:
+def test_canonical_solutions_pass(
+    store: ArtifactStore, data_cfg: ExperimentConfig, lang: Language
+) -> None:
     cell = Cell(source="canonical", level="L1", language=str(lang))
     ref = execution_ref(cell)
     require(store.manifest_of(ref), f"execution {ref.path} (run execute)")
     assert store.verify(ref)
     problems = store.read_table(problems_ref("L1", lang))
     df = store.read_table(ref)
-    assert len(df) == len(problems) and set(df["problem_key"]) == set(problems["problem_key"])
+    repeats = data_cfg.execution.canonical_repeats  # ogni canonica più volte (ADR-007)
+    assert len(df) == len(problems) * repeats
+    assert set(df["problem_key"]) == set(problems["problem_key"])
     failing = {(str(lang), k) for k in df.loc[df["status"] != "PASSED", "problem_key"]}
     undocumented = failing - known_anomalies()
     assert (

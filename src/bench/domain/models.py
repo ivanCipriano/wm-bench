@@ -84,6 +84,10 @@ class ExecutionRecord(FrozenModel):
     stderr_tail: str | None
     executor: str
     sandbox_image_hash: str
+    # Ripetizione dei TIMEOUT (ADR-007): esito del primo tentativo e della ripetizione;
+    # ``status`` è quello finale. ``retry_status`` è None se il campione non è stato ripetuto.
+    first_attempt_status: ExecStatus | None = None
+    retry_status: ExecStatus | None = None
 
 
 class DetectionRecord(FrozenModel):

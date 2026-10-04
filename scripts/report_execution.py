@@ -64,6 +64,18 @@ def canonical_report(root: Path, level: str) -> None:
         sys.stdout.write(
             f"  {lang:11s} {ok:7.2%} passed of {len(df):4d}  {_statuses(df)}  image {image[:12]}\n"
         )
+        if df["sample_index"].notna().any():
+            reps = df.groupby("problem_key")["sample_index"].nunique().max()
+            always = df.groupby("problem_key")["status"].apply(lambda s: (s == "PASSED").all())
+            sys.stdout.write(
+                f"    {reps} run(s) per problem; passed in every run: {always.mean():.2%}\n"
+            )
+        if "first_attempt_status" in df:
+            first = df.assign(status=df["first_attempt_status"])
+            sys.stdout.write(
+                f"    first attempt: {_statuses(first)}; "
+                f"retried after TIMEOUT: {df['retry_status'].notna().sum()}\n"
+            )
         for row in df[df["status"] != "PASSED"].itertuples(index=False):
             tail = (row.stderr_tail or "").replace("\n", " | ")[-300:]
             sys.stdout.write(f"    {row.problem_key:16s} {row.status:15s} {tail}\n")
@@ -108,6 +120,23 @@ def baseline_report(root: Path, level: str, resamples: int) -> None:
         f"\n  total records: {len(allx)}; "
         f"sandbox errors: {(allx['status'] == 'SANDBOX_ERROR').sum()}\n"
     )
+
+    # Ripetizione dei TIMEOUT (ADR-007): quanti campioni recuperati, per modello e linguaggio.
+    if "retry_status" in allx:
+        sys.stdout.write("\n##### retry of TIMEOUT samples (alone, once; ADR-007)\n")
+        sys.stdout.write(
+            f"  {'model':22s} {'language':11s} {'timeout 1st':>11s} {'retried':>8s} "
+            f"{'->PASSED':>9s} {'still TIMEOUT':>13s}\n"
+        )
+        for (model, lang), group in allx.groupby(["model", "language"], sort=True):
+            retried = group[group["retry_status"].notna()]
+            first_timeout = int((group["first_attempt_status"] == "TIMEOUT").sum())
+            recovered = int((retried["retry_status"] == "PASSED").sum())
+            still = int((retried["retry_status"] == "TIMEOUT").sum())
+            sys.stdout.write(
+                f"  {model:22s} {lang:11s} {first_timeout:11d} {len(retried):8d} "
+                f"{recovered:9d} {still:13d}\n"
+            )
 
     # Campioni probabilmente troncati: stato dopo l'esecuzione.
     trunc = []

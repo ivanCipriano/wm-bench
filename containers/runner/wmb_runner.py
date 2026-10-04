@@ -205,10 +205,210 @@ def _prepare_evalplus_env(root: Path, mem_mb: int | None) -> None:
     os.environ["EVALPLUS_MAX_MEMORY_BYTES"] = str(-1 if mem_mb is None else mem_mb * 1024 * 1024)
 
 
+# Motivi del primo test fallito (memoria condivisa con il processo di controllo).
+_REASON_NONE = 0
+_REASON_WRONG = 1  # risposta sbagliata o eccezione del codice
+_REASON_TEST_TIMEOUT = 2  # superato il limite di tempo di un singolo test
+
+
+def _unsafe_execute(  # noqa: PLR0912, PLR0915 - copia fedele dell'originale
+    dataset: str,
+    entry_point: str,
+    code: str,
+    inputs: list[Any],
+    expected: list[Any],
+    time_limits: list[float],
+    atol: float,
+    fast_check: bool,
+    stat: Any,
+    details: Any,
+    progress: Any,
+    reason: Any,
+) -> None:
+    """Copia di ``evalplus.eval.unsafe_execute`` (EvalPlus 0.3.1, Apache-2.0) con due modifiche.
+
+    1. ``find_zero`` (HumanEval/32): l'originale fa ``continue`` dopo l'oracolo speciale senza
+       segnare il test come superato né avanzare ``progress``, quindi ogni soluzione risulta
+       FAILED (bug di EvalPlus 0.3.1, ADR-007). Qui il test superato viene contato.
+    2. Il motivo del primo test fallito va in ``reason``: limite di tempo del singolo test
+       (``TimeoutException``) oppure risposta sbagliata o eccezione. L'originale li conta
+       entrambi come ``fail``; serve a ripetere i soli fallimenti per tempo (ADR-007).
+
+    Tutto il resto (guardia, limiti, oracoli speciali, tolleranze) è identico all'originale.
+    """
+    import numpy as np
+    from evalplus.eval import _FAILED, _SUCCESS, is_floats, query_maximum_memory_bytes
+    from evalplus.eval._special_oracle import (
+        MBPP_OUTPUT_NOT_NONE_TASKS,
+        MBPP_OUTPUT_SET_EQ_TASKS,
+        _digit_distance_nums,
+        _poly,
+        _surface_Area,
+    )
+    from evalplus.eval.utils import (
+        TimeoutException,
+        create_tempdir,
+        reliability_guard,
+        swallow_io,
+        time_limit,
+    )
+
+    with create_tempdir():
+        # These system calls are needed when cleaning up tempdir.
+        import os as _os
+        import shutil as _shutil
+
+        rmtree = _shutil.rmtree
+        rmdir = _os.rmdir
+        chdir = _os.chdir
+        reliability_guard(maximum_memory_bytes=query_maximum_memory_bytes())
+        exec_globals: dict[str, Any] = {}
+        try:
+            with swallow_io():
+                exec(code, exec_globals)
+                fn = exec_globals[entry_point]
+
+            for i, inp in enumerate(inputs):
+                try:
+                    with time_limit(time_limits[i]), swallow_io():
+                        out = fn(*inp)
+
+                    exp = expected[i]
+                    exact_match = out == exp
+
+                    # ============== special oracles ================= #
+                    if dataset == "mbpp":
+                        if entry_point == "are_equivalent":  # Mbpp/164 special oracle
+                            exact_match = exact_match or True
+                        elif entry_point == "sum_div":  # Mbpp/295 special oracle
+                            exact_match = exact_match or out == 0
+                        elif entry_point == "surface_Area":  # Mbpp/581 special oracle
+                            exact_match = exact_match or abs(out - _surface_Area(*inp)) <= atol
+                        elif entry_point == "digit_distance_nums":  # Mbpp/558 special oracle
+                            exact_match = exact_match or out == _digit_distance_nums(*inp)
+                        elif entry_point in MBPP_OUTPUT_SET_EQ_TASKS:
+                            exact_match = set(out) == set(exp)
+                        elif entry_point in MBPP_OUTPUT_NOT_NONE_TASKS:
+                            # exp is True  if not None
+                            #        False if None
+                            if isinstance(out, bool):
+                                exact_match = out == exp
+                            else:
+                                exact_match = exp == (out is not None)
+
+                    if dataset == "humaneval" and entry_point == "find_zero":
+                        assert abs(_poly(*inp, out)) <= atol
+                        details[i] = True  # modifica 1: test superato contato
+                        progress.value += 1
+                        continue
+                    # ============== special oracles ================= #
+
+                    if atol == 0 and is_floats(exp):
+                        atol = 1e-6  # enforce atol for float comparison
+                    if not exact_match and atol != 0:
+                        # explicitly set rtol=1e-07
+                        # to match `np.testing.assert_allclose`'s default values
+                        assert type(out) == type(exp)  # noqa: E721 - come l'originale
+                        if isinstance(exp, (list, tuple)):  # noqa: UP038
+                            assert len(out) == len(exp)
+                        assert np.allclose(out, exp, rtol=1e-07, atol=atol)
+                    else:
+                        assert exact_match
+                except BaseException as exc:
+                    if reason.value == _REASON_NONE:  # modifica 2: motivo del primo fallimento
+                        timed_out = isinstance(exc, TimeoutException)
+                        reason.value = _REASON_TEST_TIMEOUT if timed_out else _REASON_WRONG
+                    details[i] = False
+                    progress.value += 1
+                    if fast_check:
+                        raise
+                    continue
+
+                details[i] = True
+                progress.value += 1
+
+            stat.value = _SUCCESS
+        except BaseException:
+            stat.value = _FAILED
+        # Needed for cleaning up.
+        _shutil.rmtree = rmtree
+        _os.rmdir = rmdir
+        _os.chdir = chdir
+
+
+def untrusted_check(
+    dataset: str,
+    code: str,
+    inputs: list[Any],
+    entry_point: str,
+    expected: list[Any],
+    atol: float,
+    ref_time: list[float],
+    fast_check: bool,
+    min_time_limit: float,
+    gt_time_limit_factor: float,
+) -> tuple[str, list[bool], int]:
+    """Copia di ``evalplus.eval.untrusted_check`` (0.3.1) che usa ``_unsafe_execute`` e
+    restituisce anche il motivo del primo fallimento. Tempi e limiti identici all'originale."""
+    import multiprocessing
+    from multiprocessing import Array, Value
+
+    from evalplus.eval import _UNKNOWN, FAIL, PASS, _mapping
+    from evalplus.eval import TIMEOUT as EP_TIMEOUT
+
+    time_limits = [max(min_time_limit, gt_time_limit_factor * t) for t in ref_time]
+    timeout = min(os.getenv("EVALPLUS_TIMEOUT_PER_TASK", 60), sum(time_limits)) + 1  # noqa: PLW1508
+    if not fast_check:
+        timeout += 1  # extra time for data collection
+
+    progress = Value("i", 0)
+    stat = Value("i", _UNKNOWN)
+    reason = Value("i", _REASON_NONE)
+    details = Array("b", [False for _ in range(len(inputs))])
+
+    proc = multiprocessing.Process(
+        target=_unsafe_execute,
+        args=(
+            dataset,
+            entry_point,
+            code,
+            inputs,
+            expected,
+            time_limits,
+            atol,
+            fast_check,
+            stat,
+            details,
+            progress,
+            reason,
+        ),
+    )
+    proc.start()
+    proc.join(timeout=timeout + 1)
+    if proc.is_alive():
+        proc.terminate()
+        time.sleep(0.1)
+    if proc.is_alive():
+        proc.kill()
+        time.sleep(0.1)
+
+    result = _mapping[stat.value]
+    checked = list(details[: progress.value])
+    if not result:
+        result = EP_TIMEOUT
+    if result == PASS and (len(checked) != len(inputs) or not all(checked)):
+        result = FAIL
+    return result, checked, int(reason.value)
+
+
 def run_evalplus(job: dict[str, Any], root: Path) -> list[dict[str, Any]]:
-    """Test base+plus di EvalPlus sui campioni di un problema."""
+    """Test base+plus di EvalPlus sui campioni di un problema (ADR-001, ADR-007).
+
+    Stati: PASSED se passano base e plus; TIMEOUT se il processo supera il tempo totale o un
+    singolo test supera il suo limite; FAILED per risposte sbagliate o eccezioni.
+    """
     _prepare_evalplus_env(root, job.get("mem_mb"))
-    from evalplus.eval import PASS, untrusted_check
+    from evalplus.eval import PASS
     from evalplus.eval import TIMEOUT as EP_TIMEOUT
 
     conf = job["evalplus"]
@@ -232,7 +432,7 @@ def run_evalplus(job: dict[str, Any], root: Path) -> list[dict[str, Any]]:
         detail = None
         # Come evalplus.evaluate.check_correctness: prima i test base, poi i plus.
         for part in ("base", "plus"):
-            stat, _details = untrusted_check(
+            stat, checked, reason = untrusted_check(
                 conf["dataset"],
                 code,
                 problem[f"{part}_input"],
@@ -245,8 +445,13 @@ def run_evalplus(job: dict[str, Any], root: Path) -> list[dict[str, Any]]:
                 gt_time_limit_factor=float(conf["gt_time_limit_factor"]),
             )
             if stat != PASS:
-                status = TIMEOUT if stat == EP_TIMEOUT else FAILED
-                detail = f"{part} tests: {stat}"
+                if stat == EP_TIMEOUT:
+                    status, why = TIMEOUT, "total time limit"
+                elif reason == _REASON_TEST_TIMEOUT:
+                    status, why = TIMEOUT, f"time limit of test {len(checked) - 1}"
+                else:
+                    status, why = FAILED, f"test {len(checked) - 1}" if checked else "before tests"
+                detail = f"{part} tests: {stat} ({why})"
                 break
         results.append(
             _record(

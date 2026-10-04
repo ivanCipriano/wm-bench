@@ -26,7 +26,7 @@ from bench.store.artifact_store import ArtifactStore
 
 PROBE = r"""
 import json, pickle, sys, time, os
-os.environ["EVALPLUS_MAX_MEMORY_BYTES"] = str(4 * 1024**3)
+os.environ["EVALPLUS_MAX_MEMORY_BYTES"] = str(MEM_GB * 1024**3)
 from evalplus.eval import untrusted_check
 from evalplus.eval._special_oracle import _poly
 payload = pickle.load(open("/work/payload.pkl", "rb"))
@@ -64,12 +64,12 @@ print(json.dumps(report))
 """
 
 
-def run_one(box: ApptainerSandbox, root, payload: bytes) -> dict:  # type: ignore[no-untyped-def,type-arg]
+def run_one(box: ApptainerSandbox, root, payload: bytes, mem_gb: int = 4) -> dict:  # type: ignore[no-untyped-def,type-arg]
     work = root / f"dbg_{uuid.uuid4().hex[:8]}"
     work.mkdir(parents=True)
     try:
         (work / "payload.pkl").write_bytes(payload)
-        (work / "probe.py").write_text(PROBE, encoding="utf-8")
+        (work / "probe.py").write_text(f"MEM_GB = {mem_gb}\n" + PROBE, encoding="utf-8")
         res = box.run(["python3", "/work/probe.py"], work, 1800)
         if res.returncode != 0:
             return {"error": (res.stderr or res.stdout)[-1500:]}
@@ -83,6 +83,7 @@ def main() -> int:
     parser.add_argument("problems", nargs="+", help="problem keys, e.g. humaneval/32 mbpp/255")
     parser.add_argument("--repeat", type=int, default=3)
     parser.add_argument("--load", type=int, default=16)
+    parser.add_argument("--mem-gb", type=int, default=4, help="EvalPlus memory limit (GB)")
     ns = parser.parse_args()
 
     cfg = load_experiment(["paths=cluster", "stage=execute"])
@@ -99,11 +100,11 @@ def main() -> int:
         payload = bytes(by_key[key]["payload"])
         print(f"===== {key}")
         for r in range(ns.repeat):
-            print(f"-- alone, run {r + 1}: {json.dumps(run_one(box, root, payload))}")
+            print(f"-- alone, run {r + 1}: {json.dumps(run_one(box, root, payload, ns.mem_gb))}")
         if ns.load > 1:
             with ThreadPoolExecutor(ns.load) as pool:
                 jobs = [payload] * ns.load
-                results = list(pool.map(lambda data: run_one(box, root, data), jobs))
+                results = list(pool.map(lambda data: run_one(box, root, data, ns.mem_gb), jobs))
             for part in ("base", "plus"):
                 fails = [x.get(part, {}).get("n_failed") for x in results]
                 print(f"-- under load x{ns.load}, {part} failed tests per run: {fails}")

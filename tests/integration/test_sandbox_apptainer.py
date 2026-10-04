@@ -132,3 +132,36 @@ def test_humanevalpack_canonicals(
         assert records[0].status == "PASSED", (problem.problem_key, records[0].stderr_tail)
         assert records[1].status != "PASSED", problem.problem_key
         assert records[0].sandbox_image_hash == box.image_hash
+
+
+def test_evalplus_known_cases(box: ApptainerSandbox, data_cfg: ExperimentConfig) -> None:
+    """Casi di ADR-007: find_zero (bug di EvalPlus 0.3.1), MBPP/255 (memoria), timeout per test."""
+    from bench.execution.executors import EvalPlusExecutor
+    from bench.pipeline.stages.evalplus_groundtruth import groundtruth_ref, load_groundtruth
+
+    store = ArtifactStore(data_cfg.paths.artifacts)
+    require(
+        store.manifest_of(groundtruth_ref()), "EvalPlus ground truth (run evalplus_groundtruth)"
+    )
+    table = store.read_table(problems_ref("L1", Language.PYTHON)).set_index("problem_key")
+    gt = load_groundtruth(store.read_table(groundtruth_ref()))
+    root = box.workdir_root(data_cfg.paths.tmp) / "test_sandbox"
+    root.mkdir(parents=True, exist_ok=True)
+    executor = EvalPlusExecutor(data_cfg, box, Language.PYTHON, root, gt)
+
+    def problem(key: str) -> Problem:
+        return Problem.model_validate({"problem_key": key, **table.loc[key].to_dict()})
+
+    for key in ("humaneval/32", "humaneval/139", "mbpp/255"):
+        p = problem(key)
+        record = executor.run_problem(p, [SampleToRun("c", key, 0, executor.canonical(p))])[0]
+        assert record.status == "PASSED", (key, record.stderr_tail)
+    p32 = problem("humaneval/32")
+    wrong = p32.prompt_text + "    return 12345.0\n"
+    record = executor.run_problem(p32, [SampleToRun("w", p32.problem_key, 0, wrong)])[0]
+    assert record.status == "FAILED", record.stderr_tail
+    p0 = problem("humaneval/0")
+    slow = p0.prompt_text + "    import time\n    time.sleep(3)\n    return False\n"
+    record = executor.run_problem(p0, [SampleToRun("s", p0.problem_key, 0, slow)])[0]
+    assert record.status == "TIMEOUT", record.stderr_tail
+    assert "time limit" in (record.stderr_tail or "")

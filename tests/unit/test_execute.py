@@ -32,6 +32,15 @@ from tests.unit.test_generate_baseline import MODEL, FakeBackend
 LOCK = threading.Lock()
 
 
+def _fake_status(program: str, alone: bool) -> str:
+    """FAIL: risposta sbagliata; SLOW: TIMEOUT in compagnia, e da solo PASSED solo con RECOVER."""
+    if "FAIL" in program:
+        return "FAILED"
+    if "SLOW" in program:
+        return "PASSED" if alone and "RECOVER" in program else "TIMEOUT"
+    return "PASSED"
+
+
 class FakeSandbox(sb.Sandbox):
     """Sandbox finta: registra i job e risponde come il runner."""
 
@@ -69,7 +78,7 @@ class FakeSandbox(sb.Sandbox):
             results = [
                 {
                     "id": s["id"],
-                    "status": "FAILED" if "FAIL" in s["program"] else "PASSED",
+                    "status": _fake_status(s["program"], alone=len(job["samples"]) == 1),
                     "n_tests": None,
                     "n_passed": None,
                     "duration_s": 0.01,
@@ -153,8 +162,13 @@ def test_groundtruth_and_canonical_python(facade: BenchmarkFacade) -> None:
     facade.run_stage("execute", cells=[Cell(source="canonical", level="L1", language="python")])
     ref = execution_ref(Cell(source="canonical", level="L1", language="python"))
     table = facade.store.read_table(ref)
-    assert len(table) == HE_TOTAL + MBPP_TOTAL  # un campione (la canonica) per problema
-    assert set(table["status"]) == {"PASSED"} and table["sample_index"].isna().all()
+    repeats = facade.cfg.execution.canonical_repeats
+    assert repeats == 3
+    assert len(table) == (HE_TOTAL + MBPP_TOTAL) * repeats  # la canonica 3 volte per problema
+    assert set(table["status"]) == {"PASSED"}
+    assert sorted(set(table["sample_index"])) == list(range(repeats))
+    assert table["sample_id"].is_unique
+    assert set(table["first_attempt_status"]) == {"PASSED"} and table["retry_status"].isna().all()
     assert set(table["executor"]) == {"evalplus"}
     # Il job di EvalPlus porta il pickle della ground truth e il nome del dataset di EvalPlus.
     datasets = {job["evalplus"]["dataset"] for job in FakeSandbox.jobs}
@@ -230,7 +244,7 @@ def test_canonical_java_really_passes(
     cell = Cell(source="canonical", level="L1", language="java")
     facade.run_stage("execute", cells=[cell])
     table = facade.store.read_table(execution_ref(cell))
-    assert len(table) == HE_TOTAL
+    assert len(table) == HE_TOTAL * facade.cfg.execution.canonical_repeats
     assert set(table["status"]) == {"PASSED"}, table[["problem_key", "status", "stderr_tail"]]
     assert set(table["sandbox_image_hash"]) == {"local"}
 
@@ -247,3 +261,57 @@ def test_check_program_used_for_canonical(facade: BenchmarkFacade) -> None:
         for r in rows.values()
     }
     assert programs == expected
+
+
+def test_timeouts_are_retried_alone_once(
+    facade: BenchmarkFacade, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from bench.execution.executors import HumanEvalPackExecutor
+
+    markers = {"humaneval/0": "SLOW RECOVER", "humaneval/1": "SLOW", "humaneval/2": "FAIL"}
+    original = HumanEvalPackExecutor.canonical
+    monkeypatch.setattr(
+        HumanEvalPackExecutor,
+        "canonical",
+        lambda self, p: original(self, p) + "// " + markers.get(p.problem_key, ""),
+    )
+    cell = Cell(source="canonical", level="L1", language="java")
+    facade.run_stage("execute", cells=[cell])
+    table = facade.store.read_table(execution_ref(cell)).set_index(["problem_key", "sample_index"])
+    repeats = facade.cfg.execution.canonical_repeats
+    for rep in range(repeats):
+        recovered = table.loc[("humaneval/0", rep)]
+        assert recovered["first_attempt_status"] == "TIMEOUT"
+        assert recovered["retry_status"] == recovered["status"] == "PASSED"
+        still = table.loc[("humaneval/1", rep)]
+        assert (
+            still["first_attempt_status"] == still["retry_status"] == still["status"] == "TIMEOUT"
+        )
+        wrong = table.loc[("humaneval/2", rep)]  # risposte sbagliate: niente ripetizione
+        assert wrong["status"] == "FAILED" and wrong["retry_status"] is None
+    # Le ripetizioni girano una per invocazione (da sole), solo per i TIMEOUT.
+    alone = [j for j in FakeSandbox.jobs if len(j["samples"]) == 1]
+    assert len(alone) == 2 * repeats
+    manifest = facade.store.read_manifest(execution_ref(cell))
+    assert manifest is not None
+    assert manifest.extra["retried"] == 2 * repeats
+    assert manifest.extra["recovered_timeout_to_passed"] == repeats
+    assert manifest.extra["first_attempt_status_counts"]["TIMEOUT"] == 2 * repeats
+
+
+def test_workers_follow_the_job_cpus(
+    cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from bench.pipeline.stages.execute import job_cpus, max_workers
+
+    monkeypatch.setenv("SLURM_CPUS_PER_TASK", "16")
+    assert job_cpus(cfg) == 16
+    assert max_workers(cfg, "java") == 16
+    assert max_workers(cfg, "python") == 8  # metà per Python (ADR-007)
+    monkeypatch.setenv("SLURM_CPUS_PER_TASK", "1")
+    assert max_workers(cfg, "python") == 1
+    monkeypatch.delenv("SLURM_CPUS_PER_TASK")
+    import os
+
+    if hasattr(os, "sched_getaffinity"):
+        assert job_cpus(cfg) == len(os.sched_getaffinity(0))

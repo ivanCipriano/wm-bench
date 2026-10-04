@@ -14,10 +14,12 @@ sources: [canonical, llm_baseline]
 timeouts_s: {python: 10, java: 20, cpp: 20, javascript: 10}
 compile_timeout_s: 30
 # Memoria virtuale per campione; null = nessun limite per processo (JVM e V8, vedi ADR-001).
-# Python: passato a EvalPlus come EVALPLUS_MAX_MEMORY_BYTES (suo default: 4 GB).
-mem_mb: {python: 4096, cpp: 4096, java: null, javascript: null}
+# Python: passato a EvalPlus come EVALPLUS_MAX_MEMORY_BYTES; 8 GB invece del default di 4 GB
+# (MBPP/255: l'output della canonica non sta in 4 GB, ADR-007, D13).
+mem_mb: {python: 8192, cpp: 4096, java: null, javascript: null}
 groundtruth_timeout_s: 10800
-max_workers: null              # null = SLURM_CPUS_PER_TASK (o i core della macchina)
+max_workers: null              # null = CPU del job (SLURM_CPUS_PER_TASK o affinità); Python: la metà
+canonical_repeats: 3           # ogni canonica eseguita 3 volte: deve passare sempre (ADR-007)
 stderr_tail_chars: 2000
 evalplus:                      # default di EvalPlus 0.3.1 (evalplus/config.py)
   min_time_limit: 1.0

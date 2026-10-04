@@ -233,6 +233,7 @@ class ExecutionConfig(_Frozen):
     mem_mb: dict[str, int | None]
     groundtruth_timeout_s: float = Field(gt=0)
     max_workers: int | None = Field(default=None, gt=0)
+    canonical_repeats: int = Field(default=1, gt=0)
     stderr_tail_chars: int = Field(gt=0)
     evalplus: EvalPlusConfig
 

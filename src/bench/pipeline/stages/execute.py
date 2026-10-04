@@ -72,12 +72,27 @@ def execution_ref(cell: Cell) -> ArtifactRef:
     )
 
 
-def max_workers(cfg: ExperimentConfig) -> int:
-    """Thread paralleli: configurazione, poi ``SLURM_CPUS_PER_TASK``, poi i core."""
+def job_cpus(cfg: ExperimentConfig) -> int:
+    """CPU assegnate al job: configurazione, poi ``SLURM_CPUS_PER_TASK``, poi l'affinità del
+    processo (mai ``os.cpu_count()``, che conta tutti i core del nodo)."""
     if cfg.execution.max_workers:
         return cfg.execution.max_workers
     slurm = os.environ.get("SLURM_CPUS_PER_TASK")
-    return int(slurm) if slurm else max(1, os.cpu_count() or 1)
+    if slurm:
+        return max(1, int(slurm))
+    affinity = getattr(os, "sched_getaffinity", None)
+    if affinity is not None:
+        return max(1, len(affinity(0)))
+    return max(1, os.cpu_count() or 1)  # solo dove manca sched_getaffinity (Windows, test)
+
+
+def max_workers(cfg: ExperimentConfig, language: str | None = None) -> int:
+    """Thread paralleli: le CPU del job; per Python la metà (come il default di EvalPlus,
+    perché i limiti di tempo dipendono dal carico, ADR-007)."""
+    cpus = job_cpus(cfg)
+    if language == str(Language.PYTHON):
+        return max(1, cpus // 2)
+    return cpus
 
 
 @STAGES.register("execute")
@@ -150,16 +165,22 @@ class ExecuteStage(Stage):
         self, ctx: StageContext, cell: Cell, problems: list[Problem], executors: dict[str, Executor]
     ) -> dict[str, list[SampleToRun]]:
         if cell.source == "canonical":
+            # La canonica gira ``canonical_repeats`` volte: sample_index = ripetizione (ADR-007).
+            repeats = self._cfg().execution.canonical_repeats
             return {
                 p.problem_key: [
                     SampleToRun(
                         sample_id=sample_id(
-                            source=Source.HUMAN, problem_key=p.problem_key, language=p.language
+                            source=Source.HUMAN,
+                            problem_key=p.problem_key,
+                            language=p.language,
+                            sample_index=rep,
                         ),
                         problem_key=p.problem_key,
-                        sample_index=None,
+                        sample_index=rep,
                         code=executors[p.dataset].canonical(p),
                     )
+                    for rep in range(repeats)
                 ]
                 for p in problems
             }
@@ -224,9 +245,9 @@ class ExecuteStage(Stage):
         )
         ref = execution_ref(cell)
         partial = ctx.store.root / ref.path.parent / "_partial" / f"{ref.path.stem}.jsonl"
-        done = self._load_partial(partial, fingerprint)
+        done, retries = self._load_partial(partial, fingerprint)
         todo = [p for p in problems if p.problem_key not in done]
-        workers = max_workers(cfg)
+        workers = max_workers(cfg, cell.language)
         logger.info(
             "%s: %d problems, %d already done, %d to run with %d workers",
             cell.key(),
@@ -259,22 +280,75 @@ class ExecuteStage(Stage):
                     future.result()
                     if i % 50 == 0 or i == len(futures):
                         logger.info("%s: %d/%d problems executed", cell.key(), i, len(futures))
-        self._write(ctx, cell, problems, samples, done, sandbox, versions, partial)
+        self._retry_timeouts(cell, problems, samples, executors, done, retries, partial)
+        self._write(ctx, cell, problems, samples, done, retries, sandbox, versions, partial)
+
+    def _retry_timeouts(
+        self,
+        cell: Cell,
+        problems: list[Problem],
+        samples: dict[str, list[SampleToRun]],
+        executors: dict[str, Executor],
+        done: dict[str, dict[str, Any]],
+        retries: dict[str, dict[str, Any]],
+        partial: Path,
+    ) -> None:
+        """Ripete una volta, da soli e uno alla volta, i campioni finiti in ``TIMEOUT`` (ADR-007).
+
+        Solo i fallimenti per tempo: risposte sbagliate ed errori non si ripetono. Il risultato
+        finale è quello della ripetizione; il primo esito resta nel record.
+        """
+        pending = [
+            (problem, sample)
+            for problem in problems
+            for sample, record in zip(
+                samples[problem.problem_key], done[problem.problem_key]["records"], strict=True
+            )
+            if record["status"] == ExecStatus.TIMEOUT.value and sample.sample_id not in retries
+        ]
+        if not pending:
+            return
+        logger.info("%s: retrying %d timed-out sample(s) alone", cell.key(), len(pending))
+        for problem, sample in pending:
+            record = executors[problem.dataset].run_problem(problem, [sample])[0]
+            retries[sample.sample_id] = record.model_dump(mode="json")
+            append_jsonl(partial, {"retry": sample.sample_id, "record": retries[sample.sample_id]})
 
     @staticmethod
-    def _load_partial(path: Path, fingerprint: str) -> dict[str, dict[str, Any]]:
+    def _load_partial(
+        path: Path, fingerprint: str
+    ) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+        """Problemi già eseguiti e ripetizioni già fatte (per ``sample_id``)."""
         done: dict[str, dict[str, Any]] = {}
+        retries: dict[str, dict[str, Any]] = {}
         if path.is_file():
             records = list(iter_jsonl(path))
             if records and records[0].get("fingerprint") == fingerprint:
                 for record in records[1:]:
-                    done[str(record["problem_key"])] = record
-                return done
+                    if "retry" in record:
+                        retries[str(record["retry"])] = dict(record["record"])
+                    else:
+                        done[str(record["problem_key"])] = record
+                return done, retries
             logger.warning("partial file %s has a different configuration: starting over", path)
             path.unlink()
         path.parent.mkdir(parents=True, exist_ok=True)
         append_jsonl(path, {"fingerprint": fingerprint})
-        return done
+        return done, retries
+
+    @staticmethod
+    def _final(first: dict[str, Any], retry: dict[str, Any] | None) -> ExecutionRecord:
+        """Record finale: esito della ripetizione se c'è stata, con il primo esito registrato."""
+        first_record = ExecutionRecord.model_validate(first)
+        if retry is None:
+            return first_record.model_copy(update={"first_attempt_status": first_record.status})
+        retry_record = ExecutionRecord.model_validate(retry)
+        return retry_record.model_copy(
+            update={
+                "first_attempt_status": first_record.status,
+                "retry_status": retry_record.status,
+            }
+        )
 
     def _write(
         self,
@@ -283,6 +357,7 @@ class ExecuteStage(Stage):
         problems: list[Problem],
         samples: dict[str, list[SampleToRun]],
         done: dict[str, dict[str, Any]],
+        retries: dict[str, dict[str, Any]],
         sandbox: Sandbox,
         versions: dict[str, str],
         partial: Path,
@@ -291,22 +366,32 @@ class ExecuteStage(Stage):
         for problem in problems:
             records = done[problem.problem_key]["records"]
             for sample, record in zip(samples[problem.problem_key], records, strict=True):
+                final = self._final(record, retries.get(sample.sample_id))
                 rows.append(
                     {
                         "problem_key": problem.problem_key,
                         "sample_index": sample.sample_index,
                         "dataset": problem.dataset,
-                        **ExecutionRecord.model_validate(record).model_dump(mode="json"),
+                        **final.model_dump(mode="json"),
                     }
                 )
         df = pd.DataFrame(rows, columns=OUTPUT_COLUMNS)
         df["sample_index"] = df["sample_index"].astype("Int64")
         n_expected = sum(len(v) for v in samples.values())
         statuses = Counter(df["status"])
+        first = Counter(df["first_attempt_status"])
+        retried = df[df["retry_status"].notna()]
         elapsed = [float(done[p.problem_key]["elapsed_s"]) for p in problems]
         n = len(df)
         extra = {
             "status_counts": {s.value: int(statuses.get(s.value, 0)) for s in ExecStatus},
+            "first_attempt_status_counts": {
+                s.value: int(first.get(s.value, 0)) for s in ExecStatus
+            },
+            "retried": len(retried),
+            "recovered_timeout_to_passed": int(
+                (retried["retry_status"] == ExecStatus.PASSED.value).sum()
+            ),
             "passed_fraction": round(statuses.get(ExecStatus.PASSED.value, 0) / n, 6)
             if n
             else None,
@@ -315,7 +400,8 @@ class ExecuteStage(Stage):
                 "mean": round(statistics.fmean(elapsed), 3) if elapsed else None,
                 "max": round(max(elapsed), 3) if elapsed else None,
             },
-            "workers": max_workers(self._cfg()),
+            "workers": max_workers(self._cfg(), cell.language),
+            "job_cpus": job_cpus(self._cfg()),
         }
         ref = execution_ref(cell)
         manifest = ctx.make_manifest(
@@ -330,4 +416,11 @@ class ExecuteStage(Stage):
         partial.unlink(missing_ok=True)
         with contextlib.suppress(OSError):  # cartella _partial vuota
             partial.parent.rmdir()
-        logger.info("%s: %d records, status %s", cell.key(), n, dict(statuses))
+        logger.info(
+            "%s: %d records, status %s, %d retried (%d recovered)",
+            cell.key(),
+            n,
+            dict(statuses),
+            extra["retried"],
+            extra["recovered_timeout_to_passed"],
+        )
