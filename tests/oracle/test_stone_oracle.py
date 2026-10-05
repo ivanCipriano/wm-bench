@@ -20,12 +20,12 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from bench_contracts import WorkerItem
-
 from bench.config.builder import load_experiment
 from bench.config.schema import ExperimentConfig
 from bench.methods.adapters.stone import StoneAdapter
 from bench.pipeline.stages.watermark import make_worker_client
+from bench_contracts import WorkerItem
+
 from tests.conftest import REPO_ROOT
 
 pytestmark = [pytest.mark.oracle, pytest.mark.gpu]
