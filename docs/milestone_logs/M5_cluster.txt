@@ -1,0 +1,250 @@
+patches/stone/0000-modifiche-preesistenti.patch:33: trailing whitespace.
+                unwatermarked_codes.append({"task_id": task_id, "completion": completion})            
+warning: 1 line adds whitespace errors.
+[apply_patches] stone: applied 0000-modifiche-preesistenti.patch
+[apply_patches] stone: applied 0001-rowwise-syntax-mask.patch
+[OK] stone -> build/patched/stone (bb5d809c0c494a219411e861f2313cca2b9fd7b4, 2 patch(es))
+srun: job 784443 queued and waiting for resources
+srun: job 784443 has been allocated resources
+##### oracle STONE: nodo gnode05, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/stone/inputs.json (5 prompts, 10 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:01<00:05,  1.69s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:03<00:03,  1.56s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:04<00:01,  1.56s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.04s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:04<00:00,  1.24s/it]
+Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
+wrote tests/fixtures/oracle/stone/original.json: 5 generations, 15 detections
+.F.                                                                      [100%]
+=================================== FAILURES ===================================
+_____________________ test_detection_matches_the_original ______________________
+
+data = {'inputs': {'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/hf_cache/hub..."\n    mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / len(numbers)\n```'}], ...}}
+adapter = <bench.methods.adapters.stone.StoneAdapter object at 0x15551cdc6ad0>
+cfg = ExperimentConfig(global_seed=20261001, stage='watermark', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'], ...e, canonical_repeats=3, stderr_tail_chars=2000, evalplus=EvalPlusConfig(min_time_limit=1.0, gt_time_limit_factor=4.0)))
+tmp_path = PosixPath('/tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-0/test_detection_matches_the_ori0')
+
+    def test_detection_matches_the_original(
+        data: dict[str, Any], adapter: StoneAdapter, cfg: ExperimentConfig, tmp_path: Path
+    ) -> None:
+        inputs, original = data["inputs"], data["original"]
+        request = _request(adapter, cfg, inputs, "detect", tmp_path / "detect")
+        detections = original["detections"]
+        items = [
+            WorkerItem(
+                item_id=d["id"],
+                language=d["language"],
+                seed=0,
+                prompt_messages=None,
+                code=d["code"],
+                context_prompt=None,
+                expected_message=None,
+                n=1,
+            )
+            for d in detections
+        ]
+        run = adapter.run_worker(request, items)
+        by_id = {r.item_id: r for r in run.results}
+        assert any(d["id"].startswith("generated:") for d in detections)
+        for d in detections:
+            result = by_id[d["id"]]
+            if d["error"] is not None:
+                assert result.status == "FAILED", d["id"]
+                continue
+            assert result.status == "OK", (d["id"], result.error)
+            assert result.score is not None and abs(result.score - d["score"]) <= TOLERANCE, d["id"]
+            assert result.native_decision == d["is_watermarked"]
+            extra = result.extra
+            assert extra["n_syntax"] + extra["n_nonsyntax"] == extra["n_tokens"]
+            if extra["n_nonsyntax"] > 0:
+                assert extra["z_nonsyntax"] is not None
+        # I campioni generati con il watermark devono avere z-score alti, i canonici no.
+        generated = [
+            d["score"]
+            for d in detections
+            if d["id"].startswith("generated:") and d["score"] is not None
+        ]
+        canonical = [
+            d["score"]
+            for d in detections
+            if d["id"].startswith("canonical:") and d["score"] is not None
+        ]
+>       assert min(generated) > max(canonical)
+E       assert 1.3471506281091268 > 11.461397661875115
+E        +  where 1.3471506281091268 = min([4.608176875690327, 16.36365578864426, 10.205040771249134, 1.3471506281091268, 9.731169106223211])
+E        +  and   11.461397661875115 = max([3.491189739487307, 11.461397661875115, 9.430054396763888, 4.180039147272101, 8.795200711499172])
+
+tests/oracle/test_stone_oracle.py:158: AssertionError
+1 failed, 2 passed in 52.60s
+srun: error: gnode05: task 0: Exited with exit code 1
+srun: job 784457 queued and waiting for resources
+srun: job 784457 has been allocated resources
+##### oracle STONE: nodo gnode04, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/stone/inputs.json (5 prompts, 10 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00, 10.28it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 12.49it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 12.10it/s]
+Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
+wrote tests/fixtures/oracle/stone/original.json: 5 generations, 15 detections
+...                                                                      [100%]
+==================================== PASSES ====================================
+_____________________ test_detection_matches_the_original ______________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          official   z_nonsyntax  n_syntax  n_nonsyntax
+canonical:humaneval/0          3.491         0.308        69           95
+baseline:humaneval/0           4.032         0.943        67           91
+canonical:humaneval/1         11.461         0.786        55          131
+baseline:humaneval/1          14.148         1.000        53          144
+canonical:humaneval/2          9.430         1.921        27           61
+baseline:humaneval/2           7.833         2.177        33           61
+canonical:humaneval/3          4.180        -0.422        55           90
+baseline:humaneval/3           4.811         0.318        56           89
+canonical:humaneval/4          8.795         1.141        45           93
+baseline:humaneval/4           9.481         1.633        47           96
+generated:humaneval/0          4.608         1.238        68           94
+generated:humaneval/1         16.364         1.808        52          148
+generated:humaneval/2         10.205         2.540        28           62
+generated:humaneval/3          1.347         1.569        27           26
+generated:humaneval/4          9.731         1.633        46           96
+3 passed in 48.54s
+##### piano (dry run): watermark stone, quota 1/1
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=stone__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=stone__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=stone__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=stone__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) planned (dry run)
+##### invio: watermark stone, quota 1/1
+SLURM job 784468 (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=stone__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=stone__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job 784469 (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=stone__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=stone__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) submitted
+             JOBID         USER PARTITION                               NAME    STATE       TIME
+            784430 g.marotta31@       aiq                      prdjudge-2gpu  PENDING       0:00
+            784429 g.marotta31@       aiq                    qwen-2gpu-final  PENDING       0:00
+            784469 i.cipriano1@      gpuq                      wmb-watermark  PENDING       0:00
+            784468 i.cipriano1@      gpuq                      wmb-watermark  PENDING       0:00
+            784395 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    2:58:07
+            784393 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    3:11:08
+            784394 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    3:11:08
+            784392 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    3:19:38
+##### piano (dry run): watermark stone, quota 1/1
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=stone__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=stone__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=stone__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=stone__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) planned (dry run)
+##### invio: watermark stone, quota 1/1
+bench submit: jobs that may run the same cells are already queued or running: 784468 wmb-watermark (i.cipriano1@studenti.unisa.it, COMPLETING); 784469 wmb-watermark (i.cipriano1@studenti.unisa.it, COMPLETING). Cancel them with scancel first (completed problems are kept and resumed)
+##### piano (dry run): watermark stone, quota 1/1
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=stone__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=stone__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=stone__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=stone__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) planned (dry run)
+##### invio: watermark stone, quota 1/1
+SLURM job 784471 (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=stone__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=stone__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job 784472 (slurm_gpu), cells run in sequence:
+    1. method=stone__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=stone__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=stone__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=stone__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) submitted
+             JOBID         USER PARTITION                               NAME    STATE       TIME
+            784430 g.marotta31@       aiq                      prdjudge-2gpu  PENDING       0:00
+            784429 g.marotta31@       aiq                    qwen-2gpu-final  PENDING       0:00
+            784472 i.cipriano1@      gpuq                      wmb-watermark  PENDING       0:00
+            784471 i.cipriano1@      gpuq                      wmb-watermark  PENDING       0:00
+            784395 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    3:10:17
+            784393 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    3:23:18
+            784394 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    3:23:18
+            784392 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    3:31:48
+##### chiusura della Milestone 5 (2026-10-05 18:58, i.cipriano1@studenti.unisa.it)
+4b7d9bc [M5] oracle: ordine degli import
+?? docs/milestone_logs/M5_cluster.txt
+?? tests/fixtures/oracle/
+##### job watermark degli ultimi giorni (entrambi gli utenti)
+         JobID                   User                            JobName          State ExitCode    Elapsed     NodeList 
+        784443 i.cipriano1@studenti.+                   wmb-oracle-stone         FAILED      1:0   00:03:42      gnode05 
+        784457 i.cipriano1@studenti.+                   wmb-oracle-stone      COMPLETED      0:0   00:01:37      gnode04 
+        784468 i.cipriano1@studenti.+                      wmb-watermark CANCELLED by +      0:0   00:03:50      gnode10 
+        784469 i.cipriano1@studenti.+                      wmb-watermark CANCELLED by +      0:0   00:03:50      gnode10 
+        784471 i.cipriano1@studenti.+                      wmb-watermark      COMPLETED      0:0   00:09:54      gnode01 
+        784472 i.cipriano1@studenti.+                      wmb-watermark      COMPLETED      0:0   00:09:42      gnode01 
+##### job ancora in coda (atteso: nessuno della fase watermark)
+             JOBID         USER                               NAME    STATE       TIME
+            784430 g.marotta31@                      prdjudge-2gpu  PENDING       0:00
+            784429 g.marotta31@                    qwen-2gpu-final  PENDING       0:00
+            784395 g.dambrosio6                        mass-qwen36  RUNNING    3:21:35
+            784393 g.dambrosio6                        mass-qwen36  RUNNING    3:34:36
+            784394 g.dambrosio6                        mass-qwen36  RUNNING    3:34:36
+            784392 g.dambrosio6                        mass-qwen36  RUNNING    3:43:06
+##### artefatti (attesi: 8 parquet = 2 modelli x 4 linguaggi, L1 dev)
+8
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/stone/deepseek_coder_6p7b/d0105c864648/:
+L1_cpp_dev.parquet
+L1_cpp_dev.parquet.manifest.json
+L1_java_dev.parquet
+L1_java_dev.parquet.manifest.json
+L1_javascript_dev.parquet
+L1_javascript_dev.parquet.manifest.json
+L1_python_dev.parquet
+L1_python_dev.parquet.manifest.json
+
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/stone/qwen25_coder_7b/d0105c864648/:
+L1_cpp_dev.parquet
+L1_cpp_dev.parquet.manifest.json
+L1_java_dev.parquet
+L1_java_dev.parquet.manifest.json
+L1_javascript_dev.parquet
+L1_javascript_dev.parquet.manifest.json
+L1_python_dev.parquet
+L1_python_dev.parquet.manifest.json
+##### ripresa dei worker (righe 'already done' > 0 dopo un'interruzione)
+      1 2026-10-05 18:41:03,816 INFO bench_shims: stone embed: 24 items, 0 already done
+      1 2026-10-05 18:41:03,834 INFO bench_shims: stone embed: 96 items, 0 already done
+      1 2026-10-05 18:47:49,140 INFO bench_shims: stone embed: 96 items, 13 already done
+      1 2026-10-05 18:47:49,155 INFO bench_shims: stone embed: 24 items, 17 already done
+      1 2026-10-05 18:49:24,187 INFO bench_shims: stone embed: 96 items, 0 already done
+      1 2026-10-05 18:52:25,047 INFO bench_shims: stone embed: 24 items, 0 already done
+      1 2026-10-05 18:54:59,934 INFO bench_shims: stone embed: 24 items, 0 already done
+      1 2026-10-05 18:55:21,384 INFO bench_shims: stone embed: 24 items, 0 already done
+##### criteri di accettazione M5
+........                                                                 [100%]
+8 passed in 2.20s
+..........                                                               [100%]
+10 passed in 50.00s
+##### riepilogo dei manifest
+deepseek_coder_6p7b  L1_cpp_dev             rows=144/144 status={'OK': 144} extraction=1.0 attempts=1 missing=0 cfg=d0105c864648
+deepseek_coder_6p7b  L1_java_dev            rows=144/144 status={'OK': 144} extraction=1.0 attempts=1 missing=0 cfg=d0105c864648
+deepseek_coder_6p7b  L1_javascript_dev      rows=144/144 status={'NOT_APPLICABLE': 144} extraction=0.0 attempts=0 missing=0 cfg=d0105c864648
+deepseek_coder_6p7b  L1_python_dev          rows=576/576 status={'OK': 576} extraction=1.0 attempts=1 missing=0 cfg=d0105c864648
+qwen25_coder_7b      L1_cpp_dev             rows=144/144 status={'OK': 144} extraction=1.0 attempts=1 missing=0 cfg=d0105c864648
+qwen25_coder_7b      L1_java_dev            rows=144/144 status={'OK': 144} extraction=1.0 attempts=1 missing=0 cfg=d0105c864648
+qwen25_coder_7b      L1_javascript_dev      rows=144/144 status={'NOT_APPLICABLE': 144} extraction=0.0 attempts=0 missing=0 cfg=d0105c864648
+qwen25_coder_7b      L1_python_dev          rows=576/576 status={'OK': 576} extraction=1.0 attempts=1 missing=0 cfg=d0105c864648
+##### completezza (atteso: total: 0 ran, 8 skipped)
+total: 0 ran, 8 skipped
