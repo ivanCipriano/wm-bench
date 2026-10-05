@@ -144,18 +144,19 @@ def test_detection_matches_the_original(
         assert extra["n_syntax"] + extra["n_nonsyntax"] == extra["n_tokens"]
         if extra["n_nonsyntax"] > 0:
             assert extra["z_nonsyntax"] is not None
-    # I campioni generati con il watermark devono avere z-score alti, i canonici no.
-    generated = [
-        d["score"]
-        for d in detections
-        if d["id"].startswith("generated:") and d["score"] is not None
-    ]
-    canonical = [
-        d["score"]
-        for d in detections
-        if d["id"].startswith("canonical:") and d["score"] is not None
-    ]
-    assert min(generated) > max(canonical)
+    # Diagnostica, non criterio di fedeltà (SPEC §21.4): i due punteggi per tipo di codice.
+    # Con lo z-score ufficiale (denominatore sui token sintattici, audit §5) la separazione
+    # fra codice marcato e codice umano non è garantita; si confrontano i due punteggi in M7.
+    print("\nid                          official   z_nonsyntax  n_syntax  n_nonsyntax")
+    for d in detections:
+        result = by_id[d["id"]]
+        z2 = result.extra.get("z_nonsyntax")
+        official = f"{result.score:9.3f}" if result.score is not None else "   FAILED"
+        corrected = f"{z2:12.3f}" if z2 is not None else "        None"
+        print(
+            f"{d['id']:26s} {official}  {corrected}  {result.extra.get('n_syntax', '-')!s:>8}"
+            f"  {result.extra.get('n_nonsyntax', '-')!s:>11}"
+        )
 
 
 def test_rowwise_equivalence_of_the_processor(adapter: StoneAdapter, cfg: ExperimentConfig) -> None:

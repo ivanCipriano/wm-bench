@@ -25,5 +25,5 @@ srun -p gpuq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_gpuq_qos --gres=gpu:1 -c
         python tests/oracle/make_stone_inputs.py || exit 1
         PYTHONPATH=$REPO_ROOT/build/patched/stone/stone_implementation $STONE_PY tests/oracle/stone_original.py \
             --inputs tests/fixtures/oracle/stone/inputs.json --out tests/fixtures/oracle/stone/original.json || exit 1
-        WMB_REQUIRE_DATA=1 python -m pytest -q -rs -m oracle tests/oracle/test_stone_oracle.py
+        WMB_REQUIRE_DATA=1 python -m pytest -q -rs -rP -m oracle tests/oracle/test_stone_oracle.py
     "
