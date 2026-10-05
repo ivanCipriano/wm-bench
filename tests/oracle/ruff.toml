@@ -1,0 +1,9 @@
+# stone_original.py e stone_rowwise.py girano nell'ambiente stone: Python 3.9 (cluster_info §1).
+extend = "../../pyproject.toml"
+target-version = "py39"
+
+[lint]
+extend-ignore = ["UP006", "UP035"]
+
+[lint.per-file-ignores]
+"*" = ["PLR2004"]

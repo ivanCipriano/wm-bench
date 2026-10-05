@@ -27,7 +27,8 @@ def _policy(
         ("watermark", "stone", None, ResourceClass.GPU_NVIDIA),
         ("watermark", "acw", None, ResourceClass.CPU),
         ("detect", "sweet", None, ResourceClass.GPU_NVIDIA),
-        ("detect", "stone", None, ResourceClass.CPU),
+        # STONE: la green list dipende dal generatore casuale CUDA (audit di STONE §2).
+        ("detect", "stone", None, ResourceClass.GPU_NVIDIA),
         ("attack", None, "T1.4", ResourceClass.CPU),
         ("attack", None, "T2.2", ResourceClass.GPU_NVIDIA),
         ("attack", None, "T3.1", ResourceClass.GPU_NVIDIA),

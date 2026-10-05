@@ -1,0 +1,43 @@
+diff --git a/stone_implementation/watermark/stone/stone.py b/stone_implementation/watermark/stone/stone.py
+index b1e465c..c367cc1 100644
+--- a/stone_implementation/watermark/stone/stone.py
++++ b/stone_implementation/watermark/stone/stone.py
+@@ -276,7 +276,8 @@ class STONELogitsProcessor(LogitsProcessor):
+         raw_probs = torch.softmax(scores, dim=-1)  
+ 
+         # token will be generated in the next time step
+-        next_token = self.config.generation_tokenizer.decode(torch.argmax(raw_probs), skip_special_tokens=True)
++        # [wm-bench 0001] argmax of each row, not of the flattened batch
++        next_tokens = [self.config.generation_tokenizer.decode(torch.argmax(raw_probs[b_idx]), skip_special_tokens=True) for b_idx in range(raw_probs.shape[0])]
+         keywords = []
+         operators = []
+         delimiters = []
+@@ -371,20 +372,15 @@ class STONELogitsProcessor(LogitsProcessor):
+         elif self.skipping_rule == 'types':
+             syntax_tokens = types
+ 
+-        if self.watermark_on_pl == "True":
+-            if next_token in syntax_tokens or next_token.strip() in syntax_tokens:
+-                pl_mask = torch.tensor([[True]], device=scores.device)
+-                # print("Watermarked token: ", next_token)
+-            else:
+-                pl_mask = torch.tensor([[False]], device=scores.device)
+-                # print("Non-watermarked token: ", next_token)
+-        else:
+-            if next_token in syntax_tokens or next_token.strip() in syntax_tokens:
+-                pl_mask = torch.tensor([[False]], device=scores.device)
+-                # print("Non-watermarked token: ", next_token)
++        # [wm-bench 0001] one decision per row (shape [B, 1]); identical to the original for B = 1
++        row_flags = []
++        for next_token in next_tokens:
++            is_syntax = next_token in syntax_tokens or next_token.strip() in syntax_tokens
++            if self.watermark_on_pl == "True":
++                row_flags.append([is_syntax])
+             else:
+-                pl_mask = torch.tensor([[True]], device=scores.device)
+-                # print("Watermarked token: ", next_token)            
++                row_flags.append([not is_syntax])
++        pl_mask = torch.tensor(row_flags, device=scores.device)
+ 
+         green_tokens_mask = green_tokens_mask * pl_mask
+ 

@@ -69,5 +69,8 @@ bash scripts/check_sandbox.sh                          # verifica della sandbox 
 bash scripts/submit_execute_l1.sh groundtruth          # ground truth di EvalPlus (1 job defq)
 bash scripts/submit_execute_l1.sh execute 1/1          # test di canoniche e baseline (job defq)
 python scripts/report_execution.py                     # Pass@1 con IC, stati, canoniche fallite (M4)
-bash scripts/close_m3.sh / close_m4.sh                 # verifica finale della milestone, output nel log
+bash scripts/apply_patches.sh stone                    # copia patchata di STONE (patch 0000 e 0001)
+bash scripts/oracle_stone.sh                           # oracle di STONE su gpuq: fixture originali + confronto con lo shim (M5)
+bash scripts/submit_watermark_l1.sh stone 1/1          # campioni marcati di L1 dev con la configurazione di default (gpuq)
+bash scripts/close_m3.sh / close_m4.sh / close_m5.sh   # verifica finale della milestone, output nel log
 ```

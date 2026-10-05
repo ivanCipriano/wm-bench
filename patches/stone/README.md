@@ -13,6 +13,26 @@ Modifiche preesistenti dell'utente (non scritte dall'agente).
 
 `git apply` segnala una riga con spazi finali: avviso innocuo.
 
+## 0001-rowwise-syntax-mask.patch
+
+Scritta dall'agente in Milestone 5 (decisione dell'utente del 5 ottobre 2026; audit `docs/audit/stone.md` §9).
+
+| File | Modifica | Impatto |
+|---|---|---|
+| `stone_implementation/watermark/stone/stone.py` (`STONELogitsProcessor.__call__`) | il token "previsto" usato per decidere se il passo è sintattico si calcola con l'argmax **di ogni riga** (`raw_probs[b_idx]`) e la maschera `pl_mask` ha forma `[B, 1]`, una decisione per riga | nessuno con una sola sequenza per volta |
+
+**Il difetto dell'originale compare solo con più sequenze per volta.** L'originale fa `torch.argmax(raw_probs)` sull'intero
+tensore `[B, V]`: con B > 1 ottiene un indice "appiattito" (riga × V + colonna) che non appartiene a nessuna riga, lo
+decodifica come se fosse un token e applica la stessa decisione `[[bool]]` a tutte le righe. **Con una sola sequenza
+(B = 1) l'indice appiattito coincide con quello della riga e la patch dà un comportamento identico all'originale.**
+Il framework genera i 6 campioni di un problema in una sola chiamata (`num_return_sequences=6`, stesso seme della
+baseline), quindi la patch è necessaria.
+
+Verifica (SPEC §21.4, `tests/oracle/`):
+- fedeltà a una sequenza: testo generato e z-score identici al percorso originale;
+- equivalenza per riga: con un blocco di 6 sequenze, decisione sintattica e logit modificati di ogni riga identici a
+  quelli del processor applicato alla riga da sola.
+
 ## Verifica
 
 - `scripts/apply_patches.sh stone` applica la patch a `build/patched/stone/` sul commit fissato: verificato in M0.

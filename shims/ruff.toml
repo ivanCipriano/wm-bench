@@ -1,0 +1,7 @@
+# Gli shim girano negli ambienti dei metodi: Python >= 3.9 (cluster_info §1).
+extend = "../pyproject.toml"
+target-version = "py39"
+
+[lint]
+# typing.Dict/List restano: nessuna sintassi più recente in codice che gira su Python 3.9.
+extend-ignore = ["UP006", "UP035"]

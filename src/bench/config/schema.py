@@ -7,7 +7,7 @@ seme globale) avviene in ``ExperimentConfig``.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -147,6 +147,12 @@ class MethodConfig(_Frozen):
     submodule: str
     patched_dir: str
     worker_timeout_s: int = Field(gt=0)
+    # Dall'audit (SPEC §9.0): sottocartella della copia patchata da mettere nel PYTHONPATH,
+    # linguaggi supportati (gli altri sono NOT_APPLICABLE) e configurazione di default
+    # (nomi del protocollo) usata fino all'HPO.
+    patched_subdir: str = ""
+    supported_languages: list[Language] | None = None
+    default_hparams: dict[str, Any] = Field(default_factory=dict)
 
 
 class PartitionSpec(_Frozen):

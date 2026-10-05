@@ -9,6 +9,14 @@ from bench.pipeline.stages import (
     generate_baseline,
     prepare_data,
     selftest,
+    watermark,
 )
 
-__all__ = ["evalplus_groundtruth", "execute", "generate_baseline", "prepare_data", "selftest"]
+__all__ = [
+    "evalplus_groundtruth",
+    "execute",
+    "generate_baseline",
+    "prepare_data",
+    "selftest",
+    "watermark",
+]

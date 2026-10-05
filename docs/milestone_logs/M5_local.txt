@@ -1,0 +1,15 @@
+##### M5 verifica locale (2026-10-05 17:36, Windows, Python 3.11, torch 2.4.1 CPU; ambiente di verifica ricreato)
+##### ruff
+All checks passed!
+130 files already formatted
+##### mypy
+Success: no issues found in 66 source files
+##### pytest (OMP_NUM_THREADS=1; test_decoding.py a parte: con pyarrow importato prima, torch CPU in questo ambiente Windows va in access violation)
+1 failed, 298 passed, 71 skipped in 539.15s (0:08:59)
+(test_resources.py corretto dopo questa esecuzione:)
+24 passed in 12.58s
+##### test M5 (worker, adapter, fase watermark, compatibilità 3.9), 3 ripetizioni di test_worker_client
+10 passed in 12.57s
+10 passed in 11.71s
+10 passed in 11.72s
+6 passed in 28.81s

@@ -14,6 +14,7 @@ from bench.domain.errors import ConfigError
 
 if TYPE_CHECKING:
     from bench.data.loaders.base import DatasetLoader
+    from bench.methods.base import MethodAdapter
     from bench.pipeline.stage import Stage
 
 T = TypeVar("T")
@@ -67,3 +68,4 @@ class Registry(Generic[T]):
 
 STAGES: Registry[Stage] = Registry("stage")
 LOADERS: Registry[DatasetLoader] = Registry("loader")
+METHODS: Registry[MethodAdapter] = Registry("method")

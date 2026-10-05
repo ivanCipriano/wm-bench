@@ -5,3 +5,9 @@ family: logit
 submodule: third_party/STONE-watermarking
 patched_dir: build/patched/stone
 worker_timeout_s: 18000        # 5 h: sotto il limite di 7 h delle partizioni GPU (cluster_info §1)
+# Audit (docs/audit/stone.md): codice in stone_implementation/, JavaScript non supportato (§4).
+patched_subdir: stone_implementation
+supported_languages: [python, java, cpp]
+# Default fino all'HPO (decisione dell'utente, audit §3). La griglia della M8 deve contenere
+# delta = 0.5 e 1.0 (valori del repository) più eventuali valori intermedi o più alti.
+default_hparams: {gamma: 0.5, delta: 1.0}
