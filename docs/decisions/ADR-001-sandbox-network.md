@@ -118,4 +118,9 @@ ground truth vengono copiati nella cartella di lavoro invece di montare beegfs. 
 `.sif`. La directory su beegfs prodotta da `build_sandbox.sh` serve solo al doctor dal nodo di login; lì un
 blocco dà WARN.
 
-Esito della verifica dopo la correzione: da aggiungere dopo `scripts/check_sandbox.sh`.
+**Esito dopo la correzione** (tnode05).
+- `check_sandbox.sh`: 8/8 il 4 ottobre, poi 9/9 con l'immagine `befbe98d95d2…` (ADR-007) il 5 ottobre.
+  I test coprono rete assente, isolamento, versioni, 20 exec consecutive sotto 10 s, canoniche HumanEvalPack e i
+  casi di EvalPlus.
+- Esecuzione completa di L1 (5 ottobre): 20 celle, 12.408 campioni della baseline e 3.102 esecuzioni di canoniche
+  (3 per problema), **0 `SANDBOX_ERROR`**, da 0,5 a 4 s per problema con 16 worker (8 per Python).
