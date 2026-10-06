@@ -153,7 +153,14 @@
 
 Effetto della patch 0001:
 - primo oracle (6 ottobre 2026, senza prefill): il codice originale sceglie γ = 0,25 su **0 dei 748 passi**: i logit non risultano mai "uniformi" (std ≤ 0,2·media, con media dei logit vicina a zero o negativa). Logit di originale e patch identici su tutti i passi. Nessuna posizione marcata, quindi nessun bit da confrontare;
-- con il prefill: quota di passi con γ = 0,25 e bit recuperati con originale e patch _in attesa_ del nuovo oracle.
+- secondo oracle (6 ottobre 2026, con il prefill): γ = 0,25 su **0 dei 2.054 passi** e su 0 dei 245 passi
+  marcati; logit identici su tutti i passi. Su Qwen la patch non cambia l'inserimento.
+- Bit recuperati: non ancora confrontabili. Con il prefill i 5 campioni hanno 7-17 posizioni marcate (prima 0),
+  ma nessuno arriva al ciclo completo di 24 (tutti `PARTIAL`, 3 su 5 fino a `max_new_tokens` = 512).
+- Allineamento della rilevazione: nel secondo oracle la rilevazione sul codice estratto trovava una posizione in
+  meno della generazione e nessun token iniziale in comune (spostamento di un passo: in generazione la macchina
+  a stati parte dall'ultimo token del prompt). Lo shim ora fa precedere il codice dall'ultimo token del prefill,
+  lo stesso che vede il processor al primo passo (`context_ids`); da confermare con il prossimo oracle.
 
 ## 10. Definizioni operative degli stati
 

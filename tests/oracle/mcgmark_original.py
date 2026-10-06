@@ -165,6 +165,8 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
         ids = tokenizer(code, add_special_tokens=False)["input_ids"]
         if ids and ids[0] == tokenizer.bos_token_id:
             ids = ids[1:]
+        if prefill:  # stesso primo token della generazione (ultimo del prefill), come lo shim
+            ids = [tokenizer(prefill, add_special_tokens=False)["input_ids"][-1], *ids]
         split_tokens = [tokenizer.decode(int(t), skip_special_tokens=False) for t in ids]
         detector._pseudo_generate_mask(split_tokens)
         records = list(wg.Bich_kaiwen_First_watermark_token.items())

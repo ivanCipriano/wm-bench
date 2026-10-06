@@ -196,6 +196,18 @@ class McgmarkShim(ShimBase):
         return [self.result(item, status, sample_index=0, raw_output=text, extra=extra)]
 
     # ------------------------------------------------------------------ rilevazione
+    def context_ids(self) -> List[int]:
+        """Token che la macchina a stati vede prima del codice (audit §2).
+
+        In generazione il primo passo del processor riceve l'ultimo token del prompt, cioè
+        l'ultimo token del prefill (a capo): la rilevazione parte dallo stesso token, così
+        contatori e posizioni idonee restano allineati alla generazione.
+        """
+        prefill = str(self.hp.get("assistant_prefill") or "")
+        if not prefill:
+            return []
+        return [int(self.tokenizer(prefill, add_special_tokens=False)["input_ids"][-1])]
+
     def extract(self, code: str, message: str) -> Tuple[str, List[str], List[str]]:
         """Bit per posizione marcata, messaggi per ciclo e token marcati ricostruiti dal codice."""
         self.reset_state(message)
@@ -205,6 +217,7 @@ class McgmarkShim(ShimBase):
         ids = self.tokenizer(code, add_special_tokens=False)["input_ids"]
         if ids and ids[0] == self.tokenizer.bos_token_id:
             ids = ids[1:]
+        ids = self.context_ids() + list(ids)
         split_tokens = [self.tokenizer.decode(int(t), skip_special_tokens=False) for t in ids]
         with contextlib.redirect_stdout(io.StringIO()):
             detector._pseudo_generate_mask(split_tokens)
