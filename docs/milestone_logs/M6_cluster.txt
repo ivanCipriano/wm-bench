@@ -1,0 +1,82 @@
+[apply_patches] sweet: applied 0000-modifiche-preesistenti.patch
+[OK] sweet -> build/patched/sweet (853b47eb064c180beebd383302d09491fc98a565, 1 patch(es))
+##### oracle sweet: nodo gnode05, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/sweet/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  5.43it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.16it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  6.98it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  7.31it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  7.05it/s]
+We detected that you are passing `past_key_values` as a tuple and this is deprecated and will be removed in v4.43. Please use an appropriate `Cache` class (https://huggingface.co/docs/transformers/v4.41.3/en/internal/generation_utils#transformers.Cache)
+wrote tests/fixtures/oracle/sweet/original.json: 5 generations, 16 detections
+...                                                                      [100%]
+==================================== PASSES ====================================
+_____________________ test_detection_matches_the_original ______________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          z (shim)   scored  green
+canonical:humaneval/0          1.732       3      3
+baseline:humaneval/0           0.000       2      1
+canonical:humaneval/1          0.000      24     12
+baseline:humaneval/1           0.378       7      4
+canonical:humaneval/2          0.577       3      2
+baseline:humaneval/2          -1.732       3      0
+canonical:humaneval/3          1.000       4      3
+baseline:humaneval/3           0.000       2      1
+canonical:humaneval/4          0.577       3      2
+baseline:humaneval/4          -0.577       3      1
+nocontext:humaneval/0         -1.265      40     16
+generated:humaneval/0          0.000       2      1
+generated:humaneval/1          1.633       6      5
+generated:humaneval/2          1.414       2      2
+generated:humaneval/3          0.000       2      1
+generated:humaneval/4          0.000       2      1
+3 passed in 124.05s (0:02:04)
+##### piano (dry run): watermark sweet, quota 1/1
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=sweet__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=sweet__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=sweet__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=sweet__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=sweet__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=sweet__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=sweet__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=sweet__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) planned (dry run)
+##### invio: watermark sweet, quota 1/1
+SLURM job 784757 (slurm_gpu), cells run in sequence:
+    1. method=sweet__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=sweet__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=sweet__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=sweet__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job 784758 (slurm_gpu), cells run in sequence:
+    1. method=sweet__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=sweet__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=sweet__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=sweet__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) submitted
+             JOBID         USER PARTITION                               NAME    STATE       TIME
+            784721 g.marotta31@       aiq                    qwen-2gpu-final  RUNNING      47:14
+            784720 g.marotta31@       aiq                      prdjudge-2gpu  RUNNING    2:06:26
+            784758 i.cipriano1@      gpuq                      wmb-watermark  PENDING       0:00
+            784757 i.cipriano1@      gpuq                      wmb-watermark  PENDING       0:00
+            784714 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    2:21:21
+            784715 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    2:21:21
+            784716 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    2:21:21
+            784713 g.dambrosio6      gpuq                        mass-qwen36  RUNNING    2:21:22
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/deepseek_coder_6p7b/356dd3cf78ee/:
+L1_cpp_dev.parquet
+L1_cpp_dev.parquet.manifest.json
+L1_java_dev.parquet
+L1_java_dev.parquet.manifest.json
+L1_javascript_dev.parquet
+L1_javascript_dev.parquet.manifest.json
+L1_python_dev.parquet
+L1_python_dev.parquet.manifest.json
+
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/qwen25_coder_7b/356dd3cf78ee/:
+L1_cpp_dev.parquet
+L1_cpp_dev.parquet.manifest.json
+L1_java_dev.parquet
+L1_java_dev.parquet.manifest.json
+L1_javascript_dev.parquet
+L1_javascript_dev.parquet.manifest.json
+L1_python_dev.parquet
+L1_python_dev.parquet.manifest.json
