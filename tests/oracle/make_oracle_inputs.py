@@ -18,6 +18,7 @@ stessi input.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -111,7 +112,10 @@ def main(argv: list[str]) -> int:
     }
     out = repo_root() / "tests" / "fixtures" / "oracle" / method / "inputs.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    # Scrittura atomica: i job paralleli dell'oracle diviso in parti scrivono lo stesso contenuto.
+    tmp = out.with_name(f"{out.name}.{os.getpid()}.tmp")
+    tmp.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    os.replace(tmp, out)
     sys.stdout.write(f"wrote {out} ({len(prompts)} prompts, {len(codes)} codes)\n")
     return 0
 

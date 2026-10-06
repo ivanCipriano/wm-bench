@@ -71,6 +71,9 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
     parser.add_argument("--out", required=True)
     parser.add_argument("--replay-from", default=None)
     parser.add_argument("--device", default="cuda:0")
+    parser.add_argument(
+        "--share", default="1/1", help="K/M: solo prompt e codici con indice i %% M == K - 1"
+    )
     ns = parser.parse_args()
     os.environ["MCG_RESULT_DIR"] = tempfile.mkdtemp(prefix="mcg_oracle_")
 
@@ -87,6 +90,9 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
 
     with open(ns.inputs, encoding="utf-8") as handle:
         data = json.load(handle)
+    part, parts = (int(x) for x in ns.share.split("/"))
+    data["prompts"] = [p for i, p in enumerate(data["prompts"]) if i % parts == part - 1]
+    data["codes"] = [c for i, c in enumerate(data["codes"]) if i % parts == part - 1]
     decoding = dict(data["decoding"])
     dtype = {"bfloat16": torch.bfloat16, "float16": torch.float16}[decoding.pop("torch_dtype")]
     tokenizer = AutoTokenizer.from_pretrained(data["model_path"], local_files_only=True)
