@@ -67,6 +67,9 @@
 Il watermark non contiene alcuna logica legata al linguaggio: niente parser, AST o insiemi di token. Funziona quindi
 per **tutti e quattro** i linguaggi. Nel repository il linguaggio conta solo nell'harness di valutazione.
 
+- Il paper valuta Python (HumanEval, MBPP, DS-1000) e, nell'App. E.1, C++ e Java (HumanEvalPack); JavaScript non è nominato.
+- **Caso applicato** (regola dei linguaggi, `CLAUDE.md`): il metodo non dipende dal linguaggio, quindi si esegue su tutti e quattro. **JavaScript è un'estensione** del perimetro del paper (D19).
+
 ## 5. Punteggio di rilevazione e direzione
 
 - z-score sui soli token con entropia sopra la soglia: `(verdi − γ·T) / sqrt(T·γ(1−γ))`, con T = token del codice con

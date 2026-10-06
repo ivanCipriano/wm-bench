@@ -791,10 +791,11 @@ L'audit va **mostrato all'utente** prima di implementare l'adapter.
 ### 9.5 MCGMark
 
 - **Famiglia:** logit processor multi-bit. **Ambiente:** `env-mcgmark`.
-- **Iperparametri:** intensità del bias, soglia per la ridistribuzione dei token molto probabili. **Lunghezza del messaggio fissata a 24 bit** (decisione dell'utente) ⇒ esclusa dalla griglia. **Deviazione D1.**
-- **Messaggio atteso:** stringa di 24 bit uniformi, generata da `derive_seed(global_seed, "mcgmark-msg", problem_key, language, model_id, sample_index)`. Per i **negativi** (umani e LLM) si deriva un messaggio atteso con la stessa funzione sui loro identificativi, così il punteggio è definito anche su di essi.
-- **Punteggio:** **numero di bit estratti uguali al messaggio atteso**, intero in [0, 24]. Estrazione fallita ⇒ **0** (punteggio minimo).
-- **FAILED:** estrazione impossibile. **PARTIAL:** il codice generato non ha abbastanza token idonei per contenere tutti i 24 bit (definizione operativa da audit).
+- **Iperparametri:** intensità del bias, soglia per la ridistribuzione dei token molto probabili (nel codice: bias = scarto massimo dei logit, nessun parametro; vedi audit). **Watermark di 24 bit = 12 bit di informazione + 12 di correzione** (paper §4.5): lunghezza esclusa dalla griglia. **Deviazione D1.**
+- **Messaggio atteso:** stringa di **12 bit** uniformi (il payload d'informazione), generata da `derive_seed(global_seed, "mcgmark-msg", problem_key, language, model_id, sample_index)`. I 12 bit di correzione dipendono dalla generazione e non hanno un valore atteso. Per i **negativi** (umani e LLM) si deriva un messaggio atteso con la stessa funzione sui loro identificativi, così il punteggio è definito anche su di essi.
+- **Punteggio:** **numero di bit decodificati (informazione XOR correzione) uguali al messaggio atteso**, intero in [0, 12]. Estrazione fallita ⇒ **0** (punteggio minimo). Con punteggi interi la soglia all'1% di FPR cade su un valore discreto e l'FPR effettivo è più basso (§13.2).
+- **Linguaggi:** solo Python (paper §4.4; D17). **γ = 0,5 fisso** in generazione (D18).
+- **FAILED:** estrazione impossibile. **PARTIAL:** il codice generato non contiene nemmeno un ciclo completo di 24 posizioni idonee (definizione operativa da audit).
 - **Metriche di capacità:** §13.5.
 - **Nota:** il README dichiara una "versione preliminare" e richiede modello e parametri da configurare a mano in `watermark.py`. Lo shim deve passare tutti i parametri esplicitamente, eventualmente con una patch che sostituisca le costanti cablate con argomenti.
 
@@ -1003,8 +1004,8 @@ Una soglia per `(metodo, modello, linguaggio, config_hash)`, calcolata sui negat
 
 | Metrica | Definizione |
 |---|---|
-| `message_accuracy` | frazione di campioni con tutti i 24 bit corretti |
-| `bit_accuracy` | media di `bits_correct / 24` |
+| `message_accuracy` | frazione di campioni con tutti i 12 bit d'informazione corretti (D1) |
+| `bit_accuracy` | media di `bits_correct / 12` |
 | `embedding_success_rate` | frazione con `embed_status == OK` |
 
 ### 13.6 Incertezza
