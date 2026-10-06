@@ -11,7 +11,7 @@
 # Le fixture vanno poi aggiunte al repository (git add tests/fixtures/oracle/<metodo>).
 # Per STONE resta scripts/oracle_stone.sh (Milestone 5).
 #
-# MCGMark si può dividere fra più persone (job paralleli, ognuno con il proprio clone):
+# MCGMark si può dividere fra più persone (job paralleli, anche dallo stesso clone):
 #
 #   bash scripts/oracle_method.sh mcgmark 1/2    # persona 1: prompt e codici di indice pari
 #   bash scripts/oracle_method.sh mcgmark 2/2    # persona 2, in contemporanea
@@ -53,12 +53,19 @@ case "$METHOD" in
             echo "usage: oracle_method.sh mcgmark [K/M | test]" >&2; exit 2
         fi
         # Codice originale per D18: submodule + sola patch 0000 (import e simboli mancanti).
-        ORIG_SRC="$REPO_ROOT/build/oracle_src/mcgmark"
-        rm -rf "$ORIG_SRC" && mkdir -p "$ORIG_SRC"
-        git -C "$REPO_ROOT/third_party/MCGMT" checkout-index -a -f --prefix="$ORIG_SRC/"
-        (cd "$REPO_ROOT" \
-            && git apply --directory=build/oracle_src/mcgmark patches/mcgmark/0000-modifiche-preesistenti.patch) \
-            || exit 1
+        # Una copia per parte: job paralleli sullo stesso clone non si cancellano a vicenda.
+        # safe.directory solo per questi comandi: il clone può appartenere all'altro utente.
+        ORIG_REL="build/oracle_src/mcgmark_${SHARE%/*}of${SHARE#*/}"
+        ORIG_SRC="$REPO_ROOT/$ORIG_REL"
+        GIT=(git -c "safe.directory=*")
+        if [ "$MODE" != "test" ]; then
+            rm -rf "$ORIG_SRC" && mkdir -p "$ORIG_SRC"
+            "${GIT[@]}" -C "$REPO_ROOT/third_party/MCGMT" checkout-index -a -f --prefix="$ORIG_SRC/" \
+                || exit 1
+            (cd "$REPO_ROOT" \
+                && "${GIT[@]}" apply --directory="$ORIG_REL" patches/mcgmark/0000-modifiche-preesistenti.patch) \
+                || exit 1
+        fi
         SCRIPT="tests/oracle/mcgmark_original.py --inputs $FIX/inputs.json --share $SHARE"
         RUN_ORIG="PYTHONPATH=$ORIG_SRC/Watermark $METHOD_PY $SCRIPT --variant original --out $ORIG_OUT"
         RUN_PATCHED="PYTHONPATH=$REPO_ROOT/build/patched/mcgmark/Watermark $METHOD_PY $SCRIPT --variant patched"
