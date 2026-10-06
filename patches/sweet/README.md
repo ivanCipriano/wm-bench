@@ -14,3 +14,7 @@ Modifica preesistente dell'utente (non scritta dall'agente).
 
 - `scripts/apply_patches.sh sweet` applica la patch a `build/patched/sweet/` (`git apply --check` + `git apply`) sul commit fissato: verificato in M0.
 - La fedeltà del comportamento è verificata dal test oracle di SWEET (SPEC §21.4, M6).
+
+## Milestone 6
+
+Nessuna patch aggiuntiva: il processor di SWEET gestisce correttamente più sequenze per volta (audit `docs/audit/sweet.md` §9, verificato da `tests/oracle/sweet_rowwise.py`). Lo shim importa solo `sweet.py` e `watermark.py`.

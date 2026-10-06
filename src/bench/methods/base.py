@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 from bench_contracts import SCHEMA_VERSION, WorkerItem, WorkerRequest, WorkerResult
-from bench_contracts.enums import EmbedStatus, WorkerOp
+from bench_contracts.enums import DetectStatus, EmbedStatus, WorkerOp
 
 from bench.config.builder import repo_root
 from bench.config.schema import ExperimentConfig, MethodConfig, ModelSpec
@@ -294,3 +294,69 @@ class PromptEmbedder(MethodAdapter):
             attack_status=None,
             contamination_risk=problem.contamination_risk,
         )
+
+
+@dataclass(frozen=True)
+class DetectInput:
+    """Codice da valutare: identità, linguaggio e contesto di condizionamento (SPEC §9.1)."""
+
+    item_id: str
+    language: str
+    code: str
+    prompt_messages: list[dict[str, str]] | None = None
+    context_prompt: str | None = None
+    expected_message: str | None = None
+
+
+class Detector(MethodAdapter):
+    """Metodi con rilevazione (tutti): un punteggio per codice, più alto = più marcato."""
+
+    def detect_codes(
+        self,
+        inputs: Sequence[DetectInput],
+        hp: dict[str, Any],
+        model: ModelSpec,
+        key_id: str,
+        decoding: dict[str, Any],
+        run_dir: Path,
+        device: str = "cuda:0",
+    ) -> list[WorkerResult]:
+        """Un ``WorkerResult`` per input, nell'ordine dato (I1).
+
+        I linguaggi non supportati danno ``NOT_APPLICABLE`` senza invocare il worker.
+        """
+        supported = [x for x in inputs if self.supports(x.language)]
+        found: dict[str, WorkerResult] = {}
+        if supported:
+            request = self.build_request(
+                WorkerOp.DETECT, model, hp, key_id, decoding, "", run_dir, device
+            )
+            items = [
+                WorkerItem(
+                    item_id=x.item_id,
+                    language=str(x.language),
+                    seed=0,
+                    prompt_messages=x.prompt_messages,
+                    code=x.code,
+                    context_prompt=x.context_prompt,
+                    expected_message=x.expected_message,
+                    n=1,
+                )
+                for x in supported
+            ]
+            for result in self.run_worker(request, items).results:
+                found[result.item_id] = result
+        return [
+            found.get(x.item_id)
+            or WorkerResult(
+                item_id=x.item_id,
+                sample_index=None,
+                status=DetectStatus.NOT_APPLICABLE,
+                raw_output=None,
+                code=None,
+                score=None,
+                native_decision=None,
+                decoded_message=None,
+            )
+            for x in inputs
+        ]

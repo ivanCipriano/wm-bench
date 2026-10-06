@@ -59,6 +59,7 @@ def cfg() -> ExperimentConfig:
 
 @pytest.fixture(scope="module")
 def adapter(cfg: ExperimentConfig) -> StoneAdapter:
+    _require(cfg.envs["stone"].python)  # interprete dell'ambiente del metodo (solo sul cluster)
     method_cfg = cfg.methods_catalog["stone"]
     return StoneAdapter(method_cfg, cfg, make_worker_client(cfg, method_cfg.worker_timeout_s))
 

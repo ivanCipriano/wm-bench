@@ -6,7 +6,7 @@ from typing import Any, ClassVar
 
 from bench.domain.enums import MethodFamily
 from bench.domain.errors import ConfigError
-from bench.methods.base import PromptEmbedder
+from bench.methods.base import Detector, PromptEmbedder
 from bench.registry import METHODS
 
 # Valori fissi come in run.py del repository (audit §3).
@@ -20,7 +20,7 @@ FIXED_NATIVE: dict[str, Any] = {
 
 
 @METHODS.register("stone")
-class StoneAdapter(PromptEmbedder):
+class StoneAdapter(PromptEmbedder, Detector):
     """STONE: logit processor sui soli token non sintattici.
 
     La rilevazione usa solo il tokenizer, ma deve girare su CUDA come l'inserimento: la green
