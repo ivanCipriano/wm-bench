@@ -58,6 +58,10 @@ case "$METHOD" in
         ORIG_REL="build/oracle_src/mcgmark_${SHARE%/*}of${SHARE#*/}"
         ORIG_SRC="$REPO_ROOT/$ORIG_REL"
         GIT=(git -c "safe.directory=*")
+        if [ ! -f "$REPO_ROOT/build/patched/mcgmark/Watermark/watermark_global.py" ]; then
+            echo "[ERROR] build/patched/mcgmark missing: run bash scripts/apply_patches.sh mcgmark" >&2
+            exit 1
+        fi
         if [ "$MODE" != "test" ]; then
             rm -rf "$ORIG_SRC" && mkdir -p "$ORIG_SRC"
             "${GIT[@]}" -C "$REPO_ROOT/third_party/MCGMT" checkout-index -a -f --prefix="$ORIG_SRC/" \
