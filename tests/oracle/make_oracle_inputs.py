@@ -65,6 +65,7 @@ def main(argv: list[str]) -> int:
                 "seed": seed,
                 "messages": messages,
                 "message": message,
+                "problem": problem.model_dump(mode="json"),
             }
         )
         canonical = (problem.prompt_text or "") + (problem.canonical_solution or "")

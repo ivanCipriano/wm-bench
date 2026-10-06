@@ -203,3 +203,35 @@ def test_shims_are_python39_compatible() -> None:
             if isinstance(node, ast.Import | ast.ImportFrom):
                 module = node.module if isinstance(node, ast.ImportFrom) else node.names[0].name
                 assert not (module or "").startswith("bench."), f"{path} imports {module}"
+
+
+def test_baseline_twin_stage(cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Baseline gemella di MCGMark (D20): righe ``llm_baseline`` con il metodo, I1, manifest."""
+    build_tiny_datasets(cfg.paths.datasets)
+    tcfg = tiny_config(cfg)
+    BenchmarkFacade(tcfg).run_stage("prepare_data")
+    tcfg = rebuild(tcfg, methods=["mcgmark"], models=[MODEL], languages=["python"], splits=["dev"])
+    monkeypatch.setattr(wm, "WORKER_FACTORY", echo_client)
+    facade = BenchmarkFacade(tcfg)
+    report = facade.run_stage("generate_baseline_twin")
+    assert report.ran == 1
+    stage = wm.BaselineTwinStage(facade.cfg)
+    cfg_hash = stage.config_hash("mcgmark")
+    ref = wm.baseline_twin_ref("mcgmark", MODEL, cfg_hash, "L1", "python", "dev")
+    assert str(ref.path).startswith(f"baseline/{MODEL}/twin/mcgmark/")
+    twin = facade.store.read_table(ref)
+    n = facade.cfg.decoding["level1"].n
+    assert len(twin) == (HE_DEV + MBPP_DEV) * n
+    assert set(twin["source"]) == {"llm_baseline"} and set(twin["method"]) == {"mcgmark"}
+    assert twin["key_id"].isna().all() and twin["embed_status"].isna().all()
+    for _, group in twin.groupby("problem_key"):
+        assert group["seed"].nunique() == n  # un seme per campione
+    manifest = facade.store.read_manifest(ref)
+    assert manifest is not None and manifest.extra["watermark"] is False
+    assert manifest.extra["seed_scheme"] == "per_sample" and manifest.extra["key_id"] is None
+    assert manifest.extra["native_hparams"]["watermark"] is False
+    assert manifest.extra["embed_status_counts"] == {"OK": len(twin)}
+    with pytest.raises(ConfigError, match="twin"):
+        stage.run(
+            Cell(method="stone", model_id=MODEL, level="L1", language="python", split="dev"), None
+        )  # type: ignore[arg-type]

@@ -12,8 +12,10 @@ Verifiche:
   inseriti; decoding effettivo neutro;
 - isolamento (decisione dell'utente): il campione generato da solo o dopo altri è identico,
   quindi lo stato globale di modulo viene azzerato davvero;
-- rilevazione: stessi bit e stessi messaggi del percorso diretto; l'estrazione dal solo codice
-  ritrova le posizioni e i bit registrati dal processor in generazione (primo ciclo);
+- rilevazione: stessi bit e stessi messaggi del percorso diretto; l'estrazione dal codice
+  estratto con D4 ritrova le posizioni e i bit registrati dal processor in generazione (primo
+  ciclo), con il tasso di inserimento riuscito;
+- generazione con il prefill della fence (D20) e baseline gemella senza processor;
 - messaggio noto: su almeno un campione si recuperano tutti i 12 bit;
 - patch 0001 (D18): con lo stesso testo forzato e gli stessi logit, i logit restituiti sono
   identici sui passi con γ = 0,5 nel codice originale; le differenze stanno solo sui passi con
@@ -194,29 +196,92 @@ def test_detection_matches_the_direct_path(
         )
 
 
-def test_extraction_from_code_recovers_the_embedding(data: dict[str, Any]) -> None:
-    """La macchina a stati rigiocata sul testo ritrova le posizioni marcate in generazione."""
-    patched = data["patched"]
-    by_id = {d["id"]: d for d in patched["detections"]}
-    checked = 0
-    print("\nproblem         embedded  replayed  equal prefix")
+def test_extraction_from_code_recovers_the_embedding(
+    data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+) -> None:
+    """Sul codice estratto con la regola D4 (come nella pipeline) la macchina a stati rigiocata
+    ritrova le posizioni e i bit registrati dal processor in generazione."""
+    from bench.domain.models import Problem
+    from bench.generation.code_extractor import FencedCodeExtractor
+
+    assert isinstance(adapter, Detector)
+    inputs, patched = data["inputs"], data["patched"]
+    problems = {p["problem_key"]: Problem.model_validate(p["problem"]) for p in inputs["prompts"]}
+    extractor = FencedCodeExtractor()
+    codes = {}
     for gen in patched["generations"]:
+        code, ok = extractor.extract(gen["new_text"], problems[gen["problem_key"]])
+        assert ok, gen["problem_key"]
+        codes[gen["problem_key"]] = code
+    results = adapter.detect_codes(
+        [
+            DetectInput(key, "python", code, expected_message=gen["message"])
+            for (key, code), gen in zip(codes.items(), patched["generations"], strict=True)
+        ],
+        adapter.default_hparams(),
+        cfg.models_catalog[inputs["model_id"]],
+        "k1",
+        inputs["decoding"],
+        tmp_path / "detect",
+        "cuda:0",
+    )
+    checked = embedded_ok = 0
+    print("\nproblem         embedded  replayed  equal prefix  equal bits (first round)")
+    for gen, result in zip(patched["generations"], results, strict=True):
         internal = gen["internal"]
-        replay = by_id[f"generated:{gen['problem_key']}"]
+        replay_tokens, replay_bits = result.extra["tokens"], result.extra["bits"]
         prefix = 0
-        for a, b in zip(internal["tokens"], replay["tokens"], strict=False):
+        for a, b in zip(internal["tokens"], replay_tokens, strict=False):
             if a != b:
                 break
             prefix += 1
+        same_bits = internal["bits"][:ROUND] == replay_bits[:ROUND]
         print(
-            f"{gen['problem_key']:15s} {len(internal['tokens']):8d} {len(replay['tokens']):9d} "
-            f"{prefix:13d}"
+            f"{gen['problem_key']:15s} {len(internal['tokens']):8d} {len(replay_tokens):9d} "
+            f"{prefix:13d}  {same_bits}"
         )
         if len(internal["tokens"]) >= ROUND:
             checked += 1
-            assert internal["tokens"][:ROUND] == replay["tokens"][:ROUND], gen["problem_key"]
-            assert internal["bits"][:ROUND] == replay["bits"][:ROUND], gen["problem_key"]
+            embedded_ok += 1
+            assert internal["tokens"][:ROUND] == replay_tokens[:ROUND], gen["problem_key"]
+            assert same_bits, gen["problem_key"]
+    n = len(patched["generations"])
+    print(f"embedding with a complete round (OK): {embedded_ok}/{n} ({embedded_ok / n:.0%})")
     assert checked > 0, "no sample with a complete round"
+
+
+def test_twin_baseline_differs_only_by_the_watermark(
+    data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+) -> None:
+    """Baseline gemella (D20): stessa pipeline senza processor; parte con il prefill."""
+    import dataclasses
+
+    from bench_contracts import WorkerItem
+
+    inputs = data["inputs"]
+    model = cfg.models_catalog[inputs["model_id"]]
+    request = adapter.build_request(
+        "embed", model, {}, "k1", inputs["decoding"], "", tmp_path / "twin", "cuda:0"
+    )
+    request = dataclasses.replace(request, hparams={**request.hparams, "watermark": False})
+    prompt = inputs["prompts"][0]
+    item = WorkerItem(
+        item_id=f"{prompt['problem_key']}#0",
+        language="python",
+        seed=prompt["seed"],
+        prompt_messages=prompt["messages"],
+        code=None,
+        context_prompt=None,
+        expected_message=prompt["message"],
+        n=1,
+    )
+    run = adapter.run_worker(request, [item])
+    result = run.results[0]
+    assert result.status == "OK" and result.extra["watermark"] is False
+    assert result.extra["n_embedded"] == 0
+    assert result.raw_output.startswith(inputs["native_hparams"]["assistant_prefill"])
+    marked = data["patched"]["generations"][0]["new_text"]
+    print(f"\ntwin == watermarked: {result.raw_output == marked}")
 
 
 def test_known_message_is_recovered(data: dict[str, Any]) -> None:

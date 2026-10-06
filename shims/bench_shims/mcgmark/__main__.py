@@ -11,9 +11,13 @@ stato globale si azzera prima di ogni campione e di ogni rilevazione.
 
 - **embed**: ``WatermarkLogitsProcessor`` costruito come in ``Watermark/watermark.py:225-234``
   (vocabolario ordinato per id), messaggio di 12 bit impostato con ``set_old_water_info``,
-  ``model.generate`` con il prompt chat, il decoding neutro e il seme del campione. Stato:
-  ``OK`` con almeno un ciclo completo (24 posizioni marcate, come ``dww`` del repository),
-  ``PARTIAL`` altrimenti (anche con 0 posizioni).
+  ``model.generate`` con il prompt chat, il decoding neutro e il seme del campione. Il turno
+  dell'assistente inizia con ``hparams.assistant_prefill`` (fence di apertura, D20): i suoi
+  token stanno nel prompt, non vengono generati, e ``raw_output`` è prefill + testo generato.
+  Stato: ``OK`` con almeno un ciclo completo (24 posizioni marcate, come ``dww`` del
+  repository), ``PARTIAL`` altrimenti (anche con 0 posizioni).
+  Con ``hparams.watermark = False`` (baseline gemella) la generazione è identica ma senza
+  processor: stato ``OK``.
 - **detect**: estrazione dal solo codice composta da due parti del repository:
   ``WatermarkDetector._pseudo_generate_mask`` (la macchina a stati rigiocata sui token, che
   ricostruisce le posizioni marcate) e ``WatermarkLogitsProcessor.detect`` (i bit dalle green
@@ -133,6 +137,17 @@ class McgmarkShim(ShimBase):
         return message
 
     # ------------------------------------------------------------------ inserimento
+    def prompt_ids(self, item: WorkerItem, prefill: str) -> Any:
+        """Prompt chat con ``add_generation_prompt`` seguito dai token del prefill."""
+        import torch
+
+        input_ids = encode_chat(self.tokenizer, item.prompt_messages or [], self.device)
+        if not prefill:
+            return input_ids
+        ids = self.tokenizer(prefill, add_special_tokens=False)["input_ids"]
+        tail = torch.tensor([ids], dtype=input_ids.dtype, device=input_ids.device)
+        return torch.cat([input_ids, tail], dim=1)
+
     def embed(self, item: WorkerItem) -> List[WorkerResult]:
         import torch
         from transformers import LogitsProcessorList
@@ -140,9 +155,15 @@ class McgmarkShim(ShimBase):
         if item.n != 1:
             raise ValueError("MCGMark generates one sample per item (n must be 1)")
         message = self._message(item)
+        watermark = bool(self.hp.get("watermark", True))
+        prefill = str(self.hp.get("assistant_prefill") or "")
         self.reset_state(message)
-        processor = self.wp.WatermarkLogitsProcessor(tokenizer=self.tokenizer, **self._common())
-        input_ids = encode_chat(self.tokenizer, item.prompt_messages or [], self.device)
+        processors = []
+        if watermark:
+            processors.append(
+                self.wp.WatermarkLogitsProcessor(tokenizer=self.tokenizer, **self._common())
+            )
+        input_ids = self.prompt_ids(item, prefill)
         set_seed(item.seed)
         log = io.StringIO()
         with torch.no_grad(), contextlib.redirect_stdout(log):  # il repository stampa a ogni token
@@ -150,15 +171,19 @@ class McgmarkShim(ShimBase):
                 input_ids=input_ids,
                 attention_mask=torch.ones_like(input_ids),
                 generation_config=self.generation_config,
-                logits_processor=LogitsProcessorList([processor]),
+                logits_processor=LogitsProcessorList(processors),
                 num_return_sequences=1,
             )
-        text = decode_new_tokens(self.tokenizer, output, input_ids.shape[1])[0]
-        records = list(self.wg.First_watermark_token.items())
+        text = prefill + decode_new_tokens(self.tokenizer, output, input_ids.shape[1])[0]
+        records = list(self.wg.First_watermark_token.items()) if watermark else []
         bits = "".join(str(v[0]) for _, v in records)
-        status = EmbedStatus.OK if len(records) >= ROUND else EmbedStatus.PARTIAL
+        if not watermark:
+            status = EmbedStatus.OK
+        else:
+            status = EmbedStatus.OK if len(records) >= ROUND else EmbedStatus.PARTIAL
         extra: Dict[str, Any] = {
             "message": message,
+            "watermark": watermark,
             "n_embedded": len(records),
             "embedded_bits": bits,
             "embedded_tokens": [str(v[1]) for _, v in records],
@@ -203,6 +228,7 @@ class McgmarkShim(ShimBase):
         extra: Dict[str, Any] = {
             "message": message,
             "n_eligible": len(tokens),
+            "tokens": tokens,
             "bits": bits,
             "rounds": rounds,
             "round_matches": [matches(r, message) for r in rounds],

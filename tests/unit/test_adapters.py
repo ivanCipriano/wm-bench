@@ -165,3 +165,26 @@ def test_mcgmark_embeds_one_sample_per_item(cfg: ExperimentConfig, tmp_path: Pat
     assert [s.expected_message for s in python] == [it.expected_message for it in client.last_items]
     assert len({s.seed for s in python}) == 3
     assert [str(s.embed_status) for s in java] == ["NOT_APPLICABLE"] * 3
+
+
+def test_mcgmark_twin_baseline(cfg: ExperimentConfig, tmp_path: Path) -> None:
+    client = echo_client()
+    a = McgmarkAdapter(cfg.methods_catalog["mcgmark"], cfg, client)
+    model = cfg.models_catalog["qwen25_coder_7b"]
+    problems = [_problem("humaneval/0", Language.PYTHON)]
+    builder = PromptBuilder.from_config(cfg.prompt)
+    args = (problems, {}, model, "k1", {"num_return_sequences": 2}, 2, builder)
+    marked = a.embed_from_prompts(*args, tmp_path / "wm", "cpu")
+    twin = a.embed_from_prompts(*args, tmp_path / "twin", "cpu", watermark=False)
+    assert marked.request is not None and twin.request is not None
+    assert marked.request["hparams"]["assistant_prefill"] == "```python\n"
+    assert "watermark" not in marked.request["hparams"]
+    assert twin.request["hparams"]["watermark"] is False
+    assert [s.seed for s in twin.samples] == [s.seed for s in marked.samples]
+    for s in twin.samples:
+        assert s.source == "llm_baseline" and s.method == "mcgmark" and s.key_id is None
+        assert s.embed_status is None
+    assert {s.sample_id for s in twin.samples}.isdisjoint(s.sample_id for s in marked.samples)
+    sweet = SweetAdapter(cfg.methods_catalog["sweet"], cfg, echo_client())
+    with pytest.raises(ConfigError, match="twin"):
+        sweet.embed_from_prompts(*args, tmp_path / "s", "cpu", watermark=False)

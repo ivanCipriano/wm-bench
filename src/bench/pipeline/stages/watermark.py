@@ -10,6 +10,14 @@ stesso seme della baseline; i linguaggi non supportati dal metodo danno N righe
 **Ripresa:** la cartella di lavoro del worker è stabile per cella
 (``_runs/watermark/<metodo>/<modello>/<cfg>/<cella>/``): rilanciando la fase, il runner dello
 shim salta gli item già scritti in ``results.jsonl``.
+
+Fase ``generate_baseline_twin`` (D20): per i metodi con ``twin_baseline`` (MCGMark), la stessa
+generazione del metodo con il watermark disattivato (stesso worker e ambiente, stesso prompt e
+prefill, stessi semi per campione). Output
+``baseline/<modello>/twin/<metodo>/<config_hash>/<livello>_<linguaggio>_<parte>.parquet``,
+campioni ``llm_baseline`` con ``method`` valorizzato. È la baseline di riferimento del metodo
+per ΔPass@1, CodeBLEU, ΔPPL e classificatore avversario; il confronto con la baseline normale è
+secondario.
 """
 
 from __future__ import annotations
@@ -74,6 +82,16 @@ def watermarked_ref(
     )
 
 
+def baseline_twin_ref(
+    method: str, model_id: str, cfg_hash: str, level: str, language: str, split: str
+) -> ArtifactRef:
+    """Baseline gemella di un metodo (D20)."""
+    return ArtifactRef.of(
+        "baseline_twin",
+        f"baseline/{model_id}/twin/{method}/{cfg_hash}/{level}_{language}_{split}.parquet",
+    )
+
+
 @STAGES.register("watermark")
 class WatermarkStage(Stage):
     """Inserimento del watermark in generazione (metodi ``PromptEmbedder``)."""
@@ -82,6 +100,7 @@ class WatermarkStage(Stage):
     resources: ClassVar[ResourceClass] = ResourceClass.GPU_NVIDIA
     output_kinds: ClassVar[frozenset[str]] = frozenset({"watermarked"})
     cell_axes: ClassVar[tuple[str, ...]] = ("method", "model_id", "level", "language", "split")
+    watermark: ClassVar[bool] = True  # False: baseline gemella
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
@@ -130,6 +149,8 @@ class WatermarkStage(Stage):
         adapter = self.adapter(method)
         if not isinstance(adapter, PromptEmbedder):
             raise ConfigError(f"{method} does not embed from prompts (stage watermark)")
+        if not self.watermark and not adapter.twin_baseline:
+            raise ConfigError(f"{method} has no twin baseline (stage {self.name})")
         model = cfg.models_catalog[model_id]
         decoding = decoding_for(cfg, level)
         prompts = PromptBuilder.from_config(cfg.prompt)
@@ -145,7 +166,7 @@ class WatermarkStage(Stage):
         run_dir = (
             ctx.store.root
             / "_runs"
-            / "watermark"
+            / ("watermark" if self.watermark else "baseline_twin")
             / method
             / model_id
             / cfg_hash
@@ -170,6 +191,7 @@ class WatermarkStage(Stage):
             decoding.n,
             prompts,
             run_dir,
+            watermark=self.watermark,
         )
         introspect = adapter.introspect() if supported else {}
         self._write(
@@ -203,7 +225,8 @@ class WatermarkStage(Stage):
         df = pd.DataFrame(
             [s.model_dump(mode="json") for s in samples], columns=list(CodeSample.model_fields)
         )
-        statuses = Counter(s.embed_status for s in samples)
+        # Baseline gemella: embed_status vuoto sui campioni generati (come la baseline), qui OK.
+        statuses = Counter(s.embed_status or "OK" for s in samples)
         extracted = sum(1 for s in samples if s.extraction_ok)
         generation = next(
             (
@@ -217,7 +240,8 @@ class WatermarkStage(Stage):
             "method": cell.method,
             "hparams": hp,
             "native_hparams": result.native_hparams,
-            "key_id": KEY_ID,
+            "key_id": KEY_ID if self.watermark else None,
+            "watermark": self.watermark,
             "seed_scheme": seed_scheme,
             "config_hash": cfg_hash,
             "embed_status_counts": dict(statuses),
@@ -257,3 +281,19 @@ class WatermarkStage(Stage):
             dict(statuses),
             extra["extraction_rate"],
         )
+
+
+@STAGES.register("generate_baseline_twin")
+class BaselineTwinStage(WatermarkStage):
+    """Baseline gemella dei metodi con ``twin_baseline`` (D20): generazione del metodo senza
+    watermark."""
+
+    name: ClassVar[str] = "generate_baseline_twin"
+    output_kinds: ClassVar[frozenset[str]] = frozenset({"baseline_twin"})
+    watermark: ClassVar[bool] = False
+
+    def outputs(self, cell: Cell) -> list[ArtifactRef]:
+        method, model_id, level, language, split = self._require(cell)
+        return [
+            baseline_twin_ref(method, model_id, self.config_hash(method), level, language, split)
+        ]

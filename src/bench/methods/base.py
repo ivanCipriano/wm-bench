@@ -9,6 +9,7 @@ Per i linguaggi non supportati l'adapter **non** invoca il worker: produce righe
 
 from __future__ import annotations
 
+import dataclasses
 import logging
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
@@ -169,6 +170,9 @@ class PromptEmbedder(MethodAdapter):
     # volta): un item per campione, con seme proprio (D9: accoppiamento con la baseline per
     # problema). Gli altri: un item per problema con n campioni e il seme della baseline.
     one_sample_per_item: ClassVar[bool] = False
+    # Metodi con una baseline gemella (es. MCGMark con il prefill della fence): stesso worker,
+    # stesso prompt, stessi semi, watermark disattivato (fase ``generate_baseline_twin``).
+    twin_baseline: ClassVar[bool] = False
 
     def seed_scheme(self) -> str:
         """Schema dei semi registrato nel manifest: ``per_problem`` o ``per_sample``."""
@@ -201,13 +205,21 @@ class PromptEmbedder(MethodAdapter):
         run_dir: Path,
         device: str = "cuda:0",
         extractor: CodeExtractor | None = None,
+        watermark: bool = True,
     ) -> EmbedRun:
         """N campioni marcati per problema, con codice estratto (regola unica D4).
 
         I problemi di linguaggi non supportati danno N righe ``NOT_APPLICABLE`` senza worker.
+        Con ``watermark=False`` (solo metodi con ``twin_baseline``) il worker genera la baseline
+        gemella: stessa pipeline del metodo con il watermark disattivato (``hparams.watermark``),
+        campioni ``llm_baseline`` con ``method`` valorizzato.
         """
+        if not watermark and not self.twin_baseline:
+            raise ConfigError(f"{self.name} has no twin baseline")
         extractor = extractor or FencedCodeExtractor()
         native = self.to_native_hparams(hp)
+        if not watermark:
+            native = {**native, "watermark": False}
         cfg_hash = self.config_hash(hp)
         problem_seeds = {
             p.problem_key: generation_seed(
@@ -239,16 +251,12 @@ class PromptEmbedder(MethodAdapter):
                 run_dir,
                 device,
             )
+            if not watermark:
+                request = dataclasses.replace(request, hparams=native)
             request_dict = request.to_dict()
             items = self._embed_items(supported, model, prompts, n, seed_of)
             worker_run = self.run_worker(request, items)
-            for worker_result in worker_run.results:
-                if self.one_sample_per_item:
-                    problem_key, _, index_text = worker_result.item_id.rpartition("#")
-                    results[(problem_key, int(index_text))] = worker_result
-                else:
-                    key = (worker_result.item_id, int(worker_result.sample_index or 0))
-                    results[key] = worker_result
+            results = self._index_results(worker_run)
         samples = []
         for problem in problems:
             for index in range(n):
@@ -274,11 +282,24 @@ class PromptEmbedder(MethodAdapter):
                         ok,
                         status,
                         self.expected_message(model, problem, index),
+                        watermark,
                     )
                 )
         return EmbedRun(
             samples=samples, worker=worker_run, native_hparams=native, request=request_dict
         )
+
+    def _index_results(self, worker_run: WorkerRun) -> dict[tuple[str, int], WorkerResult]:
+        """Risultati del worker per ``(problem_key, sample_index)``."""
+        results: dict[tuple[str, int], WorkerResult] = {}
+        for worker_result in worker_run.results:
+            if self.one_sample_per_item:
+                problem_key, _, index_text = worker_result.item_id.rpartition("#")
+                results[(problem_key, int(index_text))] = worker_result
+            else:
+                key = (worker_result.item_id, int(worker_result.sample_index or 0))
+                results[key] = worker_result
+        return results
 
     def _embed_items(
         self,
@@ -334,16 +355,22 @@ class PromptEmbedder(MethodAdapter):
         ok: bool,
         status: str,
         expected_message: str | None = None,
+        watermark: bool = True,
     ) -> CodeSample:
+        # Baseline gemella: sorgente baseline, metodo e configurazione per distinguerla dalla
+        # baseline normale, nessuna chiave.
+        source = Source.LLM_WATERMARKED if watermark else Source.LLM_BASELINE
+        key = key_id if watermark else None
+        embed_status = status if watermark or status != EmbedStatus.OK else None
         return CodeSample(
             sample_id=sample_id(
-                source=Source.LLM_WATERMARKED,
+                source=source,
                 problem_key=problem.problem_key,
                 language=problem.language,
                 model_id=model.model_id,
                 method=self.name,
                 config_hash=cfg_hash,
-                key_id=key_id,
+                key_id=key,
                 sample_index=index,
             ),
             problem_key=problem.problem_key,
@@ -351,17 +378,17 @@ class PromptEmbedder(MethodAdapter):
             language=problem.language,
             level=problem.level,
             split=problem.split,
-            source=Source.LLM_WATERMARKED,
+            source=source,
             model_id=model.model_id,
             method=self.name,
             config_hash=cfg_hash,
-            key_id=key_id,
+            key_id=key,
             sample_index=index,
             seed=seed,
             raw_output=raw,
             code=code,
             extraction_ok=ok,
-            embed_status=status,
+            embed_status=embed_status,
             expected_message=expected_message,
             parent_id=None,
             attack_id=None,

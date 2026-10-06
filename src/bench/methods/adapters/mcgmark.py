@@ -12,6 +12,7 @@ from bench.domain.models import Problem
 from bench.methods.base import Detector, PromptEmbedder
 from bench.registry import METHODS
 
+PREFILL = "```python\n"  # fence di apertura e a capo (D20)
 MESSAGE_BITS = 12  # payload d'informazione (24 bit = 12 + 12 di correzione, D1)
 # Configurazione fissa (audit §3): il bias è lo scarto massimo dei logit (paper §4.2) e γ è
 # fissato a 0,5 dalla patch 0001 (D18); delta è ignorato dal repository e resta al suo default.
@@ -20,6 +21,9 @@ FIXED_NATIVE: dict[str, Any] = {
     "delta": 6.0,
     "seeding_scheme": "simple_1",
     "select_green_tokens": True,
+    # Adattamento al formato chat (D20): il turno dell'assistente inizia con la fence, così il
+    # codice generato non resta bloccato dalla macchina a stati (``` trattata come docstring).
+    "assistant_prefill": PREFILL,
 }
 
 
@@ -39,7 +43,8 @@ class McgmarkAdapter(PromptEmbedder, Detector):
     family: ClassVar[MethodFamily] = MethodFamily.LOGIT
     gpu_for_embed: ClassVar[bool] = True
     gpu_for_detect: ClassVar[bool] = True  # torch.Generator sul dispositivo (audit §7)
-    one_sample_per_item: ClassVar[bool] = True  # niente batch: stato globale (audit §5)
+    one_sample_per_item: ClassVar[bool] = True  # niente batch: stato globale (audit §7)
+    twin_baseline: ClassVar[bool] = True  # baseline gemella con lo stesso prefill (D20)
 
     def to_native_hparams(self, hp: dict[str, Any]) -> dict[str, Any]:
         """Nessun iperparametro regolabile nel codice né nel paper (audit §3)."""

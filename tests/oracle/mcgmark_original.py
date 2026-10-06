@@ -53,6 +53,17 @@ def decode_rounds(bits: str) -> List[str]:
     ]
 
 
+def fenced_code(text: str, prefill: str) -> str:
+    """Codice del blocco aperto dal prefill, fino alla fence di chiusura (o alla fine).
+
+    Per testi della forma prefill + codice + fence coincide con la regola D4; il test lo verifica
+    con ``FencedCodeExtractor``.
+    """
+    body = text[len(prefill) :] if prefill and text.startswith(prefill) else text
+    end = body.find("```")
+    return body if end < 0 else body[:end]
+
+
 def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del docstring
     parser = argparse.ArgumentParser()
     parser.add_argument("--variant", choices=["original", "patched"], required=True)
@@ -88,6 +99,7 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
     generation_config = GenerationConfig(**decoding, eos_token_id=eos, pad_token_id=pad)
     model.generation_config = generation_config
     hp = data["native_hparams"]
+    prefill = str(hp.get("assistant_prefill") or "")
     vocab_dict = tokenizer.get_vocab()
     vocab = list(OrderedDict(sorted(vocab_dict.items(), key=lambda x: x[1])).values())
     common = {
@@ -181,6 +193,9 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
         input_ids = tokenizer.apply_chat_template(
             prompt["messages"], add_generation_prompt=True, return_tensors="pt"
         ).to(ns.device)
+        if prefill:  # turno dell'assistente che inizia con la fence (D20)
+            tail = tokenizer(prefill, add_special_tokens=False)["input_ids"]
+            input_ids = torch.cat([input_ids, torch.tensor([tail], device=ns.device)], dim=1)
         # 1. generazione
         reset(message)
         traced = Traced(wp.WatermarkLogitsProcessor(tokenizer=tokenizer, **common))
@@ -196,9 +211,10 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
             )
             internal = internal_bits(traced.inner)
         new_ids = [int(t) for t in output[0, input_ids.shape[1] :].tolist()]
-        new_text = tokenizer.batch_decode(
-            output[:, input_ids.shape[1] :], skip_special_tokens=True
-        )[0]
+        new_text = (
+            prefill
+            + tokenizer.batch_decode(output[:, input_ids.shape[1] :], skip_special_tokens=True)[0]
+        )
         # 3. forzatura del testo di riferimento sugli stessi logit
         ref_ids = reference.get(prompt["problem_key"], new_ids)
         reset(message)
@@ -227,7 +243,7 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
         {
             "id": f"generated:{g['problem_key']}",
             "language": "python",
-            "code": g["new_text"],
+            "code": fenced_code(g["new_text"], prefill),
             "messages": p["messages"],
             "message": g["message"],
         }

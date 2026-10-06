@@ -26,6 +26,9 @@
     confronti, le parentesi aperte, le stringhe e le docstring bloccano l'inserimento fino alla chiusura; gli spazi
     annullano la posizione appena usata.
   - Sulle posizioni idonee (dopo i primi 4 passi) inserisce un bit: green list ± bias.
+  - **Prefill della fence (D20).** Il turno dell'assistente inizia con `` ```python`` + a capo, nel prompt (`hparams.assistant_prefill`). Senza prefill la risposta chat si apre con `` ``` ``, che `case_4` tratta come una docstring: l'inserimento resta bloccato fino alla fence di chiusura, cioè per tutto il codice (primo oracle, 6 ottobre 2026: 0 posizioni marcate su 5 campioni, tutti `PARTIAL`). Gli autori generavano **in completamento** (`watermark.py`: prompt come testo semplice, nessuna fence); il prefill riproduce quella condizione: il codice generato parte subito e coincide con quello che estrae la regola D4. `raw_output` contiene prefill + testo generato e l'estrazione D4 si applica a quel testo, come per gli altri metodi.
+  - **Baseline gemella (D20).** Fase `generate_baseline_twin`: stesso shim con `hparams.watermark = False` (nessun processor), stesso prompt e prefill, stessi semi per campione. Output `baseline/<modello>/twin/mcgmark/<config_hash>/...`, campioni `llm_baseline` con `method = mcgmark`. È la baseline di riferimento di MCGMark per ΔPass@1, CodeBLEU, ΔPPL e classificatore avversario; il confronto con la baseline normale è secondario.
+  - Unica differenza fra generazione e rilevazione: in generazione la macchina a stati vede per primo l'ultimo token del prefill (a capo), in rilevazione parte dal primo token del codice estratto. `test_extraction_from_code_recovers_the_embedding` verifica sul codice estratto con D4 che posizioni e bit del primo ciclo coincidano con quelli registrati in generazione.
   - Le posizioni idonee si raggruppano in **cicli di 24**: 12 bit di informazione (il messaggio) e 12 di correzione.
 - **Rilevazione:** il repository non ha una rilevazione su codice arbitrario che restituisca il messaggio:
   - `WatermarkDetector.detect` rigioca la macchina a stati (`_pseudo_generate_mask`), stampa un verdetto e restituisce
@@ -112,7 +115,7 @@
 
 - `watermark.py`: campionamento con `top_k=0` e `sampling_temp`, oppure beam search; `float16` con
   `device_map='auto'`; prompt come testo semplice con token speciali e troncamento; nessun seme per campione.
-- Lo shim usa il decoding neutro del request (ADR-006), il prompt chat del framework e il seme del campione.
+- Lo shim usa il decoding neutro del request (ADR-006), il prompt chat del framework con il prefill della fence (D20, §2) e il seme del campione.
 
 ## 7. Generatore casuale, stato e dispositivo
 
@@ -148,8 +151,9 @@
 | `0001-gamma-fisso.patch` | `self.gamma = 0.5` al posto della scelta 0,25/0,5 in `__call__` | D18; l'oracle verifica che i logit siano identici all'originale sui passi con γ = 0,5 e misura la quota di passi con γ = 0,25 e i bit recuperati con originale e patch |
 | `0002-rimuovi-decodifica-vocabolario.patch` | rimossa `vocab_test = tokenizer.batch_decode(self.vocab)` (variabile mai usata) | solo velocità |
 
-Effetto della patch 0001 (dall'oracle, da completare): quota di passi con γ = 0,25 nel codice originale: _in attesa_;
-bit recuperati sul primo ciclo con originale e con patch: _in attesa_.
+Effetto della patch 0001:
+- primo oracle (6 ottobre 2026, senza prefill): il codice originale sceglie γ = 0,25 su **0 dei 748 passi**: i logit non risultano mai "uniformi" (std ≤ 0,2·media, con media dei logit vicina a zero o negativa). Logit di originale e patch identici su tutti i passi. Nessuna posizione marcata, quindi nessun bit da confrontare;
+- con il prefill: quota di passi con γ = 0,25 e bit recuperati con originale e patch _in attesa_ del nuovo oracle.
 
 ## 10. Definizioni operative degli stati
 
