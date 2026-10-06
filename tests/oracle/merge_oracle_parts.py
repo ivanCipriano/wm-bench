@@ -1,4 +1,4 @@
-"""Unisce le parti dell'oracle di MCGMark scritte da job paralleli (``oracle_method.sh mcgmark K/M``).
+"""Unisce le parti dell'oracle di MCGMark scritte da job paralleli (``oracle_method.sh``).
 
     python tests/oracle/merge_oracle_parts.py PARTS_DIR OUT_DIR
 
