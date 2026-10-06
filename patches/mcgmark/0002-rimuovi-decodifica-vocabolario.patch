@@ -1,0 +1,13 @@
+diff --git a/Watermark/watermark_processor.py b/Watermark/watermark_processor.py
+index 7a81086..5c7134a 100644
+--- a/Watermark/watermark_processor.py
++++ b/Watermark/watermark_processor.py
+@@ -1106,7 +1106,7 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+         Identify_chars = teet[-10:] # 倒数后10个字符
+ 
+ 
+-        vocab_test = self.tokenizer.batch_decode(self.vocab, skip_special_tokens=False)
++        # [wm-bench 0002] removed: unused decoding of the whole vocabulary at every step (Useless_code_5)
+                                                                 # Useless_code_5
+         
+         first_column_2 = scores[0].tolist()

@@ -183,6 +183,7 @@ class WatermarkStage(Stage):
             result,
             introspect,
             prompts,
+            adapter.seed_scheme(),
         )
 
     def _write(
@@ -197,6 +198,7 @@ class WatermarkStage(Stage):
         result: Any,
         introspect: dict[str, Any],
         prompts: PromptBuilder,
+        seed_scheme: str,
     ) -> None:
         df = pd.DataFrame(
             [s.model_dump(mode="json") for s in samples], columns=list(CodeSample.model_fields)
@@ -216,6 +218,7 @@ class WatermarkStage(Stage):
             "hparams": hp,
             "native_hparams": result.native_hparams,
             "key_id": KEY_ID,
+            "seed_scheme": seed_scheme,
             "config_hash": cfg_hash,
             "embed_status_counts": dict(statuses),
             "extraction_rate": round(extracted / len(samples), 6) if samples else None,

@@ -139,6 +139,7 @@ def test_watermark_stage_rows_statuses_and_resume(facade: BenchmarkFacade) -> No
     assert manifest is not None and manifest.config_hash == cfg_hash
     extra = manifest.extra
     assert extra["native_hparams"]["delta"] == 1.0 and extra["key_id"] == "k1"
+    assert extra["seed_scheme"] == "per_problem"  # STONE: seme della baseline (D9)
     assert extra["embed_status_counts"] == {"OK": len(py)}
     assert manifest.worker_env is not None and manifest.worker_packages_sha256 == "0" * 64
     assert manifest.n_rows_expected == manifest.n_rows_out

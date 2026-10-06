@@ -1,0 +1,17 @@
+diff --git a/Watermark/watermark_processor.py b/Watermark/watermark_processor.py
+index 5070571..7a81086 100644
+--- a/Watermark/watermark_processor.py
++++ b/Watermark/watermark_processor.py
+@@ -1111,10 +1111,8 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+         
+         first_column_2 = scores[0].tolist()
+         is_average = is_evenly_distributed(first_column_2)
+-        if is_average == True:
+-            self.gamma = 0.25
+-        else:
+-            self.gamma = 0.5
++        # [wm-bench 0001] gamma fixed to 0.5 (paper Sec. 5.1): the detector uses a fixed gamma
++        self.gamma = 0.5
+         #print("概率分布：",is_average,self.gamma)
+ 
+         max_value_2 = max(first_column_2)

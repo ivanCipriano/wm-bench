@@ -9,7 +9,11 @@ from typing import Any
 import pytest
 
 from bench.config.schema import ExperimentConfig
+from bench.domain.enums import Language
 from bench.domain.errors import ConfigError
+from bench.domain.models import Problem
+from bench.generation.prompt_builder import PromptBuilder
+from bench.methods.adapters.mcgmark import FIXED_NATIVE, McgmarkAdapter, message_bits
 from bench.methods.adapters.stone import StoneAdapter
 from bench.methods.adapters.sweet import SweetAdapter
 from bench.methods.base import DetectInput, MethodAdapter
@@ -94,3 +98,70 @@ def test_detect_codes_keeps_order_and_skips_unsupported_languages(
     assert [it.item_id for it in client.last_items] == ["s/1", "s/3"]
     assert client.last_items[0].prompt_messages == [{"role": "user", "content": "x"}]
     assert client.last_items[1].context_prompt == "ctx"
+
+
+def _problem(key: str, language: Language) -> Problem:
+    return Problem(
+        problem_key=key,
+        dataset="humanevalplus",
+        level="L1",  # type: ignore[arg-type]
+        language=language,
+        split="dev",  # type: ignore[arg-type]
+        prompt_text="def f():\n",
+        entry_point="f",
+        canonical_solution=None,
+        test_ref=None,
+        contamination_risk=False,
+        loc_to_generate=None,
+    )
+
+
+def test_mcgmark_hparams_and_message(cfg: ExperimentConfig) -> None:
+    a = McgmarkAdapter(cfg.methods_catalog["mcgmark"], cfg, echo_client())
+    assert a.default_hparams() == {}
+    assert a.to_native_hparams({}) == FIXED_NATIVE and FIXED_NATIVE["gamma"] == 0.5
+    with pytest.raises(ConfigError, match="no tunable"):
+        a.to_native_hparams({"delta": 2.0})
+    assert a.supports("python") and not any(a.supports(x) for x in ("java", "cpp", "javascript"))
+    assert a.gpu_for_detect and a.seed_scheme() == "per_sample"
+    assert a.source().pythonpath == a.source().root / "Watermark"
+    assert SweetAdapter(cfg.methods_catalog["sweet"], cfg, echo_client()).seed_scheme() == (
+        "per_problem"
+    )
+    model = cfg.models_catalog["qwen25_coder_7b"]
+    problem = _problem("humaneval/0", Language.PYTHON)
+    messages = [a.expected_message(model, problem, i) for i in range(6)]
+    assert all(m is not None and len(m) == 12 and set(m) <= {"0", "1"} for m in messages)
+    assert len(set(messages)) > 1  # un messaggio per campione
+    assert messages[0] == message_bits(cfg.global_seed, "humaneval/0", "python", model.model_id, 0)
+    seeds = {a.sample_seed(model, problem, i) for i in range(6)}
+    assert len(seeds) == 6
+
+
+def test_mcgmark_embeds_one_sample_per_item(cfg: ExperimentConfig, tmp_path: Path) -> None:
+    client = echo_client()
+    a = McgmarkAdapter(cfg.methods_catalog["mcgmark"], cfg, client)
+    model = cfg.models_catalog["qwen25_coder_7b"]
+    problems = [_problem("humaneval/0", Language.PYTHON), _problem("humaneval/1", Language.JAVA)]
+    run = a.embed_from_prompts(
+        problems,
+        {},
+        model,
+        "k1",
+        {"num_return_sequences": 3},
+        3,
+        PromptBuilder.from_config(cfg.prompt),
+        tmp_path,
+        "cpu",
+    )
+    # Solo Python arriva al worker: un item per campione, n = 1, seme e messaggio propri.
+    assert [it.item_id for it in client.last_items] == [f"humaneval/0#{i}" for i in range(3)]
+    assert all(it.n == 1 for it in client.last_items)
+    assert run.request is not None and run.request["decoding"]["num_return_sequences"] == 1
+    python = [s for s in run.samples if s.problem_key == "humaneval/0"]
+    java = [s for s in run.samples if s.problem_key == "humaneval/1"]
+    assert [s.sample_index for s in python] == [0, 1, 2]
+    assert [s.seed for s in python] == [it.seed for it in client.last_items]
+    assert [s.expected_message for s in python] == [it.expected_message for it in client.last_items]
+    assert len({s.seed for s in python}) == 3
+    assert [str(s.embed_status) for s in java] == ["NOT_APPLICABLE"] * 3

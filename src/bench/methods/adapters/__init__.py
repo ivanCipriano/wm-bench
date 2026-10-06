@@ -3,6 +3,6 @@
 Import espliciti (SPEC §7.1). STONE (Milestone 5); SWEET, MCGMark, PromptMark, ACW (Milestone 6).
 """
 
-from bench.methods.adapters import stone, sweet
+from bench.methods.adapters import mcgmark, stone, sweet
 
-__all__ = ["stone", "sweet"]
+__all__ = ["mcgmark", "stone", "sweet"]

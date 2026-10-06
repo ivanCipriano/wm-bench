@@ -165,6 +165,30 @@ class MethodAdapter(ABC):
 class PromptEmbedder(MethodAdapter):
     """Metodi che inseriscono il watermark durante la generazione (logit o prompt)."""
 
+    # Metodi che generano un campione alla volta (es. MCGMark, che non supporta più sequenze per
+    # volta): un item per campione, con seme proprio (D9: accoppiamento con la baseline per
+    # problema). Gli altri: un item per problema con n campioni e il seme della baseline.
+    one_sample_per_item: ClassVar[bool] = False
+
+    def seed_scheme(self) -> str:
+        """Schema dei semi registrato nel manifest: ``per_problem`` o ``per_sample``."""
+        return "per_sample" if self.one_sample_per_item else "per_problem"
+
+    def sample_seed(self, model: ModelSpec, problem: Problem, index: int) -> int:
+        """Seme del campione ``index`` (schema ``per_sample``)."""
+        return derive_seed(
+            self.cfg.global_seed,
+            "gen",
+            model.model_id,
+            problem.problem_key,
+            str(problem.language),
+            index,
+        )
+
+    def expected_message(self, model: ModelSpec, problem: Problem, index: int) -> str | None:
+        """Messaggio atteso del campione (solo metodi multi-bit)."""
+        return None
+
     def embed_from_prompts(
         self,
         problems: Sequence[Problem],
@@ -185,38 +209,46 @@ class PromptEmbedder(MethodAdapter):
         extractor = extractor or FencedCodeExtractor()
         native = self.to_native_hparams(hp)
         cfg_hash = self.config_hash(hp)
-        seeds = {
+        problem_seeds = {
             p.problem_key: generation_seed(
                 self.cfg.global_seed, model.model_id, p.problem_key, p.language
             )
             for p in problems
         }
+
+        def seed_of(problem: Problem, index: int) -> int:
+            if self.one_sample_per_item:
+                return self.sample_seed(model, problem, index)
+            return problem_seeds[problem.problem_key]
+
         supported = [p for p in problems if self.supports(p.language)]
         results: dict[tuple[str, int], WorkerResult] = {}
         worker_run: WorkerRun | None = None
         request_dict: dict[str, Any] | None = None
         if supported:
+            item_decoding = dict(decoding)
+            if self.one_sample_per_item:
+                item_decoding["num_return_sequences"] = 1
             request = self.build_request(
-                WorkerOp.EMBED, model, hp, key_id, decoding, prompts.system_prompt, run_dir, device
+                WorkerOp.EMBED,
+                model,
+                hp,
+                key_id,
+                item_decoding,
+                prompts.system_prompt,
+                run_dir,
+                device,
             )
             request_dict = request.to_dict()
-            items = [
-                WorkerItem(
-                    item_id=p.problem_key,
-                    language=str(p.language),
-                    seed=seeds[p.problem_key],
-                    prompt_messages=prompts.build(p),
-                    code=None,
-                    context_prompt=None,
-                    expected_message=None,
-                    n=n,
-                )
-                for p in supported
-            ]
+            items = self._embed_items(supported, model, prompts, n, seed_of)
             worker_run = self.run_worker(request, items)
             for worker_result in worker_run.results:
-                key = (worker_result.item_id, int(worker_result.sample_index or 0))
-                results[key] = worker_result
+                if self.one_sample_per_item:
+                    problem_key, _, index_text = worker_result.item_id.rpartition("#")
+                    results[(problem_key, int(index_text))] = worker_result
+                else:
+                    key = (worker_result.item_id, int(worker_result.sample_index or 0))
+                    results[key] = worker_result
         samples = []
         for problem in problems:
             for index in range(n):
@@ -236,16 +268,58 @@ class PromptEmbedder(MethodAdapter):
                         cfg_hash,
                         key_id,
                         index,
-                        seeds[problem.problem_key],
+                        seed_of(problem, index),
                         raw,
                         code,
                         ok,
                         status,
+                        self.expected_message(model, problem, index),
                     )
                 )
         return EmbedRun(
             samples=samples, worker=worker_run, native_hparams=native, request=request_dict
         )
+
+    def _embed_items(
+        self,
+        problems: Sequence[Problem],
+        model: ModelSpec,
+        prompts: PromptBuilder,
+        n: int,
+        seed_of: Any,
+    ) -> list[WorkerItem]:
+        """Item del worker: uno per problema (n campioni) o uno per campione."""
+        items: list[WorkerItem] = []
+        for p in problems:
+            messages = prompts.build(p)
+            if self.one_sample_per_item:
+                items += [
+                    WorkerItem(
+                        item_id=f"{p.problem_key}#{i}",
+                        language=str(p.language),
+                        seed=seed_of(p, i),
+                        prompt_messages=messages,
+                        code=None,
+                        context_prompt=None,
+                        expected_message=self.expected_message(model, p, i),
+                        n=1,
+                    )
+                    for i in range(n)
+                ]
+            else:
+                items.append(
+                    WorkerItem(
+                        item_id=p.problem_key,
+                        language=str(p.language),
+                        seed=seed_of(p, 0),
+                        prompt_messages=messages,
+                        code=None,
+                        context_prompt=None,
+                        expected_message=None,
+                        n=n,
+                    )
+                )
+        return items
 
     def _sample(
         self,
@@ -259,6 +333,7 @@ class PromptEmbedder(MethodAdapter):
         code: str,
         ok: bool,
         status: str,
+        expected_message: str | None = None,
     ) -> CodeSample:
         return CodeSample(
             sample_id=sample_id(
@@ -287,7 +362,7 @@ class PromptEmbedder(MethodAdapter):
             code=code,
             extraction_ok=ok,
             embed_status=status,
-            expected_message=None,
+            expected_message=expected_message,
             parent_id=None,
             attack_id=None,
             attack_params_hash=None,
