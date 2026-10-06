@@ -1,4 +1,4 @@
-"""Percorso diretto di MCGMark per l'oracle (SPEC §21.4). Ambiente ``mcgmark`` (Python 3.9).
+"""Percorso diretto di MCGMark per l'oracle (SPEC §21.4). Ambiente ``mcgmark`` (Python 3.10).
 
 Si lancia due volte, con due copie del codice:
 

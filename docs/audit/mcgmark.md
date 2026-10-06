@@ -13,7 +13,7 @@
     lm-watermarking, simboli mancanti di `watermark_global.py` ricostruiti (§3.2);
   - `0001` (nuova): γ = 0,5 fisso (D18);
   - `0002` (nuova): rimossa la decodifica inutile dell'intero vocabolario a ogni passo.
-- Ambiente `mcgmark`: Python 3.9. Versioni di torch e transformers registrate dall'introspezione del worker.
+- Ambiente `mcgmark`: Python 3.10.21 (dal log di `install_contracts.sh`). Versioni di torch e transformers registrate dall'introspezione del worker.
 - Il codice si importa da `Watermark/` con import assoluti: `patched_subdir: Watermark`.
 
 ## 2. Punto d'innesto

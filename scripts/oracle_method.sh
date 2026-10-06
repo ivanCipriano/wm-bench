@@ -49,7 +49,6 @@ srun -p gpuq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_gpuq_qos --gres=gpu:1 -c
         cd $REPO_ROOT
         echo \"##### oracle $METHOD: nodo \$(hostname), \$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)\"
         python tests/oracle/make_oracle_inputs.py $METHOD || exit 1
-        PYTHONPATH=$SOURCE $METHOD_PY tests/oracle/${METHOD}_original.py \
-            --inputs tests/fixtures/oracle/$METHOD/inputs.json --out tests/fixtures/oracle/$METHOD/original.json || exit 1
+        $ORIGINAL || exit 1
         WMB_REQUIRE_DATA=1 python -m pytest -q -rs -rP -m oracle tests/oracle/test_${METHOD}_oracle.py
     "
