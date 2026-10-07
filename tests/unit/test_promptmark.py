@@ -108,6 +108,17 @@ def test_prompt_examples_inside_the_framework_fence() -> None:
     assert len(prompt_examples(rendered)) == 2
 
 
+def test_prompt_examples_with_trailing_comments() -> None:
+    """Un commento in coda all'esempio non deve rendere l'asserzione non valida (HumanEval/32)."""
+    text = (
+        "    >>> round(find_zero([1, 2]), 2) # f(x) = 1 + 2x\n    -0.5\n    >>> f('#')\n    '#'\n"
+    )
+    assert prompt_examples(text) == [
+        "assert (round(find_zero([1, 2]), 2)) == (-0.5)",
+        "assert (f('#')) == ('#')",
+    ]
+
+
 def test_prompt_examples() -> None:
     assert prompt_examples(HE_PROMPT) == [
         "assert (has_close_elements([1.0, 2.0, 3.0], 0.5)) == (False)",

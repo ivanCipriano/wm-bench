@@ -15,7 +15,9 @@ Gli esempi in altre forme (per esempio ``f(1) == 2`` in prosa, ``➞``) non si e
 from __future__ import annotations
 
 import ast
+import io
 import re
+import tokenize
 from typing import List
 
 _PROMPT = re.compile(r"^(\s*)>>> ?(.*)$")
@@ -28,6 +30,22 @@ def _is_expression(text: str) -> bool:
     except SyntaxError:
         return False
     return True
+
+
+def _without_comments(code: str) -> str:
+    """L'espressione senza commenti ``#`` (tokenizzazione Python, le stringhe restano intatte)."""
+    if "#" not in code:
+        return code
+    try:
+        tokens = list(tokenize.generate_tokens(io.StringIO(code).readline))
+    except (tokenize.TokenError, IndentationError):
+        return code
+    lines = code.splitlines()
+    for token in tokens:
+        if token.type == tokenize.COMMENT:  # un commento al più per riga, fino a fine riga
+            row, col = token.start
+            lines[row - 1] = lines[row - 1][:col].rstrip()
+    return "\n".join(lines).strip()
 
 
 def doctest_examples(text: str) -> List[str]:
@@ -62,7 +80,14 @@ def doctest_examples(text: str) -> List[str]:
         source = source.strip()
         if not expected or not _is_expression(source) or not _is_expression(expected):
             continue
-        out.append(f"assert ({source}) == ({expected})")
+        # Un commento in coda all'esempio (es. ``f(x)  # nota``) chiuderebbe la riga
+        # dell'asserzione: si toglie (gli esempi senza commenti restano invariati).
+        test = f"assert ({_without_comments(source)}) == ({_without_comments(expected)})"
+        try:
+            ast.parse(test)
+        except SyntaxError:
+            continue
+        out.append(test)
     return out
 
 

@@ -1,8 +1,9 @@
 # Audit di PromptMark (SPEC §9.0)
 
 - **Stato:** decisioni dell'utente del 7 ottobre 2026 applicate (test del ciclo dagli esempi del prompt,
-  esecuzione con limiti, griglia HPO su tutti e tre i parametri). Primo oracle (8 ottobre 2026): 4 test verdi,
-  ma l'estrazione degli esempi doctest falliva sul prompt del framework (corretta, §8): oracle da rilanciare.
+  esecuzione con limiti, griglia HPO su tutti e tre i parametri). Secondo oracle (8 ottobre 2026): shim e
+  percorso diretto coincidono con gli esempi eseguiti (1-2 per campione) e i limiti attivi; da rilanciare solo
+  la parte di test per la sovrapposizione con EvalPlus (esempi con commento in coda, §8).
 - **Repository:** `ahmedfahad04/promptmark`, paper "PromptMark: A Prompt-Guided Iterative-Feedback Framework
   for Source Code Watermarking" (`PromptMark_ENASE_Final_18_March.pdf` nel repository).
 
@@ -133,6 +134,13 @@
   segue la docstring. L'estrazione ora legge gli esempi riga per riga (stessa regola dell'uscita attesa di
   doctest, chiusa anche da docstring e recinzioni); nel primo oracle i 5 campioni HumanEval hanno quindi
   eseguito 0 esempi. Le iterazioni e la sovrapposizione su HumanEval+ vanno rimisurate.
+- **Seconda correzione:** un esempio con commento in coda (HumanEval/32, `find_zero([1, 2]), 2)  # f(x) = 1 + 2x`)
+  dava un'asserzione non valida, che nel ciclo sarebbe diventata un falso errore di correttezza: il commento
+  ora si toglie (tokenizzazione Python); gli esempi senza commento restano identici.
+- Secondo oracle: i 5 campioni HumanEval eseguono 1-2 esempi ciascuno, sempre superati; shim (con limiti) e
+  percorso diretto (senza limiti) danno le stesse iterazioni ed esiti. Sovrapposizione su HumanEval+ dev:
+  10 problemi su 24 con esempi, 30 esempi, 23 con input fra i test di base e 10 fra i plus, 9 problemi con
+  sovrapposizione; la parte di test va rimisurata.
 - **Questione aperta per la M9:** su CodeNet gli esempi di input/output del testo coincidono in gran parte
   con i test di valutazione; quando si arriva a L2 vanno proposte alternative (ciclo di correttezza
   disattivato su L2, oppure Pass@1 di PromptMark su L2 con avvertenza).

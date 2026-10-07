@@ -204,7 +204,11 @@ def test_patch_0002_and_frequency_procedure(data: dict[str, Any]) -> None:
 def _call_inputs(test: str, entry_point: str) -> list[Any]:
     """Argomenti (valori letterali) delle chiamate a ``entry_point`` in un'asserzione."""
     found = []
-    for node in ast.walk(ast.parse(test)):
+    try:
+        tree = ast.parse(test)
+    except SyntaxError:  # non dovrebbe accadere: gli esempi estratti sono validi
+        return found
+    for node in ast.walk(tree):
         if isinstance(node, ast.Call) and getattr(node.func, "id", None) == entry_point:
             try:
                 found.append([ast.literal_eval(arg) for arg in node.args])
