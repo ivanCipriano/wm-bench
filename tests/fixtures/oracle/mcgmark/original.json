@@ -3363,7 +3363,8 @@
      "tele_after": 10,
      "digest": "9704f888a4f05ff0"
     }
-   ]
+   ],
+   "elapsed_s": 264.126
   },
   {
    "problem_key": "humaneval/1",
@@ -10055,7 +10056,8 @@
      "tele_after": 15,
      "digest": "8f4e2b5691d92590"
     }
-   ]
+   ],
+   "elapsed_s": 539.028
   },
   {
    "problem_key": "humaneval/2",
@@ -16737,7 +16739,8 @@
      "tele_after": 4,
      "digest": "1e0c65f7376a2b78"
     }
-   ]
+   ],
+   "elapsed_s": 520.014
   },
   {
    "problem_key": "humaneval/3",
@@ -23419,7 +23422,8 @@
      "tele_after": 4,
      "digest": "6dd972a6dd236b0b"
     }
-   ]
+   ],
+   "elapsed_s": 532.145
   },
   {
    "problem_key": "humaneval/4",
@@ -26857,7 +26861,8 @@
      "tele_after": 11,
      "digest": "193a18a9a7189d92"
     }
-   ]
+   ],
+   "elapsed_s": 265.286
   }
  ],
  "detections": [
