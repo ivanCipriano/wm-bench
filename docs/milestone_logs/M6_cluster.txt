@@ -1010,3 +1010,87 @@ humanevalplus  test        140        60       136       86       27            
 mbppplus       dev          72        72        72       62       11                62
 mbppplus       test        306       306       306      260       37               260
 4 passed in 176.96s (0:02:56)
+##### oracle promptmark 1/2: nodo gnode06, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/promptmark/inputs.json (10 prompts, 21 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  9.20it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00, 10.46it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 10.85it/s]
+Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/promptmark/original.1of2.json: 5 generations, 16 detections
+temperature 0.2
+problem         iters  marked  free ids  examples  distinct resp/code  min p
+humaneval/0         5  False          2         2              5/1     0.291
+humaneval/2         5  False          2         1              1/1     0.604
+humaneval/4         5  False          2         1              5/3     0.339
+mbpp/108            5  False          7         1              5/4     0.172
+mbpp/118            5  False          1         1              5/5     0.169
+watermark embedded: 0/5
+##### oracle promptmark test: nodo gnode06, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/promptmark/inputs.json (10 prompts, 21 codes)
+wrote tests/fixtures/oracle/promptmark/original.json: 2 parts, 10 generations
+wrote tests/fixtures/oracle/promptmark/patch_check.json: 0 mismatches
+....                                                                     [100%]
+==================================== PASSES ====================================
+___________________ test_generation_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+problem         iters  retry wm  retry corr  examples  selected  D4 == method  marked  free ids  distinct seeds/responses/codes
+humaneval/0         5         4           0         2         0  True          False          2  5/5/1
+humaneval/1         5         4           0         1         0  True          False          4  5/5/3
+humaneval/2         5         4           0         1         0  True          False          2  5/1/1
+humaneval/3         5         4           0         2         0  True          False          1  5/5/3
+humaneval/4         5         4           0         1         0  True          False          2  5/5/3
+mbpp/103            5         4           0         1         0  True          False          0  5/5/5
+mbpp/108            5         0           4         1         0  True          False          7  5/5/4
+mbpp/109            5         4           0         1         0  True          False          4  5/5/4
+mbpp/118            5         4           0         1         0  True          False          1  5/5/5
+mbpp/120            5         4           0         1         0  True          False          4  5/5/5
+watermark embedded (humaneval): 0/5
+watermark embedded (mbpp): 0/5
+green list: ['c', 'e', 'f', 'i', 'l', 'n', 'o', 'p'] (size 8), gamma 0.4113
+____________________ test_detection_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          score  tokens  green  status
+canonical:humaneval/0        0.54       9      5  OK
+canonical:humaneval/1        0.73      10      6  OK
+canonical:humaneval/2        0.17       5      2  OK
+canonical:humaneval/3        0.26       9      4  OK
+canonical:humaneval/4        0.26       9      4  OK
+canonical:mbpp/103           0.17       5      2  OK
+canonical:mbpp/108           0.47       5      3  OK
+canonical:mbpp/109           0.17       5      2  OK
+canonical:mbpp/118          -0.00       3      0  OK
+canonical:mbpp/120           0.03       5      1  OK
+nocontext:humaneval/0        0.54       9      5  OK
+generated:humaneval/0        0.54       9      5  OK
+generated:humaneval/2        0.22       7      3  OK
+generated:humaneval/4        0.47      14      7  OK
+generated:mbpp/108           0.77      14      8  OK
+generated:mbpp/118           0.77       2      2  OK
+baseline:humaneval/0         0.72       8      5  OK
+baseline:humaneval/1         0.73      10      6  OK
+baseline:humaneval/2         0.17       5      2  OK
+baseline:humaneval/3         0.26       9      4  OK
+baseline:humaneval/4         0.19      10      4  OK
+baseline:mbpp/103            0.17       5      2  OK
+baseline:mbpp/108            0.71       6      4  OK
+baseline:mbpp/109            0.43       3      2  OK
+baseline:mbpp/118           -0.00       2      0  OK
+baseline:mbpp/120            0.03       5      1  OK
+generated:humaneval/1        0.73      10      6  OK
+generated:humaneval/3        0.26       9      4  OK
+generated:mbpp/103           0.72       4      3  OK
+generated:mbpp/109           0.47       5      3  OK
+generated:mbpp/120           0.03       5      1  OK
+___________________ test_patch_0002_and_frequency_procedure ____________________
+----------------------------- Captured stdout call -----------------------------
+
+identifier sets compared: 21, differences: []
+______________________ test_example_overlap_with_evalplus ______________________
+----------------------------- Captured stdout call -----------------------------
+
+dataset        split  problems  with ex.  examples  in base  in plus  problems overlap
+humanevalplus  dev          24        10        30       23       10                 9
+humanevalplus  test        140        60       136       86       27                43
+mbppplus       dev          72        72        72       62       11                62
+mbppplus       test        306       306       306      260       37               260
+4 passed in 340.29s (0:05:40)
