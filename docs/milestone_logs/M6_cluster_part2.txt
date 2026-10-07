@@ -1,0 +1,41 @@
+fatal: detected dubious ownership in repository at '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/MCGMT'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/MCGMT
+error: build/oracle_src/mcgmark/Watermark/Detection_Only.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/Watermark-MBPP.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/logs_counter.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/watermark.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/watermark_global.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/watermark_processor.py: No such file or directory
+fatal: detected dubious ownership in repository at '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/MCGMT'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/third_party/MCGMT
+error: build/oracle_src/mcgmark/Watermark/Detection_Only.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/Watermark-MBPP.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/logs_counter.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/watermark.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/watermark_global.py: No such file or directory
+error: build/oracle_src/mcgmark/Watermark/watermark_processor.py: No such file or directory
+srun: job 784971 queued and waiting for resources
+srun: job 784971 has been allocated resources
+##### oracle mcgmark 2/2: nodo gnode03, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/mcgmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  7.99it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  9.00it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 10.37it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  9.95it/s]
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/original.2of2.json (original): 2 generations, 7 detections
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/oracle/mcgmark_original.py", line 300, in <module>
+    sys.exit(main())
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/oracle/mcgmark_original.py", line 81, in main
+    import watermark_global as wg
+ModuleNotFoundError: No module named 'watermark_global'
+srun: error: gnode03: task 0: Exited with exit code 1
+srun: job 784979 queued and waiting for resources
+srun: job 784979 has been allocated resources
+##### oracle mcgmark 2/2: nodo gnode10, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/mcgmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  7.66it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00, 10.27it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 10.71it/s]
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/original.2of2.json (original): 2 generations, 7 detections
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  7.80it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00, 11.19it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 11.68it/s]
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/patched.2of2.json (patched): 2 generations, 7 detections

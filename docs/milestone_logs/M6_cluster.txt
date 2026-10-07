@@ -80,3 +80,483 @@ L1_javascript_dev.parquet
 L1_javascript_dev.parquet.manifest.json
 L1_python_dev.parquet
 L1_python_dev.parquet.manifest.json
+scripts/oracle_method.sh: line 42: SOURCE: unbound variable
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/deepseek_coder_6p7b/356dd3cf78ee/L1_cpp_dev.parquet.manifest.json: {'OK': 144} None
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/deepseek_coder_6p7b/356dd3cf78ee/L1_java_dev.parquet.manifest.json: {'OK': 144} None
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/deepseek_coder_6p7b/356dd3cf78ee/L1_javascript_dev.parquet.manifest.json: {'OK': 144} None
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/deepseek_coder_6p7b/356dd3cf78ee/L1_python_dev.parquet.manifest.json: {'OK': 576} None
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/qwen25_coder_7b/356dd3cf78ee/L1_cpp_dev.parquet.manifest.json: {'OK': 144} None
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/qwen25_coder_7b/356dd3cf78ee/L1_java_dev.parquet.manifest.json: {'OK': 144} None
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/qwen25_coder_7b/356dd3cf78ee/L1_javascript_dev.parquet.manifest.json: {'OK': 144} None
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/sweet/qwen25_coder_7b/356dd3cf78ee/L1_python_dev.parquet.manifest.json: {'OK': 576} None
+srun: job 784813 queued and waiting for resources
+srun: job 784813 has been allocated resources
+##### oracle mcgmark: nodo gnode06, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/mcgmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  6.70it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.39it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  3.07it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  3.47it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:01<00:00,  3.78it/s]
+wrote tests/fixtures/oracle/mcgmark/original.json (original): 5 generations, 16 detections
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  6.86it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.58it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  7.35it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  7.89it/s]
+wrote tests/fixtures/oracle/mcgmark/patched.json (patched): 5 generations, 16 detections
+...FF.                                                                   [100%]
+=================================== FAILURES ===================================
+_______________ test_extraction_from_code_recovers_the_embedding _______________
+
+data = {'inputs': {'method': 'mcgmark', 'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/..., ...}, 'patched': {'variant': 'patched', 'transformers': '4.46.3', 'torch': '2.4.1+cu121', 'vocab_size': 151665, ...}}
+
+    def test_extraction_from_code_recovers_the_embedding(data: dict[str, Any]) -> None:
+        """La macchina a stati rigiocata sul testo ritrova le posizioni marcate in generazione."""
+        patched = data["patched"]
+        by_id = {d["id"]: d for d in patched["detections"]}
+        checked = 0
+        print("\nproblem         embedded  replayed  equal prefix")
+        for gen in patched["generations"]:
+            internal = gen["internal"]
+            replay = by_id[f"generated:{gen['problem_key']}"]
+            prefix = 0
+            for a, b in zip(internal["tokens"], replay["tokens"], strict=False):
+                if a != b:
+                    break
+                prefix += 1
+            print(
+                f"{gen['problem_key']:15s} {len(internal['tokens']):8d} {len(replay['tokens']):9d} "
+                f"{prefix:13d}"
+            )
+            if len(internal["tokens"]) >= ROUND:
+                checked += 1
+                assert internal["tokens"][:ROUND] == replay["tokens"][:ROUND], gen["problem_key"]
+                assert internal["bits"][:ROUND] == replay["bits"][:ROUND], gen["problem_key"]
+>       assert checked > 0, "no sample with a complete round"
+E       AssertionError: no sample with a complete round
+E       assert 0 > 0
+
+tests/oracle/test_mcgmark_oracle.py:219: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+problem         embedded  replayed  equal prefix
+humaneval/0            0         0             0
+humaneval/1            0         0             0
+humaneval/2            0         0             0
+humaneval/3            0         0             0
+humaneval/4            0         0             0
+_______________________ test_known_message_is_recovered ________________________
+
+data = {'inputs': {'method': 'mcgmark', 'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/..., ...}, 'patched': {'variant': 'patched', 'transformers': '4.46.3', 'torch': '2.4.1+cu121', 'vocab_size': 151665, ...}}
+
+    def test_known_message_is_recovered(data: dict[str, Any]) -> None:
+        """Bit recuperati sul primo ciclo: codice originale (γ dinamico) e codice con patch 0001."""
+        print("\nproblem         message       original  patched")
+        best = 0
+        for variant in ("original", "patched"):
+            assert data[variant]["variant"] == variant
+        pairs = zip(data["original"]["generations"], data["patched"]["generations"], strict=True)
+        for orig, patc in pairs:
+            cells = []
+            for gen in (orig, patc):
+                rounds = gen["internal"]["rounds"]
+                cells.append(f"{_matches(rounds[0], gen['message']):2d}/12" if rounds else "  -  ")
+            if patc["internal"]["rounds"]:
+                best = max(best, _matches(patc["internal"]["rounds"][0], patc["message"]))
+            print(f"{orig['problem_key']:15s} {orig['message']}  {cells[0]:>8s}  {cells[1]:>7s}")
+        _print_error_breakdown(data["patched"]["generations"])
+>       assert best == INFO, "no sample recovers the full 12-bit message"
+E       AssertionError: no sample recovers the full 12-bit message
+E       assert 0 == 12
+
+tests/oracle/test_mcgmark_oracle.py:238: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+problem         message       original  patched
+humaneval/0     010101110011       -        -  
+humaneval/1     110101000011       -        -  
+humaneval/2     111100000010       -        -  
+humaneval/3     011000011010       -        -  
+humaneval/4     010011000101       -        -  
+message bit  correction bit  positions  wrong
+==================================== PASSES ====================================
+___________________ test_generation_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+problem         status   embedded  generated
+humaneval/0     PARTIAL         0        163
+humaneval/1     PARTIAL         0        201
+humaneval/2     PARTIAL         0         91
+humaneval/3     PARTIAL         0        150
+humaneval/4     PARTIAL         0        143
+____________________ test_detection_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          eligible rounds  score  first round  message
+canonical:humaneval/0             9      0      -
+baseline:humaneval/0             12      0      -
+canonical:humaneval/1             6      0      -
+baseline:humaneval/1             14      0      -
+canonical:humaneval/2             4      0      -
+baseline:humaneval/2              7      0      -
+canonical:humaneval/3            10      0      -
+baseline:humaneval/3             10      0      -
+canonical:humaneval/4             3      0      -
+baseline:humaneval/4              3      0      -
+nocontext:humaneval/0             9      0      -
+generated:humaneval/0             0      0      -
+generated:humaneval/1             0      0      -
+generated:humaneval/2             0      0      -
+generated:humaneval/3             0      0      -
+generated:humaneval/4             0      0      -
+_________ test_fixed_gamma_patch_changes_only_the_dynamic_gamma_steps __________
+----------------------------- Captured stdout call -----------------------------
+
+problem         steps  gamma=0.25  differing  allowed
+humaneval/0       163           0          0        0
+humaneval/1       201           0          0        0
+humaneval/2        91           0          0        0
+humaneval/3       150           0          0        0
+humaneval/4       143           0          0        0
+original generation: gamma=0.25 on 0/748 steps (0.0%), on 0/0 marking steps (0.0%)
+2 failed, 4 passed in 300.53s (0:05:00)
+srun: error: gnode06: task 0: Exited with exit code 1
+srun: job 784922 queued and waiting for resources
+srun: job 784922 has been allocated resources
+##### oracle mcgmark: nodo gnode01, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/mcgmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00, 11.64it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 13.06it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 12.82it/s]
+wrote tests/fixtures/oracle/mcgmark/original.json (original): 5 generations, 16 detections
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  9.08it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00, 10.04it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 10.58it/s]
+wrote tests/fixtures/oracle/mcgmark/patched.json (patched): 5 generations, 16 detections
+...F.F.                                                                  [100%]
+=================================== FAILURES ===================================
+_______________ test_extraction_from_code_recovers_the_embedding _______________
+
+data = {'inputs': {'method': 'mcgmark', 'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/..., ...}, 'patched': {'variant': 'patched', 'transformers': '4.46.3', 'torch': '2.4.1+cu121', 'vocab_size': 151665, ...}}
+adapter = <bench.methods.adapters.mcgmark.McgmarkAdapter object at 0x155516191850>
+cfg = ExperimentConfig(global_seed=20261001, stage='watermark', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'], ...e, canonical_repeats=3, stderr_tail_chars=2000, evalplus=EvalPlusConfig(min_time_limit=1.0, gt_time_limit_factor=4.0)))
+tmp_path = PosixPath('/tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-0/test_extraction_from_code_reco0')
+
+    def test_extraction_from_code_recovers_the_embedding(
+        data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+    ) -> None:
+        """Sul codice estratto con la regola D4 (come nella pipeline) la macchina a stati rigiocata
+        ritrova le posizioni e i bit registrati dal processor in generazione."""
+        from bench.domain.models import Problem
+        from bench.generation.code_extractor import FencedCodeExtractor
+    
+        assert isinstance(adapter, Detector)
+        inputs, patched = data["inputs"], data["patched"]
+        problems = {p["problem_key"]: Problem.model_validate(p["problem"]) for p in inputs["prompts"]}
+        extractor = FencedCodeExtractor()
+        codes = {}
+        for gen in patched["generations"]:
+            code, ok = extractor.extract(gen["new_text"], problems[gen["problem_key"]])
+            assert ok, gen["problem_key"]
+            codes[gen["problem_key"]] = code
+        results = adapter.detect_codes(
+            [
+                DetectInput(key, "python", code, expected_message=gen["message"])
+                for (key, code), gen in zip(codes.items(), patched["generations"], strict=True)
+            ],
+            adapter.default_hparams(),
+            cfg.models_catalog[inputs["model_id"]],
+            "k1",
+            inputs["decoding"],
+            tmp_path / "detect",
+            "cuda:0",
+        )
+        checked = embedded_ok = 0
+        print("\nproblem         embedded  replayed  equal prefix  equal bits (first round)")
+        for gen, result in zip(patched["generations"], results, strict=True):
+            internal = gen["internal"]
+            replay_tokens, replay_bits = result.extra["tokens"], result.extra["bits"]
+            prefix = 0
+            for a, b in zip(internal["tokens"], replay_tokens, strict=False):
+                if a != b:
+                    break
+                prefix += 1
+            same_bits = internal["bits"][:ROUND] == replay_bits[:ROUND]
+            print(
+                f"{gen['problem_key']:15s} {len(internal['tokens']):8d} {len(replay_tokens):9d} "
+                f"{prefix:13d}  {same_bits}"
+            )
+            if len(internal["tokens"]) >= ROUND:
+                checked += 1
+                embedded_ok += 1
+                assert internal["tokens"][:ROUND] == replay_tokens[:ROUND], gen["problem_key"]
+                assert same_bits, gen["problem_key"]
+        n = len(patched["generations"])
+        print(f"embedding with a complete round (OK): {embedded_ok}/{n} ({embedded_ok / n:.0%})")
+>       assert checked > 0, "no sample with a complete round"
+E       AssertionError: no sample with a complete round
+E       assert 0 > 0
+
+tests/oracle/test_mcgmark_oracle.py:250: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+problem         embedded  replayed  equal prefix  equal bits (first round)
+humaneval/0           14        13             0  False
+humaneval/1           17        16             0  False
+humaneval/2            7         6             0  False
+humaneval/3            7         6             0  False
+humaneval/4           13        12             0  False
+embedding with a complete round (OK): 0/5 (0%)
+_______________________ test_known_message_is_recovered ________________________
+
+data = {'inputs': {'method': 'mcgmark', 'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/..., ...}, 'patched': {'variant': 'patched', 'transformers': '4.46.3', 'torch': '2.4.1+cu121', 'vocab_size': 151665, ...}}
+
+    def test_known_message_is_recovered(data: dict[str, Any]) -> None:
+        """Bit recuperati sul primo ciclo: codice originale (γ dinamico) e codice con patch 0001."""
+        print("\nproblem         message       original  patched")
+        best = 0
+        for variant in ("original", "patched"):
+            assert data[variant]["variant"] == variant
+        pairs = zip(data["original"]["generations"], data["patched"]["generations"], strict=True)
+        for orig, patc in pairs:
+            cells = []
+            for gen in (orig, patc):
+                rounds = gen["internal"]["rounds"]
+                cells.append(f"{_matches(rounds[0], gen['message']):2d}/12" if rounds else "  -  ")
+            if patc["internal"]["rounds"]:
+                best = max(best, _matches(patc["internal"]["rounds"][0], patc["message"]))
+            print(f"{orig['problem_key']:15s} {orig['message']}  {cells[0]:>8s}  {cells[1]:>7s}")
+        _print_error_breakdown(data["patched"]["generations"])
+>       assert best == INFO, "no sample recovers the full 12-bit message"
+E       AssertionError: no sample recovers the full 12-bit message
+E       assert 0 == 12
+
+tests/oracle/test_mcgmark_oracle.py:303: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+problem         message       original  patched
+humaneval/0     010101110011       -        -  
+humaneval/1     110101000011       -        -  
+humaneval/2     111100000010       -        -  
+humaneval/3     011000011010       -        -  
+humaneval/4     010011000101       -        -  
+message bit  correction bit  positions  wrong
+==================================== PASSES ====================================
+___________________ test_generation_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+problem         status   embedded  generated
+humaneval/0     PARTIAL        14        256
+humaneval/1     PARTIAL        17        512
+humaneval/2     PARTIAL         7        512
+humaneval/3     PARTIAL         7        512
+humaneval/4     PARTIAL        13        262
+____________________ test_detection_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          eligible rounds  score  first round  message
+canonical:humaneval/0             9      0      -
+baseline:humaneval/0             12      0      -
+canonical:humaneval/1             6      0      -
+baseline:humaneval/1             14      0      -
+canonical:humaneval/2             4      0      -
+baseline:humaneval/2              7      0      -
+canonical:humaneval/3            10      0      -
+baseline:humaneval/3             10      0      -
+canonical:humaneval/4             3      0      -
+baseline:humaneval/4              3      0      -
+nocontext:humaneval/0             9      0      -
+generated:humaneval/0            13      0      -
+generated:humaneval/1            16      0      -
+generated:humaneval/2             6      0      -
+generated:humaneval/3             6      0      -
+generated:humaneval/4            12      0      -
+_______________ test_twin_baseline_differs_only_by_the_watermark _______________
+----------------------------- Captured stdout call -----------------------------
+
+twin == watermarked: False
+_________ test_fixed_gamma_patch_changes_only_the_dynamic_gamma_steps __________
+----------------------------- Captured stdout call -----------------------------
+
+problem         steps  gamma=0.25  differing  allowed
+humaneval/0       256           0          0        0
+humaneval/1       512           0          0        0
+humaneval/2       512           0          0        0
+humaneval/3       512           0          0        0
+humaneval/4       262           0          0        0
+original generation: gamma=0.25 on 0/2054 steps (0.0%), on 0/245 marking steps (0.0%)
+2 failed, 5 passed in 492.96s (0:08:12)
+srun: error: gnode01: task 0: Exited with exit code 1
+srun: job 784964 queued and waiting for resources
+srun: job 784964 has been allocated resources
+##### oracle mcgmark 1/2: nodo gnode03, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/mcgmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  7.35it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  8.24it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  3.51it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  4.10it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  4.40it/s]
+srun: job 784970 queued and waiting for resources
+srun: job 784970 has been allocated resources
+##### oracle mcgmark 1/2: nodo gnode03, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/mcgmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00, 10.77it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 12.01it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 11.80it/s]
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/original.1of2.json (original): 3 generations, 9 detections
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/oracle/mcgmark_original.py", line 300, in <module>
+    sys.exit(main())
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/oracle/mcgmark_original.py", line 81, in main
+    import watermark_global as wg
+ModuleNotFoundError: No module named 'watermark_global'
+srun: error: gnode03: task 0: Exited with exit code 1
+srun: job 784978 queued and waiting for resources
+srun: job 784978 has been allocated resources
+##### oracle mcgmark 1/2: nodo gnode12, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/mcgmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  5.88it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  5.64it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  4.02it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  5.16it/s]
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/original.1of2.json (original): 3 generations, 9 detections
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  5.45it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.41it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  9.49it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  8.69it/s]
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/patched.1of2.json (patched): 3 generations, 9 detections
+##### oracle mcgmark test: nodo gnode01, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/mcgmark/inputs.json (5 prompts, 11 codes)
+wrote tests/fixtures/oracle/mcgmark/original.json: 2 parts, 5 generations
+wrote tests/fixtures/oracle/mcgmark/patched.json: 2 parts, 5 generations
+...F.F.                                                                  [100%]
+=================================== FAILURES ===================================
+_______________ test_extraction_from_code_recovers_the_embedding _______________
+
+data = {'inputs': {'method': 'mcgmark', 'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/..., ...}, 'patched': {'variant': 'patched', 'transformers': '4.46.3', 'torch': '2.4.1+cu121', 'vocab_size': 151665, ...}}
+adapter = <bench.methods.adapters.mcgmark.McgmarkAdapter object at 0x155521507f50>
+cfg = ExperimentConfig(global_seed=20261001, stage='watermark', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'], ...e, canonical_repeats=3, stderr_tail_chars=2000, evalplus=EvalPlusConfig(min_time_limit=1.0, gt_time_limit_factor=4.0)))
+tmp_path = PosixPath('/tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-1/test_extraction_from_code_reco0')
+
+    def test_extraction_from_code_recovers_the_embedding(
+        data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+    ) -> None:
+        """Sul codice estratto con la regola D4 (come nella pipeline) la macchina a stati rigiocata
+        ritrova le posizioni e i bit registrati dal processor in generazione."""
+        from bench.domain.models import Problem
+        from bench.generation.code_extractor import FencedCodeExtractor
+    
+        assert isinstance(adapter, Detector)
+        inputs, patched = data["inputs"], data["patched"]
+        problems = {p["problem_key"]: Problem.model_validate(p["problem"]) for p in inputs["prompts"]}
+        extractor = FencedCodeExtractor()
+        codes = {}
+        for gen in patched["generations"]:
+            code, ok = extractor.extract(gen["new_text"], problems[gen["problem_key"]])
+            assert ok, gen["problem_key"]
+            codes[gen["problem_key"]] = code
+        results = adapter.detect_codes(
+            [
+                DetectInput(key, "python", code, expected_message=gen["message"])
+                for (key, code), gen in zip(codes.items(), patched["generations"], strict=True)
+            ],
+            adapter.default_hparams(),
+            cfg.models_catalog[inputs["model_id"]],
+            "k1",
+            inputs["decoding"],
+            tmp_path / "detect",
+            "cuda:0",
+        )
+        checked = embedded_ok = 0
+        print("\nproblem         embedded  replayed  equal prefix  equal bits (first round)")
+        for gen, result in zip(patched["generations"], results, strict=True):
+            internal = gen["internal"]
+            replay_tokens, replay_bits = result.extra["tokens"], result.extra["bits"]
+            prefix = 0
+            for a, b in zip(internal["tokens"], replay_tokens, strict=False):
+                if a != b:
+                    break
+                prefix += 1
+            same_bits = internal["bits"][:ROUND] == replay_bits[:ROUND]
+            print(
+                f"{gen['problem_key']:15s} {len(internal['tokens']):8d} {len(replay_tokens):9d} "
+                f"{prefix:13d}  {same_bits}"
+            )
+            if len(internal["tokens"]) >= ROUND:
+                checked += 1
+                embedded_ok += 1
+                assert internal["tokens"][:ROUND] == replay_tokens[:ROUND], gen["problem_key"]
+                assert same_bits, gen["problem_key"]
+        n = len(patched["generations"])
+        print(f"embedding with a complete round (OK): {embedded_ok}/{n} ({embedded_ok / n:.0%})")
+>       assert checked > 0, "no sample with a complete round"
+E       AssertionError: no sample with a complete round
+E       assert 0 > 0
+
+tests/oracle/test_mcgmark_oracle.py:250: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+problem         embedded  replayed  equal prefix  equal bits (first round)
+humaneval/0           14        14            14  True
+humaneval/1           17        17            15  False
+humaneval/2            7         7             7  True
+humaneval/3            7         7             7  True
+humaneval/4           13        13            13  True
+embedding with a complete round (OK): 0/5 (0%)
+_______________________ test_known_message_is_recovered ________________________
+
+data = {'inputs': {'method': 'mcgmark', 'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/..., ...}, 'patched': {'variant': 'patched', 'transformers': '4.46.3', 'torch': '2.4.1+cu121', 'vocab_size': 151665, ...}}
+
+    def test_known_message_is_recovered(data: dict[str, Any]) -> None:
+        """Bit recuperati sul primo ciclo: codice originale (γ dinamico) e codice con patch 0001."""
+        print("\nproblem         message       original  patched")
+        best = 0
+        for variant in ("original", "patched"):
+            assert data[variant]["variant"] == variant
+        pairs = zip(data["original"]["generations"], data["patched"]["generations"], strict=True)
+        for orig, patc in pairs:
+            cells = []
+            for gen in (orig, patc):
+                rounds = gen["internal"]["rounds"]
+                cells.append(f"{_matches(rounds[0], gen['message']):2d}/12" if rounds else "  -  ")
+            if patc["internal"]["rounds"]:
+                best = max(best, _matches(patc["internal"]["rounds"][0], patc["message"]))
+            print(f"{orig['problem_key']:15s} {orig['message']}  {cells[0]:>8s}  {cells[1]:>7s}")
+        _print_error_breakdown(data["patched"]["generations"])
+>       assert best == INFO, "no sample recovers the full 12-bit message"
+E       AssertionError: no sample recovers the full 12-bit message
+E       assert 0 == 12
+
+tests/oracle/test_mcgmark_oracle.py:303: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+problem         message       original  patched
+humaneval/0     010101110011       -        -  
+humaneval/1     110101000011       -        -  
+humaneval/2     111100000010       -        -  
+humaneval/3     011000011010       -        -  
+humaneval/4     010011000101       -        -  
+message bit  correction bit  positions  wrong
+==================================== PASSES ====================================
+___________________ test_generation_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+problem         status   embedded  generated
+humaneval/0     PARTIAL        14        256
+humaneval/1     PARTIAL        17        512
+humaneval/2     PARTIAL         7        512
+humaneval/3     PARTIAL         7        512
+humaneval/4     PARTIAL        13        262
+____________________ test_detection_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          eligible rounds  score  first round  message
+canonical:humaneval/0            10      0      -
+canonical:humaneval/1             7      0      -
+canonical:humaneval/2             4      0      -
+canonical:humaneval/3            11      0      -
+canonical:humaneval/4             4      0      -
+nocontext:humaneval/0            10      0      -
+generated:humaneval/0            14      0      -
+generated:humaneval/2             7      0      -
+generated:humaneval/4            13      0      -
+baseline:humaneval/0             13      0      -
+baseline:humaneval/1             15      0      -
+baseline:humaneval/2              8      0      -
+baseline:humaneval/3             11      0      -
+baseline:humaneval/4              4      0      -
+generated:humaneval/1            17      0      -
+generated:humaneval/3             7      0      -
+_______________ test_twin_baseline_differs_only_by_the_watermark _______________
+----------------------------- Captured stdout call -----------------------------
+
+twin == watermarked: False
+_________ test_fixed_gamma_patch_changes_only_the_dynamic_gamma_steps __________
+----------------------------- Captured stdout call -----------------------------
+
+problem         steps  gamma=0.25  differing  allowed
+humaneval/0       256           0          0        0
+humaneval/1       512           0          0        0
+humaneval/2       512           0          0        0
+humaneval/3       512           0          0        0
+humaneval/4       262           0          0        0
+original generation: gamma=0.25 on 0/2054 steps (0.0%), on 0/245 marking steps (0.0%)
+2 failed, 5 passed in 564.74s (0:09:24)
+srun: error: gnode01: task 0: Exited with exit code 1
