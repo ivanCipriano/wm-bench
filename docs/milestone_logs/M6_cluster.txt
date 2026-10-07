@@ -828,3 +828,136 @@ humanevalplus  test        140         3         5        5        1            
 mbppplus       dev          72        72        72       62       11                62
 mbppplus       test        306       306       306      260       37               260
 4 passed in 182.16s (0:03:02)
+##### oracle promptmark 1/2: nodo gnode01, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/promptmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  8.08it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00, 10.05it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 10.38it/s]
+Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/promptmark/original.1of2.json: 3 generations, 9 detections
+##### oracle promptmark test: nodo gnode01, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/promptmark/inputs.json (5 prompts, 11 codes)
+wrote tests/fixtures/oracle/promptmark/original.json: 2 parts, 5 generations
+wrote tests/fixtures/oracle/promptmark/patch_check.json: 0 mismatches
+...F                                                                     [100%]
+=================================== FAILURES ===================================
+______________________ test_example_overlap_with_evalplus ______________________
+
+cfg = ExperimentConfig(global_seed=20261001, stage='watermark', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'], ...e, canonical_repeats=3, stderr_tail_chars=2000, evalplus=EvalPlusConfig(min_time_limit=1.0, gt_time_limit_factor=4.0)))
+
+    def test_example_overlap_with_evalplus(cfg: ExperimentConfig) -> None:
+        """Quanti esempi del ciclo coincidono con input dei test di EvalPlus (audit §8)."""
+        for name in ("humanevalplus", "mbppplus"):
+            _require(cfg.datasets[name].file("data"))  # dataset del cluster
+        from bench.domain.models import Problem
+        from bench.generation.prompt_builder import PromptBuilder
+        from bench.pipeline.stages.generate_baseline import problems_ref
+        from bench.store.artifact_store import ArtifactStore
+    
+        sys.path.insert(0, str(REPO_ROOT / "shims"))
+        from bench_shims.promptmark.examples import prompt_examples
+    
+        store = ArtifactStore(cfg.paths.artifacts)
+        table = store.read_table(problems_ref("L1", "python"))
+        builder = PromptBuilder.from_config(cfg.prompt)
+        evalplus: dict[str, dict[str, Any]] = {}
+        for name in ("humanevalplus", "mbppplus"):
+            with cfg.datasets[name].file("data").open(encoding="utf-8") as handle:
+                for line in handle:
+                    row = json.loads(line)
+                    evalplus[row["task_id"]] = row
+        print(
+            "\ndataset        split  problems  with ex.  examples  in base  in plus  problems overlap"
+        )
+        for (dataset, split), group in table.groupby(["dataset", "split"]):
+            n_prob = with_ex = n_ex = in_base = in_plus = overlap = 0
+            for row in group.to_dict(orient="records"):
+                problem = Problem.model_validate(row)
+                n_prob += 1
+                examples = prompt_examples(builder.render_user(problem))
+                ref = evalplus[str(problem.test_ref)]
+                base = [list(x) for x in ref.get("base_input") or []]
+                plus = [list(x) for x in ref.get("plus_input") or []]
+                hit = False
+                if examples:
+                    with_ex += 1
+                for test in examples:
+                    n_ex += 1
+>                   calls = _call_inputs(test, str(problem.entry_point))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/oracle/test_promptmark_oracle.py:254: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/oracle/test_promptmark_oracle.py:207: in _call_inputs
+    for node in ast.walk(ast.parse(test)):
+                         ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+source = 'assert (round(find_zero([1, 2]), 2) # f(x) = 1 + 2x) == (-0.5)'
+filename = '<unknown>', mode = 'exec', type_comments = False
+feature_version = -1
+
+    def parse(source, filename='<unknown>', mode='exec', *,
+              type_comments=False, feature_version=None):
+        """
+        Parse the source into an AST node.
+        Equivalent to compile(source, filename, mode, PyCF_ONLY_AST).
+        Pass type_comments=True to get back type comments where the syntax allows.
+        """
+        flags = PyCF_ONLY_AST
+        if type_comments:
+            flags |= PyCF_TYPE_COMMENTS
+        if isinstance(feature_version, tuple):
+            major, minor = feature_version  # Should be a 2-tuple.
+            assert major == 3
+            feature_version = minor
+        elif feature_version is None:
+            feature_version = -1
+        # Else it should be an int giving the minor version for 3.x.
+>       return compile(source, filename, mode, flags,
+                       _feature_version=feature_version)
+E         File "<unknown>", line 1
+E           assert (round(find_zero([1, 2]), 2) # f(x) = 1 + 2x) == (-0.5)
+E                  ^
+E       SyntaxError: '(' was never closed
+
+../wm_bench/bench-core/lib/python3.11/ast.py:50: SyntaxError
+----------------------------- Captured stdout call -----------------------------
+
+dataset        split  problems  with ex.  examples  in base  in plus  problems overlap
+humanevalplus  dev          24        10        30       23       10                 9
+==================================== PASSES ====================================
+___________________ test_generation_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+problem         iters  retry wm  retry corr  examples  selected  D4 == method
+humaneval/0         5         4           0         2         0  True
+humaneval/1         5         4           0         1         0  True
+humaneval/2         5         4           0         1         0  True
+humaneval/3         5         4           0         2         0  True
+humaneval/4         5         4           0         1         0  True
+green list: ['c', 'e', 'f', 'i', 'l', 'n', 'o', 'p'] (size 8), gamma 0.4113
+____________________ test_detection_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          score  tokens  green  status
+canonical:humaneval/0        0.54       9      5  OK
+canonical:humaneval/1        0.73      10      6  OK
+canonical:humaneval/2        0.17       5      2  OK
+canonical:humaneval/3        0.26       9      4  OK
+canonical:humaneval/4        0.26       9      4  OK
+nocontext:humaneval/0        0.54       9      5  OK
+generated:humaneval/0        0.54       9      5  OK
+generated:humaneval/2        0.22       7      3  OK
+generated:humaneval/4        0.47      14      7  OK
+baseline:humaneval/0         0.72       8      5  OK
+baseline:humaneval/1         0.73      10      6  OK
+baseline:humaneval/2         0.17       5      2  OK
+baseline:humaneval/3         0.26       9      4  OK
+baseline:humaneval/4         0.19      10      4  OK
+generated:humaneval/1        0.73      10      6  OK
+generated:humaneval/3        0.26       9      4  OK
+___________________ test_patch_0002_and_frequency_procedure ____________________
+----------------------------- Captured stdout call -----------------------------
+
+identifier sets compared: 11, differences: []
+1 failed, 3 passed in 179.58s (0:02:59)
+srun: error: gnode01: task 0: Exited with exit code 1
