@@ -39,6 +39,30 @@ Modifiche preesistenti dell'utente (non scritte dall'agente). Escluso: `__pycach
   decodifica dell'intero vocabolario a ogni passo in una variabile mai usata (`Useless_code_5` nel codice).
 - Nessun effetto sulla semantica; solo velocità.
 
+## 0003-rimuovi-calcoli-inutili.patch
+
+Patch **puramente di prestazioni** (decisione dell'utente del 7 ottobre 2026): nessun effetto sul
+testo generato né sui bit inseriti. In `Watermark/watermark_processor.py`, `__call__`, rimuove a ogni
+passo di generazione:
+
+| Calcolo rimosso | Perché è inutile dopo la 0001 |
+|---|---|
+| `teet = tokenizer.batch_decode(input_ids)` (decodifica dell'intera sequenza) e `Identify_chars = teet[-10:]` | `Identify_chars` non è mai letto |
+| `scores[0].tolist()` (lista Python di tutto il vocabolario) | serviva solo a massimo, minimo e indice del massimo, ora presi con torch sugli stessi valori (`max().item()`, `min().item()`, `argmax`: primo indice del massimo, come `list.index`) |
+| `is_evenly_distributed(...)` (media e deviazione in Python sull'intero vocabolario) | il risultato sceglieva γ, fissato a 0,5 dalla 0001 |
+| `detect_outlier(...)` (percentili e scansione del vocabolario) e `selected_indices`, con `np.random.seed(hash_key)` e `np.random.choice` | `selected_indices` non è mai letto: il suo uso in `_get_greenlist_ids` è commentato nel repository |
+| `tensor_value`, `scores[0].tolist()` dopo il bias, `max_value_3` | mai letti |
+
+**Generatore casuale.** Fra i calcoli rimossi solo `np.random.seed`/`np.random.choice` usavano un
+generatore: quello globale di **numpy**. Nessun'altra parte del metodo, di transformers o dello shim
+legge il generatore di numpy (il campionamento usa quello di torch, le green list un `torch.Generator`
+proprio): la rimozione non cambia la generazione.
+
+**Verifica** (oracle, `test_patch_0003_keeps_the_text_identical_and_is_faster`): con lo stesso seme il
+testo generato con 0000-0003 è identico carattere per carattere a quello con 0000-0002 (stessi id, stesse
+posizioni e bit inseriti), sui prompt lunghi (3 CodeNet + 6 ClassEval); su L1 il codice del framework è
+identico all'originale dove γ = 0,25 non compare. Lo speed-up misurato è riportato nell'audit (§9).
+
 ## Verifica
 
 - `scripts/apply_patches.sh mcgmark` applica la patch a `build/patched/mcgmark/` sul commit fissato: verificato in M0.

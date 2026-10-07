@@ -235,3 +235,16 @@ def test_baseline_twin_stage(cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPa
         stage.run(
             Cell(method="stone", model_id=MODEL, level="L1", language="python", split="dev"), None
         )  # type: ignore[arg-type]
+
+
+def test_watermark_rows_carry_embed_columns(facade: BenchmarkFacade) -> None:
+    """Colonne ``n_sites`` e ``n_generated_tokens`` sempre presenti (``None`` se non misurate)."""
+    facade.run_stage("watermark")
+    stage = wm.WatermarkStage(facade.cfg)
+    ref = wm.watermarked_ref("stone", MODEL, stage.config_hash("stone"), "L1", "python", "dev")
+    df = facade.store.read_table(ref)
+    assert {"n_sites", "n_generated_tokens"} <= set(df.columns)
+    assert df["n_sites"].isna().all()
+    manifest = facade.store.read_manifest(ref)
+    assert manifest is not None and manifest.extra["embed_success_rate"] == 1.0
+    assert manifest.extra["n_sites"] is None

@@ -1,0 +1,71 @@
+diff --git a/Watermark/watermark_processor.py b/Watermark/watermark_processor.py
+index 5c7134a..ff2a0a9 100644
+--- a/Watermark/watermark_processor.py
++++ b/Watermark/watermark_processor.py
+@@ -1024,7 +1024,7 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+         #print("input_ids============",input_ids)
+         Identify_value = input_ids[-1][-1] 
+         Identify_value = Identify_value.unsqueeze(0) #最后一个Token
+-        teet = self.tokenizer.batch_decode(input_ids, skip_special_tokens=False)[0] #全部的Token的解码
++        # [wm-bench 0003] removed: full decoding of the sequence at every step, used only by Identify_chars (never read)
+         teet_1 = self.tokenizer.batch_decode(Identify_value, skip_special_tokens=False)[0] # 最后一个Token的解码
+         
+         self.teet_1_list.append(teet_1)
+@@ -1103,37 +1103,27 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+             self.dww()
+ 
+ 
+-        Identify_chars = teet[-10:] # 倒数后10个字符
++        # [wm-bench 0003] removed: Identify_chars (never read)
+ 
+ 
+         # [wm-bench 0002] removed: unused decoding of the whole vocabulary at every step (Useless_code_5)
+                                                                 # Useless_code_5
+         
+-        first_column_2 = scores[0].tolist()
+-        is_average = is_evenly_distributed(first_column_2)
++        # [wm-bench 0003] max, min and first argmax of the row with torch instead of a Python list (same values)
++        first_row_2 = scores[0]
++        # [wm-bench 0003] removed: is_evenly_distributed (its result chose gamma, fixed to 0.5 by patch 0001)
+         # [wm-bench 0001] gamma fixed to 0.5 (paper Sec. 5.1): the detector uses a fixed gamma
+         self.gamma = 0.5
+         #print("概率分布：",is_average,self.gamma)
+ 
+-        max_value_2 = max(first_column_2)
+-        min_value_2 = min(first_column_2)
++        max_value_2 = first_row_2.max().item()
++        min_value_2 = first_row_2.min().item()
+         prob_dis = math.ceil(max_value_2 - min_value_2)
+ 
+-        outliers, outlier_number, outlier_indices = detect_outlier(first_column_2)
+-        #print("离群值：",outliers, outlier_number, outlier_indices)
+-
+-        if outlier_number == 1:
+-            self.selected_indices = outlier_indices[0]
+-        elif outlier_number >= 2:
+-            num_to_select = outlier_number // 2
+-            int(num_to_select)
+-            #self.selected_indices = np.random.sample(outlier_indices, num_to_select)
+-            np.random.seed(seed=self.hash_key)
+-            self.selected_indices = np.random.choice(outlier_indices, num_to_select, replace=False)
+-        else:
+-            self.selected_indices = []
++        # [wm-bench 0003] removed: IQR outliers and selected_indices (never read: their use is commented out
++        # in _get_greenlist_ids); this also drops np.random.seed/np.random.choice at every step
+ 
+-        self.max_index = first_column_2.index(max_value_2)
++        self.max_index = int(torch.argmax(first_row_2).item())  # first maximal value, like list.index
+ 
+         
+         batched_greenlist_ids = [None for _ in range(input_ids.shape[0])]
+@@ -1142,9 +1132,7 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+             batched_greenlist_ids[b_idx] = greenlist_ids
+         green_tokens_mask = self._calc_greenlist_mask(scores=scores, greenlist_token_ids=batched_greenlist_ids)
+         scores = self._bias_greenlist_logits(scores=scores, greenlist_mask=green_tokens_mask, greenlist_bias=prob_dis,teet_1=teet_1, input_ids=input_ids)
+-        tensor_value = torch.tensor([[max_value_2]])
+-        first_column_3 = scores[0].tolist()
+-        max_value_3 = max(first_column_3)
++        # [wm-bench 0003] removed: tensor_value, first_column_3, max_value_3 (never read)
+         return scores
+ 
+ 

@@ -6,6 +6,7 @@ files:
   no_solutions: ${paths.datasets}/Project_CodeNet/derived/input_output/no_solutions.txt
   unverified_accepted: ${paths.datasets}/Project_CodeNet/derived/input_output/unverified_accepted_solutions.txt
   identical_clusters: ${paths.datasets}/Project_CodeNet/derived/duplicates/identical_problem_clusters
+  excluded: ${paths.repo}/configs/dataset/codenet_excluded.yaml   # problemi da non selezionare (oracle)
 dirs:
   metadata: ${paths.datasets}/Project_CodeNet/metadata
   problem_descriptions: ${paths.datasets}/Project_CodeNet/problem_descriptions

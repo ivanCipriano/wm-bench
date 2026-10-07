@@ -12,6 +12,10 @@ Si lancia due volte, con due copie del codice:
         tests/oracle/mcgmark_original.py --variant patched --replay-from .../original.json \\
         --inputs .../inputs.json --out tests/fixtures/oracle/mcgmark/patched.json
 
+Varianti: ``original`` (sola 0000), ``nospeed`` (0000-0002) e ``patched`` (0000-0003); per il
+codice lungo (``inputs_long.json``) si confrontano ``nospeed`` e ``patched`` con ``--no-forced``
+(testo identico e tempi di generazione: speed-up della patch 0003).
+
 Per ogni prompt (un campione, con seme e messaggio di 12 bit propri):
 1. **generazione** come ``Watermark/watermark.py:225-234`` (``WatermarkLogitsProcessor`` nuovo,
    vocabolario ordinato per id) con prompt chat, decoding neutro, seme e chiave del framework;
@@ -36,6 +40,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 from collections import OrderedDict
 from typing import Any, Dict, List
 
@@ -66,7 +71,12 @@ def fenced_code(text: str, prefill: str) -> str:
 
 def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del docstring
     parser = argparse.ArgumentParser()
-    parser.add_argument("--variant", choices=["original", "patched"], required=True)
+    parser.add_argument("--variant", choices=["original", "nospeed", "patched"], required=True)
+    parser.add_argument(
+        "--no-forced",
+        action="store_true",
+        help="senza forzatura del testo né impronta dei logit (misura dei tempi, codice lungo)",
+    )
     parser.add_argument("--inputs", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--replay-from", default=None)
@@ -129,14 +139,19 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
     class Traced(LogitsProcessor):  # type: ignore[misc]
         """Registra, per passo, γ, posizione marcata e impronta dei logit restituiti."""
 
-        def __init__(self, inner: Any) -> None:
+        def __init__(self, inner: Any, digest: bool = True) -> None:
             self.inner = inner
+            self.digest = digest
             self.steps: List[Dict[str, Any]] = []
 
         def __call__(self, input_ids: Any, scores: Any) -> Any:
             before = int(self.inner.tele_count)
             out = self.inner(input_ids, scores)
-            digest = hashlib.sha256(out.float().cpu().numpy().tobytes()).hexdigest()[:16]
+            digest = (
+                hashlib.sha256(out.float().cpu().numpy().tobytes()).hexdigest()[:16]
+                if self.digest
+                else None
+            )
             self.steps.append(
                 {
                     "gamma": float(self.inner.gamma),
@@ -206,9 +221,13 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
             input_ids = torch.cat([input_ids, torch.tensor([tail], device=ns.device)], dim=1)
         # 1. generazione
         reset(message)
-        traced = Traced(wp.WatermarkLogitsProcessor(tokenizer=tokenizer, **common))
+        traced = Traced(
+            wp.WatermarkLogitsProcessor(tokenizer=tokenizer, **common), digest=not ns.no_forced
+        )
         torch.manual_seed(prompt["seed"])
         torch.cuda.manual_seed_all(prompt["seed"])
+        torch.cuda.synchronize()
+        started = time.perf_counter()
         with torch.no_grad(), contextlib.redirect_stdout(log):
             output = model.generate(
                 input_ids=input_ids,
@@ -217,6 +236,8 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
                 generation_config=generation_config,
                 logits_processor=LogitsProcessorList([traced]),
             )
+            torch.cuda.synchronize()
+            elapsed = time.perf_counter() - started
             internal = internal_bits(traced.inner)
         new_ids = [int(t) for t in output[0, input_ids.shape[1] :].tolist()]
         new_text = (
@@ -224,15 +245,18 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
             + tokenizer.batch_decode(output[:, input_ids.shape[1] :], skip_special_tokens=True)[0]
         )
         # 3. forzatura del testo di riferimento sugli stessi logit
-        ref_ids = reference.get(prompt["problem_key"], new_ids)
-        reset(message)
-        forced = Traced(wp.WatermarkLogitsProcessor(tokenizer=tokenizer, **common))
-        full = torch.cat([input_ids, torch.tensor([ref_ids], device=ns.device)], dim=1)
-        with torch.no_grad(), contextlib.redirect_stdout(log):
-            logits = model(full).logits[0].float()
-            start = input_ids.shape[1]
-            for t in range(len(ref_ids)):
-                forced(full[:, : start + t], logits[start + t - 1].unsqueeze(0).clone())
+        forced_steps: List[Dict[str, Any]] = []
+        if not ns.no_forced:
+            ref_ids = reference.get(prompt["problem_key"], new_ids)
+            reset(message)
+            forced = Traced(wp.WatermarkLogitsProcessor(tokenizer=tokenizer, **common))
+            full = torch.cat([input_ids, torch.tensor([ref_ids], device=ns.device)], dim=1)
+            with torch.no_grad(), contextlib.redirect_stdout(log):
+                logits = model(full).logits[0].float()
+                start = input_ids.shape[1]
+                for t in range(len(ref_ids)):
+                    forced(full[:, : start + t], logits[start + t - 1].unsqueeze(0).clone())
+            forced_steps = forced.steps
         generations.append(
             {
                 "problem_key": prompt["problem_key"],
@@ -242,7 +266,8 @@ def main() -> int:  # noqa: PLR0915 - script lineare: un passo per sezione del d
                 "new_text": new_text,
                 "steps": traced.steps,
                 "internal": internal,
-                "forced_steps": forced.steps,
+                "forced_steps": forced_steps,
+                "elapsed_s": round(elapsed, 3),
             }
         )
 

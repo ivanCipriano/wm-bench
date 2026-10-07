@@ -2,9 +2,10 @@
 
     python tests/oracle/merge_oracle_parts.py PARTS_DIR OUT_DIR
 
-Legge ``PARTS_DIR/{original,patched}.<K>of<M>.json`` e scrive ``OUT_DIR/original.json`` e
-``OUT_DIR/patched.json``: generazioni ordinate come in ``inputs.json``, rilevazioni concatenate
-per parte. Verifica che ci siano tutte le parti e che versioni e vocabolario coincidano.
+Legge ``PARTS_DIR/<nome>.<K>of<M>.json`` e scrive ``OUT_DIR/<nome>.json`` per ogni nome di
+``NAMES`` presente: generazioni ordinate come negli input (``inputs.json``, o ``inputs_long.json``
+per i nomi ``*_long``), rilevazioni concatenate per parte. Verifica che ci siano tutte le parti
+e che versioni e vocabolario coincidano.
 """
 
 from __future__ import annotations
@@ -15,14 +16,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
-PART = re.compile(r"^(original|patched)\.(\d+)of(\d+)\.json$")
+NAMES = ("original", "patched", "nospeed_long", "patched_long")
+PART = re.compile(r"^(" + "|".join(NAMES) + r")\.(\d+)of(\d+)\.json$")
 
 
 def main(argv: list[str]) -> int:
     parts_dir, out_dir = Path(argv[1]), Path(argv[2])
-    inputs = json.loads((out_dir / "inputs.json").read_text(encoding="utf-8"))
-    order = {p["problem_key"]: i for i, p in enumerate(inputs["prompts"])}
-    found: dict[str, dict[int, dict[str, Any]]] = {"original": {}, "patched": {}}
+    found: dict[str, dict[int, dict[str, Any]]] = {name: {} for name in NAMES}
     totals: set[int] = set()
     for path in sorted(parts_dir.iterdir()):
         match = PART.match(path.name)
@@ -34,6 +34,11 @@ def main(argv: list[str]) -> int:
         raise SystemExit(f"parts with different totals in {parts_dir}: {sorted(totals)}")
     m = totals.pop()
     for variant, by_part in found.items():
+        if not by_part:
+            continue
+        source = "inputs_long.json" if variant.endswith("_long") else "inputs.json"
+        inputs = json.loads((out_dir / source).read_text(encoding="utf-8"))
+        order = {p["problem_key"]: i for i, p in enumerate(inputs["prompts"])}
         missing = sorted(set(range(1, m + 1)) - set(by_part))
         if missing:
             raise SystemExit(f"{variant}: missing parts {missing} of {m} in {parts_dir}")

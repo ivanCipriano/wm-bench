@@ -1,11 +1,12 @@
 """Oracle di MCGMark (SPEC §21.4; audit ``docs/audit/mcgmark.md``). Cluster, nodo NVIDIA.
 
-Prerequisiti (``scripts/oracle_method.sh mcgmark``):
-1. ``tests/oracle/make_oracle_inputs.py mcgmark`` (bench-core) → ``inputs.json``;
-2. ``tests/oracle/mcgmark_original.py --variant original`` sul codice con la sola patch 0000
-   → ``original.json`` (γ dinamico del repository);
-3. ``tests/oracle/mcgmark_original.py --variant patched`` sul codice del framework
-   (patch 0000-0002) → ``patched.json``.
+Prerequisiti (``scripts/oracle_method.sh mcgmark``, anche in parti parallele):
+1. ``make_oracle_inputs.py mcgmark`` → ``inputs.json`` (5 HumanEval, L1) e
+   ``make_mcgmark_long_inputs.py`` → ``inputs_long.json`` (3 CodeNet esclusi dalla M9 e 6 classi
+   ClassEval, ``max_new_tokens`` 1024; solo verifica, nessuna metrica);
+2. ``mcgmark_original.py``: su L1 codice originale (sola 0000, γ dinamico) → ``original.json`` e
+   codice del framework (0000-0003) → ``patched.json``; sul codice lungo 0000-0002 →
+   ``nospeed_long.json`` e 0000-0003 → ``patched_long.json``.
 
 Verifiche:
 - lo shim riproduce il percorso diretto con le patch: stesso testo, stesse posizioni e bit
@@ -16,7 +17,10 @@ Verifiche:
   estratto con D4 ritrova le posizioni e i bit registrati dal processor in generazione (primo
   ciclo), con il tasso di inserimento riuscito;
 - generazione con il prefill della fence (D20) e baseline gemella senza processor;
-- messaggio noto: su almeno un campione si recuperano tutti i 12 bit;
+- catena completa su codice lungo: siti per campione, ciclo di 24 completo, bit recuperati dal
+  codice D4; messaggio noto recuperato per intero su almeno un campione; errori per bit di
+  correzione (audit §5.3);
+- patch 0003: testo identico carattere per carattere a 0000-0002 con lo stesso seme, speed-up;
 - patch 0001 (D18): con lo stesso testo forzato e gli stessi logit, i logit restituiti sono
   identici sui passi con γ = 0,5 nel codice originale; le differenze stanno solo sui passi con
   γ = 0,25 e sui passi di correzione che ne dipendono (bit di correzione del ciclo). Il test
@@ -58,13 +62,15 @@ def _matches(a: str, b: str) -> int:
     return sum(1 for x, y in zip(a, b, strict=False) if x == y)
 
 
+FILES = ("inputs", "original", "patched", "inputs_long", "nospeed_long", "patched_long")
+
+
 @pytest.fixture(scope="module")
 def data() -> dict[str, Any]:
-    for name in ("inputs", "original", "patched"):
+    for name in FILES:
         _require(FIXTURES / f"{name}.json")
     return {
-        name: json.loads((FIXTURES / f"{name}.json").read_text(encoding="utf-8"))
-        for name in ("inputs", "original", "patched")
+        name: json.loads((FIXTURES / f"{name}.json").read_text(encoding="utf-8")) for name in FILES
     }
 
 
@@ -196,60 +202,6 @@ def test_detection_matches_the_direct_path(
         )
 
 
-def test_extraction_from_code_recovers_the_embedding(
-    data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
-) -> None:
-    """Sul codice estratto con la regola D4 (come nella pipeline) la macchina a stati rigiocata
-    ritrova le posizioni e i bit registrati dal processor in generazione."""
-    from bench.domain.models import Problem
-    from bench.generation.code_extractor import FencedCodeExtractor
-
-    assert isinstance(adapter, Detector)
-    inputs, patched = data["inputs"], data["patched"]
-    problems = {p["problem_key"]: Problem.model_validate(p["problem"]) for p in inputs["prompts"]}
-    extractor = FencedCodeExtractor()
-    codes = {}
-    for gen in patched["generations"]:
-        code, ok = extractor.extract(gen["new_text"], problems[gen["problem_key"]])
-        assert ok, gen["problem_key"]
-        codes[gen["problem_key"]] = code
-    results = adapter.detect_codes(
-        [
-            DetectInput(key, "python", code, expected_message=gen["message"])
-            for (key, code), gen in zip(codes.items(), patched["generations"], strict=True)
-        ],
-        adapter.default_hparams(),
-        cfg.models_catalog[inputs["model_id"]],
-        "k1",
-        inputs["decoding"],
-        tmp_path / "detect",
-        "cuda:0",
-    )
-    checked = embedded_ok = 0
-    print("\nproblem         embedded  replayed  equal prefix  equal bits (first round)")
-    for gen, result in zip(patched["generations"], results, strict=True):
-        internal = gen["internal"]
-        replay_tokens, replay_bits = result.extra["tokens"], result.extra["bits"]
-        prefix = 0
-        for a, b in zip(internal["tokens"], replay_tokens, strict=False):
-            if a != b:
-                break
-            prefix += 1
-        same_bits = internal["bits"][:ROUND] == replay_bits[:ROUND]
-        print(
-            f"{gen['problem_key']:15s} {len(internal['tokens']):8d} {len(replay_tokens):9d} "
-            f"{prefix:13d}  {same_bits}"
-        )
-        if len(internal["tokens"]) >= ROUND:
-            checked += 1
-            embedded_ok += 1
-            assert internal["tokens"][:ROUND] == replay_tokens[:ROUND], gen["problem_key"]
-            assert same_bits, gen["problem_key"]
-    n = len(patched["generations"])
-    print(f"embedding with a complete round (OK): {embedded_ok}/{n} ({embedded_ok / n:.0%})")
-    assert checked > 0, "no sample with a complete round"
-
-
 def test_twin_baseline_differs_only_by_the_watermark(
     data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
 ) -> None:
@@ -284,10 +236,172 @@ def test_twin_baseline_differs_only_by_the_watermark(
     print(f"\ntwin == watermarked: {result.raw_output == marked}")
 
 
-def test_known_message_is_recovered(data: dict[str, Any]) -> None:
-    """Bit recuperati sul primo ciclo: codice originale (γ dinamico) e codice con patch 0001."""
-    print("\nproblem         message       original  patched")
-    best = 0
+def _replay(
+    inputs: dict[str, Any],
+    generations: list[dict[str, Any]],
+    adapter: MethodAdapter,
+    cfg: ExperimentConfig,
+    run_dir: Path,
+) -> list[Any]:
+    """Rilevazione dello shim sul codice estratto con la regola D4, come nella pipeline."""
+    from bench.domain.models import Problem
+    from bench.generation.code_extractor import FencedCodeExtractor
+
+    assert isinstance(adapter, Detector)
+    problems = {p["problem_key"]: Problem.model_validate(p["problem"]) for p in inputs["prompts"]}
+    extractor = FencedCodeExtractor()
+    items = []
+    for gen in generations:
+        code, ok = extractor.extract(gen["new_text"], problems[gen["problem_key"]])
+        assert ok, gen["problem_key"]
+        items.append(
+            DetectInput(gen["problem_key"], "python", code, expected_message=gen["message"])
+        )
+    return adapter.detect_codes(
+        items,
+        adapter.default_hparams(),
+        cfg.models_catalog[inputs["model_id"]],
+        "k1",
+        inputs["decoding"],
+        run_dir,
+        "cuda:0",
+    )
+
+
+def _prefix(a: list[str], b: list[str]) -> int:
+    n = 0
+    for x, y in zip(a, b, strict=False):
+        if x != y:
+            break
+        n += 1
+    return n
+
+
+def _chain_report(generations: list[dict[str, Any]], results: list[Any]) -> list[dict[str, Any]]:
+    """Per campione: siti, ciclo completo, allineamento della rilevazione e bit recuperati."""
+    rows = []
+    print(
+        "\nproblem                 sites  round  replayed  aligned  bits (generation)  "
+        "bits (code, D4)  status"
+    )
+    for gen, result in zip(generations, results, strict=True):
+        internal = gen["internal"]
+        sites = len(internal["tokens"])
+        replay = result.extra["tokens"]
+        aligned = _prefix(internal["tokens"], replay)
+        rounds = internal["rounds"]
+        bits_gen = _matches(rounds[0], gen["message"]) if rounds else None
+        bits_code = int(result.score) if result.status == "OK" else None
+        row = {
+            "key": gen["problem_key"],
+            "sites": sites,
+            "round": sites >= ROUND,
+            "aligned_round": aligned >= ROUND,
+            "bits_gen": bits_gen,
+            "bits_code": bits_code,
+            "status": result.status,
+        }
+        rows.append(row)
+        print(
+            f"{row['key']:23s} {sites:5d}  {'yes' if row['round'] else 'no':>5s}  "
+            f"{len(replay):8d}  {aligned:7d}  "
+            f"{'-' if bits_gen is None else f'{bits_gen}/12':>17s}  "
+            f"{'-' if bits_code is None else f'{bits_code}/12':>15s}  {result.status}"
+        )
+    n = len(rows)
+    complete = sum(r["round"] for r in rows)
+    print(f"embedding with a complete round (OK): {complete}/{n} ({complete / n:.0%})")
+    return rows
+
+
+def test_l1_extraction_from_code_matches_the_embedding(
+    data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+) -> None:
+    """L1 (HumanEval): la rilevazione sul codice D4 ritrova le posizioni della generazione.
+
+    Su L1 nessun campione arriva a un ciclo completo (decisione dell'utente: PARTIAL e rilevazione
+    FAILED per costruzione); si verifica l'allineamento sui siti presenti.
+    """
+    generations = data["patched"]["generations"]
+    results = _replay(data["inputs"], generations, adapter, cfg, tmp_path / "detect")
+    rows = _chain_report(generations, results)
+    aligned = sum(
+        _prefix(g["internal"]["tokens"], r.extra["tokens"]) == len(g["internal"]["tokens"])
+        for g, r in zip(generations, results, strict=True)
+    )
+    print(f"fully aligned samples: {aligned}/{len(rows)}")
+    assert aligned >= len(rows) - 1  # al più una differenza di ritokenizzazione
+    assert all(r["status"] == "FAILED" for r in rows if not r["round"])
+
+
+def test_long_code_chain_recovers_the_message(
+    data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+) -> None:
+    """Codice lungo (3 CodeNet + 6 ClassEval): inserimento → D4 → rilevazione → messaggio.
+
+    Verifica dell'integrazione prima della M9 (decisione dell'utente del 7 ottobre 2026); i
+    campioni non entrano in nessuna metrica.
+    """
+    long = data["patched_long"]
+    results = _replay(data["inputs_long"], long["generations"], adapter, cfg, tmp_path / "long")
+    rows = _chain_report(long["generations"], results)
+    _print_error_breakdown(long["generations"])
+    for row in rows:
+        if row["round"] and row["aligned_round"]:
+            # La rilevazione dal codice legge gli stessi bit della generazione.
+            assert row["bits_code"] == row["bits_gen"], row["key"]
+    assert any(r["round"] for r in rows), "no long sample reaches a complete round"
+    best = max((r["bits_code"] or 0) for r in rows)
+    assert best == INFO, "no long sample recovers the full 12-bit message"
+
+
+def test_long_human_code_scores(
+    data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+) -> None:
+    """Soluzioni canoniche di ClassEval (non marcate): siti e punteggio, solo diagnostica."""
+    assert isinstance(adapter, Detector)
+    inputs = data["inputs_long"]
+    results = adapter.detect_codes(
+        [
+            DetectInput(c["id"], "python", c["code"], expected_message=c["message"])
+            for c in inputs["codes"]
+        ],
+        adapter.default_hparams(),
+        cfg.models_catalog[inputs["model_id"]],
+        "k1",
+        inputs["decoding"],
+        tmp_path / "human",
+        "cuda:0",
+    )
+    print("\nid                                  sites  status  score")
+    for c, r in zip(inputs["codes"], results, strict=True):
+        score = "-" if r.score is None else f"{r.score:.0f}/12"
+        print(f"{c['id']:35s} {r.extra['n_eligible']:5d}  {r.status:6s}  {score}")
+
+
+def test_patch_0003_keeps_the_text_identical_and_is_faster(data: dict[str, Any]) -> None:
+    """Patch 0003: stesso seme → stesso testo carattere per carattere; speed-up misurato."""
+    before, after = data["nospeed_long"], data["patched_long"]
+    assert before["variant"] == "nospeed" and after["variant"] == "patched"
+    total_before = total_after = 0.0
+    print("\nproblem                 tokens  0000-0002 s  0000-0003 s  speed-up")
+    for b, a in zip(before["generations"], after["generations"], strict=True):
+        assert b["problem_key"] == a["problem_key"]
+        assert a["new_text"] == b["new_text"], b["problem_key"]
+        assert a["new_ids"] == b["new_ids"], b["problem_key"]
+        assert a["internal"] == b["internal"], b["problem_key"]
+        total_before += b["elapsed_s"]
+        total_after += a["elapsed_s"]
+        print(
+            f"{b['problem_key']:23s} {len(b['new_ids']):6d}  {b['elapsed_s']:11.1f}  "
+            f"{a['elapsed_s']:11.1f}  {b['elapsed_s'] / a['elapsed_s']:7.2f}x"
+        )
+    print(f"total: {total_before:.1f} s -> {total_after:.1f} s ({total_before / total_after:.2f}x)")
+
+
+def test_l1_messages_report(data: dict[str, Any]) -> None:
+    """L1: siti per campione e bit del primo ciclo con originale e patch (nessun ciclo su L1)."""
+    print("\nproblem         message       sites  original  patched")
     for variant in ("original", "patched"):
         assert data[variant]["variant"] == variant
     pairs = zip(data["original"]["generations"], data["patched"]["generations"], strict=True)
@@ -296,11 +410,14 @@ def test_known_message_is_recovered(data: dict[str, Any]) -> None:
         for gen in (orig, patc):
             rounds = gen["internal"]["rounds"]
             cells.append(f"{_matches(rounds[0], gen['message']):2d}/12" if rounds else "  -  ")
-        if patc["internal"]["rounds"]:
-            best = max(best, _matches(patc["internal"]["rounds"][0], patc["message"]))
-        print(f"{orig['problem_key']:15s} {orig['message']}  {cells[0]:>8s}  {cells[1]:>7s}")
-    _print_error_breakdown(data["patched"]["generations"])
-    assert best == INFO, "no sample recovers the full 12-bit message"
+        sites = len(patc["internal"]["tokens"])
+        print(
+            f"{orig['problem_key']:15s} {orig['message']}  {sites:5d}  {cells[0]:>8s}  "
+            f"{cells[1]:>7s}"
+        )
+        # Testo identico fra codice originale e del framework se γ = 0,25 non compare (D18, 0003).
+        if all(s["gamma"] == 0.5 for s in orig["steps"]):
+            assert orig["new_text"] == patc["new_text"], orig["problem_key"]
 
 
 def _print_error_breakdown(generations: list[dict[str, Any]]) -> None:

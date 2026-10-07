@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from bench_contracts import WorkerResult
+
 from bench.config.schema import ModelSpec
 from bench.domain.enums import MethodFamily
 from bench.domain.errors import ConfigError
@@ -51,6 +53,16 @@ class McgmarkAdapter(PromptEmbedder, Detector):
         if hp:
             raise ConfigError(f"mcgmark has no tunable hyperparameters, got {sorted(hp)}")
         return dict(FIXED_NATIVE)
+
+    def embed_metrics(self, result: WorkerResult | None) -> dict[str, Any]:
+        """Siti idonei = posizioni marcate (unità: token generato, audit §2)."""
+        extra = result.extra if result is not None else {}
+        if extra.get("watermark") is False:  # baseline gemella: nessun sito
+            return {"n_sites": None, "n_generated_tokens": extra.get("n_generated_tokens")}
+        return {
+            "n_sites": extra.get("n_embedded"),
+            "n_generated_tokens": extra.get("n_generated_tokens"),
+        }
 
     def expected_message(self, model: ModelSpec, problem: Problem, index: int) -> str | None:
         return message_bits(

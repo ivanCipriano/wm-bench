@@ -44,6 +44,13 @@ class EmbedRun:
     worker: WorkerRun | None
     native_hparams: dict[str, Any]
     request: dict[str, Any] | None
+    # Misure per campione dell'inserimento (ordine di ``samples``), colonne ``EMBED_COLUMNS``.
+    metrics: list[dict[str, Any]] = dataclasses.field(default_factory=list)
+
+
+# Colonne aggiuntive dei campioni marcati (oltre a ``CodeSample``): siti idonei usati
+# dall'inserimento e token generati, ``None`` se il metodo non li misura.
+EMBED_COLUMNS = ("n_sites", "n_generated_tokens")
 
 
 class MethodAdapter(ABC):
@@ -193,6 +200,11 @@ class PromptEmbedder(MethodAdapter):
         """Messaggio atteso del campione (solo metodi multi-bit)."""
         return None
 
+    def embed_metrics(self, result: WorkerResult | None) -> dict[str, Any]:
+        """Valori di ``EMBED_COLUMNS`` dal risultato del worker (``None`` se non misurati)."""
+        extra = result.extra if result is not None else {}
+        return {name: extra.get(name) for name in EMBED_COLUMNS}
+
     def embed_from_prompts(
         self,
         problems: Sequence[Problem],
@@ -258,9 +270,11 @@ class PromptEmbedder(MethodAdapter):
             worker_run = self.run_worker(request, items)
             results = self._index_results(worker_run)
         samples = []
+        metrics = []
         for problem in problems:
             for index in range(n):
                 found = results.get((problem.problem_key, index))
+                metrics.append(self.embed_metrics(found))
                 if found is None:  # linguaggio non supportato
                     status, raw = EmbedStatus.NOT_APPLICABLE, None
                 else:
@@ -286,7 +300,11 @@ class PromptEmbedder(MethodAdapter):
                     )
                 )
         return EmbedRun(
-            samples=samples, worker=worker_run, native_hparams=native, request=request_dict
+            samples=samples,
+            worker=worker_run,
+            native_hparams=native,
+            request=request_dict,
+            metrics=metrics,
         )
 
     def _index_results(self, worker_run: WorkerRun) -> dict[tuple[str, int], WorkerResult]:

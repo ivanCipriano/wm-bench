@@ -23,6 +23,7 @@ secondario.
 from __future__ import annotations
 
 import logging
+import statistics
 from collections import Counter
 from collections.abc import Callable
 from typing import Any, ClassVar
@@ -36,7 +37,7 @@ from bench.domain.errors import ConfigError
 from bench.domain.models import CodeSample, Problem
 from bench.generation.decoding import neutral_settings
 from bench.generation.prompt_builder import PromptBuilder
-from bench.methods.base import MethodAdapter, PromptEmbedder
+from bench.methods.base import EMBED_COLUMNS, MethodAdapter, PromptEmbedder
 from bench.methods.worker_client import WorkerClient
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.generate_baseline import decoding_for, problems_ref
@@ -80,6 +81,26 @@ def watermarked_ref(
         "watermarked",
         f"watermarked/{method}/{model_id}/{cfg_hash}/{level}_{language}_{split}.parquet",
     )
+
+
+def _success_rate(statuses: Counter[str]) -> float | None:
+    """Inserimento riuscito: OK / (OK + PARTIAL + FAILED), escluso NOT_APPLICABLE."""
+    applicable = sum(n for status, n in statuses.items() if status != "NOT_APPLICABLE")
+    return round(statuses.get("OK", 0) / applicable, 6) if applicable else None
+
+
+def _summary(values: list[Any]) -> dict[str, Any] | None:
+    """Media, mediana, minimo e massimo dei valori misurati (``None`` se nessuno)."""
+    data = sorted(float(v) for v in values if v is not None)
+    if not data:
+        return None
+    return {
+        "n": len(data),
+        "mean": round(statistics.fmean(data), 3),
+        "median": statistics.median(data),
+        "min": data[0],
+        "max": data[-1],
+    }
 
 
 def baseline_twin_ref(
@@ -222,8 +243,10 @@ class WatermarkStage(Stage):
         prompts: PromptBuilder,
         seed_scheme: str,
     ) -> None:
+        metrics = result.metrics or [dict.fromkeys(EMBED_COLUMNS) for _ in samples]
         df = pd.DataFrame(
-            [s.model_dump(mode="json") for s in samples], columns=list(CodeSample.model_fields)
+            [s.model_dump(mode="json") | m for s, m in zip(samples, metrics, strict=True)],
+            columns=[*CodeSample.model_fields, *EMBED_COLUMNS],
         )
         # Baseline gemella: embed_status vuoto sui campioni generati (come la baseline), qui OK.
         statuses = Counter(s.embed_status or "OK" for s in samples)
@@ -246,6 +269,8 @@ class WatermarkStage(Stage):
             "config_hash": cfg_hash,
             "embed_status_counts": dict(statuses),
             "extraction_rate": round(extracted / len(samples), 6) if samples else None,
+            "embed_success_rate": _success_rate(statuses),
+            "n_sites": _summary([m.get("n_sites") for m in metrics]),
             "generation_config": generation,
             "request_sha256": sha256_json(result.request) if result.request else None,
             "worker": {

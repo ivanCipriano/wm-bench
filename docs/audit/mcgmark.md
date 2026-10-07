@@ -1,18 +1,20 @@
 # Audit di MCGMark (SPEC §9.0)
 
-- **Stato:** decisioni dell'utente del 6 ottobre 2026 (messaggio di 12 bit, γ fisso, seme per campione, solo
-  Python) applicate; resta aperto il punto del §5.3, da chiudere con i numeri dell'oracle.
+- **Stato:** decisioni dell'utente del 6 e 7 ottobre 2026 (messaggio di 12 bit, γ fisso, seme per campione,
+  solo Python, prefill, baseline gemella, L1 senza cicli completi, verifica su codice lungo, patch 0003)
+  applicate; resta aperto il punto del §5.3, da chiudere con l'oracle su codice lungo.
 - **Repository:** `KevinHeiwa/MCGMT`, paper "MCGMark: An Encodable and Robust Online Watermark for Tracing
   LLM-Generated Malicious Code" (arXiv 2408.01354v2).
 
 ## 1. Commit e data
 
 - Commit `eefa27b6` (submodule `third_party/MCGMT`).
-- Il codice eseguito è la copia `build/patched/mcgmark/` (ADR-002) con tre patch:
+- Il codice eseguito è la copia `build/patched/mcgmark/` (ADR-002) con quattro patch:
   - `0000` (preesistente, dell'utente): import riparati, moduli `homoglyphs`/`normalizers` copiati da
     lm-watermarking, simboli mancanti di `watermark_global.py` ricostruiti (§3.2);
   - `0001` (nuova): γ = 0,5 fisso (D18);
-  - `0002` (nuova): rimossa la decodifica inutile dell'intero vocabolario a ogni passo.
+  - `0002` (nuova): rimossa la decodifica inutile dell'intero vocabolario a ogni passo;
+  - `0003` (nuova): rimossi i calcoli per passo diventati inutili dopo la 0001 (solo prestazioni, §9).
 - Ambiente `mcgmark`: Python 3.10.21 (dal log di `install_contracts.sh`). Versioni di torch e transformers registrate dall'introspezione del worker.
 - Il codice si importa da `Watermark/` con import assoluti: `patched_subdir: Watermark`.
 
@@ -39,6 +41,29 @@
     `_pseudo_generate_mask` sul solo codice, bit da `WatermarkLogitsProcessor.detect` sulle stesse posizioni, poi
     `informazione XOR correzione` per ciclo, come `detection_result`. L'oracle verifica che l'estrazione dal codice
     ritrovi le posizioni e i bit registrati in generazione.
+
+### 2.1 Siti idonei: unità e capacità
+
+- **Unità: il token generato.** Un sito è un passo di generazione in cui la macchina a stati consente
+  l'inserimento: riceve un bit e il token prodotto a quel passo lo porta. Lo si vede dai token registrati in
+  `First_watermark_token`, consecutivi anche sulla stessa riga (es. `class`, ` for`, ` number`, ` in`,
+  ` number`, `_set`, `:\n` per `for number in number_set:`). I blocchi (`=`, `#`, parentesi, stringhe, …)
+  escludono il resto della riga o del costrutto, per questo i siti sono pochi rispetto ai token.
+- Ogni sito riceve un bit, quindi **siti idonei = posizioni marcate**. Per ogni campione marcato il numero è
+  salvato nella colonna `n_sites` della tabella `watermarked/...` (con `n_generated_tokens`); il manifest della
+  cella riporta media, mediana, minimo e massimo (`n_sites`) e il tasso di inserimento riuscito
+  (`embed_success_rate` = OK / (OK + PARTIAL + FAILED)). Sono i dati "siti idonei" da riportare per livello.
+- **L1** (decisione dell'utente del 7 ottobre 2026): con il prefill i campioni di HumanEval hanno 7-17 siti
+  (oracle) e le soluzioni canoniche 4-11, sempre meno delle 24 posizioni di un ciclo. Su L1 i campioni restano
+  `PARTIAL` e la rilevazione `FAILED` con punteggio minimo, come prevede I2; nessuna nuova deviazione. TPR e
+  tasso di inserimento riuscito su L1 sono **zero per costruzione** (promemoria per la M7) e la scelta degli
+  iperparametri di MCGMark si baserà di fatto sulla parte di sviluppo di L2 Python (M8, da dichiarare nella
+  tesi).
+- **Verifica su codice lungo** (decisione dell'utente): l'oracle genera anche su 3 problemi CodeNet (esclusi
+  dalla selezione della M9, `configs/dataset/codenet_excluded.yaml`) e 6 classi ClassEval, con
+  `max_new_tokens` 1024 e template provvisori solo per l'oracle (`tests/oracle/templates/`), e riporta per
+  campione siti, ciclo completo e bit recuperati. Questi campioni non entrano in nessuna metrica né nella scelta
+  degli iperparametri. Risultati: _in attesa dell'oracle_.
 
 ## 3. Iperparametri e messaggio
 
@@ -150,6 +175,11 @@
 |---|---|---|
 | `0001-gamma-fisso.patch` | `self.gamma = 0.5` al posto della scelta 0,25/0,5 in `__call__` | D18; l'oracle verifica che i logit siano identici all'originale sui passi con γ = 0,5 e misura la quota di passi con γ = 0,25 e i bit recuperati con originale e patch |
 | `0002-rimuovi-decodifica-vocabolario.patch` | rimossa `vocab_test = tokenizer.batch_decode(self.vocab)` (variabile mai usata) | solo velocità |
+| `0003-rimuovi-calcoli-inutili.patch` | rimossi, a ogni passo, la decodifica dell'intera sequenza, le liste Python dell'intero vocabolario, il criterio di uniformità (sceglieva γ), gli outlier IQR con `np.random` (mai letti); massimo, minimo e argmax con torch sugli stessi valori (`patches/mcgmark/README.md`) | solo prestazioni (decisione dell'utente del 7 ottobre 2026); l'oracle verifica testo identico carattere per carattere a 0000-0002 con lo stesso seme. I calcoli rimossi usavano solo il generatore globale di numpy, che nient'altro legge |
+
+**Tempi (M14).** Le misure di efficienza di MCGMark si riferiscono al codice con la patch 0003. Speed-up della
+0003 sull'oracle (codice lungo, 0000-0002 contro 0000-0003, stesso testo): _in attesa dell'oracle_; va
+dichiarato nella tesi.
 
 Effetto della patch 0001:
 - primo oracle (6 ottobre 2026, senza prefill): il codice originale sceglie γ = 0,25 su **0 dei 748 passi**: i logit non risultano mai "uniformi" (std ≤ 0,2·media, con media dei logit vicina a zero o negativa). Logit di originale e patch identici su tutti i passi. Nessuna posizione marcata, quindi nessun bit da confrontare;
