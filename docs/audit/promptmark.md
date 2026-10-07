@@ -2,8 +2,8 @@
 
 - **Stato:** decisioni dell'utente del 7 ottobre 2026 applicate (test del ciclo dagli esempi del prompt,
   esecuzione con limiti, griglia HPO su tutti e tre i parametri). Secondo oracle (8 ottobre 2026): shim e
-  percorso diretto coincidono con gli esempi eseguiti (1-2 per campione) e i limiti attivi; da rilanciare solo
-  la parte di test per la sovrapposizione con EvalPlus (esempi con commento in coda, §8).
+  percorso diretto coincidono con gli esempi eseguiti (1-2 per campione) e i limiti attivi. Oracle verde
+  (4 test) dopo la correzione degli esempi con commento in coda (§8).
 - **Repository:** `ahmedfahad04/promptmark`, paper "PromptMark: A Prompt-Guided Iterative-Feedback Framework
   for Source Code Watermarking" (`PromptMark_ENASE_Final_18_March.pdf` nel repository).
 
@@ -125,10 +125,14 @@
   |---|---|---|---|---|---|---|---|
   | MBPP+ | dev | 72 | 72 | 72 | 62 | 11 | 62 |
   | MBPP+ | test | 306 | 306 | 306 | 260 | 37 | 260 |
-  | HumanEval+ | dev, test | — | — | — | — | — | da rimisurare (vedi sotto) |
+  | HumanEval+ | dev | 24 | 10 | 30 | 23 | 10 | 9 |
+  | HumanEval+ | test | 140 | 60 | 136 | 86 | 27 | 43 |
 
   Su MBPP+ l'assert di esempio del prompt è quasi sempre anche un test di base di EvalPlus (86% dei problemi):
   il ciclo vede un test di valutazione, ma è lo stesso che **tutti** i metodi vedono già nel prompt comune.
+  Su HumanEval+ solo 70 problemi su 164 hanno esempi estraibili (gli altri li scrivono in prosa o con `➞`);
+  il 64% degli input degli esempi compare fra i test di base di EvalPlus, anche qui già visibili a tutti nel
+  prompt. Nessun test di valutazione **non** presente nel prompt entra nel ciclo.
 - **Correzione (8 ottobre 2026):** su HumanEval+ il primo oracle trovava esempi solo in 3 problemi su 164,
   perché `doctest.DocTestParser` fallisce sull'intero testo quando la recinzione del prompt del framework
   segue la docstring. L'estrazione ora legge gli esempi riga per riga (stessa regola dell'uscita attesa di
@@ -140,7 +144,7 @@
 - Secondo oracle: i 5 campioni HumanEval eseguono 1-2 esempi ciascuno, sempre superati; shim (con limiti) e
   percorso diretto (senza limiti) danno le stesse iterazioni ed esiti. Sovrapposizione su HumanEval+ dev:
   10 problemi su 24 con esempi, 30 esempi, 23 con input fra i test di base e 10 fra i plus, 9 problemi con
-  sovrapposizione; la parte di test va rimisurata.
+  sovrapposizione (tabella sopra, completa).
 - **Questione aperta per la M9:** su CodeNet gli esempi di input/output del testo coincidono in gran parte
   con i test di valutazione; quando si arriva a L2 vanno proposte alternative (ciclo di correttezza
   disattivato su L2, oppure Pass@1 di PromptMark su L2 con avvertenza).
