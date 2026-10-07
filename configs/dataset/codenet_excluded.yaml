@@ -3,4 +3,19 @@
 # mcgmark select) e versionato: non va modificato a mano.
 # I problemi "oracle_mcgmark" servono solo alla verifica di MCGMark su codice lungo: non entrano in
 # nessuna metrica né nella scelta degli iperparametri.
-excluded: []
+excluded:
+- problem_key: codenet/p02749
+  use: oracle_mcgmark
+  reason: usato per l'oracle di MCGMark (verifica su codice lungo)
+  accepted_python: 173
+  median_code_size: 1617
+- problem_key: codenet/p03553
+  use: oracle_mcgmark
+  reason: usato per l'oracle di MCGMark (verifica su codice lungo)
+  accepted_python: 62
+  median_code_size: 1895.0
+- problem_key: codenet/p00200
+  use: oracle_mcgmark
+  reason: usato per l'oracle di MCGMark (verifica su codice lungo)
+  accepted_python: 16
+  median_code_size: 1063.5
