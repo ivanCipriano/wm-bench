@@ -101,6 +101,13 @@ assert broken(
 '''
 
 
+def test_prompt_examples_inside_the_framework_fence() -> None:
+    """Il prompt del framework racchiude il codice in un blocco ``` subito dopo la docstring."""
+    rendered = "Complete the following Python code.\n\n```python\n" + HE_PROMPT + "```"
+    assert prompt_examples(rendered) == prompt_examples(HE_PROMPT)
+    assert len(prompt_examples(rendered)) == 2
+
+
 def test_prompt_examples() -> None:
     assert prompt_examples(HE_PROMPT) == [
         "assert (has_close_elements([1.0, 2.0, 3.0], 0.5)) == (False)",

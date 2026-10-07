@@ -1,7 +1,8 @@
 # Audit di PromptMark (SPEC §9.0)
 
 - **Stato:** decisioni dell'utente del 7 ottobre 2026 applicate (test del ciclo dagli esempi del prompt,
-  esecuzione con limiti, griglia HPO su tutti e tre i parametri). Oracle da eseguire.
+  esecuzione con limiti, griglia HPO su tutti e tre i parametri). Primo oracle (8 ottobre 2026): 4 test verdi,
+  ma l'estrazione degli esempi doctest falliva sul prompt del framework (corretta, §8): oracle da rilanciare.
 - **Repository:** `ahmedfahad04/promptmark`, paper "PromptMark: A Prompt-Guided Iterative-Feedback Framework
   for Source Code Watermarking" (`PromptMark_ENASE_Final_18_March.pdf` nel repository).
 
@@ -100,7 +101,7 @@
 - `raw_output` = risposta completa della candidata scelta; il codice del campione è quello della regola D4
   applicata a quel testo, come per gli altri metodi. Il metodo valuta invece l'**ultimo** blocco `python`
   della risposta (`extract_code_from_response`), mentre D4 prende il primo: l'oracle conta i casi in cui i
-  due codici differiscono (_in attesa dell'oracle_).
+  due codici differiscono. Primo oracle: coincidono in 5 campioni su 5.
 
 ## 8. Test del ciclo di correttezza (decisione dell'utente, D23)
 
@@ -117,7 +118,21 @@
 - Per campione si registrano iterazioni, ripetizioni per forza del watermark e per correttezza, ed esempi
   eseguiti (colonne `n_iterations`, `n_retries_watermark`, `n_retries_correctness`, `n_example_tests`).
 - Sovrapposizione con i test di EvalPlus (input degli esempi presenti fra `base_input`/`plus_input`), su L1
-  Python dev e test: _in attesa dell'oracle_ (`test_example_overlap_with_evalplus`).
+  Python (`test_example_overlap_with_evalplus`, primo oracle):
+
+  | Dataset | Parte | Problemi | Con esempi | Esempi | Input in base | Input in plus | Problemi con sovrapposizione |
+  |---|---|---|---|---|---|---|---|
+  | MBPP+ | dev | 72 | 72 | 72 | 62 | 11 | 62 |
+  | MBPP+ | test | 306 | 306 | 306 | 260 | 37 | 260 |
+  | HumanEval+ | dev, test | — | — | — | — | — | da rimisurare (vedi sotto) |
+
+  Su MBPP+ l'assert di esempio del prompt è quasi sempre anche un test di base di EvalPlus (86% dei problemi):
+  il ciclo vede un test di valutazione, ma è lo stesso che **tutti** i metodi vedono già nel prompt comune.
+- **Correzione (8 ottobre 2026):** su HumanEval+ il primo oracle trovava esempi solo in 3 problemi su 164,
+  perché `doctest.DocTestParser` fallisce sull'intero testo quando la recinzione del prompt del framework
+  segue la docstring. L'estrazione ora legge gli esempi riga per riga (stessa regola dell'uscita attesa di
+  doctest, chiusa anche da docstring e recinzioni); nel primo oracle i 5 campioni HumanEval hanno quindi
+  eseguito 0 esempi. Le iterazioni e la sovrapposizione su HumanEval+ vanno rimisurate.
 - **Questione aperta per la M9:** su CodeNet gli esempi di input/output del testo coincidono in gran parte
   con i test di valutazione; quando si arriva a L2 vanno proposte alternative (ciclo di correttezza
   disattivato su L2, oppure Pass@1 di PromptMark su L2 con avvertenza).
@@ -139,7 +154,21 @@
 - Rischio residuo: la **rete non è isolata**. I test di valutazione veri restano nella sandbox Apptainer
   (fase `execute`).
 
-## 10. Decoding, semi e costo
+## 10. Prime osservazioni sull'inserimento (primo oracle, Qwen, 5 HumanEval)
+
+- In 5 campioni su 5 il ciclo esaurisce le 5 iterazioni senza arrivare a p < 0,017 (4 ripetizioni per forza del
+  watermark, codice sempre corretto) e restituisce la prima iterazione: punteggi −log10 p fra 0,2 e 0,7, come le
+  soluzioni canoniche e la baseline.
+- Il modello capisce le istruzioni (nella spiegazione dichiara di usare `i` e `j` come identificatori "verdi")
+  ma produce lo stesso codice a ogni iterazione. Cause probabili, tutte legate al protocollo comune:
+  - il prompt del framework chiede di mantenere nomi di funzione, classe e **parametri**: su HumanEval restano
+    liberi solo pochi nomi locali, mentre PromptMark chiede di rinominare anche i parametri;
+  - le righe della docstring copiata dal prompt contano come commenti (prima parola di ogni riga) e diluiscono
+    il segnale;
+  - con temperatura 0,2 le iterazioni sono quasi deterministiche (il paper usa 1,0).
+- Da verificare sulla generazione di L1 (anche MBPP+, dove il modello sceglie tutti i nomi).
+
+## 11. Decoding, semi e costo
 
 - Decoding neutro (ADR-006); il prompt di PromptMark chiede una spiegazione dopo il codice, che può essere
   troncata da `max_new_tokens` senza toccare il blocco di codice.
@@ -149,16 +178,16 @@
   vale il confronto a livello di problema, TODO 9).
 - Costo: fino a 5 generazioni per campione; il worker riprende dagli item già scritti se il job scade.
 
-## 11. Dipendenze ed effetti collaterali
+## 12. Dipendenze ed effetti collaterali
 
 - `shared_utils` importa `boto3`, `sklearn`, `scipy`, `pandas`; `llm_providers` importa `dotenv`: già
   nell'ambiente. Nessuna rete. Le molte `print` sono ridirette.
 
-## 12. Equivalenza per riga
+## 13. Equivalenza per riga
 
 Non applicabile: PromptMark non modifica i logit (`cluster_info` §11, punto 5).
 
-## 13. Definizioni operative degli stati
+## 14. Definizioni operative degli stati
 
 - **Embed:** `OK` se il ciclo restituisce una candidata (anche non corretta o non marcata, come il codice);
   `FAILED` su eccezione o senza candidate.

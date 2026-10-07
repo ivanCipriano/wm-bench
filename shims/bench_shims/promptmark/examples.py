@@ -15,8 +15,11 @@ Gli esempi in altre forme (per esempio ``f(1) == 2`` in prosa, ``➞``) non si e
 from __future__ import annotations
 
 import ast
-import doctest
+import re
 from typing import List
+
+_PROMPT = re.compile(r"^(\s*)>>> ?(.*)$")
+_STOP = (">>>", '"""', "'''", "```")
 
 
 def _is_expression(text: str) -> bool:
@@ -28,25 +31,38 @@ def _is_expression(text: str) -> bool:
 
 
 def doctest_examples(text: str) -> List[str]:
-    """Asserzioni dagli esempi ``>>>`` del testo."""
+    """Asserzioni dagli esempi ``>>>`` del testo.
+
+    Lettura riga per riga, come doctest ma tollerante: il prompt del framework racchiude il codice
+    in un blocco recintato, e la recinzione subito dopo la docstring farebbe fallire
+    ``doctest.DocTestParser`` (indentazione incoerente) per l'intero testo. L'uscita attesa sono le
+    righe successive con la stessa indentazione, fino a una riga vuota, un nuovo ``>>>``, la
+    chiusura della docstring o una recinzione.
+    """
     out: List[str] = []
-    try:
-        examples = doctest.DocTestParser().get_examples(text)
-    except ValueError:  # indentazione incoerente dentro un esempio
-        return out
-    for example in examples:
-        source = example.source.strip()
-        # L'uscita attesa finisce prima della chiusura della docstring, che doctest le attacca
-        # quando è alla stessa indentazione.
-        lines = []
-        for line in example.want.splitlines():
-            if line.strip().startswith(('"""', "'''")):
-                break
-            lines.append(line)
-        want = "\n".join(lines).strip()
-        if not want or not _is_expression(source) or not _is_expression(want):
+    lines = text.splitlines()
+    i = 0
+    while i < len(lines):
+        match = _PROMPT.match(lines[i])
+        i += 1
+        if match is None:
             continue
-        out.append(f"assert ({source}) == ({want})")
+        indent, source = match.group(1), match.group(2)
+        while i < len(lines) and lines[i].startswith(indent + "..."):
+            source += "\n" + lines[i][len(indent) + 3 :].lstrip(" ")
+            i += 1
+        want: List[str] = []
+        while i < len(lines):
+            line = lines[i]
+            if not line.strip() or line.strip().startswith(_STOP) or not line.startswith(indent):
+                break
+            want.append(line[len(indent) :])
+            i += 1
+        expected = "\n".join(want).strip()
+        source = source.strip()
+        if not expected or not _is_expression(source) or not _is_expression(expected):
+            continue
+        out.append(f"assert ({source}) == ({expected})")
     return out
 
 
