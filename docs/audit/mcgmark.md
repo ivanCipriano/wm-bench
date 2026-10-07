@@ -2,7 +2,7 @@
 
 - **Stato:** decisioni dell'utente del 6 e 7 ottobre 2026 (messaggio di 12 bit, γ fisso, seme per campione,
   solo Python, prefill, baseline gemella, L1 senza cicli completi, verifica su codice lungo, patch 0003)
-  applicate; resta aperto il punto del §5.3, da chiudere con l'oracle su codice lungo.
+  applicate. Oracle verde il 7 ottobre 2026 (10 test, codice lungo compreso); §5.3 chiuso.
 - **Repository:** `KevinHeiwa/MCGMT`, paper "MCGMark: An Encodable and Robust Online Watermark for Tracing
   LLM-Generated Malicious Code" (arXiv 2408.01354v2).
 
@@ -63,7 +63,28 @@
   dalla selezione della M9, `configs/dataset/codenet_excluded.yaml`) e 6 classi ClassEval, con
   `max_new_tokens` 1024 e template provvisori solo per l'oracle (`tests/oracle/templates/`), e riporta per
   campione siti, ciclo completo e bit recuperati. Questi campioni non entrano in nessuna metrica né nella scelta
-  degli iperparametri. Risultati: _in attesa dell'oracle_.
+  degli iperparametri. Risultati (oracle del 7 ottobre 2026):
+
+  | Campione | Siti | Ciclo di 24 | Bit recuperati (codice D4) |
+  |---|---|---|---|
+  | codenet/p02749 | 12 | no | — |
+  | codenet/p03553 | 19 | no | — |
+  | codenet/p00200 | 9 | no | — |
+  | classeval/ClassEval_73 | 20 | no | — |
+  | classeval/ClassEval_14 | 40 | sì | 12/12 |
+  | classeval/ClassEval_82 | 30 | sì | 12/12 |
+  | classeval/ClassEval_90 | 26 | sì | 12/12 |
+  | classeval/ClassEval_18 | 20 | no | — |
+  | classeval/ClassEval_64 | 81 | sì (3 cicli, tutti uguali al messaggio) | 12/12 |
+
+  - Inserimento riuscito in 4 campioni su 9; in tutti e 4 il messaggio si recupera per intero dal codice estratto
+    con D4, con posizioni allineate alla generazione. **La catena funziona.**
+  - I campioni senza ciclo completo hanno poche posizioni perché la generazione degenera in ripetizioni dentro un
+    costrutto bloccato (righe di commento `#print(...)` ripetute, `self.exp = ... % ...` ripetuto fino a
+    1024 token). Lo si vede anche su L1 (`returnFalse`, `def __ init __`, ripetizioni fino a 512 token): il bias
+    pari all'intero scarto dei logit forza scelte innaturali. Effetto atteso su ΔPass@1.
+  - Soluzioni canoniche di ClassEval (codice umano): 43-74 siti, punteggi 5-8 su 12, compatibili con
+    Bin(12, ½) (§5.2).
 
 ## 3. Iperparametri e messaggio
 
@@ -121,20 +142,21 @@
 - La soglia all'1% di FPR cade quindi su **11 bit**, con un FPR effettivo intorno allo **0,3%**: il punteggio è
   discreto e non si può centrare l'1%.
 
-### 5.3 Punto aperto: bit di correzione (da chiudere con l'oracle)
+### 5.3 Bit di correzione (chiuso il 7 ottobre 2026)
 
-- I bit di correzione del repository sono `robust_list[j]` = 1 se, alla posizione d'informazione j, il token più
-  probabile era **fuori** dalla green list (`is_pure`), indipendentemente dal bit inserito.
-- Ragionando sul codice:
-  - bit 1, token più probabile fuori: il processor lo aggiunge alla green list di generazione ma non a quella di
-    rilevazione, quindi si legge 0; correzione 1 → 0 XOR 1 = 1, corretto;
-  - bit 0, token più probabile fuori: si legge 0, ma la correzione vale comunque 1 → 0 XOR 1 = 1, **sbagliato**.
-- Se il ragionamento è giusto, circa un quarto dei bit d'informazione verrebbe invertito (bit 0 × token più probabile
-  fuori dalla green list, circa ½ × ½), e il messaggio completo si recupererebbe raramente.
-- L'oracle lo misura (`test_known_message_is_recovered` stampa gli errori per bit del messaggio e bit di
-  correzione). Se il problema si conferma è un caso di **codice incoerente con sé stesso** e la regola indica una patch
-  minima secondo il paper (correzione = 1 solo quando la lettura del bit sarebbe sbagliata); prima di scriverla
-  mostrerò i numeri.
+- I bit di correzione sono `robust_list[j]`. Nel ramo del bit 1 valgono 1 se il token più probabile era **fuori**
+  dalla green list (`is_pure`), e in quel caso il processor lo aggiunge alla green list di generazione ma non a
+  quella di rilevazione: si legge 0 e la correzione 1 lo riporta a 1. Nel ramo del bit 0 valgono **sempre 0**
+  (`watermark_processor.py`, ramo `else` di `_bias_greenlist_logits`): la lettura del bit 0 non viene invertita.
+- L'ipotesi di un errore (bit 0 con correzione 1) era sbagliata: il codice è **coerente con sé stesso** e non serve
+  una patch.
+- Oracle su codice lungo: nei 4 campioni con un ciclo completo, 48 posizioni d'informazione, **0 errori**
+  (25 bit 0 con correzione 0; 12 bit 1 con correzione 0; 11 bit 1 con correzione 1).
+- Nota sul registro del repository: in `First_watermark_token` il bit dell'ultima posizione d'informazione di
+  un ciclo viene annotato con il bit di correzione (all'annotazione `_cal_watermark_info` è già passato alla
+  seconda metà del ciclo; il codice stesso lo segnala con un TODO). È solo un'annotazione: inserimento e
+  rilevazione non la usano. La diagnostica dell'oracle confronta quindi con il messaggio atteso, non con quel
+  registro.
 
 ## 6. Decoding cablato da sovrascrivere
 
@@ -178,7 +200,8 @@
 | `0003-rimuovi-calcoli-inutili.patch` | rimossi, a ogni passo, la decodifica dell'intera sequenza, le liste Python dell'intero vocabolario, il criterio di uniformità (sceglieva γ), gli outlier IQR con `np.random` (mai letti); massimo, minimo e argmax con torch sugli stessi valori (`patches/mcgmark/README.md`) | solo prestazioni (decisione dell'utente del 7 ottobre 2026); l'oracle verifica testo identico carattere per carattere a 0000-0002 con lo stesso seme. I calcoli rimossi usavano solo il generatore globale di numpy, che nient'altro legge |
 
 **Tempi (M14).** Le misure di efficienza di MCGMark si riferiscono al codice con la patch 0003. Speed-up della
-0003 sull'oracle (codice lungo, 0000-0002 contro 0000-0003, stesso testo): _in attesa dell'oracle_; va
+0003 sull'oracle (codice lungo, 0000-0002 contro 0000-0003, stesso testo carattere per carattere): **3,11×**
+(568,8 s → 182,7 s su 9 generazioni, fra 2,51× e 3,29× per campione; A100 80 GB); va
 dichiarato nella tesi.
 
 Effetto della patch 0001:

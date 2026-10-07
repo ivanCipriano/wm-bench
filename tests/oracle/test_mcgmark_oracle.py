@@ -423,8 +423,10 @@ def test_l1_messages_report(data: dict[str, Any]) -> None:
 def _print_error_breakdown(generations: list[dict[str, Any]]) -> None:
     """Diagnostica (audit §5): errori del primo ciclo per bit del messaggio e bit di correzione.
 
-    I bit inseriti del ciclo sono il messaggio (posizioni 0-11) e i bit di correzione del
-    repository (12-23, ``robust_list``: 1 se il token più probabile era fuori dalla green list).
+    Bit del messaggio: quello atteso (il registro ``First_watermark_token`` annota l'ultima
+    posizione d'informazione con il bit di correzione, audit §5.3). Bit di correzione: posizioni
+    12-23 del registro (``robust_list``: 1 se il bit è 1 e il token più probabile era fuori dalla
+    green list).
     """
     counts: dict[tuple[str, str], list[int]] = {}
     for gen in generations:
@@ -432,7 +434,7 @@ def _print_error_breakdown(generations: list[dict[str, Any]]) -> None:
         if len(embedded) < ROUND or len(bits) < ROUND:
             continue
         for j in range(INFO):
-            m, r = embedded[j], embedded[INFO + j]
+            m, r = gen["message"][j], embedded[INFO + j]
             decoded = "1" if bits[j] != bits[INFO + j] else "0"
             cell = counts.setdefault((m, r), [0, 0])
             cell[0] += 1
