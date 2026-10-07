@@ -53,12 +53,20 @@
   salvato nella colonna `n_sites` della tabella `watermarked/...` (con `n_generated_tokens`); il manifest della
   cella riporta media, mediana, minimo e massimo (`n_sites`) e il tasso di inserimento riuscito
   (`embed_success_rate` = OK / (OK + PARTIAL + FAILED)). Sono i dati "siti idonei" da riportare per livello.
-- **L1** (decisione dell'utente del 7 ottobre 2026): con il prefill i campioni di HumanEval hanno 7-17 siti
-  (oracle) e le soluzioni canoniche 4-11, sempre meno delle 24 posizioni di un ciclo. Su L1 i campioni restano
-  `PARTIAL` e la rilevazione `FAILED` con punteggio minimo, come prevede I2; nessuna nuova deviazione. TPR e
-  tasso di inserimento riuscito su L1 sono **zero per costruzione** (promemoria per la M7) e la scelta degli
-  iperparametri di MCGMark si baserà di fatto sulla parte di sviluppo di L2 Python (M8, da dichiarare nella
-  tesi).
+- **L1** (decisione dell'utente del 7 ottobre 2026): i campioni senza un ciclo completo restano `PARTIAL` e la
+  rilevazione `FAILED` con punteggio minimo, come prevede I2; nessuna nuova deviazione. Nell'oracle (5 prompt)
+  nessun campione arrivava a 24 siti; la generazione di L1 dev (8 ottobre 2026) mostra che **pochi** ci
+  arrivano:
+
+  | Modello | OK / campioni | Inserimento riuscito | Siti: media, mediana, min-max |
+  |---|---|---|---|
+  | Qwen2.5-Coder 7B | 46 / 576 | 8,0% | 10,7; 7; 1-116 |
+  | DeepSeek-Coder 6.7B | 10 / 576 | 1,7% | 7,8; 6; 0-151 |
+
+  TPR e tasso di inserimento su L1 sono quindi **molto bassi ma non nulli** (promemoria per la M7). I campioni
+  con molti siti sono probabilmente generazioni degenerate in ripetizioni (da verificare in M7 insieme al
+  Pass@1). La scelta degli iperparametri di MCGMark si baserà soprattutto sulla parte di sviluppo di L2 Python
+  (M8, da dichiarare nella tesi).
 - **Verifica su codice lungo** (decisione dell'utente): l'oracle genera anche su 3 problemi CodeNet (esclusi
   dalla selezione della M9, `configs/dataset/codenet_excluded.yaml`) e 6 classi ClassEval, con
   `max_new_tokens` 1024 e template provvisori solo per l'oracle (`tests/oracle/templates/`), e riporta per
