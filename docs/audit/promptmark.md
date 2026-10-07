@@ -1,9 +1,9 @@
 # Audit di PromptMark (SPEC §9.0)
 
 - **Stato:** decisioni dell'utente del 7 ottobre 2026 applicate (test del ciclo dagli esempi del prompt,
-  esecuzione con limiti, griglia HPO su tutti e tre i parametri). Secondo oracle (8 ottobre 2026): shim e
-  percorso diretto coincidono con gli esempi eseguiti (1-2 per campione) e i limiti attivi. Oracle verde
-  (4 test) dopo la correzione degli esempi con commento in coda (§8).
+  esecuzione con limiti, griglia HPO su tutti e tre i parametri). Oracle verde l'8 ottobre 2026 (4 test,
+  10 prompt) e verifiche prima di L1 completate (§10): integrazione corretta, watermark non inserito dal
+  modello; si procede con il protocollo comune (decisione dell'utente).
 - **Repository:** `ahmedfahad04/promptmark`, paper "PromptMark: A Prompt-Guided Iterative-Feedback Framework
   for Source Code Watermarking" (`PromptMark_ENASE_Final_18_March.pdf` nel repository).
 
@@ -190,7 +190,23 @@
   4. *Siti idonei* di PromptMark = identificatori valutati dalla rilevazione che non compaiono già nel prompt
      del problema (`shims/bench_shims/promptmark/sites.py`); colonna `n_sites`. Sui 5 campioni HumanEval del
      secondo oracle: 2, 4, 2, 1, 2 identificatori liberi su 9-14 token valutati.
-  Risultati: _in attesa dell'oracle_.
+  Risultati (terzo oracle e prova diagnostica, 8 ottobre 2026; Qwen, 5 HumanEval + 5 MBPP+):
+
+  | Verifica | Esito |
+  |---|---|
+  | semi | 5 semi diversi su 5 iterazioni in ogni campione, uguali fra shim e percorso diretto |
+  | shim = percorso diretto (con e senza limiti) | sì, su tutti i 10 campioni (risposte, iterazioni, esiti degli esempi, p) |
+  | inserimento riuscito, temperatura 0,2 | HumanEval 0/5, MBPP+ 0/5 |
+  | inserimento riuscito, temperatura 1,0 (diagnostica) | 0/10; p minimo per campione fra 0,03 e 0,48; risposte tutte diverse |
+  | siti idonei (identificatori liberi) | HumanEval 1-4, MBPP+ 0-7 per campione |
+  | iniziali verdi fra gli identificatori liberi | 51% (70 su 136, tutte le iterazioni) contro 50% della baseline e γ = 41% |
+
+  **Conclusione:** l'integrazione è corretta (semi, provider, esempi, limiti, rilevazione verificati); il
+  modello non segue l'istruzione sulle iniziali (nessuno spostamento verso le lettere verdi rispetto alla
+  baseline, anche a temperatura 1,0), e il codice di L1 offre pochissimi identificatori liberi. Decisione
+  dell'utente: si procede con il protocollo comune; il limite di PromptMark su L1 con modelli di 7B va
+  nell'audit e nella tesi. In `mbpp/108` l'esempio del prompt fallisce a ogni iterazione (4 ripetizioni per
+  correttezza): il ciclo restituisce la prima iterazione, come il codice.
 
 ## 11. Decoding, semi e costo
 
