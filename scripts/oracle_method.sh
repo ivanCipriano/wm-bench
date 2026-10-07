@@ -21,7 +21,12 @@
 #     con forzatura del testo (D18);
 #   - codice lungo (inputs_long.json: 3 CodeNet + 6 ClassEval): 0000-0002 e 0000-0003, senza
 #     forzatura, per testo identico e tempi (patch 0003).
-# Le parti vanno in $WMB/oracle_parts/mcgmark (cartella condivisa fra i due utenti).
+# Le parti vanno in $WMB/oracle_parts/<metodo> (cartella condivisa fra i due utenti).
+#
+# PromptMark (audit di PromptMark; prima la fase promptmark_freq): stesse modalità
+#   bash scripts/oracle_method.sh promptmark [1/2 | 2/2 | test]
+# Ogni parte esegue il percorso diretto (expI senza shim e senza limiti) sui suoi prompt; "test"
+# unisce le parti, confronta la patch 0002 con l'originale (CPU) ed esegue i test.
 set -uo pipefail
 umask 002  # cartella delle parti condivisa fra i due utenti
 
@@ -109,6 +114,42 @@ case "$METHOD" in
             STEP3="$STEP3 --out $OUT/nospeed_long$(sfx)"
             STEP4="PYTHONPATH=$PATCHED_PATH $METHOD_PY $LONG --variant patched --out $OUT/patched_long$(sfx)"
             ORIGINAL="$STEP1 && $STEP2 && $STEP3 && $STEP4"
+        fi
+        TIME_MIN=180
+        ;;
+    promptmark)
+        # Prerequisito: fase promptmark_freq (lista di frequenza, D8).
+        if [ ! -f "$REPO_ROOT/build/patched/promptmark/src/llm_providers.py" ]; then
+            echo "[ERROR] build/patched/promptmark missing: run bash scripts/apply_patches.sh promptmark" >&2
+            exit 1
+        fi
+        SHARE="1/1"
+        OUT="$FIX"
+        if [[ "$MODE" =~ ^[0-9]+/[0-9]+$ ]]; then
+            SHARE="$MODE"
+            OUT="$PARTS"
+            TESTS="true"
+        elif [ -n "$MODE" ] && [ "$MODE" != "test" ]; then
+            echo "usage: oracle_method.sh promptmark [K/M | test]" >&2; exit 2
+        fi
+        LABEL="${SHARE%/*}of${SHARE#*/}"
+        PM_PATH="$REPO_ROOT/build/patched/promptmark/src:$REPO_ROOT/shims"
+        O_OUT="$OUT/original.json"
+        if [ "$OUT" = "$PARTS" ]; then O_OUT="$OUT/original.$LABEL.json"; fi
+        STEP_ORIG="PYTHONPATH=$PM_PATH $METHOD_PY tests/oracle/promptmark_original.py"
+        STEP_ORIG="$STEP_ORIG --inputs $FIX/inputs.json --share $SHARE --out $O_OUT"
+        # Niente bytecode in third_party/ (il codice originale si importa da lì in sola lettura).
+        CHECK="PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$PM_PATH $METHOD_PY tests/oracle/promptmark_patch_check.py"
+        CHECK="$CHECK --original $REPO_ROOT/third_party/PromptMark/src --patched $REPO_ROOT/build/patched/promptmark/src"
+        CHECK="$CHECK --inputs $FIX/inputs.json --out $FIX/patch_check.json"
+        if [ "$MODE" = "test" ]; then
+            INPUTS="$INPUTS && python tests/oracle/merge_oracle_parts.py $PARTS $FIX"
+            ORIGINAL="$CHECK"
+        elif [ "$OUT" = "$PARTS" ]; then
+            mkdir -p "$OUT"
+            ORIGINAL="$STEP_ORIG"
+        else
+            ORIGINAL="$STEP_ORIG && $CHECK"
         fi
         TIME_MIN=180
         ;;

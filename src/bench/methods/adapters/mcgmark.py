@@ -56,13 +56,11 @@ class McgmarkAdapter(PromptEmbedder, Detector):
 
     def embed_metrics(self, result: WorkerResult | None) -> dict[str, Any]:
         """Siti idonei = posizioni marcate (unità: token generato, audit §2)."""
+        metrics = super().embed_metrics(result)
         extra = result.extra if result is not None else {}
-        if extra.get("watermark") is False:  # baseline gemella: nessun sito
-            return {"n_sites": None, "n_generated_tokens": extra.get("n_generated_tokens")}
-        return {
-            "n_sites": extra.get("n_embedded"),
-            "n_generated_tokens": extra.get("n_generated_tokens"),
-        }
+        # Baseline gemella: nessun sito.
+        metrics["n_sites"] = None if extra.get("watermark") is False else extra.get("n_embedded")
+        return metrics
 
     def expected_message(self, model: ModelSpec, problem: Problem, index: int) -> str | None:
         return message_bits(

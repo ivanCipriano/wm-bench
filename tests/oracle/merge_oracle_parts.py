@@ -52,7 +52,8 @@ def main(argv: list[str]) -> int:
         if len(generations) != len(order):
             raise SystemExit(f"{variant}: {len(generations)} generations, expected {len(order)}")
         merged = {
-            **{f: first[f] for f in ("variant", "transformers", "torch", "vocab_size")},
+            # Gli altri campi (es. green list di PromptMark) sono uguali in tutte le parti.
+            **{k: v for k, v in first.items() if k not in ("generations", "detections")},
             "generations": generations,
             "detections": [d for k in sorted(by_part) for d in by_part[k]["detections"]],
         }

@@ -56,6 +56,9 @@ def make_worker_client(cfg: ExperimentConfig, timeout_s: float) -> WorkerClient:
         envs={name: spec.python for name, spec in cfg.envs.items()},
         shims_root=repo_root() / "shims",
         timeout_s=timeout_s,
+        # Cartella temporanea fuori da repository, artefatti e dataset (codice eseguito dai
+        # metodi, es. gli esempi del ciclo di PromptMark).
+        env={"WMB_TMP": str(cfg.paths.tmp)},
     )
 
 

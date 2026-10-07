@@ -8,6 +8,7 @@ from bench.pipeline.stages import (
     execute,
     generate_baseline,
     prepare_data,
+    promptmark_freq,
     selftest,
     watermark,
 )
@@ -17,6 +18,7 @@ __all__ = [
     "execute",
     "generate_baseline",
     "prepare_data",
+    "promptmark_freq",
     "selftest",
     "watermark",
 ]

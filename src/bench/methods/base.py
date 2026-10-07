@@ -48,9 +48,17 @@ class EmbedRun:
     metrics: list[dict[str, Any]] = dataclasses.field(default_factory=list)
 
 
-# Colonne aggiuntive dei campioni marcati (oltre a ``CodeSample``): siti idonei usati
-# dall'inserimento e token generati, ``None`` se il metodo non li misura.
-EMBED_COLUMNS = ("n_sites", "n_generated_tokens")
+# Colonne aggiuntive dei campioni marcati (oltre a ``CodeSample``), ``None`` se il metodo non le
+# misura: siti idonei usati e token generati (MCGMark); iterazioni del ciclo, ripetizioni per forza
+# del watermark e per correttezza, test di esempio eseguiti (PromptMark).
+EMBED_COLUMNS = (
+    "n_sites",
+    "n_generated_tokens",
+    "n_iterations",
+    "n_retries_watermark",
+    "n_retries_correctness",
+    "n_example_tests",
+)
 
 
 class MethodAdapter(ABC):

@@ -1,0 +1,83 @@
+diff --git a/src/shared_utils.py b/src/shared_utils.py
+index a5d35f3..a6fbf2b 100644
+--- a/src/shared_utils.py
++++ b/src/shared_utils.py
+@@ -267,7 +267,9 @@ def build_green_set(
+         )
+ 
+     seed_hash = int(hashlib.sha256(secret_key.encode()).hexdigest(), 16)
+-    seed_hash_mod = seed_hash % 11
++    # [wm-bench 0002] size in [g_min, g_max] (the code used % 11, which ignores g_max except for the
++    # default bounds 8 and 18, where the result is identical); g_min = g_max fixes the size
++    seed_hash_mod = seed_hash % (g_max - g_min + 1)
+     green_set_size = g_min + seed_hash_mod
+ 
+     rng = random.Random(seed_hash)
+@@ -830,7 +832,7 @@ def load_frequency_data(green_letters: set, base_dir: str) -> Tuple[Dict, int]:
+ # WATERMARK DETECTION WITH DEDUPLICATION
+ # ============================================================================
+ 
+-def detect_watermark(original_code: str, generated_code: str, green_letters: set, red_letters: set, gamma: float, comment_enabled: bool = False) -> Dict:
++def detect_watermark(original_code: str, generated_code: str, green_letters: set, red_letters: set, gamma: float, comment_enabled: bool = False, z_threshold: float = 2.12) -> Dict:
+     """Detect watermark in code with proper deduplication."""
+ 
+     def get_starting_letters(code: str) -> Dict:
+@@ -944,7 +946,7 @@ def detect_watermark(original_code: str, generated_code: str, green_letters: set
+     original_data = get_starting_letters(original_code)
+     generated_data = get_starting_letters(generated_code)
+ 
+-    P_THRESHOLD = norm.sf(2.12)
++    P_THRESHOLD = norm.sf(z_threshold)  # [wm-bench 0002] threshold as a parameter (default 2.12 as before)
+ 
+     return {
+         "original_z_score": original_data["z_score"],
+diff --git a/src/watermarking/exp_iterative_wm.py b/src/watermarking/exp_iterative_wm.py
+index 8a38306..d351690 100644
+--- a/src/watermarking/exp_iterative_wm.py
++++ b/src/watermarking/exp_iterative_wm.py
+@@ -49,6 +49,9 @@ SEED_KEY = "exp2025"
+ SMALL_SAMPLE_THRESHOLD = 30
+ N_MIN_TOKENS = 5
+ ITER_CAP = 5
++# [wm-bench 0002] green-list size bounds of get_red_green_sets (defaults of the function)
++G_MIN = 8
++G_MAX = 18
+ 
+ 
+ # ============================================================================
+@@ -93,7 +96,7 @@ def generate_code(record, feedback_prompt=""):
+     full_prompt = PROBLEM_TEMPLATE.format(prompt=problem_query, tests=testcases)
+ 
+     # Get green/red letters for this experiment
+-    green_letters, red_letters, _ = get_red_green_sets(secret_key=SEED_KEY, base_dir=".")
++    green_letters, red_letters, _ = get_red_green_sets(secret_key=SEED_KEY, base_dir=".", g_min=G_MIN, g_max=G_MAX)
+     system_instruction = SYSTEM_PROMPT.format(
+         green_words=sorted(green_letters), red_words=sorted(red_letters)
+     )
+@@ -163,7 +166,7 @@ def evaluate_candidate(record, generated_code):
+     }
+ 
+     # Calculate watermark metrics
+-    green_letters, red_letters, size_g = get_red_green_sets(secret_key=SEED_KEY, base_dir=".")
++    green_letters, red_letters, size_g = get_red_green_sets(secret_key=SEED_KEY, base_dir=".", g_min=G_MIN, g_max=G_MAX)
+     CURRENT_GREEN_SET_SIZE = size_g
+ 
+     original_code = record.get("canonical_solution", "") or record.get("code", "")
+@@ -181,7 +184,7 @@ def evaluate_candidate(record, generated_code):
+     # Perform watermark detection with comment support
+     detection_result = detect_watermark(
+         original_code, generated_code, green_letters, red_letters, GAMMA, 
+-        comment_enabled=COMMENT_ENABLED
++        comment_enabled=COMMENT_ENABLED, z_threshold=Z_THRESHOLD  # [wm-bench 0002]
+     )
+ 
+     eval_res.update(detection_result)
+@@ -199,7 +202,7 @@ def run_phase1(record, max_iterations=ITER_CAP, verbose=False):
+     best = None
+     selected = None
+     feedback_prompt = ""
+-    green_letters, red_letters, _ = get_red_green_sets(secret_key=SEED_KEY, base_dir=".")
++    green_letters, red_letters, _ = get_red_green_sets(secret_key=SEED_KEY, base_dir=".", g_min=G_MIN, g_max=G_MAX)
+ 
+     for it in range(max_iterations):
+         print(f"\n{'='*60}\n[Iteration {it+1}/{max_iterations}]\n{'='*60}")
