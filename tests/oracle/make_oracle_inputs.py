@@ -3,7 +3,8 @@
     python tests/oracle/make_oracle_inputs.py sweet
 
 Scrive ``tests/fixtures/oracle/<metodo>/inputs.json``:
-- 5 prompt fissi di HumanEval+ (``humaneval/0`` … ``humaneval/4``) con i messaggi chat del
+- 5 prompt fissi di HumanEval+ (``humaneval/0`` … ``humaneval/4``; per PromptMark anche i primi 5
+  problemi MBPP+ della parte di sviluppo) con i messaggi chat del
   ``PromptBuilder`` e il seme di generazione: quello della baseline (Qwen), oppure quello del
   campione 0 per i metodi con un campione per item (schema ``per_sample``, D9);
 - per i metodi multi-bit, il messaggio atteso del campione 0 (``message``), anche per i codici;
@@ -35,6 +36,9 @@ from bench.store.artifact_store import ArtifactStore
 
 MODEL = "qwen25_coder_7b"
 KEYS = [f"humaneval/{i}" for i in range(5)]
+# PromptMark: anche 5 problemi MBPP+ della parte di sviluppo, dove il modello sceglie tutti i nomi
+# (decisione dell'utente dell'8 ottobre 2026).
+EXTRA_MBPP = {"promptmark": 5}
 
 
 def main(argv: list[str]) -> int:
@@ -50,7 +54,11 @@ def main(argv: list[str]) -> int:
     assert isinstance(adapter, PromptEmbedder)
     model = cfg.models_catalog[MODEL]
     prompts, codes = [], []
-    for key in KEYS:
+    table = problems.reset_index()
+    mbpp = sorted(
+        table[(table["dataset"] == "mbppplus") & (table["split"] == "dev")]["problem_key"]
+    )[: EXTRA_MBPP.get(method, 0)]
+    for key in [*KEYS, *mbpp]:
         problem = Problem.model_validate({"problem_key": key, **problems.loc[key].to_dict()})
         messages = builder.build(problem)
         seed = (

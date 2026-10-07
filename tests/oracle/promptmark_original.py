@@ -31,12 +31,19 @@ def main() -> int:  # noqa: PLR0915 - script lineare dell'oracle
     parser.add_argument("--out", required=True)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--share", default="1/1", help="K/M: prompt e codici con i %% M == K - 1")
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=None,
+        help="solo diagnostica (fuori dal benchmark): temperatura al posto di quella neutra",
+    )
     ns = parser.parse_args()
     inputs_path, out_path = os.path.abspath(ns.inputs), os.path.abspath(ns.out)
 
     import torch
     from bench_contracts import derive_seed
     from bench_shims.promptmark.examples import prompt_examples
+    from bench_shims.promptmark.sites import free_identifiers
     from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 
     with open(inputs_path, encoding="utf-8") as handle:
@@ -68,6 +75,8 @@ def main() -> int:  # noqa: PLR0915 - script lineare dell'oracle
     exp.G_MIN, exp.G_MAX = int(hp["g_min"]), int(hp["g_max"])
 
     decoding = dict(data["decoding"])
+    if ns.temperature is not None:
+        decoding["temperature"] = ns.temperature
     dtype = {"bfloat16": torch.bfloat16, "float16": torch.float16}[decoding.pop("torch_dtype")]
     tokenizer = AutoTokenizer.from_pretrained(data["model_path"], local_files_only=True)
     model = AutoModelForCausalLM.from_pretrained(
@@ -79,6 +88,12 @@ def main() -> int:  # noqa: PLR0915 - script lineare dell'oracle
     generation_config = GenerationConfig(**decoding, eos_token_id=eos, pad_token_id=pad)
     model.generation_config = generation_config
     seeds: List[int] = []
+    used: List[int] = []
+
+    def next_seed() -> int:
+        used.append(seeds.pop(0))
+        return used[-1]
+
     provider = llm_providers.LLMProviderFactory.create(
         "inprocess_hf",
         model=model,
@@ -86,7 +101,7 @@ def main() -> int:  # noqa: PLR0915 - script lineare dell'oracle
         generation_config=generation_config,
         system_prompt=data["prompts"][0]["messages"][0]["content"] if data["prompts"] else "",
         device=ns.device,
-        seed_fn=lambda: seeds.pop(0),
+        seed_fn=next_seed,
     )
     shared_utils._llm_provider = provider
     shared_utils._current_provider_name = "inprocess_hf"
@@ -113,6 +128,7 @@ def main() -> int:  # noqa: PLR0915 - script lineare dell'oracle
             derive_seed(prompt["seed"], "promptmark-iter", t) for t in range(1, int(hp["iter_cap"]))
         ]
         evaluations: List[Dict[str, Any]] = []
+        used.clear()
 
         def recorded(record_: Any, code: str, store: List[Dict[str, Any]] = evaluations) -> Any:
             result = original_evaluate(record_, code)
@@ -131,6 +147,11 @@ def main() -> int:  # noqa: PLR0915 - script lineare dell'oracle
                 "raw_output": selected.get("full_llm_response", ""),
                 "selected_iteration": selected.get("iteration"),
                 "selected_code": selected.get("code", ""),
+                "watermarked": bool(selected.get("meets_z")),
+                "n_free_identifiers": free_identifiers(
+                    selected.get("code", ""), user, shared_utils.CodeNavigator
+                ),
+                "seeds": list(used),
                 "iterations": [
                     {
                         "correctness": bool(e.get("correctness")),
@@ -179,6 +200,7 @@ def main() -> int:  # noqa: PLR0915 - script lineare dell'oracle
 
     out = {
         "variant": "original",
+        "temperature": decoding["temperature"],
         "transformers": __import__("transformers").__version__,
         "torch": torch.__version__,
         "vocab_size": len(tokenizer.get_vocab()),
@@ -194,7 +216,26 @@ def main() -> int:  # noqa: PLR0915 - script lineare dell'oracle
     sys.stdout.write(
         f"wrote {out_path}: {len(generations)} generations, {len(detections)} detections\n"
     )
+    _summary(generations, decoding["temperature"])
     return 0
+
+
+def _summary(generations: List[Dict[str, Any]], temperature: float) -> None:
+    """Riepilogo per campione nel log (usato anche dalla prova diagnostica)."""
+    out = sys.stdout
+    out.write(f"temperature {temperature}\n")
+    out.write("problem         iters  marked  free ids  examples  distinct resp/code  min p\n")
+    for g in generations:
+        its = g["iterations"]
+        responses = len({i["response"] for i in its})
+        codes = len({i["code"] for i in its})
+        out.write(
+            f"{g['problem_key']:15s} {len(its):5d}  {g['watermarked']!s:6s}  "
+            f"{g['n_free_identifiers']!s:>8s}  {len(g['examples']):8d}  "
+            f"{responses:13d}/{codes:<4d}  {min(i['p_exact'] for i in its):.3g}\n"
+        )
+    marked = sum(g["watermarked"] for g in generations)
+    out.write(f"watermark embedded: {marked}/{len(generations)}\n")
 
 
 def _ids(value: Any) -> List[int]:

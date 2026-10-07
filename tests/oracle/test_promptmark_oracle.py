@@ -114,7 +114,11 @@ def test_generation_matches_the_direct_path(
     by_key = {r.item_id.rpartition("#")[0]: r for r in run.results}
     problems = {p["problem_key"]: p for p in inputs["prompts"]}
     extractor = FencedCodeExtractor()
-    print("\nproblem         iters  retry wm  retry corr  examples  selected  D4 == method")
+    print(
+        "\nproblem         iters  retry wm  retry corr  examples  selected  D4 == method"
+        "  marked  free ids  distinct seeds/responses/codes"
+    )
+    marked: dict[str, list[bool]] = {}
     for gen in original["generations"]:
         result = by_key[gen["problem_key"]]
         extra = result.extra
@@ -126,6 +130,17 @@ def test_generation_matches_the_direct_path(
                 assert mine[field] == theirs[field], (gen["problem_key"], field)
             assert abs(mine["p_exact"] - theirs["p_exact"]) <= TOLERANCE
         assert extra["selected_iteration"] == gen["selected_iteration"]
+        # Semi: quelli effettivamente usati, diversi a ogni iterazione e uguali al percorso diretto.
+        assert extra["seeds"] == gen["seeds"] and len(set(gen["seeds"])) == len(gen["seeds"])
+        assert len(gen["seeds"]) == len(gen["iterations"])
+        assert extra["n_free_identifiers"] == gen["n_free_identifiers"]
+        assert extra["watermarked"] == gen["watermarked"]
+        marked.setdefault(gen["problem_key"].split("/")[0], []).append(gen["watermarked"])
+        its = gen["iterations"]
+        distinct = (
+            f"{len(set(gen['seeds']))}/{len({i['response'] for i in its})}"
+            f"/{len({i['code'] for i in its})}"
+        )
         problem = Problem.model_validate(_problem_of(cfg, gen["problem_key"]))
         code, ok = extractor.extract(result.raw_output, problem)
         same = ok and code.strip() == gen["selected_code"].strip()
@@ -133,7 +148,8 @@ def test_generation_matches_the_direct_path(
             f"{gen['problem_key']:15s} {extra['n_iterations']:5d}  "
             f"{extra['n_retries_watermark']:8d}  "
             f"{extra['n_retries_correctness']:10d}  {extra['n_example_tests']:8d}  "
-            f"{extra['selected_iteration']!s:>8s}  {same}"
+            f"{extra['selected_iteration']!s:>8s}  {same!s:12s}  {gen['watermarked']!s:6s}  "
+            f"{gen['n_free_identifiers']!s:>8s}  {distinct}"
         )
         assert problems[gen["problem_key"]]["seed"] == gen["seed"]
     effective = next(
@@ -142,6 +158,8 @@ def test_generation_matches_the_direct_path(
     assert effective["temperature"] == 0.2 and effective["top_p"] == 0.95
     assert effective["max_new_tokens"] == inputs["decoding"]["max_new_tokens"] == 512
     assert effective["do_sample"] is True and effective["num_return_sequences"] == 1
+    for family, flags in marked.items():
+        print(f"watermark embedded ({family}): {sum(flags)}/{len(flags)}")
     green, size, gamma = original["green_letters"], original["green_size"], original["gamma"]
     print(f"green list: {green} (size {size}), gamma {gamma:.4f}")
 

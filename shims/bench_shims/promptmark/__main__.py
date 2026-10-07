@@ -47,6 +47,7 @@ from bench_shims._common.decoding import (
 )
 from bench_shims._common.runner import main
 from bench_shims.promptmark.examples import prompt_examples
+from bench_shims.promptmark.sites import free_identifiers
 
 KEEP_ENV = ("PATH", "LANG", "LC_ALL", "LC_CTYPE")
 EXACT_BELOW = 30  # sotto questa soglia il paper usa il binomiale esatto (Eq. 5)
@@ -143,6 +144,7 @@ class PromptMarkShim(ShimBase):
         self.model = None
         self.generation_config = None
         self._seeds: List[int] = []
+        self._used_seeds: List[int] = []
         if request.op == "embed":
             self._load_model(request)
         self._logged_config = False
@@ -189,7 +191,9 @@ class PromptMarkShim(ShimBase):
         self.su._current_provider_name = "inprocess_hf"
 
     def _next_seed(self) -> int:
-        return self._seeds.pop(0)
+        seed = self._seeds.pop(0)
+        self._used_seeds.append(seed)
+        return seed
 
     # ------------------------------------------------------------------ green list e γ
     def green_red_gamma(self) -> Any:
@@ -217,6 +221,7 @@ class PromptMarkShim(ShimBase):
         self._seeds = [item.seed] + [
             derive_seed(item.seed, "promptmark-iter", t) for t in range(1, self.iter_cap)
         ]
+        self._used_seeds = []
         evaluations: List[Dict[str, Any]] = []
         original_evaluate = self.exp.evaluate_candidate
 
@@ -251,6 +256,12 @@ class PromptMarkShim(ShimBase):
             "example_tests": examples,
             "selected_iteration": selected.get("iteration"),
             "selected_code": selected.get("code", ""),
+            "watermarked": bool(selected.get("meets_z")),
+            # Siti idonei: identificatori scelti liberamente dal modello (audit §10).
+            "n_free_identifiers": free_identifiers(
+                selected.get("code", ""), user, self.su.CodeNavigator
+            ),
+            "seeds": list(self._used_seeds),
             "iterations": iterations,
             "green_letters": sorted(green),
             "green_size": size,

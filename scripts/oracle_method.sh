@@ -24,7 +24,7 @@
 # Le parti vanno in $WMB/oracle_parts/<metodo> (cartella condivisa fra i due utenti).
 #
 # PromptMark (audit di PromptMark; prima la fase promptmark_freq): stesse modalità
-#   bash scripts/oracle_method.sh promptmark [1/2 | 2/2 | test]
+#   bash scripts/oracle_method.sh promptmark [1/2 | 2/2 | test | diag]   (diag: temperatura 1,0, solo log)
 # Ogni parte esegue il percorso diretto (expI senza shim e senza limiti) sui suoi prompt; "test"
 # unisce le parti, confronta la patch 0002 con l'originale (CPU) ed esegue i test.
 set -uo pipefail
@@ -129,8 +129,8 @@ case "$METHOD" in
             SHARE="$MODE"
             OUT="$PARTS"
             TESTS="true"
-        elif [ -n "$MODE" ] && [ "$MODE" != "test" ]; then
-            echo "usage: oracle_method.sh promptmark [K/M | test]" >&2; exit 2
+        elif [ -n "$MODE" ] && [ "$MODE" != "test" ] && [ "$MODE" != "diag" ]; then
+            echo "usage: oracle_method.sh promptmark [K/M | test | diag]" >&2; exit 2
         fi
         LABEL="${SHARE%/*}of${SHARE#*/}"
         PM_PATH="$REPO_ROOT/build/patched/promptmark/src:$REPO_ROOT/shims"
@@ -142,7 +142,16 @@ case "$METHOD" in
         CHECK="PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$PM_PATH $METHOD_PY tests/oracle/promptmark_patch_check.py"
         CHECK="$CHECK --original $REPO_ROOT/third_party/PromptMark/src --patched $REPO_ROOT/build/patched/promptmark/src"
         CHECK="$CHECK --inputs $FIX/inputs.json --out $FIX/patch_check.json"
-        if [ "$MODE" = "test" ]; then
+        if [ "$MODE" = "diag" ]; then
+            # Prova diagnostica fuori dal benchmark (decisione dell'utente dell'8 ottobre 2026):
+            # stessi prompt con temperatura 1,0 come nel paper; risultato solo nel log e in
+            # $WMB/tmp, mai tra artefatti o fixture.
+            DIAG="$WMB/tmp/promptmark_diag"
+            mkdir -p "$DIAG"
+            ORIGINAL="PYTHONPATH=$PM_PATH $METHOD_PY tests/oracle/promptmark_original.py"
+            ORIGINAL="$ORIGINAL --inputs $FIX/inputs.json --temperature 1.0 --out $DIAG/temperature_1.json"
+            TESTS="true"
+        elif [ "$MODE" = "test" ]; then
             INPUTS="$INPUTS && python tests/oracle/merge_oracle_parts.py $PARTS $FIX"
             ORIGINAL="$CHECK"
         elif [ "$OUT" = "$PARTS" ]; then

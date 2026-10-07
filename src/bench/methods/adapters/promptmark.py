@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from bench_contracts import WorkerResult
+
 from bench.data.promptmark_freq import LetterFrequencies
 from bench.domain.enums import MethodFamily
 from bench.domain.errors import ConfigError
@@ -69,3 +71,10 @@ class PromptMarkAdapter(PromptEmbedder, Detector):
             "letter_freqs": dict(freqs.letter_freqs),
             "total_identifiers": freqs.total_identifiers,
         }
+
+    def embed_metrics(self, result: WorkerResult | None) -> dict[str, Any]:
+        """Siti idonei = identificatori scelti liberamente dal modello (audit §10)."""
+        metrics = super().embed_metrics(result)
+        extra = result.extra if result is not None else {}
+        metrics["n_sites"] = extra.get("n_free_identifiers")
+        return metrics

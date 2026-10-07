@@ -163,3 +163,22 @@ def test_limits_in_the_child_process(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert result["cwd"].startswith(str(tmp_path)) and result["cuda"] == ""
     assert result["secret"] is None and result["nproc"] == 0 and result["fork"] == "blocked"
     assert list(tmp_path.iterdir()) == []  # cartella dell'esecuzione rimossa
+
+
+def test_free_identifiers_exclude_names_given_in_the_prompt() -> None:
+    from bench_shims.promptmark.sites import free_identifiers, prompt_block
+
+    from bench.data.promptmark_freq import _Navigator
+
+    user = (
+        "Return the code in a single ```python code block.\n\n```python\n"
+        'def add(numbers, limit):\n    """Sum."""\n```'
+    )
+    assert prompt_block(user).startswith("def add(numbers, limit):")
+    code = (
+        "def add(numbers, limit):\n    total = 0\n    for item in numbers:\n"
+        "        total += item\n    return total\n"
+    )
+    # Valutati: numbers, limit, total, item; liberi: total, item.
+    assert free_identifiers(code, user, _Navigator) == 2
+    assert free_identifiers("def broken(:", user, _Navigator) is None

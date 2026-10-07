@@ -179,6 +179,18 @@
     il segnale;
   - con temperatura 0,2 le iterazioni sono quasi deterministiche (il paper usa 1,0).
 - Da verificare sulla generazione di L1 (anche MBPP+, dove il modello sceglie tutti i nomi).
+- **Verifiche richieste dall'utente prima di L1 (8 ottobre 2026)**, per escludere un errore di integrazione:
+  1. *Semi*: le iterazioni usano semi diversi (`derive_seed(seme, "promptmark-iter", t)`); nei dati del secondo
+     oracle 4 campioni su 5 hanno 5 risposte diverse su 5 (codici diversi fino a 3), quindi il codice uguale
+     non dipende dal seme. Lo shim ora registra i semi effettivamente usati (`extra["seeds"]`) e l'oracle
+     verifica che siano tutti diversi e uguali al percorso diretto.
+  2. *MBPP+*: l'oracle di PromptMark include ora anche 5 problemi MBPP+ della parte di sviluppo.
+  3. *Temperatura 1,0* (prova diagnostica fuori dal benchmark, `oracle_method.sh promptmark diag`): risultato
+     solo nel log e in `$WMB/tmp`.
+  4. *Siti idonei* di PromptMark = identificatori valutati dalla rilevazione che non compaiono già nel prompt
+     del problema (`shims/bench_shims/promptmark/sites.py`); colonna `n_sites`. Sui 5 campioni HumanEval del
+     secondo oracle: 2, 4, 2, 1, 2 identificatori liberi su 9-14 token valutati.
+  Risultati: _in attesa dell'oracle_.
 
 ## 11. Decoding, semi e costo
 
