@@ -961,3 +961,52 @@ ___________________ test_patch_0002_and_frequency_procedure ____________________
 identifier sets compared: 11, differences: []
 1 failed, 3 passed in 179.58s (0:02:59)
 srun: error: gnode01: task 0: Exited with exit code 1
+##### oracle promptmark test: nodo gnode01, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/promptmark/inputs.json (5 prompts, 11 codes)
+wrote tests/fixtures/oracle/promptmark/original.json: 2 parts, 5 generations
+wrote tests/fixtures/oracle/promptmark/patch_check.json: 0 mismatches
+....                                                                     [100%]
+==================================== PASSES ====================================
+___________________ test_generation_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+problem         iters  retry wm  retry corr  examples  selected  D4 == method
+humaneval/0         5         4           0         2         0  True
+humaneval/1         5         4           0         1         0  True
+humaneval/2         5         4           0         1         0  True
+humaneval/3         5         4           0         2         0  True
+humaneval/4         5         4           0         1         0  True
+green list: ['c', 'e', 'f', 'i', 'l', 'n', 'o', 'p'] (size 8), gamma 0.4113
+____________________ test_detection_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          score  tokens  green  status
+canonical:humaneval/0        0.54       9      5  OK
+canonical:humaneval/1        0.73      10      6  OK
+canonical:humaneval/2        0.17       5      2  OK
+canonical:humaneval/3        0.26       9      4  OK
+canonical:humaneval/4        0.26       9      4  OK
+nocontext:humaneval/0        0.54       9      5  OK
+generated:humaneval/0        0.54       9      5  OK
+generated:humaneval/2        0.22       7      3  OK
+generated:humaneval/4        0.47      14      7  OK
+baseline:humaneval/0         0.72       8      5  OK
+baseline:humaneval/1         0.73      10      6  OK
+baseline:humaneval/2         0.17       5      2  OK
+baseline:humaneval/3         0.26       9      4  OK
+baseline:humaneval/4         0.19      10      4  OK
+generated:humaneval/1        0.73      10      6  OK
+generated:humaneval/3        0.26       9      4  OK
+___________________ test_patch_0002_and_frequency_procedure ____________________
+----------------------------- Captured stdout call -----------------------------
+
+identifier sets compared: 11, differences: []
+______________________ test_example_overlap_with_evalplus ______________________
+----------------------------- Captured stdout call -----------------------------
+
+dataset        split  problems  with ex.  examples  in base  in plus  problems overlap
+humanevalplus  dev          24        10        30       23       10                 9
+humanevalplus  test        140        60       136       86       27                43
+mbppplus       dev          72        72        72       62       11                62
+mbppplus       test        306       306       306      260       37               260
+4 passed in 176.96s (0:02:56)
