@@ -693,3 +693,138 @@ humaneval/3       512           0          0        0
 humaneval/4       262           0          0        0
 original generation: gamma=0.25 on 0/2054 steps (0.0%), on 0/245 marking steps (0.0%)
 10 passed in 249.11s (0:04:09)
+##### piano (dry run): watermark mcgmark, quota 1/1
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=mcgmark__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=mcgmark__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=mcgmark__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=mcgmark__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=mcgmark__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=mcgmark__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) planned (dry run)
+##### invio: watermark mcgmark, quota 1/1
+SLURM job 785622 (slurm_gpu), cells run in sequence:
+    1. method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=mcgmark__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=mcgmark__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=mcgmark__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job 785623 (slurm_gpu), cells run in sequence:
+    1. method=mcgmark__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=mcgmark__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=mcgmark__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) submitted
+             JOBID         USER PARTITION                               NAME    STATE       TIME
+            785621 g.marotta31@       aiq                      prdjudge-2gpu  PENDING       0:00
+            785620 g.marotta31@       aiq                    qwen-2gpu-final  PENDING       0:00
+            785623 i.cipriano1@      gpuq                      wmb-watermark  RUNNING       0:00
+            785622 i.cipriano1@      gpuq                      wmb-watermark  RUNNING       0:01
+##### piano (dry run): baseline gemella mcgmark, quota 1/1
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+1 SLURM job(s) for 2 cell(s) planned (dry run)
+##### invio: baseline gemella mcgmark, quota 1/1
+SLURM job 785624 (slurm_gpu), cells run in sequence:
+    1. method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+1 SLURM job(s) for 2 cell(s) submitted
+             JOBID         USER PARTITION                               NAME    STATE       TIME
+            785621 g.marotta31@       aiq                      prdjudge-2gpu  PENDING       0:00
+            785620 g.marotta31@       aiq                    qwen-2gpu-final  PENDING       0:00
+            785624 i.cipriano1@      gpuq         wmb-generate_baseline_twin  RUNNING       0:01
+            785623 i.cipriano1@      gpuq                      wmb-watermark  RUNNING       0:05
+            785622 i.cipriano1@      gpuq                      wmb-watermark  RUNNING       0:06
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_cpp_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_java_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_javascript_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_dev.parquet.manifest.json: {'PARTIAL': 566, 'OK': 10} 0.017361 {'n': 576, 'mean': 7.76, 'median': 6.0, 'min': 0.0, 'max': 151.0} per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_cpp_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_java_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_javascript_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_dev.parquet.manifest.json: {'OK': 46, 'PARTIAL': 530} 0.079861 {'n': 576, 'mean': 10.689, 'median': 7.0, 'min': 1.0, 'max': 116.0} per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/twin/mcgmark/9df49d3f4f38/L1_python_dev.parquet.manifest.json: {'OK': 576} 1.0 None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/twin/mcgmark/9df49d3f4f38/L1_python_dev.parquet.manifest.json: {'OK': 576} 1.0 None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_cpp_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_java_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_javascript_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_dev.parquet.manifest.json: {'PARTIAL': 566, 'OK': 10} 0.017361 {'n': 576, 'mean': 7.76, 'median': 6.0, 'min': 0.0, 'max': 151.0} per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_cpp_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_java_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_javascript_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_dev.parquet.manifest.json: {'OK': 46, 'PARTIAL': 530} 0.079861 {'n': 576, 'mean': 10.689, 'median': 7.0, 'min': 1.0, 'max': 116.0} per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/deepseek_coder_6p7b/twin/mcgmark/9df49d3f4f38/L1_python_dev.parquet.manifest.json: {'OK': 576} 1.0 None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/baseline/qwen25_coder_7b/twin/mcgmark/9df49d3f4f38/L1_python_dev.parquet.manifest.json: {'OK': 576} 1.0 None per_sample
+##### invio: promptmark_freq
+SLURM job 785685 (slurm_cpu), cells run in sequence:
+    1. all
+1 SLURM job(s) for 1 cell(s) submitted
+             JOBID         USER PARTITION                               NAME    STATE       TIME
+            785621 g.marotta31@       aiq                      prdjudge-2gpu  PENDING       0:00
+            785620 g.marotta31@       aiq                    qwen-2gpu-final  RUNNING    1:26:10
+            785685 i.cipriano1@      defq                wmb-promptmark_freq  RUNNING       0:01
+##### invio: promptmark_freq
+SLURM job 785686 (slurm_cpu), cells run in sequence:
+    1. all
+1 SLURM job(s) for 1 cell(s) submitted
+             JOBID         USER PARTITION                               NAME    STATE       TIME
+            785621 g.marotta31@       aiq                      prdjudge-2gpu  PENDING       0:00
+            785620 g.marotta31@       aiq                    qwen-2gpu-final  RUNNING    1:28:54
+            785686 i.cipriano1@      defq                wmb-promptmark_freq  RUNNING       0:01
+##### oracle promptmark 1/2: nodo gnode01, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/promptmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  6.22it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.44it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  7.97it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  8.43it/s]
+Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/promptmark/original.1of2.json: 3 generations, 9 detections
+##### oracle promptmark test: nodo gnode01, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/promptmark/inputs.json (5 prompts, 11 codes)
+wrote tests/fixtures/oracle/promptmark/original.json: 2 parts, 5 generations
+wrote tests/fixtures/oracle/promptmark/patch_check.json: 0 mismatches
+....                                                                     [100%]
+==================================== PASSES ====================================
+___________________ test_generation_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+problem         iters  retry wm  retry corr  examples  selected  D4 == method
+humaneval/0         5         4           0         0         0  True
+humaneval/1         5         4           0         0         0  True
+humaneval/2         5         4           0         0         0  True
+humaneval/3         5         4           0         0         0  True
+humaneval/4         5         4           0         0         0  True
+green list: ['c', 'e', 'f', 'i', 'l', 'n', 'o', 'p'] (size 8), gamma 0.4113
+____________________ test_detection_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          score  tokens  green  status
+canonical:humaneval/0        0.54       9      5  OK
+canonical:humaneval/1        0.73      10      6  OK
+canonical:humaneval/2        0.17       5      2  OK
+canonical:humaneval/3        0.26       9      4  OK
+canonical:humaneval/4        0.26       9      4  OK
+nocontext:humaneval/0        0.54       9      5  OK
+generated:humaneval/0        0.54       9      5  OK
+generated:humaneval/2        0.22       7      3  OK
+generated:humaneval/4        0.47      14      7  OK
+baseline:humaneval/0         0.72       8      5  OK
+baseline:humaneval/1         0.73      10      6  OK
+baseline:humaneval/2         0.17       5      2  OK
+baseline:humaneval/3         0.26       9      4  OK
+baseline:humaneval/4         0.19      10      4  OK
+generated:humaneval/1        0.73      10      6  OK
+generated:humaneval/3        0.26       9      4  OK
+___________________ test_patch_0002_and_frequency_procedure ____________________
+----------------------------- Captured stdout call -----------------------------
+
+identifier sets compared: 11, differences: []
+______________________ test_example_overlap_with_evalplus ______________________
+----------------------------- Captured stdout call -----------------------------
+
+dataset        split  problems  with ex.  examples  in base  in plus  problems overlap
+humanevalplus  dev          24         0         0        0        0                 0
+humanevalplus  test        140         3         5        5        1                 3
+mbppplus       dev          72        72        72       62       11                62
+mbppplus       test        306       306       306      260       37               260
+4 passed in 182.16s (0:03:02)

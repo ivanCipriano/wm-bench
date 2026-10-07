@@ -52,3 +52,8 @@ wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/patch
 wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/nospeed_long.2of2.json (nospeed): 4 generations, 7 detections
 Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  7.68it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.79it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  9.28it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  8.92it/s]
 wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/mcgmark/patched_long.2of2.json (patched): 4 generations, 7 detections
+##### oracle promptmark 2/2: nodo gnode01, NVIDIA A100-SXM4-80GB
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/promptmark/inputs.json (5 prompts, 11 codes)
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  7.55it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  8.56it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  9.00it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  8.89it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  8.75it/s]
+Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/oracle_parts/promptmark/original.2of2.json: 2 generations, 7 detections

@@ -1,0 +1,95 @@
+{
+ "mismatches": [],
+ "n_codes": 11,
+ "green_letters": [
+  "c",
+  "e",
+  "f",
+  "i",
+  "l",
+  "n",
+  "o",
+  "p"
+ ],
+ "gamma": 0.4112549955133912,
+ "identifiers": {
+  "canonical:humaneval/0": [
+   "List",
+   "has_close_elements",
+   "i",
+   "numbers",
+   "sorted_numbers",
+   "threshold"
+  ],
+  "baseline:humaneval/0": [
+   "List",
+   "has_close_elements",
+   "i",
+   "numbers",
+   "threshold"
+  ],
+  "canonical:humaneval/1": [
+   "List",
+   "ch",
+   "cnt",
+   "group",
+   "paren_string",
+   "results",
+   "separate_paren_groups"
+  ],
+  "baseline:humaneval/1": [
+   "List",
+   "char",
+   "current_group",
+   "depth",
+   "paren_string",
+   "result",
+   "separate_paren_groups"
+  ],
+  "canonical:humaneval/2": [
+   "number",
+   "truncate_number"
+  ],
+  "baseline:humaneval/2": [
+   "number",
+   "truncate_number"
+  ],
+  "canonical:humaneval/3": [
+   "List",
+   "account",
+   "below_zero",
+   "operation",
+   "operations"
+  ],
+  "baseline:humaneval/3": [
+   "List",
+   "balance",
+   "below_zero",
+   "operation",
+   "operations"
+  ],
+  "canonical:humaneval/4": [
+   "List",
+   "mean",
+   "mean_absolute_deviation",
+   "numbers",
+   "x"
+  ],
+  "baseline:humaneval/4": [
+   "List",
+   "mad",
+   "mean",
+   "mean_absolute_deviation",
+   "numbers",
+   "x"
+  ],
+  "nocontext:humaneval/0": [
+   "List",
+   "has_close_elements",
+   "i",
+   "numbers",
+   "sorted_numbers",
+   "threshold"
+  ]
+ }
+}
