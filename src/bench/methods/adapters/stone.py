@@ -32,6 +32,8 @@ class StoneAdapter(PromptEmbedder, Detector):
     family: ClassVar[MethodFamily] = MethodFamily.LOGIT
     gpu_for_embed: ClassVar[bool] = True
     gpu_for_detect: ClassVar[bool] = True  # dispositivo del generatore casuale, non il modello
+    # z-score con il denominatore del paper (D16): misura secondaria.
+    secondary_scores: ClassVar[dict[str, str]] = {"z_nonsyntax": "z_nonsyntax"}
 
     def to_native_hparams(self, hp: dict[str, Any]) -> dict[str, Any]:
         """γ → ``gamma``, δ → ``delta`` più i valori fissi; la chiave va in ``request.key``."""

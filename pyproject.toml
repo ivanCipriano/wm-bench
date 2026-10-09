@@ -53,7 +53,10 @@ mypy_path = "packages/bench-contracts"
 
 [[tool.mypy.overrides]]
 # pyarrow non distribuisce annotazioni di tipo.
-module = ["pyarrow", "pyarrow.*", "transformers", "transformers.*", "submitit", "submitit.*"]
+module = [
+    "pyarrow", "pyarrow.*", "transformers", "transformers.*", "submitit", "submitit.*",
+    "scipy", "scipy.*", "sklearn", "sklearn.*",
+]
 ignore_missing_imports = true
 
 # ---------------------------------------------------------------- pytest (SPEC §21.1)

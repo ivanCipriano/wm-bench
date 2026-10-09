@@ -116,6 +116,11 @@ class DetectionRecord(FrozenModel):
 class ThresholdSet(FrozenModel):
     """Soglia di rilevazione congelata (I3)."""
 
+    # Soglia +inf (nessun valore rispetta l'FPR obiettivo): in JSON come "Infinity", non null.
+    model_config = ConfigDict(
+        frozen=True, extra="forbid", protected_namespaces=(), ser_json_inf_nan="strings"
+    )
+
     method: str
     model_id: str
     language: Language
@@ -127,6 +132,13 @@ class ThresholdSet(FrozenModel):
     underpowered: bool
     created_at: datetime
     negatives_ref: str
+    # Soglie provvisorie (decisione dell'utente del 9 ottobre 2026): calibrate senza tutti i
+    # livelli previsti (L1+L2, SPEC §13.2); la fase metrics non le usa sul test.
+    provisional: bool = False
+    levels: list[str] = Field(default_factory=list)
+    # Soglie dei punteggi secondari (``Detector.secondary_scores``): nome → {"threshold",
+    # "achieved_fpr_dev"}.
+    secondary: dict[str, dict[str, float]] = Field(default_factory=dict)
 
 
 class MetricValue(FrozenModel):

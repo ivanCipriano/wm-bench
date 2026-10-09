@@ -62,6 +62,11 @@ class McgmarkAdapter(PromptEmbedder, Detector):
         metrics["n_sites"] = None if extra.get("watermark") is False else extra.get("n_embedded")
         return metrics
 
+    def message_for(
+        self, model: ModelSpec, problem_key: str, language: str, index: int | None
+    ) -> str | None:
+        return message_bits(self.cfg.global_seed, problem_key, language, model.model_id, index)
+
     def expected_message(self, model: ModelSpec, problem: Problem, index: int) -> str | None:
         return message_bits(
             self.cfg.global_seed, problem.problem_key, str(problem.language), model.model_id, index

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Any, ClassVar
 
 from bench_contracts import WorkerResult
@@ -27,6 +28,8 @@ class PromptMarkAdapter(PromptEmbedder, Detector):
     family: ClassVar[MethodFamily] = MethodFamily.PROMPT
     gpu_for_embed: ClassVar[bool] = True
     gpu_for_detect: ClassVar[bool] = False  # solo AST e lista di frequenza
+    # p adattivo del paper (Eq. 5), audit §6: misura secondaria, come −log10 p.
+    secondary_scores: ClassVar[dict[str, str]] = {"p_adaptive_paper": "p_adaptive_paper"}
     one_sample_per_item: ClassVar[bool] = True  # un ciclo di feedback per campione (audit §10)
 
     _frequencies: LetterFrequencies | None = None
@@ -78,3 +81,10 @@ class PromptMarkAdapter(PromptEmbedder, Detector):
         extra = result.extra if result is not None else {}
         metrics["n_sites"] = extra.get("n_free_identifiers")
         return metrics
+
+    def secondary_score(self, name: str, extra: dict[str, Any]) -> float | None:
+        """−log10 del p adattivo (come il punteggio principale); p = 0 → +inf."""
+        p = extra.get(self.secondary_scores[name])
+        if p is None:
+            return None
+        return math.inf if float(p) <= 0.0 else -math.log10(float(p))

@@ -4,13 +4,17 @@ Celle:
 
 - ``source=canonical``: soluzioni canoniche di un livello e linguaggio (tutti i problemi,
   senza modello né parte), per verificare l'executor (atteso Pass@1 = 100%);
-- ``source=llm_baseline``: campioni della baseline di (modello, livello, linguaggio, parte).
+- ``source=llm_baseline``: campioni della baseline di (modello, livello, linguaggio, parte);
+- ``source=llm_watermarked``: campioni marcati di (metodo, modello, livello, linguaggio, parte), con
+  la configurazione di default del metodo (fino all'HPO); servono a Pass@1 e ΔPass@1 (M7);
+- ``source=baseline_twin``: baseline gemella dei metodi che la prevedono (MCGMark, D20).
 
-Output: ``execution/canonical/<L>_<lang>.parquet`` e
-``execution/llm_baseline/<modello>/<L>_<lang>_<parte>.parquet``; una riga per campione in
-input (I1) con i campi di ``ExecutionRecord`` più ``problem_key``, ``sample_index`` e
-``dataset``. Un'invocazione della sandbox per problema; i problemi girano in parallelo su
-``max_workers`` thread (il lavoro è nei sottoprocessi della sandbox).
+Output: ``execution/canonical/<L>_<lang>.parquet``,
+``execution/llm_baseline/<modello>/<L>_<lang>_<parte>.parquet`` e, per le fonti di un metodo,
+``execution/<fonte>/<metodo>/<modello>/<config_hash>/<L>_<lang>_<parte>.parquet``; una riga
+per campione in input (I1) con i campi di ``ExecutionRecord`` più ``problem_key``,
+``sample_index`` e ``dataset``. Un'invocazione della sandbox per problema; i problemi girano in
+parallelo su ``max_workers`` thread (il lavoro è nei sottoprocessi della sandbox).
 
 **Ripresa** (cluster_info §1): ogni problema completato va in un file parziale JSONL
 (``execution/.../_partial/``); al rilancio si eseguono solo i problemi mancanti.
@@ -50,7 +54,7 @@ from bench.execution.sandbox import Sandbox
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.evalplus_groundtruth import groundtruth_ref, load_groundtruth
 from bench.pipeline.stages.generate_baseline import baseline_ref, problems_ref
-from bench.registry import STAGES
+from bench.registry import METHODS, STAGES
 from bench.store.hashing import sha256_json
 from bench.store.refs import ArtifactRef
 
@@ -60,11 +64,22 @@ EXTRA_COLUMNS = ["problem_key", "sample_index", "dataset"]
 OUTPUT_COLUMNS = [*EXTRA_COLUMNS, *ExecutionRecord.model_fields]
 
 
-def execution_ref(cell: Cell) -> ArtifactRef:
-    """Esiti dell'esecuzione di una cella."""
+METHOD_SOURCES = ("llm_watermarked", "baseline_twin")
+
+
+def execution_ref(cell: Cell, config_hash: str | None = None) -> ArtifactRef:
+    """Esiti dell'esecuzione di una cella (``config_hash`` per le fonti di un metodo)."""
     if cell.source == "canonical":
         return ArtifactRef.of(
             "execution", f"execution/canonical/{cell.level}_{cell.language}.parquet"
+        )
+    if cell.source in METHOD_SOURCES:
+        if not config_hash:
+            raise ConfigError(f"execute: {cell.source} needs the method config hash")
+        return ArtifactRef.of(
+            "execution",
+            f"execution/{cell.source}/{cell.method}/{cell.model_id}/{config_hash}/"
+            f"{cell.level}_{cell.language}_{cell.split}.parquet",
         )
     return ArtifactRef.of(
         "execution",
@@ -102,7 +117,14 @@ class ExecuteStage(Stage):
     name: ClassVar[str] = "execute"
     resources: ClassVar[ResourceClass] = ResourceClass.CPU
     output_kinds: ClassVar[frozenset[str]] = frozenset({"execution"})
-    cell_axes: ClassVar[tuple[str, ...]] = ("source", "model_id", "level", "language", "split")
+    cell_axes: ClassVar[tuple[str, ...]] = (
+        "source",
+        "method",
+        "model_id",
+        "level",
+        "language",
+        "split",
+    )
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
@@ -115,6 +137,20 @@ class ExecuteStage(Stage):
     def normalize_cell(cls, cell: Cell) -> Cell | None:
         if cell.source == "canonical":
             return Cell(source="canonical", level=cell.level, language=cell.language)
+        if cell.source == "llm_baseline":
+            return Cell(
+                source=cell.source,
+                model_id=cell.model_id,
+                level=cell.level,
+                language=cell.language,
+                split=cell.split,
+            )
+        if cell.source == "baseline_twin" and cell.method:
+            import bench.methods.adapters  # noqa: F401  (popola METHODS)
+
+            adapter_cls = METHODS.get(cell.method)
+            if not getattr(adapter_cls, "twin_baseline", False):
+                return None  # il metodo non ha una baseline gemella
         return cell
 
     def _cfg(self) -> ExperimentConfig:
@@ -126,32 +162,53 @@ class ExecuteStage(Stage):
     def _check(cell: Cell) -> None:
         if cell.source == "canonical" and cell.level and cell.language:
             return
-        if (
-            cell.source == "llm_baseline"
-            and cell.model_id
-            and cell.level
-            and cell.language
-            and cell.split
-        ):
+        complete = bool(cell.model_id and cell.level and cell.language and cell.split)
+        if cell.source == "llm_baseline" and complete:
+            return
+        if cell.source in METHOD_SOURCES and complete and cell.method:
             return
         raise ConfigError(f"execute: incomplete or unknown cell {cell.key()}")
+
+    def config_hash(self, cell: Cell) -> str | None:
+        """Configurazione di default del metodo per le fonti di un metodo (fino all'HPO)."""
+        if cell.source not in METHOD_SOURCES:
+            return None
+        from bench.pipeline.stages.watermark import make_adapter
+
+        adapter = make_adapter(self._cfg(), str(cell.method))
+        return adapter.config_hash(adapter.default_hparams())
+
+    def samples_ref(self, cell: Cell) -> ArtifactRef | None:
+        """Campioni da eseguire (``None`` per le canoniche)."""
+        from bench.pipeline.stages.watermark import baseline_twin_ref, watermarked_ref
+
+        level, language, split = str(cell.level), str(cell.language), str(cell.split)
+        if cell.source == "llm_baseline":
+            return baseline_ref(str(cell.model_id), level, language, split)
+        cfg_hash = self.config_hash(cell)
+        if cell.source == "llm_watermarked":
+            return watermarked_ref(
+                str(cell.method), str(cell.model_id), str(cfg_hash), level, language, split
+            )
+        if cell.source == "baseline_twin":
+            return baseline_twin_ref(
+                str(cell.method), str(cell.model_id), str(cfg_hash), level, language, split
+            )
+        return None
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
         self._check(cell)
         refs = [problems_ref(str(cell.level), str(cell.language))]
-        if cell.source == "llm_baseline":
-            refs.append(
-                baseline_ref(
-                    str(cell.model_id), str(cell.level), str(cell.language), str(cell.split)
-                )
-            )
+        samples = self.samples_ref(cell)
+        if samples is not None:
+            refs.append(samples)
         if cell.language == str(Language.PYTHON):
             refs.append(groundtruth_ref())
         return refs
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         self._check(cell)
-        return [execution_ref(cell)]
+        return [execution_ref(cell, self.config_hash(cell))]
 
     # ------------------------------------------------------------------ campioni
     def _problems(self, ctx: StageContext, cell: Cell) -> list[Problem]:
@@ -184,9 +241,9 @@ class ExecuteStage(Stage):
                 ]
                 for p in problems
             }
-        table = ctx.store.read_table(
-            baseline_ref(str(cell.model_id), str(cell.level), str(cell.language), str(cell.split))
-        )
+        ref = self.samples_ref(cell)
+        assert ref is not None
+        table = ctx.store.read_table(ref)
         by_problem: dict[str, list[SampleToRun]] = {p.problem_key: [] for p in problems}
         table = table.sort_values(["problem_key", "sample_index"])
         for row in table.to_dict(orient="records"):
@@ -243,7 +300,7 @@ class ExecuteStage(Stage):
                 "inputs": input_hashes,
             }
         )
-        ref = execution_ref(cell)
+        ref = self.outputs(cell)[0]
         partial = ctx.store.root / ref.path.parent / "_partial" / f"{ref.path.stem}.jsonl"
         done, retries = self._load_partial(partial, fingerprint)
         todo = [p for p in problems if p.problem_key not in done]
@@ -403,7 +460,7 @@ class ExecuteStage(Stage):
             "workers": max_workers(self._cfg(), cell.language),
             "job_cpus": job_cpus(self._cfg()),
         }
-        ref = execution_ref(cell)
+        ref = self.outputs(cell)[0]
         manifest = ctx.make_manifest(
             ref,
             inputs=self.inputs(cell),

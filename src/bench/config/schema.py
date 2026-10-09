@@ -233,7 +233,7 @@ class ExecutionConfig(_Frozen):
     network_none: bool = True
     node_local: bool = True  # immagine e cartelle di lavoro sul disco locale del nodo
     apptainer_module: str
-    sources: list[Literal["canonical", "llm_baseline"]]
+    sources: list[Literal["canonical", "llm_baseline", "llm_watermarked", "baseline_twin"]]
     timeouts_s: dict[str, float]
     compile_timeout_s: float = Field(gt=0)
     mem_mb: dict[str, int | None]
@@ -258,6 +258,10 @@ class DetectionConfig(_Frozen):
 
     target_fpr: float = Field(gt=0, lt=1)
     min_negatives: int = Field(gt=0)
+    n_bootstrap: int = Field(default=1000, gt=0)  # ricampionamenti (SPEC §13.6)
+    # Metriche sul test con soglie provvisorie: vietate, salvo lo smoke test (decisione
+    # dell'utente del 9 ottobre 2026).
+    allow_provisional_test: bool = False
 
 
 class HpoConfig(_Frozen):

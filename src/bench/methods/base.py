@@ -484,7 +484,14 @@ class CodeEmbedder(MethodAdapter):
         for parent in samples:
             found = results.get(parent.sample_id)
             status = EmbedStatus.NOT_APPLICABLE if found is None else found.status
-            code = (found.code or "") if found is not None and status == EmbedStatus.OK else ""
+            if found is None:  # linguaggio non supportato
+                code = ""
+            elif status == EmbedStatus.OK:
+                code = found.code or ""
+            else:
+                # Inserimento non riuscito (es. ACW: nessuna regola applicabile): il codice in
+                # uscita dal metodo è quello di partenza, che conta per Pass@1 (I2 per il TPR).
+                code = parent.code
             metrics.append(self.embed_metrics(found))
             out.append(
                 CodeSample(
@@ -543,6 +550,23 @@ class CodeEmbedder(MethodAdapter):
 
 class Detector(MethodAdapter):
     """Metodi con rilevazione (tutti): un punteggio per codice, più alto = più marcato."""
+
+    # Punteggi secondari (varianti del paper, regola delle discrepanze in CLAUDE.md): nome →
+    # chiave di ``DetectionRecord.extra``. Ognuno ha la sua soglia (fase calibrate) e le sue
+    # metriche ``tpr_at_fpr_<nome>`` e ``auroc_<nome>`` (fase metrics).
+    secondary_scores: ClassVar[dict[str, str]] = {}
+
+    def secondary_score(self, name: str, extra: dict[str, Any]) -> float | None:
+        """Punteggio secondario dall'``extra`` di una rilevazione (più alto = più marcato)."""
+        value = extra.get(self.secondary_scores[name])
+        return None if value is None else float(value)
+
+    def message_for(
+        self, model: ModelSpec, problem_key: str, language: str, index: int | None
+    ) -> str | None:
+        """Messaggio atteso di un codice qualunque (anche negativo) dai suoi identificativi;
+        ``None`` per i metodi senza messaggio (MCGMark lo ridefinisce, SPEC §9.5)."""
+        return None
 
     def detect_codes(
         self,
