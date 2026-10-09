@@ -1,0 +1,657 @@
+{
+ "method": "acw",
+ "model_id": "qwen25_coder_7b",
+ "model_path": "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/hf_cache/hub/models--Qwen--Qwen2.5-Coder-7B-Instruct/snapshots/c03e6d358207e414f1eca0bb1891e29f1db0e242",
+ "key": 797977492,
+ "key_k2": 942664367,
+ "native_hparams": {
+  "num_transforms": 43,
+  "random_rules": true
+ },
+ "decoding": {
+  "do_sample": true,
+  "num_beams": 1,
+  "top_k": 0,
+  "typical_p": 1.0,
+  "epsilon_cutoff": 0.0,
+  "eta_cutoff": 0.0,
+  "min_p": null,
+  "repetition_penalty": 1.0,
+  "encoder_repetition_penalty": 1.0,
+  "no_repeat_ngram_size": 0,
+  "length_penalty": 1.0,
+  "bad_words_ids": null,
+  "suppress_tokens": null,
+  "begin_suppress_tokens": null,
+  "forced_bos_token_id": null,
+  "forced_eos_token_id": null,
+  "min_new_tokens": null,
+  "min_length": 0,
+  "temperature": 0.2,
+  "top_p": 0.95,
+  "max_new_tokens": 512,
+  "num_return_sequences": 1,
+  "torch_dtype": "bfloat16"
+ },
+ "prompts": [
+  {
+   "problem_key": "humaneval/0",
+   "language": "python",
+   "seed": 1035836253,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `has_close_elements` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "humaneval/0",
+    "dataset": "humanevalplus",
+    "level": "L1",
+    "language": "python",
+    "split": "test",
+    "prompt_text": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n",
+    "entry_point": "has_close_elements",
+    "canonical_solution": "\n\n    sorted_numbers = sorted(numbers)\n    for i in range(len(sorted_numbers) - 1):\n        if sorted_numbers[i + 1] - sorted_numbers[i] < threshold:\n            return True\n    return False\n\n",
+    "test_ref": "HumanEval/0",
+    "contamination_risk": false,
+    "loc_to_generate": 5
+   }
+  },
+  {
+   "problem_key": "humaneval/1",
+   "language": "python",
+   "seed": 1115006546,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `separate_paren_groups` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "humaneval/1",
+    "dataset": "humanevalplus",
+    "level": "L1",
+    "language": "python",
+    "split": "test",
+    "prompt_text": "from typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n",
+    "entry_point": "separate_paren_groups",
+    "canonical_solution": "\n\n    cnt, group, results = 0, \"\", []\n    for ch in paren_string:\n        if ch == \"(\": cnt += 1\n        if ch == \")\": cnt -= 1\n        if ch != \" \": group += ch\n        if cnt == 0:\n            if group != \"\": results.append(group)\n            group = \"\"\n    return results\n\n",
+    "test_ref": "HumanEval/1",
+    "contamination_risk": false,
+    "loc_to_generate": 9
+   }
+  },
+  {
+   "problem_key": "humaneval/2",
+   "language": "python",
+   "seed": 218240081,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `truncate_number` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n\n    Return the decimal part of the number.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "humaneval/2",
+    "dataset": "humanevalplus",
+    "level": "L1",
+    "language": "python",
+    "split": "test",
+    "prompt_text": "\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n\n    Return the decimal part of the number.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n",
+    "entry_point": "truncate_number",
+    "canonical_solution": "\n\n    return number - int(number)\n\n",
+    "test_ref": "HumanEval/2",
+    "contamination_risk": false,
+    "loc_to_generate": 1
+   }
+  },
+  {
+   "problem_key": "humaneval/3",
+   "language": "python",
+   "seed": 1621626705,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `below_zero` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations on a bank account that starts with\n    zero balance. Your task is to detect if at any point the balance of account fallls below zero, and\n    at that point function should return True. Otherwise it should return False.\n    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "humaneval/3",
+    "dataset": "humanevalplus",
+    "level": "L1",
+    "language": "python",
+    "split": "test",
+    "prompt_text": "from typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations on a bank account that starts with\n    zero balance. Your task is to detect if at any point the balance of account fallls below zero, and\n    at that point function should return True. Otherwise it should return False.\n    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n",
+    "entry_point": "below_zero",
+    "canonical_solution": "\n    account = 0\n    for operation in operations:\n        account += operation\n        if account < 0:\n            return True\n    return False\n\n",
+    "test_ref": "HumanEval/3",
+    "contamination_risk": false,
+    "loc_to_generate": 6
+   }
+  },
+  {
+   "problem_key": "humaneval/4",
+   "language": "python",
+   "seed": 1765430956,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `mean_absolute_deviation` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "humaneval/4",
+    "dataset": "humanevalplus",
+    "level": "L1",
+    "language": "python",
+    "split": "test",
+    "prompt_text": "from typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n",
+    "entry_point": "mean_absolute_deviation",
+    "canonical_solution": "\n    mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / len(numbers)\n\n",
+    "test_ref": "HumanEval/4",
+    "contamination_risk": false,
+    "loc_to_generate": 2
+   }
+  },
+  {
+   "problem_key": "mbpp/103",
+   "language": "python",
+   "seed": 1725140470,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `eulerian_num` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to find the Eulerian number a(n, m).\nassert eulerian_num(3, 1) == 4\n\"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "mbpp/103",
+    "dataset": "mbppplus",
+    "level": "L1",
+    "language": "python",
+    "split": "dev",
+    "prompt_text": "\"\"\"\nWrite a function to find the Eulerian number a(n, m).\nassert eulerian_num(3, 1) == 4\n\"\"\"\n",
+    "entry_point": "eulerian_num",
+    "canonical_solution": "\ndef eulerian_num(n, m): \n\tif (m >= n or n == 0): \n\t\treturn 0 \n\tif (m == 0): \n\t\treturn 1 \n\treturn (n - m) * eulerian_num(n - 1, m - 1) + (m + 1) * eulerian_num(n - 1, m)\n",
+    "test_ref": "Mbpp/103",
+    "contamination_risk": false,
+    "loc_to_generate": 6
+   }
+  },
+  {
+   "problem_key": "mbpp/108",
+   "language": "python",
+   "seed": 396377956,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `merge_sorted_list` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to merge three lists into a single sorted list.\nassert merge_sorted_list([25, 24, 15, 4, 5, 29, 110],[19, 20, 11, 56, 25, 233, 154],[24, 26, 54, 48])==[4, 5, 11, 15, 19, 20, 24, 24, 25, 25, 26, 29, 48, 54, 56, 110, 154, 233]\n\"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "mbpp/108",
+    "dataset": "mbppplus",
+    "level": "L1",
+    "language": "python",
+    "split": "dev",
+    "prompt_text": "\"\"\"\nWrite a function to merge three lists into a single sorted list.\nassert merge_sorted_list([25, 24, 15, 4, 5, 29, 110],[19, 20, 11, 56, 25, 233, 154],[24, 26, 54, 48])==[4, 5, 11, 15, 19, 20, 24, 24, 25, 25, 26, 29, 48, 54, 56, 110, 154, 233]\n\"\"\"\n",
+    "entry_point": "merge_sorted_list",
+    "canonical_solution": "\nimport heapq\ndef merge_sorted_list(num1,num2,num3):\n  return sorted(num1 + num2 + num3)\n",
+    "test_ref": "Mbpp/108",
+    "contamination_risk": false,
+    "loc_to_generate": 3
+   }
+  },
+  {
+   "problem_key": "mbpp/109",
+   "language": "python",
+   "seed": 2069280811,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `odd_Equivalent` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a python function to find the number of numbers with an odd value when rotating a binary string the given number of times.\nassert odd_Equivalent(\"011001\",6) == 3\n\"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "mbpp/109",
+    "dataset": "mbppplus",
+    "level": "L1",
+    "language": "python",
+    "split": "dev",
+    "prompt_text": "\"\"\"\nWrite a python function to find the number of numbers with an odd value when rotating a binary string the given number of times.\nassert odd_Equivalent(\"011001\",6) == 3\n\"\"\"\n",
+    "entry_point": "odd_Equivalent",
+    "canonical_solution": "\ndef odd_Equivalent(s,n): \n    count=0\n    for i in range(0,n): \n        if (s[i] == '1'): \n            count = count + 1\n    return count \n",
+    "test_ref": "Mbpp/109",
+    "contamination_risk": false,
+    "loc_to_generate": 6
+   }
+  },
+  {
+   "problem_key": "mbpp/118",
+   "language": "python",
+   "seed": 790925837,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `string_to_list` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to convert a string to a list of strings split on the space character.\nassert string_to_list(\"python programming\")==['python','programming']\n\"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "mbpp/118",
+    "dataset": "mbppplus",
+    "level": "L1",
+    "language": "python",
+    "split": "dev",
+    "prompt_text": "\"\"\"\nWrite a function to convert a string to a list of strings split on the space character.\nassert string_to_list(\"python programming\")==['python','programming']\n\"\"\"\n",
+    "entry_point": "string_to_list",
+    "canonical_solution": "\ndef string_to_list(string): \n    return string.split(\" \")\n",
+    "test_ref": "Mbpp/118",
+    "contamination_risk": false,
+    "loc_to_generate": 2
+   }
+  },
+  {
+   "problem_key": "mbpp/120",
+   "language": "python",
+   "seed": 967367662,
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `max_product_tuple` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to find the maximum absolute product between numbers in pairs of tuples within a given list.\nassert max_product_tuple([(2, 7), (2, 6), (1, 8), (4, 9)] )==36\n\"\"\"\n```"
+    }
+   ],
+   "message": null,
+   "problem": {
+    "problem_key": "mbpp/120",
+    "dataset": "mbppplus",
+    "level": "L1",
+    "language": "python",
+    "split": "dev",
+    "prompt_text": "\"\"\"\nWrite a function to find the maximum absolute product between numbers in pairs of tuples within a given list.\nassert max_product_tuple([(2, 7), (2, 6), (1, 8), (4, 9)] )==36\n\"\"\"\n",
+    "entry_point": "max_product_tuple",
+    "canonical_solution": "\ndef max_product_tuple(list1):\n    return max(abs(x * y) for x, y in list1)\n",
+    "test_ref": "Mbpp/120",
+    "contamination_risk": false,
+    "loc_to_generate": 2
+   }
+  }
+ ],
+ "codes": [
+  {
+   "id": "canonical:humaneval/0",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n\n\n    sorted_numbers = sorted(numbers)\n    for i in range(len(sorted_numbers) - 1):\n        if sorted_numbers[i + 1] - sorted_numbers[i] < threshold:\n            return True\n    return False\n\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `has_close_elements` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:humaneval/0",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n    numbers.sort()\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `has_close_elements` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:humaneval/1",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n\n\n    cnt, group, results = 0, \"\", []\n    for ch in paren_string:\n        if ch == \"(\": cnt += 1\n        if ch == \")\": cnt -= 1\n        if ch != \" \": group += ch\n        if cnt == 0:\n            if group != \"\": results.append(group)\n            group = \"\"\n    return results\n\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `separate_paren_groups` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:humaneval/1",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n    result = []\n    current_group = []\n    depth = 0\n\n    for char in paren_string.replace(' ', ''):\n        if char == '(':\n            depth += 1\n        if depth > 0:\n            current_group.append(char)\n        if char == ')':\n            depth -= 1\n            if depth == 0:\n                result.append(''.join(current_group))\n                current_group = []\n\n    return result\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `separate_paren_groups` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:humaneval/2",
+   "language": "python",
+   "code": "\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n\n    Return the decimal part of the number.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n\n\n    return number - int(number)\n\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `truncate_number` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n\n    Return the decimal part of the number.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:humaneval/2",
+   "language": "python",
+   "code": "from typing import *\nfrom collections import *\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n\n    Return the decimal part of the number.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n    return number - int(number)\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `truncate_number` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n\n    Return the decimal part of the number.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:humaneval/3",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations on a bank account that starts with\n    zero balance. Your task is to detect if at any point the balance of account fallls below zero, and\n    at that point function should return True. Otherwise it should return False.\n    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n\n    account = 0\n    for operation in operations:\n        account += operation\n        if account < 0:\n            return True\n    return False\n\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `below_zero` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations on a bank account that starts with\n    zero balance. Your task is to detect if at any point the balance of account fallls below zero, and\n    at that point function should return True. Otherwise it should return False.\n    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:humaneval/3",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations on a bank account that starts with\n    zero balance. Your task is to detect if at any point the balance of account fallls below zero, and\n    at that point function should return True. Otherwise it should return False.\n    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n    balance = 0\n    for operation in operations:\n        balance += operation\n        if balance < 0:\n            return True\n    return False\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `below_zero` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations on a bank account that starts with\n    zero balance. Your task is to detect if at any point the balance of account fallls below zero, and\n    at that point function should return True. Otherwise it should return False.\n    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:humaneval/4",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n\n    mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / len(numbers)\n\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `mean_absolute_deviation` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:humaneval/4",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n    mean = sum(numbers) / len(numbers)\n    mad = sum(abs(x - mean) for x in numbers) / len(numbers)\n    return mad\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `mean_absolute_deviation` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\nfrom typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:mbpp/103",
+   "language": "python",
+   "code": "\"\"\"\nWrite a function to find the Eulerian number a(n, m).\nassert eulerian_num(3, 1) == 4\n\"\"\"\n\ndef eulerian_num(n, m): \n\tif (m >= n or n == 0): \n\t\treturn 0 \n\tif (m == 0): \n\t\treturn 1 \n\treturn (n - m) * eulerian_num(n - 1, m - 1) + (m + 1) * eulerian_num(n - 1, m)\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `eulerian_num` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to find the Eulerian number a(n, m).\nassert eulerian_num(3, 1) == 4\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:mbpp/103",
+   "language": "python",
+   "code": "def eulerian_num(n, m):\n    # Base cases\n    if m >= n or n == 0:\n        return 0\n    if m == 0:\n        return 1\n\n    # Recursive relation\n    return ((n - m) * eulerian_num(n - 1, m - 1) + (m + 1) * eulerian_num(n - 1, m))\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `eulerian_num` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to find the Eulerian number a(n, m).\nassert eulerian_num(3, 1) == 4\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:mbpp/108",
+   "language": "python",
+   "code": "\"\"\"\nWrite a function to merge three lists into a single sorted list.\nassert merge_sorted_list([25, 24, 15, 4, 5, 29, 110],[19, 20, 11, 56, 25, 233, 154],[24, 26, 54, 48])==[4, 5, 11, 15, 19, 20, 24, 24, 25, 25, 26, 29, 48, 54, 56, 110, 154, 233]\n\"\"\"\n\nimport heapq\ndef merge_sorted_list(num1,num2,num3):\n  return sorted(num1 + num2 + num3)\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `merge_sorted_list` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to merge three lists into a single sorted list.\nassert merge_sorted_list([25, 24, 15, 4, 5, 29, 110],[19, 20, 11, 56, 25, 233, 154],[24, 26, 54, 48])==[4, 5, 11, 15, 19, 20, 24, 24, 25, 25, 26, 29, 48, 54, 56, 110, 154, 233]\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:mbpp/108",
+   "language": "python",
+   "code": "def merge_sorted_list(nums1, nums2, nums3):\n    # Concatenate the three lists\n    merged_list = nums1 + nums2 + nums3\n    # Sort the merged list\n    merged_list.sort()\n    return merged_list\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `merge_sorted_list` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to merge three lists into a single sorted list.\nassert merge_sorted_list([25, 24, 15, 4, 5, 29, 110],[19, 20, 11, 56, 25, 233, 154],[24, 26, 54, 48])==[4, 5, 11, 15, 19, 20, 24, 24, 25, 25, 26, 29, 48, 54, 56, 110, 154, 233]\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:mbpp/109",
+   "language": "python",
+   "code": "\"\"\"\nWrite a python function to find the number of numbers with an odd value when rotating a binary string the given number of times.\nassert odd_Equivalent(\"011001\",6) == 3\n\"\"\"\n\ndef odd_Equivalent(s,n): \n    count=0\n    for i in range(0,n): \n        if (s[i] == '1'): \n            count = count + 1\n    return count \n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `odd_Equivalent` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a python function to find the number of numbers with an odd value when rotating a binary string the given number of times.\nassert odd_Equivalent(\"011001\",6) == 3\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:mbpp/109",
+   "language": "python",
+   "code": "def odd_Equivalent(binary, n):\n    # Check if the binary string has an odd number of 1s\n    if binary.count('1') % 2 != 0:\n        return n\n    else:\n        return 0\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `odd_Equivalent` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a python function to find the number of numbers with an odd value when rotating a binary string the given number of times.\nassert odd_Equivalent(\"011001\",6) == 3\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:mbpp/118",
+   "language": "python",
+   "code": "\"\"\"\nWrite a function to convert a string to a list of strings split on the space character.\nassert string_to_list(\"python programming\")==['python','programming']\n\"\"\"\n\ndef string_to_list(string): \n    return string.split(\" \")\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `string_to_list` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to convert a string to a list of strings split on the space character.\nassert string_to_list(\"python programming\")==['python','programming']\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:mbpp/118",
+   "language": "python",
+   "code": "def string_to_list(string):\n    # Split the string by spaces and return the resulting list\n    return string.split(\" \")\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `string_to_list` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to convert a string to a list of strings split on the space character.\nassert string_to_list(\"python programming\")==['python','programming']\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "canonical:mbpp/120",
+   "language": "python",
+   "code": "\"\"\"\nWrite a function to find the maximum absolute product between numbers in pairs of tuples within a given list.\nassert max_product_tuple([(2, 7), (2, 6), (1, 8), (4, 9)] )==36\n\"\"\"\n\ndef max_product_tuple(list1):\n    return max(abs(x * y) for x, y in list1)\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `max_product_tuple` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to find the maximum absolute product between numbers in pairs of tuples within a given list.\nassert max_product_tuple([(2, 7), (2, 6), (1, 8), (4, 9)] )==36\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "baseline:mbpp/120",
+   "language": "python",
+   "code": "def max_product_tuple(test_list):\n    # Calculate the absolute product of each tuple pair\n    res = max([abs(x * y) for x, y in test_list])\n    return res\n",
+   "messages": [
+    {
+     "role": "system",
+     "content": "You are an expert software engineer.\nSolve the programming task you are given.\nReply with the complete solution in a single fenced code block in the requested programming language, without explanations.\nDo not include tests, example usage or a main function unless the task explicitly asks for a complete program."
+    },
+    {
+     "role": "user",
+     "content": "Complete the following Python code.\nKeep exactly the names and signatures given in the code (function, class and parameter names): the tests call `max_product_tuple` by name.\nReturn the complete code, including the given imports and declarations, in a single ```python code block.\n\n```python\n\"\"\"\nWrite a function to find the maximum absolute product between numbers in pairs of tuples within a given list.\nassert max_product_tuple([(2, 7), (2, 6), (1, 8), (4, 9)] )==36\n\"\"\"\n```"
+    }
+   ],
+   "message": null
+  },
+  {
+   "id": "nocontext:humaneval/0",
+   "language": "python",
+   "code": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n\n\n    sorted_numbers = sorted(numbers)\n    for i in range(len(sorted_numbers) - 1):\n        if sorted_numbers[i + 1] - sorted_numbers[i] < threshold:\n            return True\n    return False\n\n",
+   "messages": null,
+   "message": null
+  }
+ ]
+}

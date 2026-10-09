@@ -1131,3 +1131,228 @@ SLURM job 785751 (slurm_gpu), cells run in sequence:
 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/qwen25_coder_7b/ed50b87e6e09/L1_java_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None per_sample
 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/qwen25_coder_7b/ed50b87e6e09/L1_javascript_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None per_sample
 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/qwen25_coder_7b/ed50b87e6e09/L1_python_dev.parquet.manifest.json: {'OK': 576} {'n': 576, 'mean': 2.859, 'median': 3.0, 'min': 0.0, 'max': 13.0} per_sample
+##### oracle acw all: nodo tnode01, 
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/acw/inputs.json (10 prompts, 21 codes)
+<html><title>Error 400 (Bad Request)!!1</title></html>
+Failed to log in, please try again.
+srun: error: tnode01: task 0: Exited with exit code 1
+##### oracle acw all: nodo tnode01, 
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/acw/inputs.json (10 prompts, 21 codes)
+Your trial ends on 2026-10-10, update your payment method to continue using     
+Sourcery Code Quality - Team - https://app.sourcery.ai                          
+Successfully logged in!
+╭──────────────────────────────────── tip ─────────────────────────────────────╮
+│ Next steps:                                                                  │
+│                                                                              │
+│  • Run sourcery init to set up your repo with a config file.                 │
+│  • Run sourcery review . to scan the current directory for Sourcery issues.  │
+│  • Check out our docs to see how to set up Sourcery as a pre-commit hook or  │
+│    in CI                                                                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/acw/original.json: 10 embeddings, 30 detections, sourcery sourcery, version 1.33.0
+FF.                                                                      [100%]
+=================================== FAILURES ===================================
+____________________ test_embedding_matches_the_direct_path ____________________
+
+data = {'inputs': {'method': 'acw', 'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_b...n': 'sourcery, version 1.33.0', 'rules': [19, 40, 17, 33, 37, 20, ...], 'rules_k2': [43, 39, 12, 19, 38, 1, ...], ...}}
+adapter = <bench.methods.adapters.acw.AcwAdapter object at 0x15551a52f690>
+cfg = ExperimentConfig(global_seed=20261001, stage='watermark', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'], ...e, canonical_repeats=3, stderr_tail_chars=2000, evalplus=EvalPlusConfig(min_time_limit=1.0, gt_time_limit_factor=4.0)))
+tmp_path = PosixPath('/tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-0/test_embedding_matches_the_dir0')
+
+    def test_embedding_matches_the_direct_path(
+        data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+    ) -> None:
+        from bench_contracts import WorkerItem
+    
+        inputs, original = data["inputs"], data["original"]
+        request = adapter.build_request(
+            "embed",
+            cfg.models_catalog[inputs["model_id"]],
+            adapter.default_hparams(),
+            "k1",
+            {},
+            "",
+            tmp_path / "embed",
+            "cpu",
+        )
+        assert request.key == inputs["key"] and request.hparams == inputs["native_hparams"]
+        items = [
+            WorkerItem(
+                item_id=e["id"],
+                language="python",
+                seed=0,
+                prompt_messages=None,
+                code=e["code"],
+                context_prompt=None,
+                expected_message=None,
+                n=1,
+            )
+            for e in original["embed"]
+        ]
+>       run = adapter.run_worker(request, items)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/oracle/test_acw_oracle.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/bench/methods/base.py:172: in run_worker
+    return self.worker.run(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <bench.methods.worker_client.WorkerClient object at 0x15551c97a2d0>
+env_name = 'acw', method = 'acw'
+request = WorkerRequest(schema_version='1.0', op='embed', method='acw', model_id='qwen25_coder_7b', model_path='/mnt/beegfs/did_...pu', log_path='/tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-0/test_embedding_matches_the_dir0/embed/worker.log')
+items = [WorkerItem(item_id='baseline:humaneval/0', language='python', seed=0, prompt_messages=None, code='from typing import ...lerian_num(n - 1, m - 1) + (m + 1) * eulerian_num(n - 1, m))\n', context_prompt=None, expected_message=None, n=1), ...]
+source = MethodSource(pythonpath=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/build/patched/acw/source'), root=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/build/patched/acw'))
+secrets = ('SOURCERY_TOKEN',)
+
+    def run(
+        self,
+        env_name: str,
+        method: str,
+        request: WorkerRequest,
+        items: Sequence[WorkerItem],
+        source: MethodSource | None = None,
+        secrets: Sequence[str] = (),
+    ) -> WorkerRun:
+        """Esegue il worker su tutti gli item e restituisce i risultati verificati (I1)."""
+        items_path = Path(request.items_path)
+        items_path.parent.mkdir(parents=True, exist_ok=True)
+        write_jsonl(items_path, [it.to_dict() for it in items])
+        request_path = items_path.parent / "request.json"
+        request_path.write_text(
+            json.dumps(request.to_dict(), indent=2, sort_keys=True), encoding="utf-8"
+        )
+        cmd = [
+            str(self._python(env_name)),
+            "-m",
+            f"bench_shims.{method}",
+            "--request",
+            str(request_path),
+        ]
+        env = self.environment(source, secrets)
+        log_path = Path(request.log_path)
+        attempts = 0
+        for attempt in (1, 2):
+            attempts = attempt
+            code = self._launch(cmd, env, log_path, items_path.parent)
+            if code == 0:
+                break
+            if code in (EXIT_SETUP, EXIT_VERSION):
+>               raise WorkerError(
+                    f"{method} worker failed with exit code {code}:\n{self._tail(log_path)}"
+                )
+E               bench.domain.errors.WorkerError: acw worker failed with exit code 2:
+E               
+E               ===== 2026-10-09 11:28:53 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python -m bench_shims.acw --request /tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-0/test_embedding_matches_the_dir0/embed/request.json
+E               2026-10-09 11:29:08,381 ERROR bench_shims: setup failed:
+E               Traceback (most recent call last):
+E                 File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 167, in main
+E                   shim.setup(request)
+E                 File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 90, in setup
+E                   self._canary()
+E                 File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 112, in _canary
+E                   raise RuntimeError(
+E               RuntimeError: Sourcery did not modify the canary file: check login, token and network
+
+src/bench/methods/worker_client.py:202: WorkerError
+____________________ test_detection_matches_the_direct_path ____________________
+
+data = {'inputs': {'method': 'acw', 'model_id': 'qwen25_coder_7b', 'model_path': '/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_b...n': 'sourcery, version 1.33.0', 'rules': [19, 40, 17, 33, 37, 20, ...], 'rules_k2': [43, 39, 12, 19, 38, 1, ...], ...}}
+adapter = <bench.methods.adapters.acw.AcwAdapter object at 0x15551a52f690>
+cfg = ExperimentConfig(global_seed=20261001, stage='watermark', methods=['sweet', 'acw', 'stone', 'promptmark', 'mcgmark'], ...e, canonical_repeats=3, stderr_tail_chars=2000, evalplus=EvalPlusConfig(min_time_limit=1.0, gt_time_limit_factor=4.0)))
+tmp_path = PosixPath('/tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-0/test_detection_matches_the_dir0')
+
+    def test_detection_matches_the_direct_path(
+        data: dict[str, Any], adapter: MethodAdapter, cfg: ExperimentConfig, tmp_path: Path
+    ) -> None:
+        assert isinstance(adapter, Detector)
+        inputs, original = data["inputs"], data["original"]
+        detections = original["detections"]
+>       results = adapter.detect_codes(
+            [DetectInput(d["id"], "python", d["code"]) for d in detections],
+            adapter.default_hparams(),
+            cfg.models_catalog[inputs["model_id"]],
+            "k1",
+            {},
+            tmp_path / "detect",
+            "cpu",
+        )
+
+tests/oracle/test_acw_oracle.py:122: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/bench/methods/base.py:580: in detect_codes
+    for result in self.run_worker(request, items).results:
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/bench/methods/base.py:172: in run_worker
+    return self.worker.run(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <bench.methods.worker_client.WorkerClient object at 0x15551c97a2d0>
+env_name = 'acw', method = 'acw'
+request = WorkerRequest(schema_version='1.0', op='detect', method='acw', model_id='qwen25_coder_7b', model_path='/mnt/beegfs/did...u', log_path='/tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-0/test_detection_matches_the_dir0/detect/worker.log')
+items = [WorkerItem(item_id='marked:humaneval/0', language='python', seed=0, prompt_messages=None, code='from typing import Li...lerian_num(n - 1, m - 1) + (1 + m) * eulerian_num(n - 1, m))\n', context_prompt=None, expected_message=None, n=1), ...]
+source = MethodSource(pythonpath=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/build/patched/acw/source'), root=PosixPath('/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/build/patched/acw'))
+secrets = ('SOURCERY_TOKEN',)
+
+    def run(
+        self,
+        env_name: str,
+        method: str,
+        request: WorkerRequest,
+        items: Sequence[WorkerItem],
+        source: MethodSource | None = None,
+        secrets: Sequence[str] = (),
+    ) -> WorkerRun:
+        """Esegue il worker su tutti gli item e restituisce i risultati verificati (I1)."""
+        items_path = Path(request.items_path)
+        items_path.parent.mkdir(parents=True, exist_ok=True)
+        write_jsonl(items_path, [it.to_dict() for it in items])
+        request_path = items_path.parent / "request.json"
+        request_path.write_text(
+            json.dumps(request.to_dict(), indent=2, sort_keys=True), encoding="utf-8"
+        )
+        cmd = [
+            str(self._python(env_name)),
+            "-m",
+            f"bench_shims.{method}",
+            "--request",
+            str(request_path),
+        ]
+        env = self.environment(source, secrets)
+        log_path = Path(request.log_path)
+        attempts = 0
+        for attempt in (1, 2):
+            attempts = attempt
+            code = self._launch(cmd, env, log_path, items_path.parent)
+            if code == 0:
+                break
+            if code in (EXIT_SETUP, EXIT_VERSION):
+>               raise WorkerError(
+                    f"{method} worker failed with exit code {code}:\n{self._tail(log_path)}"
+                )
+E               bench.domain.errors.WorkerError: acw worker failed with exit code 2:
+E               
+E               ===== 2026-10-09 11:29:10 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python -m bench_shims.acw --request /tmp/pytest-of-i.cipriano1@studenti.unisa.it/pytest-0/test_detection_matches_the_dir0/detect/request.json
+E               2026-10-09 11:29:23,852 ERROR bench_shims: setup failed:
+E               Traceback (most recent call last):
+E                 File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 167, in main
+E                   shim.setup(request)
+E                 File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 90, in setup
+E                   self._canary()
+E                 File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 112, in _canary
+E                   raise RuntimeError(
+E               RuntimeError: Sourcery did not modify the canary file: check login, token and network
+
+src/bench/methods/worker_client.py:202: WorkerError
+==================================== PASSES ====================================
+______________________ test_order_key_and_sourcery_probe _______________________
+----------------------------- Captured stdout call -----------------------------
+
+sourcery sourcery, version 1.33.0; rules k1 = [19, 40, 17, 33, 37, 20, 27, 14, 1, 13, 15, 7, 42, 4, 31, 22, 28, 43, 45, 29, 41, 11, 34, 30, 35, 32, 2, 21, 26, 16, 23, 12, 18, 44, 25, 36, 8, 38, 9, 39, 24, 6, 3]
+rules k2 = [43, 39, 12, 19, 38, 1, 2, 30, 35, 44, 42, 16, 24, 13, 8, 14, 22, 33, 40, 32, 17, 6, 4, 20, 45, 21, 9, 29, 3, 23, 25, 41, 31, 37, 18, 26, 36, 27, 34, 15, 11, 28, 7]
+same set: True, same order: False, outputs differing between k1 and k2: 0/10
+sourcery calls in the direct path: 104, seconds per call: median 8.47, max 13.19
+probe: 30 consecutive calls, seconds first/median/last 8.53/8.43/8.42, return codes [0]
+messages mentioning limits: 0
+2 failed, 1 passed in 34.78s
+srun: error: tnode01: task 0: Exited with exit code 1
