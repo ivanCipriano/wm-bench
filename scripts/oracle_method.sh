@@ -45,6 +45,7 @@ ENV_SETUP="umask 002
 INPUTS="python tests/oracle/make_oracle_inputs.py $METHOD"
 TESTS="WMB_REQUIRE_DATA=1 python -m pytest -q -rs -rP -m oracle tests/oracle/test_${METHOD}_oracle.py"
 TIME_MIN=90
+PARTITION=(-p gpuq --qos did_tesi_nlp_330_gpuq_qos --gres=gpu:1 --mem 64G)
 GIT=(git -c "safe.directory=*")  # il clone può appartenere all'altro utente
 
 # Copia del submodule di MCGMark con le patch indicate (in ordine).
@@ -162,14 +163,32 @@ case "$METHOD" in
         fi
         TIME_MIN=180
         ;;
+    acw)
+        # Solo CPU, su defq (rete in uscita per Sourcery, cluster_info §6). Il token viene solo
+        # dall'ambiente dell'utente, mai da un file del repository.
+        if [ -z "${SOURCERY_TOKEN:-}" ]; then
+            echo "[ERROR] SOURCERY_TOKEN not set in this shell" >&2
+            exit 1
+        fi
+        if [ ! -f "$REPO_ROOT/build/patched/acw/source/refactor.py" ]; then
+            echo "[ERROR] build/patched/acw missing: run bash scripts/apply_patches.sh acw" >&2
+            exit 1
+        fi
+        ACW_BIN="$WMB/miniforge3/envs/acw/bin"
+        INPUTS="$INPUTS && $ACW_BIN/sourcery login --token \"\$SOURCERY_TOKEN\" > /dev/null"
+        ORIGINAL="PATH=$ACW_BIN:\$PATH PYTHONPATH=$REPO_ROOT/build/patched/acw/source $METHOD_PY"
+        ORIGINAL="$ORIGINAL tests/oracle/acw_original.py --inputs $FIX/inputs.json --out $FIX/original.json"
+        PARTITION=(-p defq --qos did_tesi_nlp_330_defq_qos --mem 32G)
+        TIME_MIN=120
+        ;;
     *) echo "no oracle for method '$METHOD' yet" >&2; exit 2 ;;
 esac
 
-srun -p gpuq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_gpuq_qos --gres=gpu:1 -c 8 --mem 64G -t "$TIME_MIN" \
+srun "${PARTITION[@]}" -A did_tesi_nlp_330 -c 8 -t "$TIME_MIN" \
     --job-name "wmb-oracle-$METHOD" bash -lc "
         set -uo pipefail
         $ENV_SETUP
-        echo \"##### oracle $METHOD ${MODE:-all}: nodo \$(hostname), \$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)\"
+        echo \"##### oracle $METHOD ${MODE:-all}: nodo \$(hostname), \$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1)\"
         ($INPUTS) || exit 1
         ($ORIGINAL) || exit 1
         $TESTS

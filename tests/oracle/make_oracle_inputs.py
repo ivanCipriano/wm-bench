@@ -38,7 +38,7 @@ MODEL = "qwen25_coder_7b"
 KEYS = [f"humaneval/{i}" for i in range(5)]
 # PromptMark: anche 5 problemi MBPP+ della parte di sviluppo, dove il modello sceglie tutti i nomi
 # (decisione dell'utente dell'8 ottobre 2026).
-EXTRA_MBPP = {"promptmark": 5}
+EXTRA_MBPP = {"promptmark": 5, "acw": 5}
 
 
 def main(argv: list[str]) -> int:
@@ -51,7 +51,8 @@ def main(argv: list[str]) -> int:
     adapter.worker = WorkerClient({}, Path("."), 1)  # serve solo per chiave e iperparametri
     hp = adapter.default_hparams()
     decoding = cfg.decoding["level1"].model_copy(update={"n": 1})
-    assert isinstance(adapter, PromptEmbedder)
+    # Metodi post-hoc (ACW): nessuna generazione, solo codici fissati e la seconda chiave.
+    embedder = adapter if isinstance(adapter, PromptEmbedder) else None
     model = cfg.models_catalog[MODEL]
     prompts, codes = [], []
     table = problems.reset_index()
@@ -62,11 +63,11 @@ def main(argv: list[str]) -> int:
         problem = Problem.model_validate({"problem_key": key, **problems.loc[key].to_dict()})
         messages = builder.build(problem)
         seed = (
-            adapter.sample_seed(model, problem, 0)
-            if adapter.one_sample_per_item
+            embedder.sample_seed(model, problem, 0)
+            if embedder is not None and embedder.one_sample_per_item
             else generation_seed(cfg.global_seed, MODEL, key, "python")
         )
-        message = adapter.expected_message(model, problem, 0)
+        message = embedder.expected_message(model, problem, 0) if embedder else None
         prompts.append(
             {
                 "problem_key": key,
@@ -113,6 +114,7 @@ def main(argv: list[str]) -> int:
         "model_id": MODEL,
         "model_path": str(model.path),
         "key": adapter.key("k1"),
+        "key_k2": adapter.key("k2"),
         "native_hparams": adapter.to_native_hparams(hp),
         "decoding": {**neutral_settings(decoding), "torch_dtype": model.dtype},
         "prompts": prompts,

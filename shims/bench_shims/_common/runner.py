@@ -79,30 +79,64 @@ def run(shim: ShimBase, request: WorkerRequest) -> int:
     done = _complete_items(request, items)
     todo = [it for it in items if it.item_id not in done]
     logger.info("%s %s: %d items, %d already done", shim.method, request.op, len(items), len(done))
-    for index, item in enumerate(todo, start=1):
-        expected = expected_results(request, item)
+    if request.op not in ("embed", "detect"):
+        raise ContractError(f"unknown op {request.op!r}")
+    size = max(1, int(getattr(shim, "batch_size", 1)))
+    done_count = 0
+    for begin in range(0, len(todo), size):
+        batch = todo[begin : begin + size]
         start = time.perf_counter()
-        try:
-            if request.op == "embed":
-                results = list(shim.embed(item))
-            elif request.op == "detect":
-                results = [shim.detect(item)]
-            else:
-                raise ContractError(f"unknown op {request.op!r}")
-            if len(results) != expected:
-                raise RuntimeError(f"{len(results)} results, expected {expected}")
-        except Exception:  # un item non deve fermare il worker (SPEC §8.2)
-            error = traceback.format_exc()
-            logger.error("item %s failed: %s", item.item_id, error.strip().splitlines()[-1])
-            results = ShimBase.failed(item, request.op, expected, error)
+        outputs = (
+            _run_batch(shim, request, batch) if size > 1 else [_run_one(shim, request, batch[0])]
+        )
         elapsed = time.perf_counter() - start
-        for result in results:
-            if not result.elapsed_s:
-                result.elapsed_s = elapsed / max(1, len(results))
-            append_jsonl(request.output_path, result.to_dict())
-        if index % 10 == 0 or index == len(todo):
-            logger.info("%d/%d items done", index, len(todo))
+        for results in outputs:
+            for result in results:
+                if not result.elapsed_s:
+                    result.elapsed_s = elapsed / max(1, len(batch) * len(results))
+                append_jsonl(request.output_path, result.to_dict())
+        before, done_count = done_count, done_count + len(batch)
+        if done_count // 10 > before // 10 or done_count == len(todo):
+            logger.info("%d/%d items done", done_count, len(todo))
     return EXIT_OK
+
+
+def _run_one(shim: ShimBase, request: WorkerRequest, item: WorkerItem) -> List[WorkerResult]:
+    """Un item; un'eccezione dà risultati ``FAILED`` senza fermare il worker (SPEC §8.2)."""
+    expected = expected_results(request, item)
+    try:
+        results = list(shim.embed(item)) if request.op == "embed" else [shim.detect(item)]
+        if len(results) != expected:
+            raise RuntimeError(f"{len(results)} results, expected {expected}")
+    except Exception:
+        error = traceback.format_exc()
+        logger.error("item %s failed: %s", item.item_id, error.strip().splitlines()[-1])
+        results = ShimBase.failed(item, request.op, expected, error)
+    return results
+
+
+def _run_batch(
+    shim: ShimBase, request: WorkerRequest, batch: List[WorkerItem]
+) -> List[List[WorkerResult]]:
+    """Un lotto; un'eccezione dà risultati ``FAILED`` per tutti gli item del lotto."""
+    try:
+        if request.op == "embed":
+            outputs = [list(r) for r in shim.embed_batch(batch)]
+        else:
+            outputs = [[r] for r in shim.detect_batch(batch)]
+        if len(outputs) != len(batch):
+            raise RuntimeError(f"{len(outputs)} item results, expected {len(batch)}")
+        for item, results in zip(batch, outputs):
+            if len(results) != expected_results(request, item):
+                raise RuntimeError(f"item {item.item_id}: {len(results)} results")
+    except Exception:
+        error = traceback.format_exc()
+        logger.error("batch of %d failed: %s", len(batch), error.strip().splitlines()[-1])
+        outputs = [
+            ShimBase.failed(item, request.op, expected_results(request, item), error)
+            for item in batch
+        ]
+    return outputs
 
 
 def main(shim_cls: Type[ShimBase], argv: Optional[Sequence[str]] = None) -> int:

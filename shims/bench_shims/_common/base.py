@@ -17,6 +17,9 @@ class ShimBase:
     """
 
     method = ""
+    # Item elaborati insieme dal runner (es. ACW: Sourcery lavora su cartelle e ogni chiamata
+    # costa secondi). Con 1 il runner chiama ``embed``/``detect`` item per item.
+    batch_size = 1
 
     def setup(self, request: WorkerRequest) -> None:
         """Carica modello, tokenizer e risorse; un errore qui è fatale (exit code 2)."""
@@ -29,6 +32,14 @@ class ShimBase:
     def detect(self, item: WorkerItem) -> WorkerResult:
         """Calcola il punteggio di rilevazione."""
         raise NotImplementedError(f"{self.method}: detect not supported")
+
+    def embed_batch(self, items: List[WorkerItem]) -> List[List[WorkerResult]]:
+        """Inserimento di un lotto (una lista di risultati per item, nello stesso ordine)."""
+        return [self.embed(item) for item in items]
+
+    def detect_batch(self, items: List[WorkerItem]) -> List[WorkerResult]:
+        """Rilevazione di un lotto (un risultato per item, nello stesso ordine)."""
+        return [self.detect(item) for item in items]
 
     # ------------------------------------------------------------------ utilità
     @staticmethod

@@ -5,3 +5,8 @@ family: post_hoc
 submodule: third_party/ACW
 patched_dir: build/patched/acw
 worker_timeout_s: 18000        # 5 h: sotto il limite di 7 h delle partizioni GPU (cluster_info §1)
+# Audit (docs/audit/acw.md): codice in source/ (import assoluti), solo Python (D6). Default fino
+# all'HPO = tutte le 43 regole (paper n = |T|, CLI del codice); griglia M8: {10, 20, 30, 43}.
+patched_subdir: source
+supported_languages: [python]
+default_hparams: {num_transforms: 43}

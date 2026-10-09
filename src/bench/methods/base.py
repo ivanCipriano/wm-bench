@@ -436,6 +436,111 @@ class DetectInput:
     expected_message: str | None = None
 
 
+class CodeEmbedder(MethodAdapter):
+    """Metodi post-hoc che marcano codice esistente (SPEC §7.2; ACW).
+
+    L'input sono i campioni della baseline (§9.2): un item per campione, con il codice estratto;
+    l'output è un campione ``llm_watermarked`` per ogni campione della baseline, con ``parent_id``
+    uguale al campione di partenza.
+    """
+
+    def embed_from_code(
+        self,
+        samples: Sequence[CodeSample],
+        hp: dict[str, Any],
+        model: ModelSpec,
+        key_id: str,
+        run_dir: Path,
+        device: str = "cpu",
+    ) -> EmbedRun:
+        """Un campione marcato per campione della baseline; ``NOT_APPLICABLE`` senza worker per i
+        linguaggi non supportati."""
+        native = self.to_native_hparams(hp)
+        cfg_hash = self.config_hash(hp)
+        supported = [s for s in samples if self.supports(s.language)]
+        results: dict[str, WorkerResult] = {}
+        worker_run: WorkerRun | None = None
+        request_dict: dict[str, Any] | None = None
+        if supported:
+            request = self.build_request(WorkerOp.EMBED, model, hp, key_id, {}, "", run_dir, device)
+            request_dict = request.to_dict()
+            items = [
+                WorkerItem(
+                    item_id=s.sample_id,
+                    language=str(s.language),
+                    seed=int(s.seed or 0),
+                    prompt_messages=None,
+                    code=s.code,
+                    context_prompt=None,
+                    expected_message=None,
+                    n=1,
+                )
+                for s in supported
+            ]
+            worker_run = self.run_worker(request, items)
+            results = {r.item_id: r for r in worker_run.results}
+        out: list[CodeSample] = []
+        metrics: list[dict[str, Any]] = []
+        for parent in samples:
+            found = results.get(parent.sample_id)
+            status = EmbedStatus.NOT_APPLICABLE if found is None else found.status
+            code = (found.code or "") if found is not None and status == EmbedStatus.OK else ""
+            metrics.append(self.embed_metrics(found))
+            out.append(
+                CodeSample(
+                    sample_id=sample_id(
+                        source=Source.LLM_WATERMARKED,
+                        problem_key=parent.problem_key,
+                        language=parent.language,
+                        model_id=parent.model_id,
+                        method=self.name,
+                        config_hash=cfg_hash,
+                        key_id=key_id,
+                        sample_index=parent.sample_index,
+                        parent_id=parent.sample_id,
+                    ),
+                    problem_key=parent.problem_key,
+                    dataset=parent.dataset,
+                    language=parent.language,
+                    level=parent.level,
+                    split=parent.split,
+                    source=Source.LLM_WATERMARKED,
+                    model_id=parent.model_id,
+                    method=self.name,
+                    config_hash=cfg_hash,
+                    key_id=key_id,
+                    sample_index=parent.sample_index,
+                    seed=parent.seed,
+                    raw_output=None,
+                    code=code,
+                    extraction_ok=parent.extraction_ok,
+                    embed_status=status,
+                    expected_message=None,
+                    parent_id=parent.sample_id,
+                    attack_id=None,
+                    attack_params_hash=None,
+                    attack_status=None,
+                    contamination_risk=parent.contamination_risk,
+                )
+            )
+        return EmbedRun(
+            samples=out,
+            worker=worker_run,
+            native_hparams=native,
+            request=request_dict,
+            metrics=metrics,
+        )
+
+    def embed_metrics(self, result: WorkerResult | None) -> dict[str, Any]:
+        """Valori di ``EMBED_COLUMNS`` dal risultato del worker (``None`` se non misurati)."""
+        extra = result.extra if result is not None else {}
+        return {name: extra.get(name) for name in EMBED_COLUMNS}
+
+    def seed_scheme(self) -> str:
+        """Nessuna generazione: il seme è quello del campione della baseline."""
+        return "baseline"
+
+
 class Detector(MethodAdapter):
     """Metodi con rilevazione (tutti): un punteggio per codice, più alto = più marcato."""
 

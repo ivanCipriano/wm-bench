@@ -188,3 +188,51 @@ def test_mcgmark_twin_baseline(cfg: ExperimentConfig, tmp_path: Path) -> None:
     sweet = SweetAdapter(cfg.methods_catalog["sweet"], cfg, echo_client())
     with pytest.raises(ConfigError, match="twin"):
         sweet.embed_from_prompts(*args, tmp_path / "s", "cpu", watermark=False)
+
+
+def test_acw_hparams_and_post_hoc_embedding(cfg: ExperimentConfig, tmp_path: Path) -> None:
+    from bench.domain.models import CodeSample
+    from bench.methods.adapters.acw import AcwAdapter
+
+    client = echo_client()
+    a = AcwAdapter(cfg.methods_catalog["acw"], cfg, client)
+    hp = a.default_hparams()
+    assert hp == {"num_transforms": 43}
+    assert a.to_native_hparams(hp) == {"num_transforms": 43, "random_rules": True}
+    with pytest.raises(ConfigError, match="num_transforms"):
+        a.to_native_hparams({"num_transforms": 44})
+    assert a.secrets == ("SOURCERY_TOKEN",) and not a.gpu_for_embed and not a.gpu_for_detect
+    assert a.supports("python") and not a.supports("java")
+    assert a.source().pythonpath == a.source().root / "source"
+
+    def parent(key: str, lang: Language, index: int) -> CodeSample:
+        base: dict[str, Any] = dict.fromkeys(CodeSample.model_fields)
+        base.update(
+            sample_id=f"{key}-{lang}-{index}",
+            problem_key=key,
+            dataset="humanevalplus",
+            language=lang,
+            level="L1",
+            split="dev",
+            source="llm_baseline",
+            model_id="qwen25_coder_7b",
+            sample_index=index,
+            seed=7,
+            code="def f():\n    return 1\n",
+            extraction_ok=True,
+            contamination_risk=False,
+        )
+        return CodeSample.model_validate(base)
+
+    parents = [parent("humaneval/0", Language.PYTHON, i) for i in range(2)]
+    parents.append(parent("humaneval/0", Language.JAVA, 0))
+    model = cfg.models_catalog["qwen25_coder_7b"]
+    run = a.embed_from_code(parents, hp, model, "k1", tmp_path)
+    assert [it.item_id for it in client.last_items] == [
+        "humaneval/0-python-0",
+        "humaneval/0-python-1",
+    ]
+    assert [s.embed_status for s in run.samples] == ["OK", "OK", "NOT_APPLICABLE"]
+    assert [s.parent_id for s in run.samples] == [p.sample_id for p in parents]
+    assert all(s.source == "llm_watermarked" and s.method == "acw" for s in run.samples)
+    assert len({s.sample_id for s in run.samples}) == 3 and len(run.metrics) == 3

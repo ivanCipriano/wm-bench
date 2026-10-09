@@ -37,10 +37,10 @@ from bench.domain.errors import ConfigError
 from bench.domain.models import CodeSample, Problem
 from bench.generation.decoding import neutral_settings
 from bench.generation.prompt_builder import PromptBuilder
-from bench.methods.base import EMBED_COLUMNS, MethodAdapter, PromptEmbedder
+from bench.methods.base import EMBED_COLUMNS, CodeEmbedder, MethodAdapter, PromptEmbedder
 from bench.methods.worker_client import WorkerClient
 from bench.pipeline.stage import Cell, Stage, StageContext
-from bench.pipeline.stages.generate_baseline import decoding_for, problems_ref
+from bench.pipeline.stages.generate_baseline import baseline_ref, decoding_for, problems_ref
 from bench.registry import METHODS, STAGES
 from bench.store.hashing import sha256_json
 from bench.store.refs import ArtifactRef
@@ -159,8 +159,11 @@ class WatermarkStage(Stage):
         return adapter.config_hash(adapter.default_hparams())
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
-        _, _, level, language, _ = self._require(cell)
-        return [problems_ref(level, language)]
+        method, model_id, level, language, split = self._require(cell)
+        refs = [problems_ref(level, language)]
+        if isinstance(self.adapter(method), CodeEmbedder):  # post-hoc: parte dalla baseline
+            refs.append(baseline_ref(model_id, level, language, split))
+        return refs
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
@@ -171,6 +174,9 @@ class WatermarkStage(Stage):
         cfg = self._cfg()
         method, model_id, level, language, split = self._require(cell)
         adapter = self.adapter(method)
+        if isinstance(adapter, CodeEmbedder) and self.watermark:
+            self._run_post_hoc(cell, ctx, adapter)
+            return
         if not isinstance(adapter, PromptEmbedder):
             raise ConfigError(f"{method} does not embed from prompts (stage watermark)")
         if not self.watermark and not adapter.twin_baseline:
@@ -229,6 +235,54 @@ class WatermarkStage(Stage):
             result,
             introspect,
             prompts,
+            adapter.seed_scheme(),
+        )
+
+    def _run_post_hoc(self, cell: Cell, ctx: StageContext, adapter: CodeEmbedder) -> None:
+        """Metodi post-hoc (ACW, SPEC §9.2): un campione marcato per campione della baseline."""
+        cfg = self._cfg()
+        method, model_id, level, language, split = self._require(cell)
+        model = cfg.models_catalog[model_id]
+        hp = adapter.default_hparams()
+        cfg_hash = adapter.config_hash(hp)
+        table = ctx.store.read_table(problems_ref(level, language))
+        table = table[table["split"] == split]
+        problems = sorted(
+            (Problem.model_validate(r) for r in table.to_dict(orient="records")),
+            key=lambda p: p.problem_key,
+        )
+        baseline = ctx.store.read_table(baseline_ref(model_id, level, language, split))
+        parents = sorted(
+            (CodeSample.model_validate(r) for r in baseline.to_dict(orient="records")),
+            key=lambda s: (s.problem_key, s.sample_index or 0),
+        )
+        run_dir = (
+            ctx.store.root / "_runs" / "watermark" / method / model_id / cfg_hash
+            / f"{level}_{language}_{split}"
+        )  # fmt: skip
+        supported = adapter.supports(language)
+        logger.info(
+            "%s: %d baseline samples, method %s %s (config %s)",
+            cell.key(),
+            len(parents),
+            method,
+            "supported" if supported else "NOT_APPLICABLE",
+            cfg_hash,
+        )
+        result = adapter.embed_from_code(parents, hp, model, KEY_ID, run_dir)
+        introspect = adapter.introspect() if supported else {}
+        n = len(parents) // max(1, len(problems))
+        self._write(
+            ctx,
+            cell,
+            problems,
+            result.samples,
+            n,
+            hp,
+            cfg_hash,
+            result,
+            introspect,
+            PromptBuilder.from_config(cfg.prompt),
             adapter.seed_scheme(),
         )
 

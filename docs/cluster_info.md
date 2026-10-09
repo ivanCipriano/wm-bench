@@ -308,7 +308,7 @@ Vincolo dell'utente: nessuna fuga di informazione tra sviluppo e test.
 | # | Voce | Bloccante per |
 |---|---|---|
 | 1 | Selezione dei 250 problemi CodeNet ed estrazione selettiva di `data/` | Milestone 9 |
-| 2 | Motivazioni delle modifiche preesistenti ad ACW (`source/refactor.py`). MCGMark (`Watermark/watermark_global.py`): **chiuso** (audit di MCGMark §3.2, `patches/mcgmark/README.md`) | Milestone 6 (audit) |
+| 2 | Motivazioni delle modifiche preesistenti ad ACW e MCGMark: **chiuso** (audit di ACW §1.1, audit di MCGMark §3.2) | Milestone 6 (audit) |
 | 3 | Ricalcolare l'integrazione dei negativi di sviluppo sulla distribuzione combinata L1+L2, quando si aggiungono le sottomissioni CodeNet di sviluppo (decisione dell'utente del 3 ottobre 2026, ADR-004) | Milestone 9 |
 | 4 | Gli shim dei metodi in generazione devono usare la stessa configurazione di decoding neutra della baseline (`bench.generation.decoding.neutral_settings`: top_k disattivato, repetition_penalty 1.0, no_repeat_ngram_size 0, campionamento attivo, `generation_config.json` dei modelli ignorati; decisione dell'utente del 3 ottobre 2026, ADR-006) e lo stesso seme per problema | Milestone 5 e 6 |
 | 5 | Durante gli audit di SWEET e MCGMark verificare se i loro processor di logit gestiscono correttamente più sequenze per volta, e applicare a tutti i metodi che modificano i logit il test di equivalenza per riga usato per STONE (`tests/oracle/stone_rowwise.py`; decisione dell'utente del 5 ottobre 2026) | Milestone 6 |
@@ -326,3 +326,6 @@ Vincolo dell'utente: nessuna fuga di informazione tra sviluppo e test.
 | 17 | PromptMark su CodeNet: gli esempi di input/output del testo coincidono in gran parte con i test di valutazione, quindi il ciclo di correttezza ottimizzerebbe sui test di Pass@1; proporre alternative (ciclo disattivato su L2, oppure Pass@1 di PromptMark su L2 con avvertenza) (decisione dell'utente del 7 ottobre 2026) | Milestone 9 |
 | 18 | PromptMark genera un campione alla volta con seme per campione: CodeBLEU e ΔPPL contro la baseline a livello di problema, come MCGMark (TODO 9) | Milestone 12 |
 | 19 | Nel riepilogo della M7 ricordare che PromptMark con i modelli di 7B non inserisce il watermark su L1 (oracle: 0/10, anche a temperatura 1,0; iniziali verdi come la baseline; 0-7 identificatori liberi per campione; audit di PromptMark §10): AUROC vicina a 0,5 e TPR basso sono un risultato, non un errore | Milestone 7 |
+| 20 | ACW: punteggio discreto (frazione delle 43 regole invariate); applicare la calibrazione di SPEC §13.2 e, se la soglia all'1% di FPR non è raggiungibile (troppi negativi umani con punteggio pieno), riportarlo esplicitamente invece di forzare una soglia (decisione dell'utente del 9 ottobre 2026) | Milestone 7 |
+| 21 | ACW: se l'HPO sceglie 43 regole, T3.1 è `NOT_APPLICABLE` ("senza sottoinsieme scelto dalla chiave la seconda chiave non produce un watermark diverso") (decisione dell'utente del 9 ottobre 2026) | Milestone 11 |
+| 22 | ACW: con n = \|T\| la verifica è "cieca" (nessun segreto, chiunque conosca le regole può verificare, togliere o falsificare il watermark); dichiararlo nella tesi | Milestone 15 |

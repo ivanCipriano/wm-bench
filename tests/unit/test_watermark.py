@@ -248,3 +248,38 @@ def test_watermark_rows_carry_embed_columns(facade: BenchmarkFacade) -> None:
     manifest = facade.store.read_manifest(ref)
     assert manifest is not None and manifest.extra["embed_success_rate"] == 1.0
     assert manifest.extra["n_sites"] is None
+
+
+def test_post_hoc_stage_marks_the_baseline(
+    cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """ACW (CodeEmbedder): un campione marcato per campione della baseline, parent_id, I1."""
+    import bench.pipeline.stages.generate_baseline as gb
+    from tests.unit.test_generate_baseline import FakeBackend
+
+    build_tiny_datasets(cfg.paths.datasets)
+    tcfg = tiny_config(cfg)
+    BenchmarkFacade(tcfg).run_stage("prepare_data")
+    tcfg = rebuild(tcfg, methods=["acw"], models=[MODEL], languages=["python"], splits=["dev"])
+    FakeBackend.calls = []
+    FakeBackend.fail_after = None
+    monkeypatch.setattr(gb, "BACKEND_FACTORY", FakeBackend)
+    monkeypatch.setattr(wm, "WORKER_FACTORY", echo_client)
+    facade = BenchmarkFacade(tcfg)
+    facade.run_stage("generate_baseline")
+    report = facade.run_stage("watermark")
+    assert report.ran == 1
+    stage = wm.WatermarkStage(facade.cfg)
+    assert any(
+        r.kind == "baseline"
+        for r in stage.inputs(next(iter(CellPlanner(facade.cfg).cells_for(wm.WatermarkStage))))
+    )
+    ref = wm.watermarked_ref("acw", MODEL, stage.config_hash("acw"), "L1", "python", "dev")
+    marked = facade.store.read_table(ref)
+    baseline = facade.store.read_table(gb.baseline_ref(MODEL, "L1", "python", "dev"))
+    assert len(marked) == len(baseline)  # I1
+    assert set(marked["parent_id"]) == set(baseline["sample_id"])
+    assert set(marked["source"]) == {"llm_watermarked"} and set(marked["method"]) == {"acw"}
+    manifest = facade.store.read_manifest(ref)
+    assert manifest is not None and manifest.extra["seed_scheme"] == "baseline"
+    assert manifest.n_rows_expected == manifest.n_rows_out
