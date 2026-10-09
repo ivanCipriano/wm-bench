@@ -207,6 +207,10 @@
   dell'utente: si procede con il protocollo comune; il limite di PromptMark su L1 con modelli di 7B va
   nell'audit e nella tesi. In `mbpp/108` l'esempio del prompt fallisce a ogni iterazione (4 ripetizioni per
   correttezza): il ciclo restituisce la prima iterazione, come il codice.
+- **Generazione di L1 dev (9 ottobre 2026):** 576 campioni Python `OK` per modello (il ciclo restituisce sempre
+  una candidata), 144 `NOT_APPLICABLE` per Java, C++ e JavaScript; `seed_scheme: per_sample`. Siti idonei
+  (identificatori liberi) per campione: Qwen media 2,86, mediana 3, 0-13; DeepSeek media 2,22, mediana 2, 0-9.
+  Il tasso di watermark effettivamente inserito si misura in M7 con la rilevazione.
 
 ## 11. Decoding, semi e costo
 
