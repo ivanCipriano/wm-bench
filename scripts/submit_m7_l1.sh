@@ -18,6 +18,8 @@ METHOD="${2:?$USAGE}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 umask 002
+WMB="${WMB:-/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench}"
+export PATH="$WMB/bench-core/bin:$PATH"  # bench-core anche in una shell nuova
 
 case "$METHOD" in
     sweet) LANGS="[python,java,cpp,javascript]" ;;
