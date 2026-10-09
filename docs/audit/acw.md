@@ -111,7 +111,8 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
 - **Chiave e ordine con 43 regole:** il seme non sceglie più nulla ma mescola l'ordine
   (`random_rules=True`). Le regole Sourcery si applicano comunque tutte in una chiamata, quindi l'ordine conta
   solo fra le regole proprie 36-45. L'oracle confronta il codice marcato con la chiave k1 e con la k2
-  (stesse regole, ordine diverso): _in attesa dell'oracle_.
+  (stesse regole, ordine diverso). Primo oracle: **0 codici diversi su 10**; con tutte le 43 regole la
+  chiave non cambia il risultato su questi codici.
 - **Verifica "cieca":** con n = |T| non c'è nessun segreto: chiunque conosca le regole (pubbliche nel
   repository) può verificare il watermark, e anche toglierlo o falsificarlo applicandole. Va dichiarato
   nella tesi.
@@ -135,8 +136,10 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
   degli shim, `ShimBase.batch_size`) invece che file per file.
 - **Limiti di Sourcery:** la documentazione attuale non descrive più la CLI (l'ultima versione su PyPI è la
   1.46.0, settembre 2026; l'ambiente ha la 1.33.0, gennaio 2025) e non indica limiti di frequenza o di volume.
-  L'oracle fa una prova di 30 chiamate consecutive cronometrate, registrando codici di uscita e messaggi:
-  _in attesa dell'oracle_. Se emergono limiti, prima di lanciare L1 si propone una strategia (lotti più
+  L'oracle fa una prova di 30 chiamate consecutive cronometrate, registrando codici di uscita e messaggi.
+  Primo oracle (9 ottobre 2026, `tnode01`): 30 chiamate, tutte con codice 0, 8,4 secondi l'una dalla prima
+  all'ultima, nessun messaggio su limiti o quote; 104 chiamate nel percorso diretto, mediana 8,5 s. Nessun
+  limite osservato. Se emergono limiti, prima di lanciare L1 si propone una strategia (lotti più
   grandi, pause, cache dei risultati per codice già visto).
 - **Stima delle chiamate** (lotti di 50; 36 chiamate per lotto in inserimento e altrettante in rilevazione,
   cioè 0,72 per campione e per operazione):
@@ -145,11 +148,20 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
     2.200-2.500 chiamate;
   - HPO (M8), 4 valori di `num_transforms`: inserimento e rilevazione per ciascuno, al più circa 13.000
     chiamate (meno per i sottoinsiemi piccoli, che hanno meno regole Sourcery).
+- **Tempo:** con 8,5 s a chiamata, l'inserimento di L1 dev richiede circa 2 ore, la rilevazione della M7
+  circa 6, l'HPO fino a circa 31: se il tempo di una chiamata dipende poco dal numero di file (prova a 10
+  file), conviene un lotto più grande; il secondo oracle misura una chiamata su 30 file.
+- **Regole che modificano codice** nel primo oracle (20 codici di baseline e umani, applicate da sole): 11,
+  15, 16, 23, 35 (Sourcery), 36-38 (riordino), 40, 44 (autopep8), 45 (tabulazioni, 19 codici su 20). La
+  regola 45 domina: quasi ogni codice umano indentato con spazi cambia, il che separa codice marcato e umano
+  ma rende il watermark fragile a una semplice riformattazione.
 - Il numero di chiamate a Sourcery per campione è registrato in `extra` (`sourcery_calls_batch`,
   `sourcery_calls_per_sample`) come misura di efficienza.
-- **Controllo di partenza:** login con il token e file canarino che la regola 1 deve modificare; se
-  Sourcery non lo modifica il worker si ferma (errore di setup) invece di produrre campioni senza le regole
-  1-35. Il `PATH` del worker include la cartella dell'interprete dell'ambiente `acw`, dove stanno `sourcery` e
+- **Controllo di partenza:** login con il token e tre file canarino (casi tipici delle regole Sourcery 11,
+  4 e 7, in una sola chiamata); se Sourcery non ne modifica nessuno il worker si ferma (errore di setup)
+  invece di produrre campioni senza le regole 1-35. Il primo oracle usava la regola 1 e si è fermato: quella
+  regola non ha mai trovato nulla da fare, neanche nel percorso diretto ("No issues detected"), quindi il
+  canarino era sbagliato, non Sourcery. Il `PATH` del worker include la cartella dell'interprete dell'ambiente `acw`, dove stanno `sourcery` e
   `autopep8` (il codice li chiama dalla shell).
 - `random.seed` globale, cartelle temporanee e file `.sourcery_temp_*.yaml` nella directory corrente: lo shim
   lavora in una cartella dedicata.

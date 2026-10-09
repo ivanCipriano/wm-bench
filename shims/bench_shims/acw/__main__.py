@@ -44,8 +44,20 @@ from bench_shims._common.runner import main
 BATCH_SIZE = 50
 THREADS = 5  # thread delle regole proprie (``batch`` del codice, default 5)
 SOURCERY_RULES = range(1, 36)
-CANARY = "def canary(value):\n    if value:\n        return 1\n    else:\n        return 2\n"
-CANARY_RULE = 1  # remove-unnecessary-else
+# File canarino per il controllo di partenza: casi tipici di tre regole Sourcery (la 11 ha
+# modificato codice anche nell'oracle); basta che uno cambi. ``remove-unnecessary-else`` (1) non
+# si usa: nell'oracle non ha mai trovato nulla da fare, neanche nel percorso diretto.
+CANARIES = {
+    11: "def canary(value):\n    result = value + 1\n    return result\n",  # inline-...-variable
+    4: (  # list-comprehension
+        "def canary(items):\n    result = []\n    for item in items:\n"
+        "        result.append(item * 2)\n    return result\n"
+    ),
+    7: (  # sum-comprehension
+        "def canary(items):\n    total = 0\n    for item in items:\n"
+        "        total += item\n    return total\n"
+    ),
+}
 
 
 def file_hash(path: str) -> str:
@@ -103,15 +115,20 @@ class AcwShim(ShimBase):
     def _canary(self) -> None:
         folder = tempfile.mkdtemp(prefix="canary_", dir=self.workdir)
         try:
-            path = os.path.join(folder, "canary.py")
-            with open(path, "w", encoding="utf-8") as handle:
-                handle.write(CANARY)
-            self._apply(folder, [CANARY_RULE])
-            with open(path, encoding="utf-8") as handle:
-                if handle.read() == CANARY:
-                    raise RuntimeError(
-                        "Sourcery did not modify the canary file: check login, token and network"
-                    )
+            for rule, code in CANARIES.items():
+                with open(os.path.join(folder, f"canary_{rule}.py"), "w", encoding="utf-8") as h:
+                    h.write(code)
+            self._apply(folder, list(CANARIES))  # una sola chiamata a Sourcery
+            modified = []
+            for rule, code in CANARIES.items():
+                with open(os.path.join(folder, f"canary_{rule}.py"), encoding="utf-8") as h:
+                    if h.read() != code:
+                        modified.append(rule)
+            if not modified:
+                raise RuntimeError(
+                    "Sourcery did not modify any canary file: check login, token and network"
+                )
+            self.canary_rules = modified
         finally:
             shutil.rmtree(folder, ignore_errors=True)
 
