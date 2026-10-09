@@ -205,3 +205,26 @@ def test_cell_weight_counts_samples(cfg: ExperimentConfig) -> None:
     assert cell_weight(cfg, Cell(model_id="m", level="L1", language="java", split="test")) == 7 * n
     assert cell_weight(cfg, Cell(source="canonical", level="L1", language="java")) == 10
     assert cell_weight(cfg, Cell(source="canonical", level="L1", language="cpp")) == 1  # ignoto
+
+
+def test_jobs_of_different_methods_do_not_conflict(monkeypatch: pytest.MonkeyPatch) -> None:
+    """``wmb-detect.sweet`` e ``wmb-detect.stone`` lavorano su celle disgiunte."""
+    import bench.pipeline.submit as sub
+
+    assert sub.job_name("detect", (1, 1), ["stone", "sweet"]) == "wmb-detect.stone+sweet"
+    assert sub.job_name("detect", (2, 2), ["sweet"]) == "wmb-detect.sweet-s2of2"
+    rows = [("1", "x", "RUNNING", "wmb-detect.sweet+stone"), ("2", "x", "PENDING", "wmb-execute")]
+    monkeypatch.setattr(sub, "queued_jobs", lambda account: rows)
+    assert sub.conflicting_jobs("detect", (1, 1), "acc", ["mcgmark"]) == []
+    assert len(sub.conflicting_jobs("detect", (1, 1), "acc", ["stone"])) == 1
+    assert len(sub.conflicting_jobs("detect", (1, 1), "acc", None)) == 1  # tutti i metodi
+    # Un job senza metodi nel nome (vecchio formato) conta come se li avesse tutti.
+    assert len(sub.conflicting_jobs("execute", (1, 1), "acc", ["mcgmark"])) == 1
+
+
+def test_job_name_carries_the_methods_only_for_method_stages(cfg: ExperimentConfig) -> None:
+    c = rebuild(cfg, methods=["sweet"])
+    detect = submit(c, "detect", PROFILES, dry_run=True)
+    assert {j.params["name"] for j in detect} == {"wmb-detect.sweet"}
+    baseline = submit(c, "generate_baseline", PROFILES, dry_run=True)
+    assert {j.params["name"] for j in baseline} == {"wmb-generate_baseline"}

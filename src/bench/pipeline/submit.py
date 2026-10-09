@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import logging
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -231,10 +232,24 @@ def parse_share(text: str) -> tuple[int, int]:
     return int(head), int(tail)
 
 
-def job_name(stage: str, share: tuple[int, int] = (1, 1)) -> str:
-    """Nome dei job SLURM di una fase (con la quota, se le quote sono più di una)."""
+def job_name(
+    stage: str, share: tuple[int, int] = (1, 1), methods: Sequence[str] | None = None
+) -> str:
+    """Nome dei job SLURM di una fase: ``wmb-<fase>[.<metodi>][-s<k>of<m>]``.
+
+    I metodi (separati da ``+``) compaiono solo per le fasi con l'asse ``method``: job di metodi
+    diversi lavorano su celle disgiunte e possono girare insieme (``conflicting_jobs``).
+    """
     k, m = share
-    return f"wmb-{stage}" if m == 1 else f"wmb-{stage}-s{k}of{m}"
+    tag = f".{'+'.join(sorted(methods))}" if methods else ""
+    return f"wmb-{stage}{tag}" if m == 1 else f"wmb-{stage}{tag}-s{k}of{m}"
+
+
+def stage_methods(cfg: ExperimentConfig, stage: str) -> list[str] | None:
+    """Metodi della configurazione se la fase ha l'asse ``method``, altrimenti ``None``."""
+    import bench.pipeline.stages  # noqa: F401  (popola STAGES)
+
+    return list(cfg.methods) if "method" in STAGES.get(stage).cell_axes else None
 
 
 def queued_jobs(account: str) -> list[tuple[str, str, str, str]]:
@@ -262,22 +277,30 @@ def queued_jobs(account: str) -> list[tuple[str, str, str, str]]:
     return rows
 
 
-def conflicting_jobs(stage: str, share: tuple[int, int], account: str) -> list[str]:
+def conflicting_jobs(
+    stage: str, share: tuple[int, int], account: str, methods: Sequence[str] | None = None
+) -> list[str]:
     """Job della stessa fase che potrebbero lavorare sulle stesse celle.
 
     Sono in conflitto: il job senza quota (tutte le celle), la stessa quota, e qualunque quota
     di una divisione diversa (es. ``1/3`` contro ``1/2``). Quote diverse della stessa
-    divisione (``1/2`` e ``2/2``) sono disgiunte e possono girare insieme.
+    divisione (``1/2`` e ``2/2``) sono disgiunte e possono girare insieme. Così pure job con
+    metodi disgiunti (``wmb-detect.sweet`` e ``wmb-detect.stone``); un job senza metodi nel nome
+    conta come se li avesse tutti.
     """
     k, m = share
     base = f"wmb-{stage}"
-    pattern = re.compile(rf"^{re.escape(base)}(?:-s(\d+)of(\d+))?$")
+    pattern = re.compile(rf"^{re.escape(base)}(?:\.([A-Za-z0-9_+]+))?(?:-s(\d+)of(\d+))?$")
+    mine = set(methods or ())
     conflicts = []
     for job_id, user, state, name in queued_jobs(account):
         match = pattern.match(name)
         if match is None:
             continue
-        other = (int(match.group(1)), int(match.group(2))) if match.group(1) else (1, 1)
+        theirs = set(match.group(1).split("+")) if match.group(1) else set()
+        if mine and theirs and not mine & theirs:
+            continue  # metodi diversi: celle disgiunte
+        other = (int(match.group(2)), int(match.group(3))) if match.group(2) else (1, 1)
         if other == share or other[1] != m or m == 1:
             conflicts.append(f"{job_id} {name} ({user}, {state})")
     return conflicts
@@ -311,9 +334,10 @@ def submit(
     import bench.pipeline.stages  # noqa: F401  (popola STAGES)
 
     k, m = share
-    name = job_name(stage, share)
+    methods = stage_methods(cfg, stage)
+    name = job_name(stage, share, methods)
     if not dry_run and not allow_concurrent:
-        running = conflicting_jobs(stage, share, cfg.slurm.account)
+        running = conflicting_jobs(stage, share, cfg.slurm.account, methods)
         if running:
             raise ConfigError(
                 f"jobs that may run the same cells are already queued or running: "
