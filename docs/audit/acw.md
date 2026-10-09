@@ -1,7 +1,19 @@
 # Audit di ACW (SPEC §9.0)
 
-- **Stato:** decisioni dell'utente del 9 ottobre 2026 applicate (§3 punteggio, §4 iperparametri);
-  oracle da eseguire (ordine delle regole e limiti di Sourcery si misurano lì).
+- **Stato:** decisioni dell'utente del 9 ottobre 2026 applicate (§3 punteggio, §4 iperparametri).
+  Oracle verde il 9 ottobre 2026 (3 test, `tnode01`). **Aperto:** la licenza di Sourcery usata è una
+  prova "Code Quality - Team" che scade il 10 ottobre 2026 (§6).
+
+## 0. Esiti dell'oracle (9 ottobre 2026)
+
+- Inserimento: lo shim (a lotti) produce lo stesso codice del percorso diretto su 10 campioni della baseline
+  (5 HumanEval, 5 MBPP+), tutti `OK`; 1-4 regole applicabili per campione (siti idonei).
+- Rilevazione: esito per regola e congiunto identico al percorso diretto su 30 codici. Punteggi: codice
+  marcato 1,000 in 10 casi su 10; baseline 0,907-0,977 (media 0,951); codice umano 0,907-0,977 (media
+  0,951). Decisione congiunta: vera per tutti i marcati, falsa per tutti gli altri.
+- Chiave e ordine: con 43 regole k1 e k2 danno 0 codici diversi su 10.
+- Sourcery 1.33.0: nessun errore né limite in 30 chiamate consecutive (7,8-7,9 s l'una) e in 104 chiamate del
+  percorso diretto (mediana 8,4 s); 3,4 chiamate per campione con lotti da 10.
 - **Repository:** `Noelle1831-k/ACW`; paper "Efficient and Universal Watermarking for LLM-Generated Code Detection"
   (arXiv 2402.07518v5, 10 luglio 2026, IEEE Transactions on Software Engineering).
 
@@ -127,6 +139,9 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
 
 ## 6. Esecuzione, rete e costo
 
+- **Licenza:** al login Sourcery risponde "Your trial ends on 2026-10-10, update your payment method to continue
+  using Sourcery Code Quality - Team". Dopo la scadenza la CLI potrebbe non applicare più le regole: il
+  controllo di partenza dello shim lo rileva e ferma il worker. Decisione dell'utente da prendere (§6).
 - Sourcery è una CLI che richiede login (`sourcery login --token $SOURCERY_TOKEN`) e rete: i nodi `defq` hanno
   accesso in uscita (cluster_info §6). ACW gira su CPU (`defq`).
 - Il token entra solo come segreto del worker (`secrets`), mai in un file del repository; lo shim fa il login
