@@ -1356,3 +1356,80 @@ probe: 30 consecutive calls, seconds first/median/last 8.53/8.43/8.42, return co
 messages mentioning limits: 0
 2 failed, 1 passed in 34.78s
 srun: error: tnode01: task 0: Exited with exit code 1
+##### oracle acw all: nodo tnode01, 
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/acw/inputs.json (10 prompts, 21 codes)
+Your trial ends on 2026-10-10, update your payment method to continue using     
+Sourcery Code Quality - Team - https://app.sourcery.ai                          
+Successfully logged in!
+╭──────────────────────────────────── tip ─────────────────────────────────────╮
+│ Next steps:                                                                  │
+│                                                                              │
+│  • Run sourcery init to set up your repo with a config file.                 │
+│  • Run sourcery review . to scan the current directory for Sourcery issues.  │
+│  • Check out our docs to see how to set up Sourcery as a pre-commit hook or  │
+│    in CI                                                                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tests/fixtures/oracle/acw/original.json: 10 embeddings, 30 detections, sourcery sourcery, version 1.33.0
+...                                                                      [100%]
+==================================== PASSES ====================================
+____________________ test_embedding_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          status  applicable rules  sourcery calls/sample
+baseline:humaneval/0        OK                     3  3.40
+baseline:humaneval/1        OK                     1  3.40
+baseline:humaneval/2        OK                     2  3.40
+baseline:humaneval/3        OK                     2  3.40
+baseline:humaneval/4        OK                     2  3.40
+baseline:mbpp/103           OK                     2  3.40
+baseline:mbpp/108           OK                     2  3.40
+baseline:mbpp/109           OK                     2  3.40
+baseline:mbpp/118           OK                     1  3.40
+baseline:mbpp/120           OK                     4  3.40
+____________________ test_detection_matches_the_direct_path ____________________
+----------------------------- Captured stdout call -----------------------------
+
+id                          kind      score  rules changed  joint unchanged
+marked:humaneval/0          marked    1.000              0  True
+marked:humaneval/1          marked    1.000              0  True
+marked:humaneval/2          marked    1.000              0  True
+marked:humaneval/3          marked    1.000              0  True
+marked:humaneval/4          marked    1.000              0  True
+marked:mbpp/103             marked    1.000              0  True
+marked:mbpp/108             marked    1.000              0  True
+marked:mbpp/109             marked    1.000              0  True
+marked:mbpp/118             marked    1.000              0  True
+marked:mbpp/120             marked    1.000              0  True
+baseline:humaneval/0        baseline  0.930              3  False
+baseline:humaneval/1        baseline  0.977              1  False
+baseline:humaneval/2        baseline  0.953              2  False
+baseline:humaneval/3        baseline  0.953              2  False
+baseline:humaneval/4        baseline  0.953              2  False
+baseline:mbpp/103           baseline  0.953              2  False
+baseline:mbpp/108           baseline  0.953              2  False
+baseline:mbpp/109           baseline  0.953              2  False
+baseline:mbpp/118           baseline  0.977              1  False
+baseline:mbpp/120           baseline  0.907              4  False
+canonical:humaneval/0       human     0.930              3  False
+canonical:humaneval/1       human     0.977              1  False
+canonical:humaneval/2       human     0.977              1  False
+canonical:humaneval/3       human     0.977              1  False
+canonical:humaneval/4       human     0.977              1  False
+canonical:mbpp/103          human     0.953              2  False
+canonical:mbpp/108          human     0.907              4  False
+canonical:mbpp/109          human     0.930              3  False
+canonical:mbpp/118          human     0.953              2  False
+canonical:mbpp/120          human     0.930              3  False
+mean score marked: 1.000 (n=10)
+mean score baseline: 0.951 (n=10)
+mean score human: 0.951 (n=10)
+______________________ test_order_key_and_sourcery_probe _______________________
+----------------------------- Captured stdout call -----------------------------
+
+sourcery sourcery, version 1.33.0; rules k1 = [19, 40, 17, 33, 37, 20, 27, 14, 1, 13, 15, 7, 42, 4, 31, 22, 28, 43, 45, 29, 41, 11, 34, 30, 35, 32, 2, 21, 26, 16, 23, 12, 18, 44, 25, 36, 8, 38, 9, 39, 24, 6, 3]
+rules k2 = [43, 39, 12, 19, 38, 1, 2, 30, 35, 44, 42, 16, 24, 13, 8, 14, 22, 33, 40, 32, 17, 6, 4, 20, 45, 21, 9, 29, 3, 23, 25, 41, 31, 37, 18, 26, 36, 27, 34, 15, 11, 28, 7]
+same set: True, same order: False, outputs differing between k1 and k2: 0/10
+sourcery calls in the direct path: 104, seconds per call: median 8.38, max 11.27
+probe: 30 consecutive calls, seconds first/median/last 7.84/7.92/7.81, return codes [0]
+messages mentioning limits: 0
+3 passed in 596.48s (0:09:56)
