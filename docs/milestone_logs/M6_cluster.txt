@@ -1094,3 +1094,40 @@ humanevalplus  test        140        60       136       86       27            
 mbppplus       dev          72        72        72       62       11                62
 mbppplus       test        306       306       306      260       37               260
 4 passed in 340.29s (0:05:40)
+##### piano (dry run): watermark promptmark, quota 1/1
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=promptmark__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=promptmark__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=promptmark__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=promptmark__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job dry-run (slurm_gpu), cells run in sequence:
+    1. method=promptmark__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=promptmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=promptmark__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=promptmark__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) planned (dry run)
+##### invio: watermark promptmark, quota 1/1
+SLURM job 785750 (slurm_gpu), cells run in sequence:
+    1. method=promptmark__model_id=qwen25_coder_7b__language=python__level=L1__split=dev
+    2. method=promptmark__model_id=qwen25_coder_7b__language=java__level=L1__split=dev
+    3. method=promptmark__model_id=qwen25_coder_7b__language=javascript__level=L1__split=dev
+    4. method=promptmark__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=dev
+SLURM job 785751 (slurm_gpu), cells run in sequence:
+    1. method=promptmark__model_id=qwen25_coder_7b__language=cpp__level=L1__split=dev
+    2. method=promptmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev
+    3. method=promptmark__model_id=deepseek_coder_6p7b__language=java__level=L1__split=dev
+    4. method=promptmark__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=dev
+2 SLURM job(s) for 8 cell(s) submitted
+             JOBID         USER PARTITION                               NAME    STATE       TIME
+            785621 g.marotta31@       aiq                      prdjudge-2gpu  RUNNING      34:18
+            785620 g.marotta31@       aiq                    qwen-2gpu-final  RUNNING    2:55:26
+            785751 i.cipriano1@      gpuq                      wmb-watermark  PENDING       0:00
+            785750 i.cipriano1@      gpuq                      wmb-watermark  PENDING       0:00
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/deepseek_coder_6p7b/ed50b87e6e09/L1_cpp_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/deepseek_coder_6p7b/ed50b87e6e09/L1_java_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/deepseek_coder_6p7b/ed50b87e6e09/L1_javascript_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/deepseek_coder_6p7b/ed50b87e6e09/L1_python_dev.parquet.manifest.json: {'OK': 576} {'n': 576, 'mean': 2.22, 'median': 2.0, 'min': 0.0, 'max': 9.0} per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/qwen25_coder_7b/ed50b87e6e09/L1_cpp_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/qwen25_coder_7b/ed50b87e6e09/L1_java_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/qwen25_coder_7b/ed50b87e6e09/L1_javascript_dev.parquet.manifest.json: {'NOT_APPLICABLE': 144} None per_sample
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/watermarked/promptmark/qwen25_coder_7b/ed50b87e6e09/L1_python_dev.parquet.manifest.json: {'OK': 576} {'n': 576, 'mean': 2.859, 'median': 3.0, 'min': 0.0, 'max': 13.0} per_sample
