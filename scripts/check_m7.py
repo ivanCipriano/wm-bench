@@ -25,6 +25,7 @@ LANGS = {
     "stone": ["python", "java", "cpp"],
     "mcgmark": ["python"],
     "promptmark": ["python"],
+    "acw": ["python"],
 }
 TWIN = {"mcgmark"}
 
