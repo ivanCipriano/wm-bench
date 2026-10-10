@@ -1,0 +1,1301 @@
+
+====================================================================================================
+humaneval/115 #1  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=5
+--- stderr
+SyntaxError('unterminated triple-quoted string literal (detected at line 5)', ('<sample>', 4, 5, '    """', 4, 5))
+--- marked code
+import math
+
+def max_fill(grid, capacity):
+    """
+    You are give
+
+--- twin code (same seed)
+import math
+
+def max_fill(grid, capacity):
+    """
+    You are given a rectangular grid of wells. Each row represents a single well,
+    and each 1 in a row represents a single unit of water.
+    Each well has a corresponding bucket that can be used to extract water from it, 
+    and all buckets have the same capacity.
+    Your task is to use the buckets to empty the wells.
+    Output the number of times you need to lower the buckets.
+
+    Example 1:
+        Input: 
+            grid : [[0,0,1,0], [0,1,0,0], [1,1,1,1]]
+            bucket_capacity : 1
+        Output: 6
+
+    Example 2:
+        Input: 
+            grid : [[0,0,1,1], [0,0,0,0], [1,1,1,1], [0,1,1,1]]
+            bucket_capacity : 2
+        Output: 5
+    
+    Example 3:
+        Input: 
+            grid : [[0,0,0], [0,0,0]]
+            bucket_capacity : 5
+        Output: 0
+
+    Constraints:
+        * all wells have the same length
+        * 1 <= grid.length <= 10^2
+        * 1 <= grid[:,1].length <= 10^2
+        * grid[i][j] -> 0 | 1
+        * 1 <= capacity <= 10
+    """
+    total_water = sum(sum(row) for row in grid)
+    return math.ceil(total_water / capacity)
+
+
+====================================================================================================
+humaneval/128 #0  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=9
+--- stderr
+IndentationError('unindent does not match any outer indentation level', ('<sample>', 5, 22, '     sign_product = 1\n', 5, -1))
+--- marked code
+def prod_signs(arr):
+    if not arr:
+        return None
+    
+     sign_product = 1
+    magnitude_sum = 0
+    
+    for num
+     magnitude_sum += abs(num)
+        sign_product *= -1 if num < 0 else 1
+    
+    sign_product *= 0 if 0 in arr else 1
+    
+    result = magnitude_sum * sign_product
+    result
+
+--- twin code (same seed)
+def prod_signs(arr):
+    if not arr:
+        return None
+    
+    sign_product = 1
+    magnitude_sum = 0
+    
+    for num in arr:
+        if num == 0:
+            return 0
+        elif num < 0:
+            sign_product *= -1
+        
+        magnitude_sum += abs(num)
+    
+    return sign_product * magnitude_sum
+
+
+====================================================================================================
+humaneval/135 #0  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=7
+--- stderr
+SyntaxError('invalid syntax', ('<sample>', 21, 17, '         for i  range (index_of_interest, -1, -1):\n', 21, 22))
+--- marked code
+def can_arrange(arr):
+    """Create a function which returns the largest index of an element which
+    is not greater than or equal to the element immediately preceding it. If
+    no such element exists then return -1. The given array will not contain
+    duplicate values.
+
+    Examples:
+    can_arrange([1,2,4,3,5]) = 3
+    can_arrange([1,2,3]) = -1
+    """
+    index_of_interest = -1
+    greatest_value_found = float('-inf')
+    for i in range(1, len(arr)):
+        if arr(i) < greatest_value_found:
+            index_of_interest = i
+        greatest_value_found = max(greatest_value_found, arr[i-1])
+    if index_of_interest < 0:
+        index_of_interest = -1
+    else :
+         # Adjust index to be the largest index where the condition is met
+         for i  range (index_of_interest, -1, -1):
+             greatest = float('-inf')
+             for j in range (0, i):
+                 greatest = max(greatest, arr[j])
+             # Check if the condition is met for the largest index
+             # If it is, return the index
+             # If not, continue to the next largest index
+             # If the condition is never met, return -1
+             # This is a bit tricky, so let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for now and fix it later
+             # For now, let's just return the index_of_interest
+             # for
+--- twin code (same seed)
+def can_arrange(arr):
+    """Create a function which returns the largest index of an element which
+    is not greater than or equal to the element immediately preceding it. If
+    no such element exists then return -1. The given array will not contain
+    duplicate values.
+
+    Examples:
+    can_arrange([1,2,4,3,5]) = 3
+    can_arrange([1,2,3]) = -1
+    """
+    for i in range(len(arr) - 1, 0, -1):
+        if arr[i] < arr[i - 1]:
+            return i
+    return -1
+
+
+====================================================================================================
+humaneval/136 #2  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=16
+--- stderr
+IndentationError('unexpected indent', ('<sample>', 20, 4, '    return (largest_negative, smallest_positve)\n', 20, -1))
+--- marked code
+def largest_smallest_integers(lst):
+    '''
+    Create a function that returns a tuple (a, b), where 'a’ is the largest  # noqa
+    # of negative integers, and 'b’ is the smallest of positive integers in a list. # noqa
+    # If there is no negative or positive integers, return them as None. # noqa
+
+    Examples:
+    largestSmallerIntegers([2, 4, 1, 3, 5, 7]) == (None, 1)
+    largestSmallerIntegers([]) == (None, None)
+    largestSmallerIntegers([0]) == (None, None)
+    '''
+    negatives = [x for x in lst if x < 0]
+    positives = [x for x in lst if x > 0]
+
+    largest_negative = max(negatives) if negatives else None
+    smallest_positve = min(positives) if positives else None
+
+    returnlargest_negative
+smallest_positve
+    return (largest_negative, smallest_positve)
+
+--- twin code (same seed)
+def largest_smallest_integers(lst):
+    '''
+    Create a function that returns a tuple (a, b), where 'a' is
+    the largest of negative integers, and 'b' is the smallest
+    of positive integers in a list.
+    If there is no negative or positive integers, return them as None.
+
+    Examples:
+    largest_smallest_integers([2, 4, 1, 3, 5, 7]) == (None, 1)
+    largest_smallest_integers([]) == (None, None)
+    largest_smallest_integers([0]) == (None, None)
+    '''
+    negative_integers = [num for num in lst if num < 0]
+    positive_integers = [num for num in lst if num > 0]
+
+    largest_negative = max(negative_integers) if negative_integers else None
+    smallest_positive = min(positive_integers) if positive_integers else None
+
+    return (largest_negative, smallest_positive)
+
+
+====================================================================================================
+humaneval/141 #1  status=SYNTAX_ERROR  embed=OK  n_sites=45
+--- stderr
+SyntaxError('invalid syntax', ('<sample>', 30, 34, "                    if file_name split('.')[-1] not in ['txt', 'exe', 'dll']:\n", 30, 39))
+--- marked code
+import re
+
+def file_name_check(file_name):
+    """Create a function which takes a string representing a file's name, and returns
+    'Yes' if the the file's name is valid, and returns 'No' otherwise.
+    A file's name is considered to be valid if and only if all the following conditions 
+    are met:
+    - There should not be more than three digits ('0'-'9') in the file's name.
+    - The file's name contains exactly one dot '.'
+    - The substring before the dot should not be empty, and it starts with a letter from 
+    the latin alphapet ('a'-'z' and 'A'-'Z').
+    - The substring after the dot should be one of these: ['txt', 'exe', 'dll']
+    Examples:
+    file_name_check("example.txt") # => 'Yes'
+    file_name_check("1example.dll") # => 'No' (the name should start with a latin alphapet letter)
+    """
+    if len(re.findall(r'\d', file_name)) > 3:
+       return ('No')
+    if file_name.count('.') != 1:
+        if file_name.count('.') > 1:
+            if file_name.count('.') == 0:
+                if file_name[0].isalpha():
+                    if file_name.split('.')[-1] in ['txt', 'exe', 'dll']:
+                        return ('Yes')
+                    if file_name.split('.')[-1] not in ['txt', 'exe', 'dll']:
+                        print('No')
+                if not file_NAME[0].isalpha:
+                    if file_name.split('.')[-1] in ['txt', 'exe', 'dll']:
+                        return ('No')
+                    if file_name split('.')[-1] not in ['txt', 'exe', 'dll']:
+                        return ('No')
+            if file_name count('.') == 0:
+                if file_name [0].isalpha():
+                    if  split ('.') [-1] in ['txt', 'exe', 'dll']:
+                        print ('Yes')
+                    split ('.') [-1] not  ['txt', 'exe', 'dll']:
+                        (print ('No'))
+                split ('.') [0] not isalpha():
+                    split ('.') [-1] in ['txt', 'exe', 'dll']:
+                        (print ('No'))
+                    split ('.') [-1] not  ['txt', 'exe', 'dll']:
+                        (print ('No'))
+        return ('No')
+
+--- twin code (same seed)
+import re
+
+def file_name_check(file_name):
+    """Create a function which takes a string representing a file's name, and returns
+    'Yes' if the the file's name is valid, and returns 'No' otherwise.
+    A file's name is considered to be valid if and only if all the following conditions 
+    are met:
+    - There should not be more than three digits ('0'-'9') in the file's name.
+    - The file's name contains exactly one dot '.'
+    - The substring before the dot should not be empty, and it starts with a letter from 
+    the latin alphapet ('a'-'z' and 'A'-'Z').
+    - The substring after the dot should be one of these: ['txt', 'exe', 'dll']
+    Examples:
+    file_name_check("example.txt") # => 'Yes'
+    file_name_check("1example.dll") # => 'No' (the name should start with a latin alphapet letter)
+    """
+    # Regular expression to match the file name criteria
+    pattern = r'^[a-zA-Z][a-zA-Z0-9]{0,}(\d{0,3})\.(txt|exe|dll)$'
+    
+    # Check if the file name matches the pattern
+    if re.match(pattern, file_name):
+        return 'Yes'
+    else:
+        return 'No'
+
+
+====================================================================================================
+humaneval/115 #3  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=12
+--- stderr
+IndentationError('unindent does not match any outer indentation level', ('<sample>', 8, 6, ' ` ``\n', 8, -1))
+--- marked code
+import math
+
+def max_fill(grid, capacity):
+    count = 0
+    for row in grid:
+        count+= sum(row)
+    return math.ceil(count/capacity)
+ ` ``
+
+--- twin code (same seed)
+import math
+
+def max_fill(grid, capacity):
+    total_wells = sum(sum(row) for row in grid)
+    return math.ceil(total_wells / capacity)
+
+
+====================================================================================================
+humaneval/128 #1  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=18
+--- stderr
+SyntaxError('invalid non-printable character U+200B', ('<sample>', 6, 11, '    for i \u200b\u200b in arr:', 6, 11))
+--- marked code
+def prod_signs(arr):
+    if len(arr) == 0:
+        return None
+    sum_magnitude = 0
+    product_sign= 1
+    for i ​​ in arr:
+        sum _ magnitude += abs(i)
+        if(i < 0):
+            if (product_sign == 1):
+                ​​ product sign *= ​​ -1
+       ​​ elif (i > 0):
+            if(product_sign == -1):
+               product sign *= 1
+        else if (i == 0):
+            return 0
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+--- twin code (same seed)
+def prod_signs(arr):
+    if not arr:
+        return None
+    sign_product = 1
+    magnitude_sum = 0
+    for num in arr:
+        if num < 0:
+            sign_product *= -1
+        magnitude_sum += abs(num)
+    return sign_product * magnitude_sum
+
+
+====================================================================================================
+humaneval/135 #0  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=18
+--- stderr
+IndentationError("expected an indented block after 'if' statement on line 11", ('<sample>', 372, 1, '\n', 372, -1))
+--- marked code
+def can_arrange(arr):
+    for ind in range(len(arr) - 1, 0, -1):
+        print('ind', ind)
+        for i, j in zip(arr[ind - 1::-1], arr[ind::-1]):
+            print(i, j)
+
+        print("---")
+        arr_ = arr[ind - 1::-1] + arr[ind::-1]
+        print(arr_)
+        print(arr_ == sorted(arr_))
+        if all([i >= j for i, j in zip(arr_[1:], arr_[:-1])]):
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--- twin code (same seed)
+def can_arrange(arr):
+    for i in range(len(arr) - 1, 0, -1):
+        if arr[i] < arr[i - 1]:
+            return i
+    return -1
+
+
+====================================================================================================
+humaneval/141 #0  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=5
+--- stderr
+SyntaxError("'[' was never closed", ('<sample>', 20, 18, '    conditions = [', 20, 0))
+--- marked code
+import re
+
+def file_name_check(file_name):
+    """Create a function which takes a string representing a file's name, and returns
+    'Yes' if the the file's name is valid, and returns 'No' otherwise.
+    A file's name is considered to be valid if and only if all the following conditions 
+    are met:
+    - There should not be more than three digits ('0'-'9') in the file's name.
+    - The file's name contains exactly one dot '.'
+    - The substring before the dot should not be empty, and it starts with a letter from 
+    the latin alphapet ('a'-'z' and 'A'-'Z').
+    - The substring after the dot should be one of these: ['txt', 'exe', 'dll']
+    Examples:
+    file_name_check("example.txt") # => 'Yes'
+    file_name_check("1example.dll") # => 'No' (the name should start with a latin alphapet letter)
+    """
+    dot_indexes = [i for i, char in enumerate(file_name) if char == '.']
+    valid_extensions=['txt', 'exe', 'dll']
+    
+    conditions = [
+        len(dot_indexes) == 1,
+        dot_indexes[0] != 0,
+        dot_indexes[0] != 1,
+        dot_indexes[0] != 2,
+        dot_indexes[0] != 3,
+        dot_indexes[0] != 4,
+        dot_indexes[0] != 5,
+        dot_indexes[0] != 6,
+        dot_indexes[0] != 7,
+        dot_indexes[0] != 8,
+        dot_indexes[0] != 9,
+        dot_indexes[0] != 10,
+        dot_indexes[0] != 11,
+        dot_indexes[0] != 12,
+        dot_indexes[0] != 13,
+        dot_indexes[0] != 14,
+        dot
+--- twin code (same seed)
+import re
+
+def file_name_check(file_name):
+    if not isinstance(file_name, str):
+        return 'No'
+    if file_name.count('.') != 1:
+        return 'No'
+    name, extension = file_name.split('.')
+    if not re.match("^[a-zA-Z]", name):
+        return 'No'
+    if len(re.findall("\d", name)) > 3:
+        return 'No'
+    if extension not in ['txt', 'exe', 'dll']:
+        return 'No'
+    return 'Yes'
+
+
+====================================================================================================
+humaneval/143 #0  status=SYNTAX_ERROR  embed=PARTIAL  n_sites=8
+--- stderr
+SyntaxError('invalid syntax', ('<sample>', 4, 15, '        for i range(2, int(n**0.5) + 1):\n', 4, 20))
+--- marked code
+def words_in_sentence(sentence):
+    def is_prime(n):
+        """Check if a number is prime."""
+        for i range(2, int(n**0.5) + 1):
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+--- twin code (same seed)
+def words_in_sentence(sentence):
+    def is_prime(n):
+        if n < 2:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    words = sentence.split()
+    prime_words = [word for word in words if is_prime(len(word))]
+    return ' '.join(prime_words)
+
