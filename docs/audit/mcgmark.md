@@ -91,6 +91,20 @@
     costrutto bloccato (righe di commento `#print(...)` ripetute, `self.exp = ... % ...` ripetuto fino a
     1024 token). Lo si vede anche su L1 (`returnFalse`, `def __ init __`, ripetizioni fino a 512 token): il bias
     pari all'intero scarto dei logit forza scelte innaturali. Effetto atteso su ΔPass@1.
+  - **Conferma in M7 (L1 dev, 10 ottobre 2026; `docs/milestone_logs/M7_check.txt`,
+    `M7_mcgmark_errors.txt`).** Pass@1 marcati contro gemella: Qwen 27% contro 76%, DeepSeek 31% contro 65%.
+    Campioni marcati con errore di sintassi: 182 su 576 (Qwen) e 117 su 576 (DeepSeek), contro 0 nella gemella
+    con lo stesso seme, prompt e prefill. Gli errori di sintassi hanno in media più posizioni marcate di quelli
+    che passano (Qwen 12,4 contro 7,6). Nei campioni ispezionati, alle posizioni marcate spariscono o si
+    sostituiscono token obbligati (`for i range(...)`, `for num` senza `in arr:`, `file_name split('.')`,
+    `returnlargest_negative`), compaiono caratteri invisibili (U+200B) e la generazione si interrompe a metà
+    (docstring troncata). Meccanismo: con bit 0 tutta la green list riceve `−(max − min)` dei logit, quindi se
+    il token più probabile è verde si sceglie il miglior token rosso di una metà casuale del vocabolario. Quel
+    vocabolario comprende anche token speciali ed EOS (`tokenizer.get_vocab()`, come `watermark.py:225-228`):
+    un token speciale sparisce dal testo decodificato, EOS chiude la risposta. Con bit 1 il codice protegge il
+    token più probabile (`max_index` aggiunto alla green list), con bit 0 no. È il comportamento del codice
+    degli autori, coerente con sé stesso: lo si segue senza patch (regola delle discrepanze) e il calo di
+    Pass@1 è un risultato da riportare.
   - Soluzioni canoniche di ClassEval (codice umano): 43-74 siti, punteggi 5-8 su 12, compatibili con
     Bin(12, ½) (§5.2).
 
