@@ -2,11 +2,11 @@
 sweet      qwen25_coder_7b      python     ok
 sweet      qwen25_coder_7b      java       ok
 sweet      qwen25_coder_7b      cpp        ok
-sweet      qwen25_coder_7b      javascript det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
-sweet      deepseek_coder_6p7b  python     det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
-sweet      deepseek_coder_6p7b  java       det_pos=MISSING det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
-sweet      deepseek_coder_6p7b  cpp        det_pos=MISSING det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
-sweet      deepseek_coder_6p7b  javascript det_pos=MISSING det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
+sweet      qwen25_coder_7b      javascript ok
+sweet      deepseek_coder_6p7b  python     ok
+sweet      deepseek_coder_6p7b  java       ok
+sweet      deepseek_coder_6p7b  cpp        ok
+sweet      deepseek_coder_6p7b  javascript ok
 stone      qwen25_coder_7b      python     ok
 stone      qwen25_coder_7b      java       ok
 stone      qwen25_coder_7b      cpp        ok

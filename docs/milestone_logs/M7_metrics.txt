@@ -143,6 +143,50 @@ threshold 31.14651285710641  achieved FPR dev 0.0100  n_neg 2000  levels ['L1'] 
   delta_pass_at_1_pp                 -0.6944  [-3.4722, 1.3889]  n=96  cluster_bootstrap
   embed_success_rate -  n_sites null
 
+##### sweet deepseek_coder_6p7b cpp (L1 dev, config 356dd3cf78ee)
+threshold 2.528102914801153  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  tpr_at_fpr                          0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
+  fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
+  fpr_llm                             0.0000  [0.0000, 0.0253]  n=144  clopper_pearson
+  auroc                               0.5295  [0.4253, 0.6334]  n=2144  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.6736  [0.4929, 0.8403]  n=24  cluster_bootstrap
+  pass_at_1_baseline                  0.6736  [0.4931, 0.8333]  n=24  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [-4.1667, 5.5556]  n=24  cluster_bootstrap
+  embed_success_rate -  n_sites null
+
+##### sweet deepseek_coder_6p7b java (L1 dev, config 356dd3cf78ee)
+threshold 2.846049894151541  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  tpr_at_fpr                          0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
+  fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
+  fpr_llm                             0.0000  [0.0000, 0.0253]  n=144  clopper_pearson
+  auroc                               0.4891  [0.3899, 0.5880]  n=2144  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.7292  [0.5625, 0.8819]  n=24  cluster_bootstrap
+  pass_at_1_baseline                  0.6458  [0.4722, 0.8125]  n=24  cluster_bootstrap
+  delta_pass_at_1_pp                 -8.3333  [-16.6667, 0.0000]  n=24  cluster_bootstrap
+  embed_success_rate -  n_sites null
+
+##### sweet deepseek_coder_6p7b javascript (L1 dev, config 356dd3cf78ee)
+threshold 2.8867513459481287  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  tpr_at_fpr                          0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
+  fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
+  fpr_llm                             0.0000  [0.0000, 0.0253]  n=144  clopper_pearson
+  auroc                               0.4636  [0.3680, 0.5564]  n=2144  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.7361  [0.5833, 0.8958]  n=24  cluster_bootstrap
+  pass_at_1_baseline                  0.7361  [0.5556, 0.9028]  n=24  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [-2.7778, 2.1007]  n=24  cluster_bootstrap
+  embed_success_rate -  n_sites null
+
+##### sweet deepseek_coder_6p7b python (L1 dev, config 356dd3cf78ee)
+threshold 2.7791013395195128  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  tpr_at_fpr                          0.0035  [0.0000, 0.0104]  n=576  cluster_bootstrap
+  fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
+  fpr_llm                             0.0000  [0.0000, 0.0064]  n=576  clopper_pearson
+  auroc                               0.5398  [0.4903, 0.5885]  n=2576  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.6597  [0.5764, 0.7449]  n=96  cluster_bootstrap
+  pass_at_1_baseline                  0.6580  [0.5677, 0.7483]  n=96  cluster_bootstrap
+  delta_pass_at_1_pp                 -0.1736  [-3.3030, 3.2986]  n=96  cluster_bootstrap
+  embed_success_rate -  n_sites null
+
 ##### sweet qwen25_coder_7b cpp (L1 dev, config 356dd3cf78ee)
 threshold 2.28747855498907  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
   tpr_at_fpr                          0.0069  [0.0000, 0.0208]  n=144  cluster_bootstrap
@@ -163,6 +207,17 @@ threshold 2.28747855498907  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  
   pass_at_1                           0.8750  [0.7500, 1.0000]  n=24  cluster_bootstrap
   pass_at_1_baseline                  0.8611  [0.7361, 0.9861]  n=24  cluster_bootstrap
   delta_pass_at_1_pp                 -1.3889  [-4.1667, 0.0000]  n=24  cluster_bootstrap
+  embed_success_rate -  n_sites null
+
+##### sweet qwen25_coder_7b javascript (L1 dev, config 356dd3cf78ee)
+threshold 2.6  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  tpr_at_fpr                          0.0208  [0.0000, 0.0625]  n=144  cluster_bootstrap
+  fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
+  fpr_llm                             0.0139  [0.0017, 0.0493]  n=144  clopper_pearson
+  auroc                               0.4920  [0.3824, 0.6054]  n=2144  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.8333  [0.6667, 0.9583]  n=24  cluster_bootstrap
+  pass_at_1_baseline                  0.8333  [0.6667, 0.9583]  n=24  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=24  cluster_bootstrap
   embed_success_rate -  n_sites null
 
 ##### sweet qwen25_coder_7b python (L1 dev, config 356dd3cf78ee)
