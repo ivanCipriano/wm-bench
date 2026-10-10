@@ -14,6 +14,8 @@ MODE="${3:-}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 umask 002
+WMB="${WMB:-/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench}"
+export PATH="$WMB/bench-core/bin:$PATH"  # bench-core anche in una shell nuova
 
 ARGS=(--jobs "${JOBS:-2}" --share "$SHARE" "stage=watermark" "methods=[$METHOD]" "levels=[L1]" "splits=[dev]")
 echo "##### piano (dry run): watermark $METHOD, quota $SHARE"

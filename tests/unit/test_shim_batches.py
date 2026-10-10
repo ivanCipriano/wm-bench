@@ -11,7 +11,8 @@ from bench_contracts import SCHEMA_VERSION, WorkerItem, WorkerRequest, iter_json
 from tests.conftest import REPO_ROOT
 
 sys.path.insert(0, str(REPO_ROOT / "shims"))
-from bench_shims._common.base import ShimBase
+import pytest
+from bench_shims._common.base import FatalShimError, ShimBase
 from bench_shims._common.runner import run
 
 
@@ -26,6 +27,8 @@ class BatchShim(ShimBase):
         self.batches.append([it.item_id for it in items])
         if any(it.code == "boom" for it in items):
             raise RuntimeError("tool error")
+        if any(it.code == "expired" for it in items):
+            raise FatalShimError("license expired")
         return [self.result(it, "OK", score=float(len(it.code or ""))) for it in items]
 
 
@@ -80,3 +83,18 @@ def test_batches_keep_order_fail_together_and_resume(tmp_path: Path) -> None:
     # Ripresa: nessun item da rifare.
     again = BatchShim()
     assert run(again, request) == 0 and again.batches == []
+
+
+def test_fatal_error_stops_without_writing_the_batch(tmp_path: Path) -> None:
+    items = [_item(i, "x" * i) for i in range(7)]
+    items[4] = _item(4, "expired")
+    request = _request(tmp_path, items)
+    with pytest.raises(FatalShimError):
+        run(BatchShim(), request)
+    # Solo il primo lotto è scritto: il lotto con l'errore e i successivi no.
+    assert [r["item_id"] for r in iter_jsonl(request.output_path)] == ["s0", "s1", "s2"]
+    # Con lo strumento di nuovo funzionante la ripresa rifà solo gli item mancanti.
+    write_jsonl(tmp_path / "items.jsonl", [_item(i, "x" * i).to_dict() for i in range(7)])
+    again = BatchShim()
+    assert run(again, request) == 0
+    assert again.batches == [["s3", "s4", "s5"], ["s6"]]

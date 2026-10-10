@@ -20,7 +20,9 @@ Sourcery lavora su cartelle e ogni chiamata costa secondi: lo shim elabora gli i
 
 All'avvio: login a Sourcery con ``SOURCERY_TOKEN`` (segreto del worker, mai scritto su file dallo
 shim) e un controllo su un file canarino: il codice ignora gli errori di Sourcery, quindi senza
-login o rete le regole 1-35 non si applicherebbero in silenzio.
+login o rete le regole 1-35 non si applicherebbero in silenzio. Il canarino si ripete **dopo ogni
+lotto**: se il token scade a metà lavoro il lotto non si scrive e il worker si ferma
+(``FatalShimError``, exit code 2); con un token nuovo un nuovo invio riprende dagli item scritti.
 """
 
 from __future__ import annotations
@@ -38,7 +40,7 @@ from typing import Any, Dict, List, Sequence
 from bench_contracts import WorkerItem, WorkerRequest, WorkerResult
 from bench_contracts.enums import DetectStatus, EmbedStatus
 
-from bench_shims._common.base import ShimBase
+from bench_shims._common.base import FatalShimError, ShimBase
 from bench_shims._common.runner import main
 
 BATCH_SIZE = 50
@@ -97,8 +99,9 @@ class AcwShim(ShimBase):
             batch=THREADS,
         )
         self.rules: List[int] = list(self.injector.selected_rules)
+        self.uses_sourcery = any(r in SOURCERY_RULES for r in self.rules)
         self._login()
-        if any(r in SOURCERY_RULES for r in self.rules):
+        if self.uses_sourcery:
             self._canary()
 
     # ------------------------------------------------------------------ Sourcery
@@ -125,12 +128,20 @@ class AcwShim(ShimBase):
                     if h.read() != code:
                         modified.append(rule)
             if not modified:
-                raise RuntimeError(
-                    "Sourcery did not modify any canary file: check login, token and network"
+                raise FatalShimError(
+                    "Sourcery did not modify any canary file: check login, token (expired?) "
+                    "and network"
                 )
             self.canary_rules = modified
         finally:
             shutil.rmtree(folder, ignore_errors=True)
+
+    def _check_sourcery(self) -> int:
+        """Canarino dopo un lotto: Sourcery funziona ancora? Chiamate a Sourcery fatte."""
+        if not self.uses_sourcery:
+            return 0
+        self._canary()
+        return 1
 
     def _apply(self, folder: str, rules: Sequence[int]) -> int:
         """Applica le regole con il codice (``apply_specific_rules``); chiamate a Sourcery fatte."""
@@ -177,6 +188,7 @@ class AcwShim(ShimBase):
             work = self._copy(folder, "embed")
             calls += self._apply(work, self.rules)
             modified = self._changed(folder, work, names)
+            calls += self._check_sourcery()  # prima di scrivere il lotto
             outputs: List[List[WorkerResult]] = []
             for i, (item, name) in enumerate(zip(items, names)):
                 applicable = [r for r in self.rules if changed[r][i]]
@@ -214,6 +226,7 @@ class AcwShim(ShimBase):
             calls += self._apply(joint, self.rules)
             joint_changed = self._changed(folder, joint, names)
             shutil.rmtree(joint, ignore_errors=True)
+            calls += self._check_sourcery()  # prima di scrivere il lotto
             results: List[WorkerResult] = []
             for i, item in enumerate(items):
                 unchanged = {str(r): not changed[r][i] for r in self.rules}

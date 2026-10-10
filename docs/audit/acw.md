@@ -1,8 +1,8 @@
 # Audit di ACW (SPEC §9.0)
 
 - **Stato:** decisioni dell'utente del 9 ottobre 2026 applicate (§3 punteggio, §4 iperparametri).
-  Oracle verde il 9 ottobre 2026 (3 test, `tnode01`). **Aperto:** la licenza di Sourcery usata è una
-  prova "Code Quality - Team" che scade il 10 ottobre 2026 (§6).
+  Oracle verde il 9 ottobre 2026 (3 test, `tnode01`). Licenza di Sourcery: prova "Code Quality - Team";
+  alla scadenza si usa il token di un altro account (decisione dell'utente del 10 ottobre 2026, §6).
 
 ## 0. Esiti dell'oracle (9 ottobre 2026)
 
@@ -140,8 +140,15 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
 ## 6. Esecuzione, rete e costo
 
 - **Licenza:** al login Sourcery risponde "Your trial ends on 2026-10-10, update your payment method to continue
-  using Sourcery Code Quality - Team". Dopo la scadenza la CLI potrebbe non applicare più le regole: il
-  controllo di partenza dello shim lo rileva e ferma il worker. Decisione dell'utente da prendere (§6).
+  using Sourcery Code Quality - Team". Dopo la scadenza la CLI potrebbe non applicare più le regole.
+  **Decisione dell'utente (10 ottobre 2026):** quando la prova scade si crea un token con un altro account e
+  lo si mette al posto del vecchio (`~/.config/wmb/sourcery_token`), senza cambiare nulla nel repository.
+  Perché una scadenza a metà lavoro non produca in silenzio campioni senza le regole 1-35, lo shim ripete
+  il canarino **dopo ogni lotto**, prima di scriverlo (una chiamata in più ogni 50 file, circa +3%): se
+  Sourcery non modifica più i canarini il lotto non si scrive e il worker si ferma (`FatalShimError`,
+  exit code 2, nessun secondo tentativo). Si cambia il token e si rilancia lo stesso comando: la ripresa
+  rifà solo gli item mancanti. Il token usato non influisce sui risultati (stessa versione della CLI e
+  stesse regole), purché il piano dia accesso alle stesse regole.
 - Sourcery è una CLI che richiede login (`sourcery login --token $SOURCERY_TOKEN`) e rete: i nodi `defq` hanno
   accesso in uscita (cluster_info §6). ACW gira su CPU (`defq`).
 - Il token entra solo come segreto del worker (`secrets`), mai in un file del repository; lo shim fa il login

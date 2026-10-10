@@ -4,7 +4,8 @@
 2. ``setup`` una volta (errore fatale: exit code 2);
 3. **ripresa**: tiene in ``output_path`` solo gli item completi e salta quelli;
 4. per ogni item l'operazione è dentro ``try/except``: un'eccezione produce risultati
-   ``FAILED`` con ``error`` e non interrompe il ciclo;
+   ``FAILED`` con ``error`` e non interrompe il ciclo, tranne ``FatalShimError``: il lotto in
+   corso non si scrive e il worker esce con exit code 2;
 5. ogni risultato è una riga JSONL scritta con ``flush`` + ``fsync``;
 6. exit code 0 se il ciclo si completa (anche con item falliti).
 
@@ -34,7 +35,7 @@ from bench_contracts import (
     write_jsonl,
 )
 
-from bench_shims._common.base import ShimBase
+from bench_shims._common.base import FatalShimError, ShimBase
 from bench_shims._common.introspect import introspect
 
 EXIT_OK = 0
@@ -108,6 +109,8 @@ def _run_one(shim: ShimBase, request: WorkerRequest, item: WorkerItem) -> List[W
         results = list(shim.embed(item)) if request.op == "embed" else [shim.detect(item)]
         if len(results) != expected:
             raise RuntimeError(f"{len(results)} results, expected {expected}")
+    except FatalShimError:
+        raise
     except Exception:
         error = traceback.format_exc()
         logger.error("item %s failed: %s", item.item_id, error.strip().splitlines()[-1])
@@ -129,6 +132,8 @@ def _run_batch(
         for item, results in zip(batch, outputs):
             if len(results) != expected_results(request, item):
                 raise RuntimeError(f"item {item.item_id}: {len(results)} results")
+    except FatalShimError:
+        raise
     except Exception:
         error = traceback.format_exc()
         logger.error("batch of %d failed: %s", len(batch), error.strip().splitlines()[-1])
@@ -168,11 +173,17 @@ def main(shim_cls: Type[ShimBase], argv: Optional[Sequence[str]] = None) -> int:
     except Exception:
         logger.error("setup failed:\n%s", traceback.format_exc())
         return EXIT_SETUP
-    return run(shim, request)
+    try:
+        return run(shim, request)
+    except FatalShimError:
+        # Gli item già scritti restano: un nuovo invio riprende da lì.
+        logger.error("fatal error, worker stopped:\n%s", traceback.format_exc())
+        return EXIT_SETUP
 
 
 __all__ = [
     "EXIT_OK",
+    "FatalShimError",
     "EXIT_SETUP",
     "EXIT_VERSION",
     "WorkerResult",

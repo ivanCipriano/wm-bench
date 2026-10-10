@@ -8,6 +8,14 @@ from bench_contracts import WorkerItem, WorkerRequest, WorkerResult
 from bench_contracts.enums import DetectStatus, EmbedStatus
 
 
+class FatalShimError(RuntimeError):
+    """Errore che rende inutili gli item successivi (es. licenza di uno strumento scaduta).
+
+    Il runner non scrive il lotto in corso, si ferma e esce con exit code 2: gli item già scritti
+    restano e un nuovo invio riprende da lì.
+    """
+
+
 class ShimBase:
     """Shim di un metodo: carica le risorse una volta, poi elabora un item alla volta.
 
