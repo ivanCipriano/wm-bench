@@ -1,0 +1,37 @@
+##### artefatti per cella (L1 dev)
+sweet      qwen25_coder_7b      python     ok
+sweet      qwen25_coder_7b      java       ok
+sweet      qwen25_coder_7b      cpp        ok
+sweet      qwen25_coder_7b      javascript det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
+sweet      deepseek_coder_6p7b  python     det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
+sweet      deepseek_coder_6p7b  java       det_pos=MISSING det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
+sweet      deepseek_coder_6p7b  cpp        det_pos=MISSING det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
+sweet      deepseek_coder_6p7b  javascript det_pos=MISSING det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
+stone      qwen25_coder_7b      python     ok
+stone      qwen25_coder_7b      java       ok
+stone      qwen25_coder_7b      cpp        ok
+stone      deepseek_coder_6p7b  python     ok
+stone      deepseek_coder_6p7b  java       ok
+stone      deepseek_coder_6p7b  cpp        ok
+mcgmark    qwen25_coder_7b      python     ok
+mcgmark    deepseek_coder_6p7b  python     ok
+promptmark qwen25_coder_7b      python     ok
+promptmark deepseek_coder_6p7b  python     ok
+
+##### MCGMark: stati di esecuzione (marcati e gemella)
+qwen25_coder_7b marked: {'FAILED': 230, 'SYNTAX_ERROR': 182, 'PASSED': 157, 'TIMEOUT': 7}
+qwen25_coder_7b twin: {'PASSED': 438, 'FAILED': 131, 'TIMEOUT': 7}
+qwen25_coder_7b marked, embed_status x exec status:
+status        FAILED  PASSED  SYNTAX_ERROR  TIMEOUT
+embed_status                                       
+OK                20       8            18        0
+PARTIAL          210     149           164        7
+qwen25_coder_7b marked, mean n_sites by exec status: {'FAILED': 11.57, 'PASSED': 7.56, 'SYNTAX_ERROR': 12.44, 'TIMEOUT': 6.29}
+deepseek_coder_6p7b marked: {'FAILED': 269, 'PASSED': 180, 'SYNTAX_ERROR': 117, 'TIMEOUT': 10}
+deepseek_coder_6p7b twin: {'PASSED': 376, 'FAILED': 182, 'TIMEOUT': 18}
+deepseek_coder_6p7b marked, embed_status x exec status:
+status        FAILED  PASSED  SYNTAX_ERROR  TIMEOUT
+embed_status                                       
+OK                 4       2             4        0
+PARTIAL          265     178           113       10
+deepseek_coder_6p7b marked, mean n_sites by exec status: {'FAILED': 7.45, 'PASSED': 5.84, 'SYNTAX_ERROR': 11.37, 'TIMEOUT': 8.3}
