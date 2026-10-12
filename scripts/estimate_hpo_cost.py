@@ -111,8 +111,14 @@ class Unit:
 def _results(path: Path) -> list[dict[str, Any]]:
     if not path.is_file():
         return []
+    rows = []
     with open(path, encoding="utf-8") as handle:
-        return [json.loads(line) for line in handle if line.strip()]
+        for line in handle:
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue  # riga vuota o in scrittura da un worker ancora attivo (es. ACW)
+    return rows
 
 
 def _cfg(root: Path, method: str, model: str) -> str | None:
