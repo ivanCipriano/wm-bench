@@ -1,4 +1,7 @@
-srun: job 793289 queued and waiting for resources
-srun: job 793289 has been allocated resources
-python: can't open file '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/scripts/verify_promptmark_replay.py': [Errno 2] No such file or directory
-srun: error: gnode02: task 0: Exited with exit code 2
+srun: job 793294 queued and waiting for resources
+srun: job 793294 has been allocated resources
+problems (10): ['humaneval/136', 'humaneval/143', 'humaneval/84', 'humaneval/96', 'mbpp/725', 'mbpp/739', 'mbpp/754', 'mbpp/775', 'mbpp/781', 'mbpp/784']
+config A {'iter_cap': 3, 'z_threshold': 2.12}: 20 samples, 10 stopped early, 20 identical to the replay
+config B {'iter_cap': 5, 'z_threshold': 1.64}: 20 samples, 16 stopped early, 20 identical to the replay
+default replay vs M7 artifacts (informative): 20/20 identical
+RESULT: OK
