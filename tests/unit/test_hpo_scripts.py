@@ -128,3 +128,45 @@ def test_expand_and_auroc() -> None:
     high, low = df["z_official"].iloc[5:], df["z_official"].iloc[:5]
     assert stone.auroc(high, low) == pytest.approx(1.0)
     assert math.isnan(stone.auroc(high.iloc[:2], low))
+
+
+# ------------------------------------------------- PromptMark, griglia ricostruita
+replay_mod = _load("verify_promptmark_replay")
+
+
+def _it(correct: bool, p: float, text: str) -> dict[str, object]:
+    return {"correctness": correct, "p_exact": p, "response": text}
+
+
+def test_replay_stops_like_run_phase1() -> None:
+    its = [
+        _it(False, 0.5, "r0"),
+        _it(True, 0.04, "r1"),
+        _it(True, 0.01, "r2"),
+        _it(True, 0.3, "r3"),
+    ]
+    # η = 2,12 (p < 0,017): stop alla terza iterazione.
+    assert replay_mod.replay(its, 5, 2.12) == (2, 3)
+    # η = 1,64 (p < 0,05): stop prima, alla seconda.
+    assert replay_mod.replay(its, 5, 1.64) == (1, 2)
+    # Massimo 2 iterazioni con η = 2,12: nessuno stop, best = la prima corretta.
+    assert replay_mod.replay(its, 2, 2.12) == (1, 2)
+    # Mai corretta: best = la prima iterazione.
+    wrong = [_it(False, 0.001, "a"), _it(False, 0.001, "b")]
+    assert replay_mod.replay(wrong, 5, 2.12) == (0, 2)
+    # Soglia irraggiungibile: nessuno stop.
+    assert replay_mod.replay(its, 5, replay_mod.UNREACHABLE_Z) == (1, 4)
+
+
+def test_replay_compare_detects_differences() -> None:
+    its = [_it(False, 0.5, "r0"), _it(True, 0.01, "r1"), _it(True, 0.3, "r2")]
+    trajectory = {"iterations": its}
+    actual = {
+        "n_iterations": 2,
+        "selected_iteration": 1,
+        "raw_output": "r1",
+        "iterations": its[:2],
+    }
+    assert replay_mod.compare(trajectory, actual, 5, 2.12) == []
+    changed = {**actual, "raw_output": "r1 "}
+    assert replay_mod.compare(trajectory, changed, 5, 2.12) == ["raw_output differs"]
