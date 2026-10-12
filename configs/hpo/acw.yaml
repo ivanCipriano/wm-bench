@@ -1,0 +1,5 @@
+# Griglia HPO di ACW (Milestone 8; docs/hpo_grids.md, audit di ACW §4): 4 configurazioni,
+# default (tutte le 43 regole) compreso.
+method: acw
+space:
+  num_transforms: [10, 20, 30, 43]

@@ -1,0 +1,4 @@
+# MCGMark non ha iperparametri regolabili (D1, D18): la griglia è il solo default, nessuno sweep.
+method: mcgmark
+include:
+  - {}

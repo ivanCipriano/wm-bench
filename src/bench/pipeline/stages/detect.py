@@ -36,6 +36,7 @@ from bench.domain.errors import ConfigError
 from bench.domain.models import CodeSample, DetectionRecord, Problem
 from bench.generation.decoding import neutral_settings
 from bench.generation.prompt_builder import PromptBuilder
+from bench.hpo.grid import resolve
 from bench.methods.base import DetectInput, Detector
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.generate_baseline import baseline_ref, decoding_for, problems_ref
@@ -77,6 +78,7 @@ class DetectStage(Stage):
     resources: ClassVar[ResourceClass] = ResourceClass.GPU_NVIDIA
     output_kinds: ClassVar[frozenset[str]] = frozenset({"detection"})
     cell_axes: ClassVar[tuple[str, ...]] = ("method", "model_id", "level", "language", "split")
+    sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
@@ -104,9 +106,14 @@ class DetectStage(Stage):
             )
         return cell.method, cell.model_id, cell.level, cell.language, cell.split
 
-    def config_hash(self, method: str) -> str:
-        adapter = self.adapter(method)
-        return str(adapter.config_hash(adapter.default_hparams()))
+    def cell_config(self, cell: Cell) -> tuple[dict[str, Any], str]:
+        """Iperparametri e hash della cella (default senza ``config_hash``, sweep dell'HPO)."""
+        hp, cfg_hash, _ = resolve(self._cfg(), self.adapter(str(cell.method)), cell.config_hash)
+        return hp, cfg_hash
+
+    def config_hash(self, cell: Cell | str) -> str:
+        """Hash della configurazione della cella (con un nome di metodo: il default)."""
+        return self.cell_config(Cell(method=cell) if isinstance(cell, str) else cell)[1]
 
     def subjects(self, method: str) -> tuple[str, ...]:
         twin = getattr(self.adapter(method), "twin_baseline", False)
@@ -114,7 +121,7 @@ class DetectStage(Stage):
 
     def _sample_refs(self, cell: Cell) -> dict[str, list[ArtifactRef]]:
         method, model_id, level, language, split = self._require(cell)
-        cfg_hash = self.config_hash(method)
+        cfg_hash = self.config_hash(cell)
         refs: dict[str, list[ArtifactRef]] = {
             "positives": [watermarked_ref(method, model_id, cfg_hash, level, language, split)],
             "neg_human": [
@@ -138,7 +145,7 @@ class DetectStage(Stage):
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
-        cfg_hash = self.config_hash(method)
+        cfg_hash = self.config_hash(cell)
         return [
             detection_ref(method, model_id, cfg_hash, s, level, language, split)
             for s in self.subjects(method)
@@ -164,8 +171,7 @@ class DetectStage(Stage):
         if not isinstance(adapter, Detector):
             raise ConfigError(f"{method} has no detector")
         model = cfg.models_catalog[model_id]
-        hp = adapter.default_hparams()
-        cfg_hash = self.config_hash(method)
+        hp, cfg_hash = self.cell_config(cell)
         prompts = PromptBuilder.from_config(cfg.prompt)
         problems = {
             r["problem_key"]: Problem.model_validate(r)

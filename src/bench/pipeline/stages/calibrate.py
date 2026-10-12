@@ -21,6 +21,7 @@ from bench.config.resources import ResourceClass
 from bench.config.schema import ExperimentConfig
 from bench.domain.errors import ConfigError
 from bench.domain.models import ThresholdSet
+from bench.hpo.grid import resolve
 from bench.metrics.calibration import MIN_SCORE, ThresholdCalibrator
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.detect import detection_ref
@@ -106,6 +107,7 @@ class CalibrateStage(Stage):
     resources: ClassVar[ResourceClass] = ResourceClass.CPU
     output_kinds: ClassVar[frozenset[str]] = frozenset({"threshold"})
     cell_axes: ClassVar[tuple[str, ...]] = ("method", "model_id", "language")
+    sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
@@ -120,11 +122,15 @@ class CalibrateStage(Stage):
             raise ConfigError("calibrate needs the experiment configuration")
         return self.config
 
-    def config_hash(self, method: str) -> str:
-        if method not in self._hashes:
-            adapter = make_adapter(self._cfg(), method)
-            self._hashes[method] = str(adapter.config_hash(adapter.default_hparams()))
-        return self._hashes[method]
+    def config_hash(self, cell: Cell | str) -> str:
+        """Hash della configurazione della cella (con un nome di metodo: il default)."""
+        if isinstance(cell, str):
+            cell = Cell(method=cell)
+        key = f"{cell.method}:{cell.config_hash}"
+        if key not in self._hashes:
+            adapter = make_adapter(self._cfg(), str(cell.method))
+            self._hashes[key] = resolve(self._cfg(), adapter, cell.config_hash)[1]
+        return self._hashes[key]
 
     @staticmethod
     def _require(cell: Cell) -> tuple[str, str, str]:
@@ -137,7 +143,7 @@ class CalibrateStage(Stage):
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, language = self._require(cell)
-        cfg_hash = self.config_hash(method)
+        cfg_hash = self.config_hash(cell)
         return [
             detection_ref(
                 method, model_id, cfg_hash, "neg_human", level, language, CALIBRATION_SPLIT
@@ -147,12 +153,12 @@ class CalibrateStage(Stage):
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, language = self._require(cell)
-        return [threshold_ref(method, model_id, language, self.config_hash(method))]
+        return [threshold_ref(method, model_id, language, self.config_hash(cell))]
 
     def run(self, cell: Cell, ctx: StageContext) -> None:
         cfg = self._cfg()
         method, model_id, language = self._require(cell)
-        cfg_hash = self.config_hash(method)
+        cfg_hash = self.config_hash(cell)
         frames = [ctx.store.read_table(ref) for ref in self.inputs(cell)]
         adapter: Any = make_adapter(cfg, method)
         table = primary_view(pd.concat(frames, ignore_index=True), adapter)

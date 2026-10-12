@@ -2,15 +2,22 @@
 
 from __future__ import annotations
 
+import dataclasses
 import math
+from collections.abc import Sequence
+from pathlib import Path
 from typing import Any, ClassVar
 
-from bench_contracts import WorkerResult
+from bench_contracts import WorkerResult, iter_jsonl
+from bench_contracts.enums import EmbedStatus
+from scipy.stats import norm
 
+from bench.config.schema import ModelSpec
 from bench.data.promptmark_freq import LetterFrequencies
 from bench.domain.enums import MethodFamily
 from bench.domain.errors import ConfigError
-from bench.methods.base import Detector, PromptEmbedder
+from bench.domain.models import Problem
+from bench.methods.base import Detector, EmbedRun, PromptEmbedder
 from bench.registry import METHODS
 
 PROTOCOL = ("iter_cap", "z_threshold", "green_size")
@@ -18,6 +25,62 @@ PROTOCOL = ("iter_cap", "z_threshold", "green_size")
 # derivata dalla chiave in [8, 18] se ``green_size`` è nullo, altrimenti fissata (patch 0002).
 G_MIN, G_MAX = 8, 18
 CANDIDATES = 18  # pool delle iniziali più frequenti (``top_n`` del codice)
+
+
+def replay_selection(
+    iterations: Sequence[dict[str, Any]], iter_cap: int, z_threshold: float
+) -> tuple[int, int]:
+    """(indice della candidata scelta, iterazioni eseguite) come ``run_phase1`` (ADR-009).
+
+    ``iterations`` è la traiettoria con soglia irraggiungibile. Stop alla prima iterazione
+    t < ``iter_cap`` con codice corretto e ``p_exact < norm.sf(z_threshold)``; altrimenti la
+    candidata ``best``: la prima iterazione corretta, se c'è, se no la prima
+    (``exp_iterative_wm.py:207-284``).
+    """
+    threshold = float(norm.sf(z_threshold))
+    best: int | None = None
+    steps = min(int(iter_cap), len(iterations))
+    for t in range(steps):
+        it = iterations[t]
+        if it["correctness"] and float(it["p_exact"]) < threshold:
+            return t, t + 1
+        if best is None or (it["correctness"] and not iterations[best]["correctness"]):
+            best = t
+    return (best if best is not None else 0), steps
+
+
+def replay_result(result: WorkerResult, iter_cap: int, z_threshold: float) -> WorkerResult:
+    """Risultato del worker per (``iter_cap``, η) ricavato da quello della traiettoria.
+
+    Ricalcola i campi dello shim che dipendono dalla scelta: risposta (``raw_output``),
+    iterazioni eseguite e ripetizioni, iterazione e codice scelti, esito del watermark, siti
+    idonei, semi e iterazioni registrate.
+    """
+    extra = dict(result.extra or {})
+    trajectory = list(extra.get("iterations") or [])
+    if result.status != EmbedStatus.OK or not trajectory:
+        return result
+    chosen, steps = replay_selection(trajectory, iter_cap, z_threshold)
+    threshold = float(norm.sf(z_threshold))
+    used = [{**it, "meets_z": float(it["p_exact"]) < threshold} for it in trajectory[:steps]]
+    selected = used[chosen]
+    extra.update(
+        {
+            "n_iterations": steps,
+            "n_retries_correctness": sum(1 for it in used[:-1] if not it["correctness"]),
+            "n_retries_watermark": sum(
+                1 for it in used[:-1] if it["correctness"] and not it["meets_z"]
+            ),
+            "selected_iteration": selected.get("iteration", chosen),
+            "selected_code": selected.get("code", ""),
+            "watermarked": bool(selected["meets_z"]),
+            "n_free_identifiers": selected.get("n_free_identifiers"),
+            "seeds": list(extra.get("seeds") or [])[:steps],
+            "iterations": used,
+            "replay": {"iter_cap": int(iter_cap), "z_threshold": float(z_threshold)},
+        }
+    )
+    return dataclasses.replace(result, raw_output=selected.get("response", ""), extra=extra)
 
 
 @METHODS.register("promptmark")
@@ -81,6 +144,48 @@ class PromptMarkAdapter(PromptEmbedder, Detector):
         extra = result.extra if result is not None else {}
         metrics["n_sites"] = extra.get("n_free_identifiers")
         return metrics
+
+    def embed_from_trajectory(
+        self,
+        problems: Sequence[Problem],
+        hp: dict[str, Any],
+        model: ModelSpec,
+        key_id: str,
+        n: int,
+        trajectory_dir: Path,
+    ) -> EmbedRun:
+        """Campioni di un candidato ricostruiti dai risultati della traiettoria (ADR-009).
+
+        Nessuna generazione: si leggono i risultati del worker della traiettoria
+        (``results.jsonl`` nella sua cartella di lavoro) e si sceglie, per ogni campione,
+        l'iterazione dove il ciclo con (``iter_cap``, η) si sarebbe fermato.
+
+        Raises:
+            ConfigError: se mancano i risultati della traiettoria.
+        """
+        path = trajectory_dir / "results.jsonl"
+        if not path.is_file():
+            raise ConfigError(f"{path} not found: run the trajectory first (hpo.part=trajectories)")
+        rows = [WorkerResult.from_dict(row) for row in iter_jsonl(path)]
+        results: dict[tuple[str, int], WorkerResult] = {}
+        for row in rows:  # in caso di righe ripetute vale l'ultima, come WorkerClient.collect
+            problem_key, _, index = row.item_id.rpartition("#")
+            results[(problem_key, int(index))] = replay_result(
+                row, int(hp["iter_cap"]), float(hp["z_threshold"])
+            )
+        supported = {p.problem_key for p in problems if self.supports(p.language)}
+        missing = [(k, i) for k in sorted(supported) for i in range(n) if (k, i) not in results]
+        if missing:
+            raise ConfigError(f"trajectory {trajectory_dir} lacks {len(missing)} sample(s)")
+        samples, metrics = self.samples_from_results(problems, results, hp, model, key_id, n)
+        return EmbedRun(
+            samples=samples,
+            worker=None,
+            native_hparams=self.to_native_hparams(hp),
+            request=None,
+            metrics=metrics,
+            replayed_from=trajectory_dir.parent.name,
+        )
 
     def secondary_score(self, name: str, extra: dict[str, Any]) -> float | None:
         """−log10 del p adattivo (come il punteggio principale); p = 0 → +inf."""

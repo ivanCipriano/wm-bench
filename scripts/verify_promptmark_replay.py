@@ -34,7 +34,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from scipy.stats import norm
+from bench.methods.adapters.promptmark import replay_selection
 
 WMB = os.environ.get("WMB", "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench")
 MODEL = "qwen25_coder_7b"
@@ -43,21 +43,8 @@ CONFIGS: dict[str, tuple[int, float]] = {"A": (3, 2.12), "B": (5, 1.64)}  # (ite
 TRAJECTORY = {"iter_cap": 5, "z_threshold": UNREACHABLE_Z}
 
 
-def replay(iterations: list[dict[str, Any]], iter_cap: int, z_threshold: float) -> tuple[int, int]:
-    """(indice della candidata scelta, iterazioni eseguite) come ``run_phase1``.
-
-    ``iterations`` è la traiettoria con soglia irraggiungibile (campo ``iterations`` dello shim).
-    """
-    threshold = float(norm.sf(z_threshold))
-    best: int | None = None
-    steps = min(iter_cap, len(iterations))
-    for t in range(steps):
-        it = iterations[t]
-        if it["correctness"] and float(it["p_exact"]) < threshold:
-            return t, t + 1
-        if best is None or (it["correctness"] and not iterations[best]["correctness"]):
-            best = t
-    return (best if best is not None else 0), steps
+# Stessa funzione usata dal framework per i candidati ricostruiti (ADR-009).
+replay = replay_selection
 
 
 def compare(

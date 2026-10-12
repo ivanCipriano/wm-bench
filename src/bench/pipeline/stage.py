@@ -6,7 +6,7 @@ import itertools
 import re
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, replace
 from datetime import UTC, datetime
 from typing import Any, ClassVar
 
@@ -124,6 +124,9 @@ class Stage(ABC):
     resources: ClassVar[ResourceClass]
     output_kinds: ClassVar[frozenset[str]]
     cell_axes: ClassVar[tuple[str, ...]] = ()
+    # Sweep dell'HPO (``hpo.grid``): ruoli dei punti della griglia per cui la fase ha una cella
+    # per configurazione (``Cell.config_hash``); vuoto = la fase non partecipa allo sweep.
+    sweep_roles: ClassVar[tuple[str, ...]] = ()
 
     @classmethod
     def create(cls, config: ExperimentConfig) -> Stage:
@@ -137,6 +140,11 @@ class Stage(ABC):
         ``None`` scarta la cella; le celle uguali dopo la normalizzazione si contano una volta.
         """
         return cell
+
+    @classmethod
+    def sweep_cell(cls, cell: Cell) -> bool:
+        """Se la cella (di un metodo) si espande per configurazione nello sweep."""
+        return True
 
     @abstractmethod
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
@@ -159,6 +167,7 @@ class CellPlanner:
     """
 
     def __init__(self, config: ExperimentConfig) -> None:
+        self.config = config
         self._axes: dict[str, list[str]] = {
             "method": list(config.methods),
             "model_id": list(config.models),
@@ -184,4 +193,24 @@ class CellPlanner:
             cell = stage.normalize_cell(Cell(**dict(zip(stage.cell_axes, combo, strict=True))))
             if cell is not None and cell not in cells:
                 cells.append(cell)
-        return cells
+        return self._sweep(stage, cells)
+
+    def _sweep(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:
+        """Con ``hpo.grid``: una cella per configurazione della griglia, per le celle del metodo.
+
+        Le celle senza metodo (es. esecuzione della baseline) restano come sono; quelle di altri
+        metodi si scartano. Le fasi senza ``sweep_roles`` non si espandono.
+        """
+        method = self.config.hpo.grid
+        if method is None or not stage.sweep_roles:
+            return cells
+        from bench.hpo.grid import sweep_hashes
+
+        hashes = sweep_hashes(self.config, method, stage.sweep_roles)  # type: ignore[arg-type]
+        out: list[Cell] = []
+        for cell in cells:
+            if cell.method is None or not stage.sweep_cell(cell):
+                out.append(cell)
+            elif cell.method == method:
+                out.extend(replace(cell, config_hash=h) for h in hashes)
+        return out

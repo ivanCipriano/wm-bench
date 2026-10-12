@@ -240,6 +240,10 @@ class PromptMarkShim(ShimBase):
         if not selected:
             return [self.result(item, EmbedStatus.FAILED, sample_index=0, error="no candidate")]
         iterations = [self._iteration(e) for e in evaluations]
+        # Siti idonei anche per iterazione: servono ai candidati ricostruiti dalla traiettoria
+        # (ADR-009), che scelgono un'iterazione diversa da quella di questa esecuzione.
+        for it in iterations:
+            it["n_free_identifiers"] = free_identifiers(it["code"], user, self.su.CodeNavigator)
         retries_wm = retries_corr = 0
         for it in iterations[:-1]:
             if not it["correctness"]:

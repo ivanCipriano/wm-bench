@@ -1,0 +1,9 @@
+# Griglia HPO di SWEET (Milestone 8; docs/hpo_grids.md, audit di SWEET §3, TODO 7).
+# Valori del paper (App. D.2) più il default del codice (main.py): 61 configurazioni.
+method: sweet
+space:
+  gamma: [0.1, 0.25, 0.5]
+  delta: [0.5, 1.0, 2.0, 3.0, 4.0]
+  entropy_threshold: [0.3, 0.6, 0.9, 1.2]
+include:
+  - {gamma: 0.5, delta: 0.5, entropy_threshold: 0.5}   # default del codice

@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Sweep dell'HPO della Milestone 8 su L1 dev, per un metodo (griglia configs/hpo/<metodo>.yaml):
+#
+#   bash scripts/submit_hpo_l1.sh trajectories promptmark 1/1  # 0) solo PromptMark: traiettorie (ADR-009)
+#   bash scripts/submit_hpo_l1.sh watermark stone 1/1          # 1) campioni marcati per configurazione
+#   bash scripts/submit_hpo_l1.sh execute   stone 1/1          # 2) Pass@1 dei marcati (defq)
+#   bash scripts/submit_hpo_l1.sh detect    stone 1/1          # 3) punteggi di positivi e negativi
+#   bash scripts/submit_hpo_l1.sh calibrate stone              # 4) soglie per configurazione
+#   bash scripts/submit_hpo_l1.sh tune      stone              # 5) scelta della configurazione
+#   aggiungere --dry-run in fondo per vedere solo il piano; K/M divide le celle fra le due persone.
+#
+# Ordine: 0) → 1) → 2) e 3) insieme → 4) dopo 3) → 5) dopo 2) e 4). Le configurazioni già fatte
+# (es. il default della M7) si saltano. Variabile opzionale: JOBS (default 3).
+set -euo pipefail
+
+USAGE="usage: submit_hpo_l1.sh trajectories|watermark|execute|detect|calibrate|tune METHOD [K/M] [--dry-run]"
+STEP="${1:?$USAGE}"
+METHOD="${2:?$USAGE}"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+umask 002
+WMB="${WMB:-/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench}"
+export PATH="$WMB/bench-core/bin:$PATH"  # bench-core anche in una shell nuova
+
+case "$METHOD" in
+    sweet) LANGS="[python,java,cpp,javascript]" ;;
+    stone) LANGS="[python,java,cpp]" ;;
+    mcgmark|promptmark|acw) LANGS="[python]" ;;
+    *) echo "unknown method: $METHOD" >&2; exit 2 ;;
+esac
+COMMON=("methods=[$METHOD]" "levels=[L1]" "splits=[dev]" "languages=$LANGS")
+SWEEP=("hpo.grid=$METHOD")
+if [ "$METHOD" = "promptmark" ]; then
+    SWEEP+=("hpo.part=candidates")
+fi
+
+case "$STEP" in
+    trajectories)
+        [ "$METHOD" = "promptmark" ] || { echo "trajectories: only for promptmark" >&2; exit 2; }
+        SHARE="${3:?$USAGE}"; MODE="${4:-}"
+        ARGS=(--jobs "${JOBS:-3}" --share "$SHARE" "stage=watermark" "hpo.grid=$METHOD"
+              "hpo.part=trajectories" "${COMMON[@]}")
+        ;;
+    watermark|detect)
+        SHARE="${3:?$USAGE}"; MODE="${4:-}"
+        ARGS=(--jobs "${JOBS:-3}" --share "$SHARE" "stage=$STEP" "${SWEEP[@]}" "${COMMON[@]}")
+        ;;
+    execute)
+        SHARE="${3:?$USAGE}"; MODE="${4:-}"
+        ARGS=(--jobs "${JOBS:-3}" --share "$SHARE" "stage=execute" "${SWEEP[@]}"
+              "execution.sources=[llm_watermarked]" "${COMMON[@]}")
+        ;;
+    calibrate)
+        SHARE="1/1"; MODE="${3:-}"
+        ARGS=(--jobs 1 "stage=calibrate" "${SWEEP[@]}" "${COMMON[@]}")
+        ;;
+    tune)
+        SHARE="1/1"; MODE="${3:-}"
+        ARGS=(--jobs 1 "stage=tune" "${COMMON[@]}")
+        ;;
+    *) echo "unknown step: $STEP" >&2; exit 2 ;;
+esac
+
+echo "##### piano (dry run): HPO $STEP $METHOD, quota $SHARE"
+bench submit --dry-run "${ARGS[@]}" | grep -v "parameters:"
+if [ "$MODE" = "--dry-run" ]; then
+    exit 0
+fi
+echo "##### invio: HPO $STEP $METHOD, quota $SHARE"
+bench submit "${ARGS[@]}" | grep -v "parameters:"
+squeue -A did_tesi_nlp_330 -o "%.18i %.12u %.9P %.34j %.8T %.10M"

@@ -269,6 +269,10 @@ class HpoConfig(_Frozen):
 
     use_selected: bool
     max_pass1_drop_pp: float = Field(ge=0)
+    # Sweep (Milestone 8): metodo della griglia ``configs/hpo/<metodo>.yaml`` da espandere nelle
+    # celle (``Cell.config_hash``) e parte dello sweep (traiettorie di PromptMark, ADR-009).
+    grid: str | None = None
+    part: Literal["all", "trajectories", "candidates"] = "all"
 
 
 class ExperimentConfig(_Frozen):

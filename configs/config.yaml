@@ -44,6 +44,8 @@ log_level: INFO
 hpo:
   use_selected: true           # false durante lo sweep
   max_pass1_drop_pp: 3.0       # provvisorio (protocollo)
+  grid: null                   # sweep: metodo della griglia configs/hpo/<metodo>.yaml
+  part: all                    # all | trajectories | candidates (PromptMark, ADR-009)
 detection:
   target_fpr: 0.01
   min_negatives: 1000

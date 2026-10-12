@@ -1,0 +1,7 @@
+# Griglia HPO di STONE (Milestone 8; docs/hpo_grids.md, audit di STONE §3, TODO 6).
+# δ = 0,5 e 1,0 del repository; sopra 1,0 estensione dopo la prova dose-risposta (12 ottobre
+# 2026): 18 configurazioni, default (γ = 0,5, δ = 1,0) compreso.
+method: stone
+space:
+  gamma: [0.25, 0.5]
+  delta: [0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0]

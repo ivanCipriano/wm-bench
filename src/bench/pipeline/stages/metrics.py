@@ -37,6 +37,7 @@ from bench.config.resources import ResourceClass
 from bench.config.schema import ExperimentConfig
 from bench.domain.errors import ConfigError
 from bench.domain.models import MetricValue, ThresholdSet
+from bench.hpo.grid import resolve
 from bench.methods.base import Detector
 from bench.metrics.calibration import MIN_SCORE, detected
 from bench.metrics.stats import auroc, auroc_interval, clopper_pearson, ratio_interval, wilson
@@ -123,9 +124,10 @@ class MetricsStage(Stage):
             self._adapters[method] = make_adapter(self._cfg(), method)
         return self._adapters[method]
 
-    def config_hash(self, method: str) -> str:
-        adapter = self.adapter(method)
-        return str(adapter.config_hash(adapter.default_hparams()))
+    def config_hash(self, cell: Cell | str) -> str:
+        """Hash della configurazione della cella (con un nome di metodo: il default)."""
+        cell = Cell(method=cell) if isinstance(cell, str) else cell
+        return resolve(self._cfg(), self.adapter(str(cell.method)), cell.config_hash)[1]
 
     @staticmethod
     def _require(cell: Cell) -> tuple[str, str, str, str, str]:
@@ -140,7 +142,7 @@ class MetricsStage(Stage):
 
     def _refs(self, cell: Cell) -> dict[str, ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
-        cfg_hash = self.config_hash(method)
+        cfg_hash = self.config_hash(cell)
 
         def det(subject: str) -> ArtifactRef:
             return detection_ref(method, model_id, cfg_hash, subject, level, language, split)
@@ -175,13 +177,13 @@ class MetricsStage(Stage):
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
-        return [metrics_ref(method, model_id, self.config_hash(method), level, language, split)]
+        return [metrics_ref(method, model_id, self.config_hash(cell), level, language, split)]
 
     # ------------------------------------------------------------------ esecuzione
     def run(self, cell: Cell, ctx: StageContext) -> None:
         cfg = self._cfg()
         method, model_id, level, language, split = self._require(cell)
-        cfg_hash = self.config_hash(method)
+        cfg_hash = self.config_hash(cell)
         refs = self._refs(cell)
         thresholds = ctx.store.read_model(refs["threshold"], ThresholdSet)
         if split == "test" and thresholds.provisional and not cfg.detection.allow_provisional_test:

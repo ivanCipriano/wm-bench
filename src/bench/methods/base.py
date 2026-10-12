@@ -46,6 +46,8 @@ class EmbedRun:
     request: dict[str, Any] | None
     # Misure per campione dell'inserimento (ordine di ``samples``), colonne ``EMBED_COLUMNS``.
     metrics: list[dict[str, Any]] = dataclasses.field(default_factory=list)
+    # Candidati ricostruiti da una traiettoria (PromptMark, ADR-009): hash della traiettoria.
+    replayed_from: str | None = None
 
 
 # Colonne aggiuntive dei campioni marcati (oltre a ``CodeSample``), ``None`` se il metodo non le
@@ -240,19 +242,7 @@ class PromptEmbedder(MethodAdapter):
         native = self.to_native_hparams(hp)
         if not watermark:
             native = {**native, "watermark": False}
-        cfg_hash = self.config_hash(hp)
-        problem_seeds = {
-            p.problem_key: generation_seed(
-                self.cfg.global_seed, model.model_id, p.problem_key, p.language
-            )
-            for p in problems
-        }
-
-        def seed_of(problem: Problem, index: int) -> int:
-            if self.one_sample_per_item:
-                return self.sample_seed(model, problem, index)
-            return problem_seeds[problem.problem_key]
-
+        seed_of = self._seed_function(problems, model)
         supported = [p for p in problems if self.supports(p.language)]
         results: dict[tuple[str, int], WorkerResult] = {}
         worker_run: WorkerRun | None = None
@@ -277,6 +267,51 @@ class PromptEmbedder(MethodAdapter):
             items = self._embed_items(supported, model, prompts, n, seed_of)
             worker_run = self.run_worker(request, items)
             results = self._index_results(worker_run)
+        samples, metrics = self.samples_from_results(
+            problems, results, hp, model, key_id, n, extractor, watermark
+        )
+        return EmbedRun(
+            samples=samples,
+            worker=worker_run,
+            native_hparams=native,
+            request=request_dict,
+            metrics=metrics,
+        )
+
+    def _seed_function(self, problems: Sequence[Problem], model: ModelSpec) -> Any:
+        """Seme di un campione: del campione (un campione per item) o del problema."""
+        problem_seeds = {
+            p.problem_key: generation_seed(
+                self.cfg.global_seed, model.model_id, p.problem_key, p.language
+            )
+            for p in problems
+        }
+
+        def seed_of(problem: Problem, index: int) -> int:
+            if self.one_sample_per_item:
+                return self.sample_seed(model, problem, index)
+            return problem_seeds[problem.problem_key]
+
+        return seed_of
+
+    def samples_from_results(
+        self,
+        problems: Sequence[Problem],
+        results: dict[tuple[str, int], WorkerResult],
+        hp: dict[str, Any],
+        model: ModelSpec,
+        key_id: str,
+        n: int,
+        extractor: CodeExtractor | None = None,
+        watermark: bool = True,
+    ) -> tuple[list[CodeSample], list[dict[str, Any]]]:
+        """Campioni e misure d'inserimento dai risultati del worker per ``(problema, indice)``.
+
+        Un problema senza risultati (linguaggio non supportato) dà N righe ``NOT_APPLICABLE``.
+        """
+        extractor = extractor or FencedCodeExtractor()
+        cfg_hash = self.config_hash(hp)
+        seed_of = self._seed_function(problems, model)
         samples = []
         metrics = []
         for problem in problems:
@@ -307,13 +342,7 @@ class PromptEmbedder(MethodAdapter):
                         watermark,
                     )
                 )
-        return EmbedRun(
-            samples=samples,
-            worker=worker_run,
-            native_hparams=native,
-            request=request_dict,
-            metrics=metrics,
-        )
+        return samples, metrics
 
     def _index_results(self, worker_run: WorkerRun) -> dict[tuple[str, int], WorkerResult]:
         """Risultati del worker per ``(problem_key, sample_index)``."""

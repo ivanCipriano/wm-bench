@@ -11,6 +11,11 @@ stesso seme della baseline; i linguaggi non supportati dal metodo danno N righe
 (``_runs/watermark/<metodo>/<modello>/<cfg>/<cella>/``): rilanciando la fase, il runner dello
 shim salta gli item già scritti in ``results.jsonl``.
 
+**Sweep dell'HPO** (``hpo.grid``, Milestone 8): una cella per configurazione della griglia
+(``Cell.config_hash``, iperparametri da :func:`bench.hpo.grid.resolve`). I candidati di PromptMark
+ricostruiti (ADR-009) non chiamano il worker: si ricavano dai risultati della traiettoria
+(``_runs/watermark/.../<hash della traiettoria>/<cella>/results.jsonl``), input della cella.
+
 Fase ``generate_baseline_twin`` (D20): per i metodi con ``twin_baseline`` (MCGMark), la stessa
 generazione del metodo con il watermark disattivato (stesso worker e ambiente, stesso prompt e
 prefill, stessi semi per campione). Output
@@ -37,6 +42,7 @@ from bench.domain.errors import ConfigError
 from bench.domain.models import CodeSample, Problem
 from bench.generation.decoding import neutral_settings
 from bench.generation.prompt_builder import PromptBuilder
+from bench.hpo.grid import GridPoint, resolve
 from bench.methods.base import EMBED_COLUMNS, CodeEmbedder, MethodAdapter, PromptEmbedder
 from bench.methods.worker_client import WorkerClient
 from bench.pipeline.stage import Cell, Stage, StageContext
@@ -124,6 +130,7 @@ class WatermarkStage(Stage):
     resources: ClassVar[ResourceClass] = ResourceClass.GPU_NVIDIA
     output_kinds: ClassVar[frozenset[str]] = frozenset({"watermarked"})
     cell_axes: ClassVar[tuple[str, ...]] = ("method", "model_id", "level", "language", "split")
+    sweep_roles: ClassVar[tuple[str, ...]] = ("trajectory", "candidate")
     watermark: ClassVar[bool] = True  # False: baseline gemella
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
@@ -153,21 +160,34 @@ class WatermarkStage(Stage):
             )
         return cell.method, cell.model_id, cell.level, cell.language, cell.split
 
-    def config_hash(self, method: str) -> str:
-        """Hash della configurazione di default del metodo."""
-        adapter = self.adapter(method)
-        return adapter.config_hash(adapter.default_hparams())
+    def cell_config(self, cell: Cell) -> tuple[dict[str, Any], str, GridPoint]:
+        """Iperparametri, hash e punto della griglia della cella (default senza hash)."""
+        return resolve(self._cfg(), self.adapter(str(cell.method)), cell.config_hash)
+
+    def config_hash(self, cell: Cell | str) -> str:
+        """Hash della configurazione della cella (con un nome di metodo: il default)."""
+        return self.cell_config(Cell(method=cell) if isinstance(cell, str) else cell)[1]
+
+    def trajectory_hash(self, cell: Cell) -> str | None:
+        """Hash della traiettoria da cui si ricostruisce la cella (ADR-009), se c'è."""
+        point = self.cell_config(cell)[2]
+        if point.trajectory is None:
+            return None
+        return self.adapter(str(cell.method)).config_hash(point.trajectory)
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
         refs = [problems_ref(level, language)]
         if isinstance(self.adapter(method), CodeEmbedder):  # post-hoc: parte dalla baseline
             refs.append(baseline_ref(model_id, level, language, split))
+        trajectory = self.trajectory_hash(cell) if self.watermark else None
+        if trajectory is not None:
+            refs.append(watermarked_ref(method, model_id, trajectory, level, language, split))
         return refs
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
-        return [watermarked_ref(method, model_id, self.config_hash(method), level, language, split)]
+        return [watermarked_ref(method, model_id, self.config_hash(cell), level, language, split)]
 
     # ------------------------------------------------------------------ esecuzione
     def run(self, cell: Cell, ctx: StageContext) -> None:
@@ -184,8 +204,7 @@ class WatermarkStage(Stage):
         model = cfg.models_catalog[model_id]
         decoding = decoding_for(cfg, level)
         prompts = PromptBuilder.from_config(cfg.prompt)
-        hp = adapter.default_hparams()
-        cfg_hash = adapter.config_hash(hp)
+        hp, cfg_hash, point = self.cell_config(cell)
 
         table = ctx.store.read_table(problems_ref(level, language))
         table = table[table["split"] == split]
@@ -212,17 +231,25 @@ class WatermarkStage(Stage):
             "supported" if supported else "NOT_APPLICABLE",
             cfg_hash,
         )
-        result = adapter.embed_from_prompts(
-            problems,
-            hp,
-            model,
-            KEY_ID,
-            request_decoding,
-            decoding.n,
-            prompts,
-            run_dir,
-            watermark=self.watermark,
-        )
+        if point.trajectory is not None and self.watermark:
+            # Candidato ricostruito dalla traiettoria (ADR-009): nessuna generazione.
+            trajectory_hash = adapter.config_hash(point.trajectory)
+            trajectory_dir = run_dir.parent.parent / trajectory_hash / run_dir.name
+            result = adapter.embed_from_trajectory(  # type: ignore[attr-defined]
+                problems, hp, model, KEY_ID, decoding.n, trajectory_dir
+            )
+        else:
+            result = adapter.embed_from_prompts(
+                problems,
+                hp,
+                model,
+                KEY_ID,
+                request_decoding,
+                decoding.n,
+                prompts,
+                run_dir,
+                watermark=self.watermark,
+            )
         introspect = adapter.introspect() if supported else {}
         self._write(
             ctx,
@@ -243,8 +270,7 @@ class WatermarkStage(Stage):
         cfg = self._cfg()
         method, model_id, level, language, split = self._require(cell)
         model = cfg.models_catalog[model_id]
-        hp = adapter.default_hparams()
-        cfg_hash = adapter.config_hash(hp)
+        hp, cfg_hash, _ = self.cell_config(cell)
         table = ctx.store.read_table(problems_ref(level, language))
         table = table[table["split"] == split]
         problems = sorted(
@@ -336,6 +362,8 @@ class WatermarkStage(Stage):
             },
             "worker_env": introspect,
             "prompt_hashes": prompts.prompt_hashes(),
+            # Candidato ricostruito da una traiettoria (ADR-009): hash della traiettoria.
+            "replayed_from": getattr(result, "replayed_from", None),
         }
         ref = self.outputs(cell)[0]
         manifest = ctx.make_manifest(
@@ -372,10 +400,9 @@ class BaselineTwinStage(WatermarkStage):
 
     name: ClassVar[str] = "generate_baseline_twin"
     output_kinds: ClassVar[frozenset[str]] = frozenset({"baseline_twin"})
+    sweep_roles: ClassVar[tuple[str, ...]] = ()
     watermark: ClassVar[bool] = False
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
-        return [
-            baseline_twin_ref(method, model_id, self.config_hash(method), level, language, split)
-        ]
+        return [baseline_twin_ref(method, model_id, self.config_hash(cell), level, language, split)]

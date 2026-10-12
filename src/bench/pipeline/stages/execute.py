@@ -117,6 +117,7 @@ class ExecuteStage(Stage):
     name: ClassVar[str] = "execute"
     resources: ClassVar[ResourceClass] = ResourceClass.CPU
     output_kinds: ClassVar[frozenset[str]] = frozenset({"execution"})
+    sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
     cell_axes: ClassVar[tuple[str, ...]] = (
         "source",
         "method",
@@ -153,6 +154,11 @@ class ExecuteStage(Stage):
                 return None  # il metodo non ha una baseline gemella
         return cell
 
+    @classmethod
+    def sweep_cell(cls, cell: Cell) -> bool:
+        """Nello sweep dell'HPO si eseguono per configurazione solo i campioni marcati."""
+        return cell.source == "llm_watermarked"
+
     def _cfg(self) -> ExperimentConfig:
         if self.config is None:
             raise ConfigError("execute needs the experiment configuration")
@@ -170,13 +176,15 @@ class ExecuteStage(Stage):
         raise ConfigError(f"execute: incomplete or unknown cell {cell.key()}")
 
     def config_hash(self, cell: Cell) -> str | None:
-        """Configurazione di default del metodo per le fonti di un metodo (fino all'HPO)."""
+        """Configurazione della cella per le fonti di un metodo: quella dello sweep dell'HPO
+        (``Cell.config_hash``) o il default del metodo."""
         if cell.source not in METHOD_SOURCES:
             return None
+        from bench.hpo.grid import resolve
         from bench.pipeline.stages.watermark import make_adapter
 
         adapter = make_adapter(self._cfg(), str(cell.method))
-        return adapter.config_hash(adapter.default_hparams())
+        return resolve(self._cfg(), adapter, cell.config_hash)[1]
 
     def samples_ref(self, cell: Cell) -> ArtifactRef | None:
         """Campioni da eseguire (``None`` per le canoniche)."""

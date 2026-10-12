@@ -113,6 +113,31 @@ class DetectionRecord(FrozenModel):
         return value
 
 
+class SelectedConfig(FrozenModel):
+    """Configurazione scelta dall'HPO per (metodo, modello, linguaggio) (SPEC §14.5, I9)."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid", protected_namespaces=())
+
+    method: str
+    model_id: str
+    language: Language
+    config_hash: str | None  # None se il linguaggio è NOT_APPLICABLE per il metodo
+    hparams: dict[str, Any] = Field(default_factory=dict)
+    tpr_dev: float | None = None
+    pass1_dev: float | None = None
+    pass1_baseline_dev: float | None = None
+    pass1_drop_pp: float | None = None
+    constraint_satisfied: bool | None = None
+    max_pass1_drop_pp: float
+    n_candidates: int
+    n_admissible: int = 0
+    # HPO provvisorio (TODO 23): soglie calibrate senza tutti i livelli; si rifà in M9.
+    provisional: bool = False
+    levels: list[str] = Field(default_factory=list)
+    not_applicable: bool = False
+    created_at: datetime
+
+
 class ThresholdSet(FrozenModel):
     """Soglia di rilevazione congelata (I3)."""
 

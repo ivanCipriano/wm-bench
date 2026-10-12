@@ -34,6 +34,7 @@ decisioni dell'utente in `docs/cluster_info.md` §10 (1° ottobre 2026).
 
 ## Differenze di implementazione rispetto a SPEC (non sono deviazioni dal protocollo)
 
+- HPO (ADR-010): sweep con una cella per configurazione (`hpo.grid`, `Cell.config_hash`) invece di `--multirun` di Hydra; configurazione scelta in `hpo/selected/<metodo>/<modello>/<linguaggio>.json` (non `.yaml`, SPEC §14.5) con lo stesso manifest degli altri artefatti; PromptMark con candidati ricostruiti da una traiettoria (ADR-009).
 - Liste di frequenza di PromptMark (SPEC §15.2 le metteva in `prepare_data`): fase a sé `promptmark_freq` (`data/promptmark_freq/python.json`), per non rilanciare la M2; solo Python (D22).
 - Fase `execute` estesa ai campioni marcati (`source=llm_watermarked`) e alla baseline gemella (`source=baseline_twin`), output `execution/<fonte>/<metodo>/<modello>/<config_hash>/...`; le fonti si scelgono con `execution.sources` (default invariato: canoniche e baseline).
 - Metodi post-hoc (ACW): quando l'inserimento è `FAILED` (nessuna regola applicabile) il campione marcato conserva il codice di partenza, che è il codice consegnato dal metodo e conta per Pass@1; per il TPR resta non rilevato (I2).

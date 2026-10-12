@@ -13,6 +13,7 @@ from bench.pipeline.stages import (
     prepare_data,
     promptmark_freq,
     selftest,
+    tune,
     watermark,
 )
 
@@ -26,5 +27,6 @@ __all__ = [
     "prepare_data",
     "promptmark_freq",
     "selftest",
+    "tune",
     "watermark",
 ]
