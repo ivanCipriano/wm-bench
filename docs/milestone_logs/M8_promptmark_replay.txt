@@ -1,0 +1,4 @@
+srun: job 793289 queued and waiting for resources
+srun: job 793289 has been allocated resources
+python: can't open file '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/scripts/verify_promptmark_replay.py': [Errno 2] No such file or directory
+srun: error: gnode02: task 0: Exited with exit code 2
