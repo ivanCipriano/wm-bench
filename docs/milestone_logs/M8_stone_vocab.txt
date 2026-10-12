@@ -1,0 +1,48 @@
+##### 1. vocabolario: 50.272 (autori) contro generatore (D15), Qwen
+
+python vocab_size=50272
+  positives          n= 100 median z_uff    2.83  verdi_ns 0.387
+  human_native       n= 100 median z_uff    1.56  verdi_ns 0.409
+  human_integration  n= 100 median z_uff    8.08  verdi_ns 0.421
+  AUROC positives vs human_native       z_uff 0.609  z_nonsyntax 0.435
+  AUROC positives vs human_integration  z_uff 0.165  z_nonsyntax 0.461
+
+python vocab_size=len(tokenizer)
+  positives          n= 100 median z_uff    6.41  verdi_ns 0.547
+  human_native       n= 100 median z_uff    1.99  verdi_ns 0.444
+  human_integration  n= 100 median z_uff   10.19  verdi_ns 0.491
+  AUROC positives vs human_native       z_uff 0.755  z_nonsyntax 0.751
+  AUROC positives vs human_integration  z_uff 0.262  z_nonsyntax 0.679
+
+java vocab_size=50272
+  positives          n= 100 median z_uff    3.96  verdi_ns 0.452
+  human_native       n=  24 median z_uff    6.34  verdi_ns 0.470
+  human_integration  n= 100 median z_uff    3.51  verdi_ns 0.390
+  AUROC positives vs human_native       z_uff 0.407  z_nonsyntax 0.468
+  AUROC positives vs human_integration  z_uff 0.560  z_nonsyntax 0.523
+
+java vocab_size=len(tokenizer)
+  positives          n= 100 median z_uff    6.02  verdi_ns 0.487
+  human_native       n=  24 median z_uff    7.22  verdi_ns 0.490
+  human_integration  n= 100 median z_uff    5.45  verdi_ns 0.491
+  AUROC positives vs human_native       z_uff 0.443  z_nonsyntax 0.528
+  AUROC positives vs human_integration  z_uff 0.574  z_nonsyntax 0.574
+
+cpp vocab_size=50272
+  positives          n= 100 median z_uff   -0.56  verdi_ns 0.399
+  human_native       n=  24 median z_uff    6.96  verdi_ns 0.446
+  human_integration  n= 100 median z_uff    5.68  verdi_ns 0.453
+  AUROC positives vs human_native       z_uff 0.093  z_nonsyntax 0.486
+  AUROC positives vs human_integration  z_uff 0.143  z_nonsyntax 0.379
+
+cpp vocab_size=len(tokenizer)
+  positives          n= 100 median z_uff    1.26  verdi_ns 0.541
+  human_native       n=  24 median z_uff    9.49  verdi_ns 0.483
+  human_integration  n= 100 median z_uff    7.03  verdi_ns 0.491
+  AUROC positives vs human_native       z_uff 0.175  z_nonsyntax 0.722
+  AUROC positives vs human_integration  z_uff 0.226  z_nonsyntax 0.655
+
+##### 2. configurazione degli autori: vocab 50.272, γ 0,5, δ del repository, 5 campioni, contro le soluzioni canoniche
+humanevalplus  δ=0.5 marked=100 canonical=20  AUROC z_uff 0.441  z_nonsyntax 0.520  median z_uff marked 1.55 canonical 2.56
+mbppplus       δ=1.0 marked=100 canonical=20  AUROC z_uff 0.680  z_nonsyntax 0.567  median z_uff marked 3.00 canonical 1.06
+pooled          AUROC z_uff 0.550  z_nonsyntax 0.536

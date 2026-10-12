@@ -1,0 +1,106 @@
+
+##### qwen25_coder_7b python
+(a) composizione (mediane)
+  gruppo                                 n  N_syn   N_ns  ns/syn verdi_ns   z_uff   E[z]0   z_ns
+  positives                            576     23     49    2.00    0.545    6.41    5.08   0.73
+  neg_llm                              576     24     45    2.00    0.533    5.00    4.63   0.39
+  human_all                           2000     24     71    3.00    0.488    9.81   10.14  -0.21
+  human_integration                   1790     25     75    3.11    0.490   10.46   10.69  -0.17
+  human_native                         210     18     32    1.67    0.452    2.12    2.85  -0.50
+  human_native:humanevalplus            24     65    113    1.91    0.548    8.64    6.55   0.96
+  human_native:mbpp_original           186     17     28    1.67    0.442    1.84    2.71  -0.66
+(b) AUROC positivi contro
+  negativi                            z_official z_nonsyntax      z_null  z_residual
+  neg_llm                                  0.544       0.554       0.519       0.555
+  human_all                                0.315       0.668       0.218       0.663
+  human_integration                        0.265       0.662       0.165       0.655
+  human_native                             0.747       0.721       0.671       0.724
+  human_native:humanevalplus (pos humanevalplus)       0.439       0.519       0.455       0.510
+  human_native:mbpp_original (pos mbpp_original)         nan         nan         nan         nan
+
+##### qwen25_coder_7b java
+(a) composizione (mediane)
+  gruppo                                 n  N_syn   N_ns  ns/syn verdi_ns   z_uff   E[z]0   z_ns
+  positives                            144     67    123    1.63    0.487    6.94    5.15  -0.28
+  neg_llm                              144     67    123    1.63    0.483    6.77    5.15  -0.43
+  human_all                           2000     27     54    1.97    0.500    5.12    5.00   0.00
+  human_integration                   1976     27     54    1.98    0.500    5.12    5.00   0.00
+  human_native                          24     72    132    1.87    0.490    7.22    7.00  -0.20
+  human_native:humanevalpack            24     72    132    1.87    0.490    7.22    7.00  -0.20
+(b) AUROC positivi contro
+  negativi                            z_official z_nonsyntax      z_null  z_residual
+  neg_llm                                  0.513       0.518       0.501       0.518
+  human_all                                0.578       0.542       0.565       0.551
+  human_integration                        0.579       0.543       0.566       0.551
+  human_native                             0.453       0.519       0.439       0.518
+  human_native:humanevalpack (pos humanevalpack)       0.453       0.519       0.439       0.518
+
+##### qwen25_coder_7b cpp
+(a) composizione (mediane)
+  gruppo                                 n  N_syn   N_ns  ns/syn verdi_ns   z_uff   E[z]0   z_ns
+  positives                            144     51     50    1.18    0.541    1.60    1.03   0.54
+  neg_llm                              144     49     52    1.18    0.532    1.59    1.03   0.44
+  human_all                           2000     28     60    2.16    0.500    6.00    5.94   0.00
+  human_integration                   1976     28     59    2.16    0.503    5.97    5.89   0.08
+  human_native                          24     62    126    2.24    0.483    9.49    9.50  -0.46
+  human_native:humanevalpack            24     62    126    2.24    0.483    9.49    9.50  -0.46
+(b) AUROC positivi contro
+  negativi                            z_official z_nonsyntax      z_null  z_residual
+  neg_llm                                  0.507       0.536       0.487       0.531
+  human_all                                0.250       0.632       0.182       0.614
+  human_integration                        0.251       0.631       0.184       0.613
+  human_native                             0.186       0.724       0.064       0.690
+  human_native:humanevalpack (pos humanevalpack)       0.186       0.724       0.064       0.690
+
+##### deepseek_coder_6p7b python
+(a) composizione (mediane)
+  gruppo                                 n  N_syn   N_ns  ns/syn verdi_ns   z_uff   E[z]0   z_ns
+  positives                            576     30     34    1.19    0.562    1.89    1.00   0.53
+  neg_llm                              576     24     26    1.19    0.571    1.78    0.95   0.63
+  human_all                           2000     43     80    1.91    0.556    7.35    5.95   1.03
+  human_integration                   1790     44     86    1.97    0.556    7.96    6.36   1.07
+  human_native                         210     28     34    1.14    0.552    1.44    0.66   0.69
+  human_native:humanevalplus            24     89    118    1.40    0.497    4.00    3.54  -0.04
+  human_native:mbpp_original           186     24     30    1.10    0.559    1.21    0.55   0.73
+(b) AUROC positivi contro
+  negativi                            z_official z_nonsyntax      z_null  z_residual
+  neg_llm                                  0.507       0.488       0.513       0.490
+  human_all                                0.175       0.440       0.140       0.415
+  human_integration                        0.131       0.430       0.093       0.401
+  human_native                             0.546       0.524       0.542       0.530
+  human_native:humanevalplus (pos humanevalplus)       0.368       0.607       0.294       0.608
+  human_native:mbpp_original (pos mbpp_original)         nan         nan         nan         nan
+
+##### deepseek_coder_6p7b java
+(a) composizione (mediane)
+  gruppo                                 n  N_syn   N_ns  ns/syn verdi_ns   z_uff   E[z]0   z_ns
+  positives                            144     84     61    0.85    0.463   -1.53   -1.25  -0.60
+  neg_llm                              144     84     59    0.84    0.463   -1.62   -1.47  -0.47
+  human_all                           2000     47     61    1.33    0.508    2.41    2.16   0.13
+  human_integration                   1976     47     60    1.33    0.509    2.44    2.16   0.13
+  human_native                          24    110    136    1.27    0.449    1.21    3.05  -1.12
+  human_native:humanevalpack            24    110    136    1.27    0.449    1.21    3.05  -1.12
+(b) AUROC positivi contro
+  negativi                            z_official z_nonsyntax      z_null  z_residual
+  neg_llm                                  0.541       0.509       0.537       0.500
+  human_all                                0.121       0.360       0.135       0.372
+  human_integration                        0.121       0.356       0.136       0.369
+  human_native                             0.133       0.626       0.082       0.648
+  human_native:humanevalpack (pos humanevalpack)       0.133       0.626       0.082       0.648
+
+##### deepseek_coder_6p7b cpp
+(a) composizione (mediane)
+  gruppo                                 n  N_syn   N_ns  ns/syn verdi_ns   z_uff   E[z]0   z_ns
+  positives                            144    110    133    1.21    0.466    1.88    2.27  -0.59
+  neg_llm                              144    110    132    1.24    0.466    1.93    2.34  -0.89
+  human_all                           2000     45     71    1.58    0.525    4.17    3.78   0.39
+  human_integration                   1976     45     70    1.58    0.526    4.24    3.78   0.41
+  human_native                          24    105    126    1.28    0.425    2.25    2.92  -1.75
+  human_native:humanevalpack            24    105    126    1.28    0.425    2.25    2.92  -1.75
+(b) AUROC positivi contro
+  negativi                            z_official z_nonsyntax      z_null  z_residual
+  neg_llm                                  0.489       0.522       0.476       0.522
+  human_all                                0.321       0.322       0.396       0.325
+  human_integration                        0.318       0.318       0.396       0.322
+  human_native                             0.507       0.619       0.431       0.625
+  human_native:humanevalpack (pos humanevalpack)       0.507       0.619       0.431       0.625

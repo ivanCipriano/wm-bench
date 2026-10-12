@@ -1,0 +1,76 @@
+##### costi unitari misurati in M7 (L1 dev, configurazione di default)
+acw        deepseek_coder_6p7b  python     gen 7.20s×576  positives=7.22s×576 neg_human=7.12s×2000 neg_llm=0.00s×0  exec 0.13s
+acw        qwen25_coder_7b      python     gen 7.33s×576  positives=7.28s×576 neg_human=7.01s×2000 neg_llm=0.00s×0  exec 0.05s
+mcgmark    deepseek_coder_6p7b  python     gen 5.38s×576  positives=0.01s×576 neg_human=0.01s×2000 neg_llm=0.01s×576  exec 0.05s
+mcgmark    qwen25_coder_7b      python     gen 5.62s×576  positives=0.02s×576 neg_human=0.02s×2000 neg_llm=0.02s×576  exec 0.04s
+promptmark deepseek_coder_6p7b  python     gen 29.52s×576  positives=0.00s×576 neg_human=0.00s×2000 neg_llm=0.00s×576  exec 0.06s  iter mean 4.75
+promptmark qwen25_coder_7b      python     gen 29.44s×576  positives=0.00s×576 neg_human=0.00s×2000 neg_llm=0.00s×576  exec 0.06s  iter mean 4.74
+stone      deepseek_coder_6p7b  cpp        gen 0.66s×144  positives=0.12s×144 neg_human=0.06s×2000 neg_llm=0.12s×144  exec 0.06s
+stone      deepseek_coder_6p7b  java       gen 0.71s×144  positives=0.07s×144 neg_human=0.05s×2000 neg_llm=0.07s×144  exec 0.07s
+stone      deepseek_coder_6p7b  python     gen 0.54s×576  positives=0.03s×576 neg_human=0.07s×2000 neg_llm=0.03s×576  exec 0.12s
+stone      qwen25_coder_7b      cpp        gen 0.62s×144  positives=0.05s×144 neg_human=0.05s×2000 neg_llm=0.05s×144  exec 0.06s
+stone      qwen25_coder_7b      java       gen 1.05s×144  positives=0.10s×144 neg_human=0.04s×2000 neg_llm=0.10s×144  exec 0.07s
+stone      qwen25_coder_7b      python     gen 0.57s×576  positives=0.05s×576 neg_human=0.06s×2000 neg_llm=0.04s×576  exec 0.04s
+sweet      deepseek_coder_6p7b  cpp        gen 0.85s×144  positives=0.13s×144 neg_human=0.06s×2000 neg_llm=0.13s×144  exec 0.06s
+sweet      deepseek_coder_6p7b  java       gen 0.76s×144  positives=0.14s×144 neg_human=0.06s×2000 neg_llm=0.11s×144  exec 0.07s
+sweet      deepseek_coder_6p7b  javascript gen 0.58s×144  positives=0.10s×144 neg_human=0.06s×2000 neg_llm=0.09s×144  exec 0.03s
+sweet      deepseek_coder_6p7b  python     gen 0.44s×576  positives=0.07s×576 neg_human=0.07s×2000 neg_llm=0.06s×576  exec 0.12s
+sweet      qwen25_coder_7b      cpp        gen 0.93s×144  positives=1.62s×144 neg_human=1.60s×2000 neg_llm=1.05s×144  exec 0.14s
+sweet      qwen25_coder_7b      java       gen 2.84s×144  positives=3.54s×144 neg_human=2.01s×2000 neg_llm=1.78s×144  exec 0.07s
+sweet      qwen25_coder_7b      javascript gen 1.66s×144  positives=0.80s×144 neg_human=1.50s×2000 neg_llm=0.79s×144  exec 0.03s
+sweet      qwen25_coder_7b      python     gen 1.44s×576  positives=1.79s×576 neg_human=3.43s×2000 neg_llm=1.82s×576  exec 0.05s
+worker startup (median s): acw=14 mcgmark=9 promptmark=3 stone=7 sweet=14
+
+##### attesa in coda (sacct, job wmb-* dal 1° ottobre 2026)
+queue wait gpu: n=51 median 0.00 h  p90 0.05 h  max 0.53 h
+queue wait cpu: n=50 median 0.00 h  p90 0.00 h  max 0.00 h
+
+##### M8 (L1 dev, senza i default già fatti), come oggi (negativi per ogni config)
+grid                  cfg GPUgen_h GPUdet_h CPUgen_h CPUdet_h CPUexe_h  jobs  days@6  days@3
+sweet_full_61          60    36.3    353.5      0.0      0.0      2.6    75     3.2     5.8
+sweet_reduced_25       24    14.5    141.4      0.0      0.0      1.1    31     1.3     2.2
+stone_10                9     2.7      2.1      0.0      0.0      0.3     3     0.2     0.2
+promptmark_28          27   154.6      0.0      0.0      0.1      0.5    38     1.1     2.2
+acw_4                   3     0.0      0.0      3.4     15.1      0.1     5     0.4     0.4
+mcgmark_1               0     0.0      0.0      0.0      0.0      0.0     0     0.0     0.0
+
+##### M9 in più (solo L2 dev, stima), come oggi (negativi per ogni config)
+grid                  cfg GPUgen_h GPUdet_h CPUgen_h CPUdet_h CPUexe_h  jobs  days@6  days@3
+sweet_full_61          61    48.2    108.5      0.0      0.0      2.9    30     1.5     2.4
+sweet_reduced_25       25    19.8     44.4      0.0      0.0      1.2    14     0.7     1.1
+stone_10               10     3.5      0.9      0.0      0.0      0.4     3     0.2     0.2
+promptmark_28          28    85.4      0.0      0.0      0.0      0.3    19     0.6     1.3
+acw_4                   4     0.0      0.0      3.0      5.4      0.1     3     0.4     0.4
+mcgmark_1               1     0.9      0.0      0.0      0.0      0.0     3     0.0     0.0
+
+##### M8 (L1 dev, senza i default già fatti), con condivisione dei negativi
+grid                  cfg GPUgen_h GPUdet_h CPUgen_h CPUdet_h CPUexe_h  jobs  days@6  days@3
+sweet_full_61          60    36.3     97.1      0.0      0.0      2.6    26     1.2     2.1
+sweet_reduced_25       24    14.5     55.9      0.0      0.0      1.1    15     0.7     1.1
+stone_10                9     2.7      0.4      0.0      0.0      0.3     3     0.1     0.1
+promptmark_28          27   154.6      0.0      0.0      0.0      0.5    38     1.1     2.2
+acw_4                   3     0.0      0.0      3.4     15.1      0.1     5     0.4     0.4
+mcgmark_1               0     0.0      0.0      0.0      0.0      0.0     0     0.0     0.0
+
+##### M9 in più (solo L2 dev, stima), con condivisione dei negativi
+grid                  cfg GPUgen_h GPUdet_h CPUgen_h CPUdet_h CPUexe_h  jobs  days@6  days@3
+sweet_full_61          61    48.2     55.8      0.0      0.0      2.9    21     1.0     1.6
+sweet_reduced_25       25    19.8     26.9      0.0      0.0      1.2    10     0.5     0.9
+stone_10               10     3.5      0.5      0.0      0.0      0.4     3     0.2     0.2
+promptmark_28          28    85.4      0.0      0.0      0.0      0.3    19     0.6     1.3
+acw_4                   4     0.0      0.0      3.0      5.4      0.1     3     0.4     0.4
+mcgmark_1               1     0.9      0.0      0.0      0.0      0.0     3     0.0     0.0
+
+##### totali M8 + M9 (tutti i metodi)
+sweet_full_61, senza condivisione dei negativi
+grid                  cfg GPUgen_h GPUdet_h CPUgen_h CPUdet_h CPUexe_h  jobs  days@6  days@3
+total                   -   331.7    465.0      6.5     20.7      7.2   179     7.6    12.8
+sweet_reduced_25, senza condivisione dei negativi
+grid                  cfg GPUgen_h GPUdet_h CPUgen_h CPUdet_h CPUexe_h  jobs  days@6  days@3
+total                   -   281.4    188.9      6.5     20.7      3.9   119     4.9     7.9
+sweet_full_61, con condivisione dei negativi
+grid                  cfg GPUgen_h GPUdet_h CPUgen_h CPUdet_h CPUexe_h  jobs  days@6  days@3
+total                   -   331.7    153.9      6.5     20.6      7.2   121     5.0     8.3
+sweet_reduced_25, con condivisione dei negativi
+grid                  cfg GPUgen_h GPUdet_h CPUgen_h CPUdet_h CPUexe_h  jobs  days@6  days@3
+total                   -   281.4     83.8      6.5     20.6      3.9    99     4.0     6.5
