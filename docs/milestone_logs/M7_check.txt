@@ -17,6 +17,8 @@ mcgmark    qwen25_coder_7b      python     ok
 mcgmark    deepseek_coder_6p7b  python     ok
 promptmark qwen25_coder_7b      python     ok
 promptmark deepseek_coder_6p7b  python     ok
+acw        qwen25_coder_7b      python     det_pos=MISSING det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
+acw        deepseek_coder_6p7b  python     det_pos=MISSING det_human=MISSING det_llm=MISSING threshold=MISSING metrics=MISSING
 
 ##### MCGMark: stati di esecuzione (marcati e gemella)
 qwen25_coder_7b marked: {'FAILED': 230, 'SYNTAX_ERROR': 182, 'PASSED': 157, 'TIMEOUT': 7}
