@@ -1,0 +1,26 @@
+srun: job 793687 queued and waiting for resources
+srun: job 793687 has been allocated resources
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00, 15.40it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 17.55it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00, 17.17it/s]
+Starting from v4.46, the `logits` model output will have the same type as the model (except at train time, where it will always be FP32)
+From v4.47 onwards, when a model cache is to be returned, `generate` will return a `Cache` instance instead by default (as opposed to the legacy tuple of tuples format). If you want to keep returning the legacy format, please set `return_legacy_cache=True`.
+transformers 4.45.1, torch 2.4.1+cu121, temperature 0.2, top_p 0.95
+
+delta 0: steps 749, bias applied 0 (0.00)
+  incoming/raw top-logit ratio: median 1.000 (1 = raw logits, 5.0 = after temperature)
+  steps with -inf logits in input: 0
+  applied steps: top token green 0.000, gap top-best green median nan, 0 < gap < delta 0.000, chosen token green 0.000
+
+delta 1: steps 652, bias applied 431 (0.66)
+  incoming/raw top-logit ratio: median 1.000 (1 = raw logits, 5.0 = after temperature)
+  steps with -inf logits in input: 0
+  applied steps: top token green 0.578, gap top-best green median 0.00, 0 < gap < delta 0.007, chosen token green 0.585
+
+delta 3: steps 646, bias applied 426 (0.66)
+  incoming/raw top-logit ratio: median 1.000 (1 = raw logits, 5.0 = after temperature)
+  steps with -inf logits in input: 0
+  applied steps: top token green 0.592, gap top-best green median 0.00, 0 < gap < delta 0.019, chosen token green 0.610
+
+delta 10: steps 2070, bias applied 539 (0.26)
+  incoming/raw top-logit ratio: median 1.000 (1 = raw logits, 5.0 = after temperature)
+  steps with -inf logits in input: 0
+  applied steps: top token green 0.957, gap top-best green median 0.00, 0 < gap < delta 0.028, chosen token green 0.987
