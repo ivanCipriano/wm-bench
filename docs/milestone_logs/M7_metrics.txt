@@ -1,4 +1,28 @@
 
+##### acw deepseek_coder_6p7b python (L1 dev, config 1a28456b87b9)
+threshold 0.9767441860465116  achieved FPR dev 0.0090  n_neg 2000  levels ['L1']  provisional
+  tpr_at_fpr                          1.0000  [1.0000, 1.0000]  n=576  cluster_bootstrap
+  fpr_human                           0.0090  [0.0053, 0.0142]  n=2000  clopper_pearson
+  fpr_llm                             0.3611  [0.3218, 0.4018]  n=576  clopper_pearson
+  auroc                               1.0000  [0.9998, 1.0000]  n=2576  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.6302  [0.5416, 0.7153]  n=96  cluster_bootstrap
+  pass_at_1_baseline                  0.6580  [0.5677, 0.7500]  n=96  cluster_bootstrap
+  delta_pass_at_1_pp                  2.7778  [0.0000, 6.2587]  n=96  cluster_bootstrap
+  conditional_preservation            0.9578  [0.9325, 0.9738]  n=379  wilson
+  embed_success_rate 1.0000  n_sites {"n": 576, "mean": 2.104, "median": 2.0, "min": 1.0, "max": 7.0}
+
+##### acw qwen25_coder_7b python (L1 dev, config 1a28456b87b9)
+threshold 0.9767441860465116  achieved FPR dev 0.0090  n_neg 2000  levels ['L1']  provisional
+  tpr_at_fpr                          1.0000  [1.0000, 1.0000]  n=576  cluster_bootstrap
+  fpr_human                           0.0090  [0.0053, 0.0142]  n=2000  clopper_pearson
+  fpr_llm                             0.3177  [0.2798, 0.3575]  n=576  clopper_pearson
+  auroc                               1.0000  [1.0000, 1.0000]  n=2576  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.7708  [0.6892, 0.8490]  n=96  cluster_bootstrap
+  pass_at_1_baseline                  0.7743  [0.6927, 0.8524]  n=96  cluster_bootstrap
+  delta_pass_at_1_pp                  0.3472  [0.0000, 1.3889]  n=96  cluster_bootstrap
+  conditional_preservation            0.9955  [0.9838, 0.9988]  n=446  wilson
+  embed_success_rate 1.0000  n_sites {"n": 576, "mean": 2.135, "median": 2.0, "min": 1.0, "max": 6.0}
+
 ##### mcgmark deepseek_coder_6p7b python (L1 dev, config 9df49d3f4f38)
 threshold 10.0  achieved FPR dev 0.0020  n_neg 2000  levels ['L1']  provisional
   tpr_at_fpr                          0.0122  [0.0052, 0.0208]  n=576  cluster_bootstrap
