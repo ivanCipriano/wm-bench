@@ -27,7 +27,8 @@ Su richiesta dell'utente si inizia la M8 senza aspettare ACW.
   - FPR: Clopper–Pearson;
   - AUROC: bootstrap dei positivi per problema più ricampionamento dei negativi;
   - Wilson per accuratezza del messaggio e inserimento riuscito (MCGMark).
-- **Punteggi secondari:** `z_nonsyntax` di STONE (D16) e `p_adaptive_paper` di PromptMark (come −log10 p), con
+- **Punteggi secondari:** lo z del codice ufficiale di STONE (`z_official`; dal 12 ottobre 2026 il principale è
+  `z_nonsyntax`, D16) e `p_adaptive_paper` di PromptMark (come −log10 p), con
   soglia e metriche proprie.
 - **Esecuzione:**
   - i campioni marcati di tutti i metodi (`execution/llm_watermarked/...`);
@@ -65,12 +66,12 @@ Legenda delle colonne:
 | SWEET | DeepSeek | java | 2,85 | 0,0 | 0,49 [0,39; 0,59] | 72,9 / 64,6 | −8,3 [−16,7; 0,0] |
 | SWEET | DeepSeek | cpp | 2,53 | 0,0 | 0,53 [0,43; 0,63] | 67,4 / 67,4 | 0,0 [−4,2; 5,6] |
 | SWEET | DeepSeek | javascript | 2,89 | 0,0 | 0,46 [0,37; 0,56] | 73,6 / 73,6 | 0,0 [−2,8; 2,1] |
-| STONE | Qwen | python | 31,1 | 1,0 [0,0; 3,1] | 0,32 [0,27; 0,37] | 78,1 / 77,4 | −0,7 [−3,5; 1,4] |
-| STONE | Qwen | java | 24,5 | 4,2 [0,0; 12,5] | 0,58 [0,45; 0,69] | 86,8 / 86,1 | −0,7 [−2,1; 0,0] |
-| STONE | Qwen | cpp | 29,2 | 0,0 | 0,25 [0,16; 0,36] | 82,6 / 83,3 | 0,7 [0,0; 2,1] |
-| STONE | DeepSeek | python | 22,5 | 0,0 | 0,17 [0,13; 0,22] | 65,5 / 65,8 | 0,3 [−2,4; 3,0] |
-| STONE | DeepSeek | java | 16,5 | 0,0 | 0,12 [0,08; 0,17] | 68,8 / 64,6 | −4,2 [−10,4; 0,7] |
-| STONE | DeepSeek | cpp | 25,5 | 0,0 | 0,32 [0,23; 0,43] | 66,0 / 67,4 | 1,4 [−2,1; 6,3] |
+| STONE | Qwen | python | 3,61 | 4,9 [1,0; 9,6] | 0,67 [0,62; 0,72] | 78,1 / 77,4 | −0,7 [−3,5; 1,4] |
+| STONE | Qwen | java | 3,76 | 10,4 [0,0; 22,9] | 0,54 [0,41; 0,67] | 86,8 / 86,1 | −0,7 [−2,1; 0,0] |
+| STONE | Qwen | cpp | 3,72 | 4,2 [0,0; 12,5] | 0,63 [0,54; 0,73] | 82,6 / 83,3 | 0,7 [0,0; 2,1] |
+| STONE | DeepSeek | python | 4,81 | 1,4 [0,0; 3,5] | 0,44 [0,39; 0,50] | 65,5 / 65,8 | 0,3 [−2,4; 3,0] |
+| STONE | DeepSeek | java | 3,67 | 0,0 | 0,36 [0,27; 0,46] | 68,8 / 64,6 | −4,2 [−10,4; 0,7] |
+| STONE | DeepSeek | cpp | 4,88 | 0,0 | 0,32 [0,22; 0,44] | 66,0 / 67,4 | 1,4 [−2,1; 6,3] |
 | MCGMark | Qwen | python | 10 | 7,3 [4,5; 10,8] | 0,39 [0,36; 0,41] | 27,3 / 76,0 | 48,8 [40,5; 56,3] |
 | MCGMark | DeepSeek | python | 10 | 1,2 [0,5; 2,1] | 0,41 [0,40; 0,42] | 31,3 / 65,3 | 34,0 [26,4; 41,2] |
 | PromptMark | Qwen | python | 2,13 | 4,0 [0,7; 7,8] | 0,63 [0,57; 0,69] | 81,9 / 77,4 | −4,5 [−11,1; 1,6] |
@@ -79,24 +80,25 @@ Legenda delle colonne:
 
 **Punteggi secondari.**
 
-STONE `z_nonsyntax`, denominatore del paper:
+STONE, z del codice ufficiale (`z_official`, secondario dal 12 ottobre 2026, D16):
 
 | Modello | Ling. | Soglia | TPR % | AUROC |
 |---|---|---|---|---|
-| Qwen | python | 3,61 | 4,9 [1,0; 9,2] | 0,67 [0,61; 0,72] |
-| Qwen | java | 3,76 | 10,4 [0,0; 22,9] | 0,54 [0,41; 0,68] |
-| Qwen | cpp | 3,72 | 4,2 [0,0; 12,5] | 0,63 [0,54; 0,72] |
-| DeepSeek | python | 4,81 | 1,4 [0,0; 3,8] | 0,44 [0,38; 0,49] |
-| DeepSeek | java | 3,67 | 0,0 | 0,36 [0,27; 0,46] |
-| DeepSeek | cpp | 4,88 | 0,0 | 0,32 [0,22; 0,44] |
+| Qwen | python | 31,1 | 1,0 [0,0; 3,1] | 0,32 [0,27; 0,37] |
+| Qwen | java | 24,5 | 4,2 [0,0; 12,5] | 0,58 [0,46; 0,69] |
+| Qwen | cpp | 29,2 | 0,0 | 0,25 [0,16; 0,35] |
+| DeepSeek | python | 22,5 | 0,0 | 0,17 [0,14; 0,22] |
+| DeepSeek | java | 16,5 | 0,0 | 0,12 [0,08; 0,17] |
+| DeepSeek | cpp | 25,5 | 0,0 | 0,32 [0,23; 0,42] |
 
 PromptMark `p_adaptive_paper`: soglia, TPR e AUROC praticamente uguali al principale (4,0% e 0,63 su Qwen; 4,3% e
 0,51 su DeepSeek).
 
 **FPR sui negativi LLM** (soglia calibrata sui negativi umani):
 - quasi sempre ≤ 1%;
-- sopra l'1%: PromptMark Qwen 3,1% [1,9; 4,9], STONE Qwen java 4,2% [1,5; 8,9] e SWEET Qwen javascript 1,4%
-  [0,2; 4,9];
+- sopra l'1%: PromptMark Qwen 3,1% [1,9; 4,9], SWEET Qwen javascript 1,4% [0,2; 4,9] e STONE con Qwen
+  (Python 5,4% [3,7; 7,6], Java 10,4% [6,0; 16,6], C++ 4,2% [1,5; 8,9]). Per STONE con Qwen il TPR è uguale o
+  quasi all'FPR sulla baseline LLM: con il default il watermark non si distingue dal codice LLM non marcato;
 - MCGMark: gemella 0,0% (Qwen) e 0,2% (DeepSeek), uguali o quasi alla baseline normale.
 
 ## Risultati da ricordare
@@ -105,16 +107,22 @@ PromptMark `p_adaptive_paper`: soglia, TPR e AUROC praticamente uguali al princi
   (sopra 0,6 solo con Qwen in Python). Un rilevamento così basso con questo δ non è un errore di integrazione.
   Nessun costo misurabile su Pass@1: l'unico valore grande, −8,3 pp in Java con DeepSeek, va a favore dei
   marcati e ha IC che arriva a 0.
-- **STONE, z ufficiale contro z del paper (D16):**
-  - con lo z ufficiale l'AUROC è sotto 0,5 in 5 celle su 6 (0,12-0,58) e le soglie sono enormi (z = 16-31): il
-    codice umano ha punteggi più alti di quello marcato;
-  - il motivo è il denominatore, che usa i token sintattici (audit di STONE §5) e gonfia il punteggio sul
-    codice umano, più lungo e più ricco di sintassi;
-  - con il denominatore del paper (`z_nonsyntax`) le soglie tornano a 3,6-4,9 e su Qwen l'AUROC sale a 0,54-0,67;
-  - su DeepSeek resta sotto 0,5.
-
-  È un risultato da riportare nella tesi: la scelta della formula cambia la conclusione. Nessun costo su
-  Pass@1.
+- **STONE, punteggio e intensità (D16, D26; verifiche del 12 ottobre 2026 in M8):**
+  - **Lo z ufficiale è invertito.** L'AUROC è sotto 0,5 in 5 celle su 6 (0,12-0,58) e le soglie sono enormi
+    (z = 16-31). Sotto l'ipotesi nulla lo z ufficiale misura la composizione del codice (token non sintattici
+    contro sintattici), e la sola composizione riproduce l'inversione; l'adattamento del vocabolario non c'entra.
+  - **Il punteggio principale è ora `z_nonsyntax`** (secondo caso della regola delle discrepanze). Le soglie
+    sono 3,6-4,9, l'AUROC è 0,54-0,67 su Qwen e resta sotto 0,5 su DeepSeek. La tabella sopra usa già il nuovo
+    punteggio.
+  - **Il default δ = 1,0 non inserisce un watermark visibile** sul nostro codice. Marcato e baseline LLM sono
+    indistinguibili (AUROC 0,49-0,55) e la separazione dal codice umano viene dallo stile LLM.
+    - Il processor lavora correttamente sui logit grezzi, prima di temperatura e top-p.
+    - Quando il token più probabile è rosso, però, il miglior token verde è più di 3 punti di logit sotto nel
+      98% dei passi: il codice è a bassissima entropia.
+    - Il watermark si vede solo a δ = 10: frazione verde 0,83 contro 0,56 e AUROC contro la baseline 0,84, ma
+      con risposte circa 3 volte più lunghe (`M8_stone_dose.txt`, `M8_stone_processor.txt`).
+  - Con la configurazione degli autori l'AUROC resta lontano dallo 0,982 della letteratura (D26).
+  - Nessun costo su Pass@1 con il default.
 - **MCGMark (TODO 13, 15, 25):**
   - inserimento riuscito (almeno un ciclo di 24 posizioni): 8,0% con Qwen, 1,7% con DeepSeek;
   - siti per campione: media 10,7 (Qwen) e 7,8 (DeepSeek), mediana 7 e 6;

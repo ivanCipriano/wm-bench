@@ -55,8 +55,9 @@ Il codice sta in `stone_implementation/` e deriva da MarkLLM (THU-BPM, Apache-2.
   - Serve **solo fino all'HPO**.
   - La griglia HPO di STONE (Milestone 8) deve contenere entrambi i valori del repository, δ = 0,5 e δ = 1,0, più
     eventuali valori intermedi o più alti, così che la configurazione finale la scelgano i dati.
-- **Griglia della M8** (decisione dell'utente del 12 ottobre 2026, **provvisoria**): γ ∈ {0,25; 0,5} ×
-  δ ∈ {0,5; 1,0; 1,5; 2,0; 3,0; 4,0; 5,0}, 14 configurazioni.
+- **Griglia della M8** (decisione dell'utente del 12 ottobre 2026): γ ∈ {0,25; 0,5} ×
+  δ ∈ {0,5; 1,0; 1,5; 2,0; 3,0; 4,0; 5,0; 7,0; 10,0}, **18 configurazioni**. Era provvisoria con 14 (fino a
+  δ = 5); 7 e 10 sono stati aggiunti dopo la prova dose-risposta, secondo la regola fissata dall'utente.
   - **I valori di δ sopra 1,0 estendono l'intervallo del repository** (0,5 e 1,0 in `run.sh`). Motivazione:
     nelle nostre condizioni (temperatura 0,2, formato chat, codice a bassa entropia) il default δ = 1,0 non
     separa il codice marcato dalla baseline LLM. Su L1 dev l'AUROC marcato contro baseline è 0,49-0,55 in tutte
@@ -68,6 +69,22 @@ Il codice sta in `stone_implementation/` e deriva da MarkLLM (THU-BPM, Apache-2.
     - se il watermark diventa visibile contro la baseline LLM solo oltre δ = 5, si aggiungono valori più alti
       (es. 7 e 10) prima di lanciare l'HPO;
     - se non diventa visibile nemmeno con δ = 10, è un problema di integrazione e ci si ferma.
+  - **Esito (12 ottobre 2026).**
+    - **Prova dose-risposta** (`M8_stone_dose.txt`): frazione verde fra i non sintattici 0,552 con δ = 1,
+      0,557 con δ = 3 e 0,830 con δ = 10 (baseline 0,557). AUROC marcato contro baseline con `z_nonsyntax`:
+      0,50, 0,50 e 0,84.
+    - **Diagnosi del processor** (`M8_stone_processor.txt`, 5 prompt dell'oracle): il processor riceve i
+      logit grezzi (rapporto 1,000 con quelli del modello, nessun `-inf`), quindi agisce prima di temperatura
+      e top-p, come nel repository. Il bias si applica nel 66% dei passi (token più probabile non
+      sintattico).
+    - **Perché δ piccoli non bastano:** quando il token più probabile è rosso, il miglior verde è più di δ
+      punti di logit sotto nel 99,3% (δ = 1) e nel 98,1% (δ = 3) di quei passi. Il codice è a bassissima
+      entropia, quindi non è un problema di integrazione.
+    - **Con δ = 10** la frazione verde sale (0,99 fra i passi con bias), ma le risposte diventano circa 3 volte
+      più lunghe (2.070 passi contro circa 650): è probabile un costo su Pass@1, che il vincolo
+      dell'HPO valuta.
+    - **Conclusione:** il watermark è visibile contro la baseline LLM solo oltre δ = 5, quindi, per la regola
+      dell'utente, la griglia arriva a 7 e 10.
 - **Contesto della green list:**
   - con `prefix_length=0`, `STONEUtils._seed_rng` usa `prev_token = 1` (prodotto vuoto), quindi il generatore viene
     inizializzato con `hash_key` a ogni passo;
