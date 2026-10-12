@@ -60,84 +60,84 @@ threshold 2.132621930670799  achieved FPR dev 0.0100  n_neg 2000  levels ['L1'] 
   embed_success_rate 1.0000  n_sites {"n": 576, "mean": 2.859, "median": 3.0, "min": 0.0, "max": 13.0}
 
 ##### stone deepseek_coder_6p7b cpp (L1 dev, config d0105c864648)
-threshold 25.495097567963924  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
-  secondary z_nonsyntax: threshold 4.876455322645894  achieved FPR dev 0.0100
+threshold 4.876455322645894  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  secondary z_official: threshold 25.495097567963924  achieved FPR dev 0.0100
   tpr_at_fpr                          0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
   fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
   fpr_llm                             0.0000  [0.0000, 0.0253]  n=144  clopper_pearson
-  auroc                               0.3207  [0.2275, 0.4283]  n=2144  cluster_bootstrap+negative_resampling
-  tpr_at_fpr_z_nonsyntax              0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
-  auroc_z_nonsyntax                   0.3216  [0.2200, 0.4375]  n=2144  cluster_bootstrap+negative_resampling
+  auroc                               0.3216  [0.2233, 0.4351]  n=2144  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_z_official               0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
+  auroc_z_official                    0.3207  [0.2298, 0.4195]  n=2144  cluster_bootstrap+negative_resampling
   pass_at_1                           0.6597  [0.4792, 0.8333]  n=24  cluster_bootstrap
   pass_at_1_baseline                  0.6736  [0.4861, 0.8333]  n=24  cluster_bootstrap
   delta_pass_at_1_pp                  1.3889  [-2.0833, 6.2500]  n=24  cluster_bootstrap
   embed_success_rate -  n_sites null
 
 ##### stone deepseek_coder_6p7b java (L1 dev, config d0105c864648)
-threshold 16.54658495533778  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
-  secondary z_nonsyntax: threshold 3.6688113866960292  achieved FPR dev 0.0100
+threshold 3.6688113866960292  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  secondary z_official: threshold 16.54658495533778  achieved FPR dev 0.0100
   tpr_at_fpr                          0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
   fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
   fpr_llm                             0.0000  [0.0000, 0.0253]  n=144  clopper_pearson
-  auroc                               0.1212  [0.0782, 0.1669]  n=2144  cluster_bootstrap+negative_resampling
-  tpr_at_fpr_z_nonsyntax              0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
-  auroc_z_nonsyntax                   0.3597  [0.2681, 0.4573]  n=2144  cluster_bootstrap+negative_resampling
+  auroc                               0.3597  [0.2680, 0.4564]  n=2144  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_z_official               0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
+  auroc_z_official                    0.1212  [0.0784, 0.1665]  n=2144  cluster_bootstrap+negative_resampling
   pass_at_1                           0.6875  [0.5208, 0.8335]  n=24  cluster_bootstrap
   pass_at_1_baseline                  0.6458  [0.4653, 0.8056]  n=24  cluster_bootstrap
   delta_pass_at_1_pp                 -4.1667  [-10.4167, 0.6944]  n=24  cluster_bootstrap
   embed_success_rate -  n_sites null
 
 ##### stone deepseek_coder_6p7b python (L1 dev, config d0105c864648)
-threshold 22.516660498395407  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
-  secondary z_nonsyntax: threshold 4.810702354423639  achieved FPR dev 0.0100
-  tpr_at_fpr                          0.0000  [0.0000, 0.0000]  n=576  cluster_bootstrap
+threshold 4.810702354423639  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  secondary z_official: threshold 22.516660498395407  achieved FPR dev 0.0100
+  tpr_at_fpr                          0.0139  [0.0000, 0.0348]  n=576  cluster_bootstrap
   fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
-  fpr_llm                             0.0017  [0.0000, 0.0096]  n=576  clopper_pearson
-  auroc                               0.1747  [0.1338, 0.2210]  n=2576  cluster_bootstrap+negative_resampling
-  tpr_at_fpr_z_nonsyntax              0.0139  [0.0000, 0.0382]  n=576  cluster_bootstrap
-  auroc_z_nonsyntax                   0.4398  [0.3841, 0.4939]  n=2576  cluster_bootstrap+negative_resampling
+  fpr_llm                             0.0087  [0.0028, 0.0201]  n=576  clopper_pearson
+  auroc                               0.4398  [0.3870, 0.4962]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_z_official               0.0000  [0.0000, 0.0000]  n=576  cluster_bootstrap
+  auroc_z_official                    0.1747  [0.1388, 0.2175]  n=2576  cluster_bootstrap+negative_resampling
   pass_at_1                           0.6545  [0.5677, 0.7414]  n=96  cluster_bootstrap
   pass_at_1_baseline                  0.6580  [0.5711, 0.7466]  n=96  cluster_bootstrap
   delta_pass_at_1_pp                  0.3472  [-2.4306, 2.9514]  n=96  cluster_bootstrap
   embed_success_rate -  n_sites null
 
 ##### stone qwen25_coder_7b cpp (L1 dev, config d0105c864648)
-threshold 29.154759474226502  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
-  secondary z_nonsyntax: threshold 3.719924439802217  achieved FPR dev 0.0100
-  tpr_at_fpr                          0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
+threshold 3.719924439802217  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  secondary z_official: threshold 29.154759474226502  achieved FPR dev 0.0100
+  tpr_at_fpr                          0.0417  [0.0000, 0.1250]  n=144  cluster_bootstrap
   fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
-  fpr_llm                             0.0000  [0.0000, 0.0253]  n=144  clopper_pearson
-  auroc                               0.2503  [0.1621, 0.3619]  n=2144  cluster_bootstrap+negative_resampling
-  tpr_at_fpr_z_nonsyntax              0.0417  [0.0000, 0.1250]  n=144  cluster_bootstrap
-  auroc_z_nonsyntax                   0.6321  [0.5350, 0.7213]  n=2144  cluster_bootstrap+negative_resampling
+  fpr_llm                             0.0417  [0.0154, 0.0885]  n=144  clopper_pearson
+  auroc                               0.6321  [0.5360, 0.7299]  n=2144  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_z_official               0.0000  [0.0000, 0.0000]  n=144  cluster_bootstrap
+  auroc_z_official                    0.2503  [0.1573, 0.3473]  n=2144  cluster_bootstrap+negative_resampling
   pass_at_1                           0.8264  [0.6597, 0.9583]  n=24  cluster_bootstrap
   pass_at_1_baseline                  0.8333  [0.6667, 0.9583]  n=24  cluster_bootstrap
   delta_pass_at_1_pp                  0.6944  [0.0000, 2.0833]  n=24  cluster_bootstrap
   embed_success_rate -  n_sites null
 
 ##### stone qwen25_coder_7b java (L1 dev, config d0105c864648)
-threshold 24.547483524150106  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
-  secondary z_nonsyntax: threshold 3.760699023168052  achieved FPR dev 0.0100
-  tpr_at_fpr                          0.0417  [0.0000, 0.1250]  n=144  cluster_bootstrap
+threshold 3.760699023168052  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  secondary z_official: threshold 24.547483524150106  achieved FPR dev 0.0100
+  tpr_at_fpr                          0.1042  [0.0000, 0.2292]  n=144  cluster_bootstrap
   fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
-  fpr_llm                             0.0417  [0.0154, 0.0885]  n=144  clopper_pearson
-  auroc                               0.5779  [0.4508, 0.6852]  n=2144  cluster_bootstrap+negative_resampling
-  tpr_at_fpr_z_nonsyntax              0.1042  [0.0000, 0.2292]  n=144  cluster_bootstrap
-  auroc_z_nonsyntax                   0.5424  [0.4120, 0.6837]  n=2144  cluster_bootstrap+negative_resampling
+  fpr_llm                             0.1042  [0.0595, 0.1660]  n=144  clopper_pearson
+  auroc                               0.5424  [0.4065, 0.6700]  n=2144  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_z_official               0.0417  [0.0000, 0.1250]  n=144  cluster_bootstrap
+  auroc_z_official                    0.5779  [0.4552, 0.6902]  n=2144  cluster_bootstrap+negative_resampling
   pass_at_1                           0.8681  [0.7292, 0.9861]  n=24  cluster_bootstrap
   pass_at_1_baseline                  0.8611  [0.7222, 0.9861]  n=24  cluster_bootstrap
   delta_pass_at_1_pp                 -0.6944  [-2.0833, 0.0000]  n=24  cluster_bootstrap
   embed_success_rate -  n_sites null
 
 ##### stone qwen25_coder_7b python (L1 dev, config d0105c864648)
-threshold 31.14651285710641  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
-  secondary z_nonsyntax: threshold 3.6055512754639896  achieved FPR dev 0.0100
-  tpr_at_fpr                          0.0104  [0.0000, 0.0312]  n=576  cluster_bootstrap
+threshold 3.6055512754639896  achieved FPR dev 0.0100  n_neg 2000  levels ['L1']  provisional
+  secondary z_official: threshold 31.14651285710641  achieved FPR dev 0.0100
+  tpr_at_fpr                          0.0486  [0.0104, 0.0955]  n=576  cluster_bootstrap
   fpr_human                           0.0100  [0.0061, 0.0154]  n=2000  clopper_pearson
-  fpr_llm                             0.0104  [0.0038, 0.0225]  n=576  clopper_pearson
-  auroc                               0.3153  [0.2675, 0.3652]  n=2576  cluster_bootstrap+negative_resampling
-  tpr_at_fpr_z_nonsyntax              0.0486  [0.0104, 0.0920]  n=576  cluster_bootstrap
-  auroc_z_nonsyntax                   0.6680  [0.6138, 0.7159]  n=2576  cluster_bootstrap+negative_resampling
+  fpr_llm                             0.0538  [0.0369, 0.0755]  n=576  clopper_pearson
+  auroc                               0.6680  [0.6208, 0.7208]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_z_official               0.0104  [0.0000, 0.0312]  n=576  cluster_bootstrap
+  auroc_z_official                    0.3153  [0.2668, 0.3675]  n=2576  cluster_bootstrap+negative_resampling
   pass_at_1                           0.7812  [0.6979, 0.8542]  n=96  cluster_bootstrap
   pass_at_1_baseline                  0.7743  [0.6927, 0.8524]  n=96  cluster_bootstrap
   delta_pass_at_1_pp                 -0.6944  [-3.4722, 1.3889]  n=96  cluster_bootstrap

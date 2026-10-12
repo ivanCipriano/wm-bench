@@ -1,0 +1,7 @@
+problems: 20  baseline samples scored: 120
+baseline: green_pooled 0.557  green_median 0.545
+
+ delta    n green_pooled green_median AUROC_z_ns AUROC_z_uff
+     1  120        0.552        0.545      0.499       0.499
+     3  120        0.557        0.543      0.498       0.459
+    10  120        0.830        0.798      0.841       0.565
