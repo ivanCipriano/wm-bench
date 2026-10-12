@@ -1,0 +1,293 @@
+##### job ACW recenti
+             JobID                            JobName  Partition      State    Elapsed ExitCode 
+------------------ ---------------------------------- ---------- ---------- ---------- -------- 
+            787906                 wmb-detect.mcgmark       gpuq  COMPLETED   00:04:48      0:0 
+          787906.0                             python             COMPLETED   00:04:47      0:0 
+            787907              wmb-detect.promptmark       defq  COMPLETED   00:01:44      0:0 
+          787907.0                             python             COMPLETED   00:01:43      0:0 
+            787923                wmb-calibrate.sweet       defq     FAILED   00:00:12      1:0 
+          787923.0                             python                FAILED   00:00:11      1:0 
+            787924                wmb-calibrate.stone       defq  COMPLETED   00:00:19      0:0 
+          787924.0                             python             COMPLETED   00:00:18      0:0 
+            787925              wmb-calibrate.mcgmark       defq  COMPLETED   00:00:09      0:0 
+          787925.0                             python             COMPLETED   00:00:08      0:0 
+            787926           wmb-calibrate.promptmark       defq  COMPLETED   00:00:09      0:0 
+          787926.0                             python             COMPLETED   00:00:08      0:0 
+            787927                  wmb-metrics.sweet       defq     FAILED   00:00:16      1:0 
+          787927.0                             python                FAILED   00:00:15      1:0 
+            787928                  wmb-metrics.stone       defq  COMPLETED   00:00:37      0:0 
+          787928.0                             python             COMPLETED   00:00:36      0:0 
+            787929                wmb-metrics.mcgmark       defq  COMPLETED   00:00:12      0:0 
+          787929.0                             python             COMPLETED   00:00:11      0:0 
+            787930             wmb-metrics.promptmark       defq  COMPLETED   00:00:15      0:0 
+          787930.0                             python             COMPLETED   00:00:14      0:0 
+            787931                     wmb-oracle-acw       defq CANCELLED+   00:00:39      0:0 
+          787931.0                     wmb-oracle-acw            CANCELLED+   00:00:38      0:9 
+            787950                   wmb-detect.sweet       gpuq  COMPLETED   00:03:43      0:0 
+          787950.0                             python             COMPLETED   00:03:42      0:0 
+            787951                   wmb-detect.sweet       gpuq  COMPLETED   00:10:33      0:0 
+          787951.0                             python             COMPLETED   00:10:33      0:0 
+            787952                   wmb-detect.sweet       gpuq  COMPLETED   00:09:24      0:0 
+          787952.0                             python             COMPLETED   00:09:23      0:0 
+            788128                wmb-calibrate.sweet       defq  COMPLETED   00:00:15      0:0 
+          788128.0                             python             COMPLETED   00:00:15      0:0 
+            788141                  wmb-metrics.sweet       defq  COMPLETED   00:00:24      0:0 
+          788141.0                             python             COMPLETED   00:00:23      0:0 
+            788293                  wmb-watermark.acw       defq  COMPLETED   01:10:55      0:0 
+          788293.0                             python             COMPLETED   01:10:54      0:0 
+            788294                  wmb-watermark.acw       defq  COMPLETED   01:09:47      0:0 
+          788294.0                             python             COMPLETED   01:09:47      0:0 
+            788609                    wmb-execute.acw       defq  COMPLETED   00:01:49      0:0 
+          788609.0                             python             COMPLETED   00:01:48      0:0 
+            788610                     wmb-detect.acw       defq     FAILED   00:21:38      1:0 
+          788610.0                             python                FAILED   00:21:38      1:0 
+            788611                     wmb-detect.acw       defq     FAILED   00:21:38      1:0 
+          788611.0                             python                FAILED   00:21:38      1:0 
+            793123                  wmb-calibrate.acw       defq     FAILED   00:00:04      1:0 
+          793123.0                             python                FAILED   00:00:03      1:0 
+            793124                    wmb-metrics.acw       defq     FAILED   00:00:04      1:0 
+          793124.0                             python                FAILED   00:00:04      1:0 
+
+##### squeue
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+
+##### cartelle di lavoro detect acw
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/items.jsonl
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/results.jsonl
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/request.json
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/worker.log
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/acw_work
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/results.jsonl
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/request.json
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/worker.log
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/acw_work
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/items.jsonl
+
+##### worker.log detect acw (ultime 60 righe)
+== /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/worker.log
+
+===== 2026-10-10 17:13:10 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python -m bench_shims.acw --request /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/request.json
+2026-10-10 17:13:23,998 INFO bench_shims: acw detect: 576 items, 0 already done
+2026-10-10 17:19:21,093 INFO bench_shims: 50/576 items done
+2026-10-10 17:25:15,188 INFO bench_shims: 100/576 items done
+2026-10-10 17:31:09,507 INFO bench_shims: 150/576 items done
+2026-10-10 17:34:42,898 ERROR bench_shims: fatal error, worker stopped:
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 177, in main
+    return run(shim, request)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 91, in run
+    _run_batch(shim, request, batch) if size > 1 else [_run_one(shim, request, batch[0])]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 129, in _run_batch
+    outputs = [[r] for r in shim.detect_batch(batch)]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 229, in detect_batch
+    calls += self._check_sourcery()  # prima di scrivere il lotto
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 143, in _check_sourcery
+    self._canary()
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 131, in _canary
+    raise FatalShimError(
+bench_shims._common.base.FatalShimError: Sourcery did not modify any canary file: check login, token (expired?) and network
+
+== /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/worker.log
+
+===== 2026-10-10 17:13:10 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python -m bench_shims.acw --request /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/request.json
+2026-10-10 17:13:24,180 INFO bench_shims: acw detect: 576 items, 0 already done
+2026-10-10 17:19:23,097 INFO bench_shims: 50/576 items done
+2026-10-10 17:25:15,906 INFO bench_shims: 100/576 items done
+2026-10-10 17:31:10,827 INFO bench_shims: 150/576 items done
+2026-10-10 17:34:43,560 ERROR bench_shims: fatal error, worker stopped:
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 177, in main
+    return run(shim, request)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 91, in run
+    _run_batch(shim, request, batch) if size > 1 else [_run_one(shim, request, batch[0])]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 129, in _run_batch
+    outputs = [[r] for r in shim.detect_batch(batch)]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 229, in detect_batch
+    calls += self._check_sourcery()  # prima di scrivere il lotto
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 143, in _check_sourcery
+    self._canary()
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 131, in _canary
+    raise FatalShimError(
+bench_shims._common.base.FatalShimError: Sourcery did not modify any canary file: check login, token (expired?) and network
+
+
+##### log submitit detect (ultime 80 righe degli ultimi 2 job)
+== /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_slurm/detect/788610/788610_0_log.err
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/pipeline/pipeline.py", line 113, in _run_one
+    stage.run(cell, ctx)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/pipeline/stages/detect.py", line 187, in run
+    results = adapter.detect_codes(inputs, hp, model, KEY_ID, decoding, run_dir, device)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/methods/base.py", line 604, in detect_codes
+    for result in self.run_worker(request, items).results:
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/methods/base.py", line 172, in run_worker
+    return self.worker.run(
+           ^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/methods/worker_client.py", line 202, in run
+    raise WorkerError(
+bench.domain.errors.WorkerError: acw worker failed with exit code 2:
+
+===== 2026-10-10 17:13:10 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python -m bench_shims.acw --request /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/request.json
+2026-10-10 17:13:23,998 INFO bench_shims: acw detect: 576 items, 0 already done
+2026-10-10 17:19:21,093 INFO bench_shims: 50/576 items done
+2026-10-10 17:25:15,188 INFO bench_shims: 100/576 items done
+2026-10-10 17:31:09,507 INFO bench_shims: 150/576 items done
+2026-10-10 17:34:42,898 ERROR bench_shims: fatal error, worker stopped:
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 177, in main
+    return run(shim, request)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 91, in run
+    _run_batch(shim, request, batch) if size > 1 else [_run_one(shim, request, batch[0])]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 129, in _run_batch
+    outputs = [[r] for r in shim.detect_batch(batch)]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 229, in detect_batch
+    calls += self._check_sourcery()  # prima di scrivere il lotto
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 143, in _check_sourcery
+    self._canary()
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 131, in _canary
+    raise FatalShimError(
+bench_shims._common.base.FatalShimError: Sourcery did not modify any canary file: check login, token (expired?) and network
+
+submitit ERROR (2026-10-10 17:34:43,023) - Submitted job triggered an exception
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/_submit.py", line 11, in <module>
+    submitit_main()
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/submission.py", line 76, in submitit_main
+    process_job(args.folder)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/submission.py", line 69, in process_job
+    raise error
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/submission.py", line 55, in process_job
+    result = delayed.result()
+             ^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/utils.py", line 137, in result
+    self._result = self.function(*self.args, **self.kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/pipeline/submit.py", line 155, in __call__
+    raise RuntimeError(
+RuntimeError: 1 of 1 cell(s) failed:
+method=acw__model_id=qwen25_coder_7b__language=python__level=L1__split=dev: WorkerError: acw worker failed with exit code 2:
+
+===== 2026-10-10 17:13:10 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python -m bench_shims.acw --request /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/1a28456b87b9/positives/L1_python_dev/request.json
+2026-10-10 17:13:23,998 INFO bench_shims: acw detect: 576 items, 0 already done
+2026-10-10 17:19:21,093 INFO bench_shims: 50/576 items done
+2026-10-10 17:25:15,188 INFO bench_shims: 100/576 items done
+2026-10-10 17:31:09,507 INFO bench_shims: 150/576 items done
+2026-10-10 17:34:42,898 ERROR bench_shims: fatal error, worker stopped:
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 177, in main
+    return run(shim, request)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 91, in run
+    _run_batch(shim, request, batch) if size > 1 else [_run_one(shim, request, batch[0])]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 129, in _run_batch
+    outputs = [[r] for r in shim.detect_batch(batch)]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 229, in detect_batch
+    calls += self._check_sourcery()  # prima di scrivere il lotto
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 143, in _check_sourcery
+    self._canary()
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 131, in _canary
+    raise FatalShimError(
+bench_shims._common.base.FatalShimError: Sourcery did not modify any canary file: check login, token (expired?) and network
+
+srun: error: tnode01: task 0: Exited with exit code 1
+== /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_slurm/detect/788610/788610_0_log.out
+submitit INFO (2026-10-10 17:13:06,436) - Starting with JobEnvironment(job_id=788610, hostname=tnode01, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-10-10 17:13:06,438) - Loading pickle: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_slurm/detect/788610/788610_submitted.pkl
+submitit ERROR (2026-10-10 17:34:43,023) - Submitted job triggered an exception
+== /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_slurm/detect/788611/788611_0_log.err
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/pipeline/pipeline.py", line 113, in _run_one
+    stage.run(cell, ctx)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/pipeline/stages/detect.py", line 187, in run
+    results = adapter.detect_codes(inputs, hp, model, KEY_ID, decoding, run_dir, device)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/methods/base.py", line 604, in detect_codes
+    for result in self.run_worker(request, items).results:
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/methods/base.py", line 172, in run_worker
+    return self.worker.run(
+           ^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/methods/worker_client.py", line 202, in run
+    raise WorkerError(
+bench.domain.errors.WorkerError: acw worker failed with exit code 2:
+
+===== 2026-10-10 17:13:10 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python -m bench_shims.acw --request /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/request.json
+2026-10-10 17:13:24,180 INFO bench_shims: acw detect: 576 items, 0 already done
+2026-10-10 17:19:23,097 INFO bench_shims: 50/576 items done
+2026-10-10 17:25:15,906 INFO bench_shims: 100/576 items done
+2026-10-10 17:31:10,827 INFO bench_shims: 150/576 items done
+2026-10-10 17:34:43,560 ERROR bench_shims: fatal error, worker stopped:
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 177, in main
+    return run(shim, request)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 91, in run
+    _run_batch(shim, request, batch) if size > 1 else [_run_one(shim, request, batch[0])]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 129, in _run_batch
+    outputs = [[r] for r in shim.detect_batch(batch)]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 229, in detect_batch
+    calls += self._check_sourcery()  # prima di scrivere il lotto
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 143, in _check_sourcery
+    self._canary()
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 131, in _canary
+    raise FatalShimError(
+bench_shims._common.base.FatalShimError: Sourcery did not modify any canary file: check login, token (expired?) and network
+
+submitit ERROR (2026-10-10 17:34:43,622) - Submitted job triggered an exception
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/_submit.py", line 11, in <module>
+    submitit_main()
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/submission.py", line 76, in submitit_main
+    process_job(args.folder)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/submission.py", line 69, in process_job
+    raise error
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/submission.py", line 55, in process_job
+    result = delayed.result()
+             ^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/lib/python3.11/site-packages/submitit/core/utils.py", line 137, in result
+    self._result = self.function(*self.args, **self.kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench/pipeline/submit.py", line 155, in __call__
+    raise RuntimeError(
+RuntimeError: 1 of 1 cell(s) failed:
+method=acw__model_id=deepseek_coder_6p7b__language=python__level=L1__split=dev: WorkerError: acw worker failed with exit code 2:
+
+===== 2026-10-10 17:13:10 /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/acw/bin/python -m bench_shims.acw --request /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/deepseek_coder_6p7b/1a28456b87b9/positives/L1_python_dev/request.json
+2026-10-10 17:13:24,180 INFO bench_shims: acw detect: 576 items, 0 already done
+2026-10-10 17:19:23,097 INFO bench_shims: 50/576 items done
+2026-10-10 17:25:15,906 INFO bench_shims: 100/576 items done
+2026-10-10 17:31:10,827 INFO bench_shims: 150/576 items done
+2026-10-10 17:34:43,560 ERROR bench_shims: fatal error, worker stopped:
+Traceback (most recent call last):
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 177, in main
+    return run(shim, request)
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 91, in run
+    _run_batch(shim, request, batch) if size > 1 else [_run_one(shim, request, batch[0])]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/_common/runner.py", line 129, in _run_batch
+    outputs = [[r] for r in shim.detect_batch(batch)]
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 229, in detect_batch
+    calls += self._check_sourcery()  # prima di scrivere il lotto
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 143, in _check_sourcery
+    self._canary()
+  File "/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/shims/bench_shims/acw/__main__.py", line 131, in _canary
+    raise FatalShimError(
+bench_shims._common.base.FatalShimError: Sourcery did not modify any canary file: check login, token (expired?) and network
+
+srun: error: tnode01: task 0: Exited with exit code 1
+== /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_slurm/detect/788611/788611_0_log.out
+submitit INFO (2026-10-10 17:13:06,436) - Starting with JobEnvironment(job_id=788611, hostname=tnode01, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-10-10 17:13:06,438) - Loading pickle: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_slurm/detect/788611/788611_submitted.pkl
+submitit ERROR (2026-10-10 17:34:43,622) - Submitted job triggered an exception
