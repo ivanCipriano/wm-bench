@@ -29,7 +29,7 @@ scadenza della prova si usa il token di un altro account, decisione del 10 ottob
 | SWEET | nessuna | verde (shim = originale, test per riga) | 8 celle, tutti `OK` |
 | MCGMark | 0001 γ fisso (D18), 0002 e 0003 solo prestazioni (3,11×) | verde, catena completa su codice lungo (4 cicli su 9, 12/12 bit) | Python: inserimento riuscito 8,0% (Qwen), 1,7% (DeepSeek); baseline gemella fatta |
 | PromptMark | 0001 provider in-process, 0002 soglia e green list parametriche | verde (shim = originale, limiti sull'esecuzione degli esempi senza effetto) | Python: 576 campioni per modello; 2-3 identificatori liberi per campione |
-| ACW | nessuna (0000 preesistente motivata) | verde (shim = originale, punteggio per regola) | **da lanciare** |
+| ACW | nessuna (0000 preesistente motivata) | verde (shim = originale, punteggio per regola) | Python: fatta il 10 ottobre 2026 |
 
 ### Deviazioni nuove
 D17 (MCGMark solo Python), D18 (γ fisso), D19 (SWEET anche su JavaScript), D20 (prefill della fence e baseline
@@ -50,7 +50,7 @@ PromptMark sui soli esempi del prompt). Aggiornate D1 (12 bit) e D9 (semi per ca
 
 ## Cosa resta aperto
 
-1. **ACW:** generazione su L1 dev (`submit_watermark_l1.sh acw`, circa 2 ore su CPU). Licenza di Sourcery:
+1. **ACW:** generazione su L1 dev **fatta** il 10 ottobre 2026 (2 job, circa 1 ora e 10 su `defq`; esito in `M7_summary.md`). Licenza di Sourcery:
    decisione dell'utente del 10 ottobre 2026, alla scadenza della prova si usa il token di un altro account
    (audit di ACW §6); lo shim ripete il canarino dopo ogni lotto e si ferma se Sourcery smette di funzionare.
 2. Confermare come approvati gli audit di MCGMark, PromptMark e ACW.
