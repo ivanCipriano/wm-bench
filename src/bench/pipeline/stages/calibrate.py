@@ -44,6 +44,35 @@ def json_threshold(value: float) -> float | str:
     return value if math.isfinite(value) else "Infinity"
 
 
+def primary_view(table: pd.DataFrame, adapter: Any) -> pd.DataFrame:
+    """La tabella di rilevazione con il punteggio principale del metodo in ``score``.
+
+    Se il metodo prende il principale da ``extra`` (``primary_score``, es. STONE, D16), il punteggio
+    nativo si sposta in ``extra`` con il nome ``native_score_name`` (secondario) e ``score`` diventa
+    il principale; senza valore (NaN) la rilevazione conta come non riuscita. Le rilevazioni salvate
+    non cambiano: la scelta vale per calibrazione, metriche e HPO.
+    """
+    key = getattr(adapter, "primary_score", None)
+    if key is None:
+        return table
+    native = pd.to_numeric(table["score"], errors="coerce")
+    extras = []
+    for raw, value in zip(table["extra_json"], native, strict=True):
+        extra = json.loads(raw) if isinstance(raw, str) and raw else {}
+        extra[adapter.native_score_name] = None if pd.isna(value) else float(value)
+        extras.append(json.dumps(extra, sort_keys=True))
+    out = table.copy()
+    out["extra_json"] = extras
+    values = [
+        json.loads(raw).get(key) if status == "OK" else None
+        for raw, status in zip(out["extra_json"], out["status"], strict=True)
+    ]
+    # Lo stato resta quello della rilevazione: un punteggio mancante conta già come non riuscito
+    # (``negative_scores``, ``detected``) e il nativo resta usabile come secondario.
+    out["score"] = [math.nan if v is None else float(v) for v in values]
+    return out
+
+
 def with_secondary(table: pd.DataFrame, adapter: Any, name: str) -> pd.DataFrame:
     """La tabella di rilevazione con il punteggio secondario ``name`` al posto di ``score``;
     senza valore la rilevazione conta come non riuscita (punteggio minimo)."""
@@ -125,13 +154,13 @@ class CalibrateStage(Stage):
         method, model_id, language = self._require(cell)
         cfg_hash = self.config_hash(method)
         frames = [ctx.store.read_table(ref) for ref in self.inputs(cell)]
-        table = pd.concat(frames, ignore_index=True)
+        adapter: Any = make_adapter(cfg, method)
+        table = primary_view(pd.concat(frames, ignore_index=True), adapter)
         calibrator = ThresholdCalibrator(
             target_fpr=cfg.detection.target_fpr, min_negatives=cfg.detection.min_negatives
         )
         scores = negative_scores(table)
         result = calibrator.fit(scores)
-        adapter: Any = make_adapter(cfg, method)
         secondary: dict[str, dict[str, float]] = {}
         for name in adapter.secondary_scores:
             fitted = calibrator.fit(negative_scores(with_secondary(table, adapter, name)))

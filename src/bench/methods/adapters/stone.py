@@ -32,8 +32,13 @@ class StoneAdapter(PromptEmbedder, Detector):
     family: ClassVar[MethodFamily] = MethodFamily.LOGIT
     gpu_for_embed: ClassVar[bool] = True
     gpu_for_detect: ClassVar[bool] = True  # dispositivo del generatore casuale, non il modello
-    # z-score con il denominatore del paper (D16): misura secondaria.
-    secondary_scores: ClassVar[dict[str, str]] = {"z_nonsyntax": "z_nonsyntax"}
+    # Punteggio principale: z-score con il denominatore del paper (``z_nonsyntax``). Lo z del
+    # codice ufficiale è dominato dalla composizione del codice (token non sintattici contro
+    # sintattici) e inverte l'AUROC sul codice umano: secondo caso della regola delle
+    # discrepanze (D16, decisione dell'utente del 12 ottobre 2026); resta come secondario.
+    primary_score: ClassVar[str | None] = "z_nonsyntax"
+    native_score_name: ClassVar[str] = "z_official"
+    secondary_scores: ClassVar[dict[str, str]] = {"z_official": "z_official"}
 
     def to_native_hparams(self, hp: dict[str, Any]) -> dict[str, Any]:
         """γ → ``gamma``, δ → ``delta`` più i valori fissi; la chiave va in ``request.key``."""

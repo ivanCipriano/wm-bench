@@ -55,6 +55,19 @@ Il codice sta in `stone_implementation/` e deriva da MarkLLM (THU-BPM, Apache-2.
   - Serve **solo fino all'HPO**.
   - La griglia HPO di STONE (Milestone 8) deve contenere entrambi i valori del repository, δ = 0,5 e δ = 1,0, più
     eventuali valori intermedi o più alti, così che la configurazione finale la scelgano i dati.
+- **Griglia della M8** (decisione dell'utente del 12 ottobre 2026, **provvisoria**): γ ∈ {0,25; 0,5} ×
+  δ ∈ {0,5; 1,0; 1,5; 2,0; 3,0; 4,0; 5,0}, 14 configurazioni.
+  - **I valori di δ sopra 1,0 estendono l'intervallo del repository** (0,5 e 1,0 in `run.sh`). Motivazione:
+    nelle nostre condizioni (temperatura 0,2, formato chat, codice a bassa entropia) il default δ = 1,0 non
+    separa il codice marcato dalla baseline LLM. Su L1 dev l'AUROC marcato contro baseline è 0,49-0,55 in tutte
+    le 6 celle e la frazione di token verdi è quasi uguale (Qwen Python 0,545 contro 0,533;
+    `M8_stone_diag.txt`). Gli autori campionavano con i default del modello, `min_length=200` e
+    `no_repeat_ngram_size=4` (D26).
+  - **Il limite superiore si decide dopo la prova dose-risposta** (20 prompt L1 Python, Qwen, γ = 0,5,
+    δ ∈ {1, 3, 10}):
+    - se il watermark diventa visibile contro la baseline LLM solo oltre δ = 5, si aggiungono valori più alti
+      (es. 7 e 10) prima di lanciare l'HPO;
+    - se non diventa visibile nemmeno con δ = 10, è un problema di integrazione e ci si ferma.
 - **Contesto della green list:**
   - con `prefix_length=0`, `STONEUtils._seed_rng` usa `prev_token = 1` (prodotto vuoto), quindi il generatore viene
     inizializzato con `hash_key` a ogni passo;
@@ -101,6 +114,25 @@ Più alto vuol dire più probabilmente marcato.
     - `z_nonsyntax = (N_GE − γ·N_E) / sqrt(γ(1−γ)·N_E)`, la formula del paper, che vale `None` se N_E < 1;
     - `n_syntax`, `n_nonsyntax`, `n_green_nonsyntax`;
   - in M7 si confrontano AUROC e TPR con i due punteggi.
+- **Aggiornamento del 12 ottobre 2026** (decisione dell'utente, D16): `z_nonsyntax` diventa il punteggio
+  **principale** per HPO e metriche e lo z ufficiale resta secondario (`z_official`). Si applica il secondo caso
+  della regola delle discrepanze: il codice non funziona come il metodo descritto. Le verifiche:
+  1. **Gli autori calcolano l'AUROC con lo z ufficiale.** Il notebook `AUROC_perplexity.ipynb` legge
+     `roc_aur-human-watermarked`, calcolato in `run.py:240` sui punteggi di `detect_watermark`.
+  2. **Lo z ufficiale misura la composizione del codice.** Sotto l'ipotesi nulla vale in media
+     γ(N_ns − N_syn)/sqrt(γ(1−γ)·N_syn) ≠ 0. Su L1 la sola composizione riproduce l'inversione dell'AUROC contro
+     i negativi umani, e anche più forte: Qwen Python 0,22 contro 0,32, Qwen C++ 0,18 contro 0,25, DeepSeek
+     Python 0,14 contro 0,18. Il residuo, cioè lo z meno la sua media nulla, dà gli stessi AUROC di
+     `z_nonsyntax`. Il codice di integrazione (CodeSearchNet, The Stack) ha più token non sintattici
+     (N_ns/N_syn 3,1 contro 2,0 per Qwen Python) e quindi z ufficiali alti senza watermark
+     (`M8_stone_diag.txt`).
+  3. **L'inversione non dipende dall'adattamento del vocabolario (D15):** resta con 50.272 (Python,
+     integrazione: 0,17; C++: 0,09-0,14; `M8_stone_vocab.txt`).
+  4. **Configurazione degli autori, piccolo campione:** AUROC dello z ufficiale 0,44 (HumanEval+) e 0,68
+     (MBPP+), lontano dallo 0,982 della letteratura. È lo scostamento di fedeltà D26, con le condizioni diverse
+     elencate lì.
+  - Le rilevazioni salvate contengono entrambi i punteggi: soglie e metriche si ricalcolano senza rifare la
+    rilevazione (`Detector.primary_score`, `primary_view` in `calibrate.py`).
 
 ## 6. Decoding cablato da sovrascrivere
 

@@ -42,7 +42,12 @@ from bench.metrics.calibration import MIN_SCORE, detected
 from bench.metrics.stats import auroc, auroc_interval, clopper_pearson, ratio_interval, wilson
 from bench.metrics.uncertainty import ClusterBootstrap, bootstrap_seed, pass_at_1
 from bench.pipeline.stage import Cell, Stage, StageContext
-from bench.pipeline.stages.calibrate import json_threshold, threshold_ref, with_secondary
+from bench.pipeline.stages.calibrate import (
+    json_threshold,
+    primary_view,
+    threshold_ref,
+    with_secondary,
+)
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
 from bench.pipeline.stages.watermark import make_adapter, watermarked_ref
@@ -214,12 +219,14 @@ class MetricsStage(Stage):
                 bootstrap_seed(cfg.global_seed, name, cell.key()), n_resamples=n_boot
             )
 
-        positives = ctx.store.read_table(refs["positives"])
+        # Punteggio principale del metodo (per STONE z_nonsyntax, D16), come in calibrazione.
+        adapter = self.adapter(method)
+        positives = primary_view(ctx.store.read_table(refs["positives"]), adapter)
         applicable = positives[positives["status"] != "NOT_APPLICABLE"]
         if applicable.empty:
             self._write(ctx, cell, rows, cfg_hash, thresholds, not_applicable=True)
             return
-        neg_human = ctx.store.read_table(refs["neg_human"])
+        neg_human = primary_view(ctx.store.read_table(refs["neg_human"]), adapter)
 
         # --- rilevabilità
         hits = _detected(applicable, tau)
@@ -234,7 +241,7 @@ class MetricsStage(Stage):
             len(table),
         )
         for name, ref_key in self._fpr_subjects(method):
-            negatives = ctx.store.read_table(refs[ref_key])
+            negatives = primary_view(ctx.store.read_table(refs[ref_key]), adapter)
             k = int(_detected(negatives, tau).sum())
             add(
                 name,
@@ -256,7 +263,6 @@ class MetricsStage(Stage):
         )
 
         # --- punteggi secondari (varianti del paper): soglia propria, stessi positivi e negativi
-        adapter = self.adapter(method)
         for name in adapter.secondary_scores:
             sec = thresholds.secondary.get(name)
             if sec is None:

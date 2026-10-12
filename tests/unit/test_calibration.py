@@ -103,12 +103,21 @@ def test_secondary_scores_replace_the_main_score() -> None:
             ],
         }
     )
+    from bench.pipeline.stages.calibrate import primary_view
+
     stone = StoneAdapter.__new__(StoneAdapter)
-    out = with_secondary(table, stone, "z_nonsyntax")
-    assert list(out["status"]) == ["OK", "FAILED", "FAILED"]
+    # STONE (D16): principale = z_nonsyntax da extra, lo z ufficiale passa fra i secondari.
+    out = primary_view(table, stone)
+    assert list(out["status"]) == ["OK", "OK", "FAILED"]  # stato invariato, punteggio NaN
     assert negative_scores(out) == [1.5, MIN_SCORE, MIN_SCORE]
+    assert out["score"].isna().tolist() == [False, True, True]
     assert list(table["score"][:2]) == [9.0, 8.0]  # la tabella originale non cambia
+    official = with_secondary(out, stone, "z_official")
+    assert list(official["status"]) == ["OK", "OK", "FAILED"]
+    assert negative_scores(official) == [9.0, 8.0, MIN_SCORE]
+    # Metodi senza principale da extra: tabella invariata.
     pm = PromptMarkAdapter.__new__(PromptMarkAdapter)
+    assert primary_view(table, pm) is table
     assert pm.secondary_score("p_adaptive_paper", {"p_adaptive_paper": 1e-3}) == pytest.approx(3.0)
     assert pm.secondary_score("p_adaptive_paper", {"p_adaptive_paper": 0.0}) == math.inf
     assert pm.secondary_score("p_adaptive_paper", {"p_adaptive_paper": None}) is None

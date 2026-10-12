@@ -555,6 +555,11 @@ class Detector(MethodAdapter):
     # chiave di ``DetectionRecord.extra``. Ognuno ha la sua soglia (fase calibrate) e le sue
     # metriche ``tpr_at_fpr_<nome>`` e ``auroc_<nome>`` (fase metrics).
     secondary_scores: ClassVar[dict[str, str]] = {}
+    # Punteggio principale preso da ``DetectionRecord.extra`` invece che dal punteggio nativo del
+    # codice (secondo caso della regola delle discrepanze, es. STONE, D16). Il punteggio nativo
+    # resta disponibile come secondario con il nome ``native_score_name``. ``None`` = nativo.
+    primary_score: ClassVar[str | None] = None
+    native_score_name: ClassVar[str] = "native"
 
     def secondary_score(self, name: str, extra: dict[str, Any]) -> float | None:
         """Punteggio secondario dall'``extra`` di una rilevazione (più alto = più marcato)."""
