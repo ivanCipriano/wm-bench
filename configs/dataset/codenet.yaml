@@ -7,7 +7,11 @@ files:
   unverified_accepted: ${paths.datasets}/Project_CodeNet/derived/input_output/unverified_accepted_solutions.txt
   identical_clusters: ${paths.datasets}/Project_CodeNet/derived/duplicates/identical_problem_clusters
   excluded: ${paths.repo}/configs/dataset/codenet_excluded.yaml   # problemi da non selezionare (oracle)
+  selected: ${paths.repo}/configs/dataset/codenet_selected.yaml   # i 250 problemi del L2 (M9, generato)
 dirs:
   metadata: ${paths.datasets}/Project_CodeNet/metadata
   problem_descriptions: ${paths.datasets}/Project_CodeNet/problem_descriptions
   io_data: ${paths.datasets}/Project_CodeNet/derived/input_output/data
+  duplicates: ${paths.datasets}/Project_CodeNet/derived/duplicates
+  data: ${paths.datasets}/Project_CodeNet/data      # solo le sottomissioni estratte (extract_list.txt)
+  work: ${paths.wmb}/tmp/codenet                     # candidati e validazione della selezione (M9)

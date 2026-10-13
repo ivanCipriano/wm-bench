@@ -17,6 +17,9 @@ from bench.domain.errors import ConfigError
 from bench.domain.models import Problem
 from bench.store.hashing import sha256_bytes
 
+# Dataset di programmi completi (stdin/stdout): nessun entry point nel prompt (L2, CodeNet).
+NO_ENTRY_POINT_DATASETS: frozenset[str] = frozenset({"codenet"})
+
 
 def load_system_prompt(cfg: PromptConfig) -> str:
     """Legge il system prompt verificandone l'hash.
@@ -73,9 +76,10 @@ class PromptBuilder:
         """Messaggio utente del problema.
 
         Raises:
-            ConfigError: se il template manca o il problema non ha ``entry_point``.
+            ConfigError: se il template manca o il problema non ha ``entry_point`` (richiesto
+                tranne che per i dataset di ``NO_ENTRY_POINT_DATASETS``).
         """
-        if not problem.entry_point:
+        if not problem.entry_point and problem.dataset not in NO_ENTRY_POINT_DATASETS:
             raise ConfigError(f"{problem.problem_key}: entry_point is required by the prompt")
         try:
             template = self._env.get_template(self.template_name(problem))
@@ -85,7 +89,7 @@ class PromptBuilder:
         # Il blocco di codice si chiude su una riga propria; il prompt resta invariato.
         if not prompt.endswith("\n"):
             prompt += "\n"
-        return template.render(prompt=prompt, entry_point=problem.entry_point)
+        return template.render(prompt=prompt, entry_point=problem.entry_point or "")
 
     def build(self, problem: Problem, system_prompt: str | None = None) -> list[dict[str, str]]:
         """Messaggi chat (SPEC §7.5); ``system_prompt`` sostituisce quello di default."""

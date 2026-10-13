@@ -362,12 +362,109 @@ class SyntaxExecutor(Executor):
         return job, {}
 
 
+# CodeNet: compilazione (o controllo sintattico) ed esecuzione del programma completo.
+CODENET_COMPILE: dict[Language, list[str]] = {
+    Language.PYTHON: ["python3", "-m", "py_compile", "main.py"],
+    Language.JAVA: ["javac", "Main.java"],
+    Language.CPP: ["g++", "-std=c++17", "-O2", "-o", "a.out", "main.cpp"],
+    Language.JAVASCRIPT: ["node", "--check", "main.js"],
+}
+CODENET_RUN: dict[Language, list[str]] = {
+    Language.PYTHON: ["python3", "main.py"],
+    Language.JAVA: ["java", "-cp", ".", "Main"],
+    Language.CPP: ["./a.out"],
+    Language.JAVASCRIPT: ["node", "main.js"],
+}
+IO_CHECK = Path(__file__).with_name("io_check.py")
+
+
+@EXECUTORS.register("codenet")
+class CodeNetExecutor(Executor):
+    """CodeNet (L2): programma completo con l'input del problema su stdin, stdout confrontato.
+
+    Usa la modalità ``program`` del runner già nell'immagine, senza ricostruirla: i nomi dei file
+    vengono dalle regole ``syntax_<lang>`` (``main.py``, ``Main.java``, ``main.cpp``, ``main.js``),
+    la compilazione dà ``COMPILE_ERROR`` (C++, Java) o ``SYNTAX_ERROR`` (Python, JavaScript), e
+    l'esecuzione passa per ``io_check.py`` (file accessorio del job), che fornisce l'input e
+    confronta l'output: la regola generica di ``classify`` dà PASSED, FAILED o RUNTIME_ERROR.
+    Un solo caso di I/O per problema (``derived/input_output/data/<pid>``, cluster_info §8.6).
+
+    Args:
+        io_root: cartella dei casi di I/O (default: ``datasets.codenet.dirs.io_data``).
+    """
+
+    name: ClassVar[str] = "codenet"
+
+    def __init__(
+        self,
+        config: ExperimentConfig,
+        sandbox: Sandbox,
+        language: Language,
+        workdir_root: Path,
+        io_root: Path | None = None,
+    ) -> None:
+        super().__init__(config, sandbox, language, workdir_root)
+        if language not in CODENET_RUN:
+            raise ConfigError(f"codenet executor does not support {language}")
+        if io_root is None:
+            io_root = config.datasets["codenet"].dirs["io_data"]
+        self.io_root = io_root
+
+    def io_case(self, problem: Problem) -> tuple[bytes, bytes]:
+        """Input ed output attesi del problema.
+
+        Raises:
+            ConfigError: se il caso manca.
+        """
+        pid = (problem.test_ref or problem.problem_key).rsplit("/", 1)[-1]
+        folder = self.io_root / pid
+        files = folder / "input.txt", folder / "output.txt"
+        if not all(f.is_file() for f in files):
+            raise ConfigError(f"no CodeNet input/output case in {folder}")
+        return files[0].read_bytes(), files[1].read_bytes()
+
+    def canonical(self, problem: Problem) -> str:
+        return problem.canonical_solution or ""
+
+    def budget_s(self, n_samples: int) -> float:
+        per_sample = self.exec_cfg.compile_timeout_s + self.exec_cfg.timeouts_s[str(self.language)]
+        return n_samples * (per_sample + 5) + INVOCATION_MARGIN_S
+
+    def job(
+        self, problem: Problem, samples: list[SampleToRun]
+    ) -> tuple[dict[str, Any], dict[str, bytes]]:
+        stdin, expected = self.io_case(problem)
+        job = self._base_job("program")
+        job.update(
+            {
+                "rule": f"syntax_{self.language}",
+                "compile_cmd": CODENET_COMPILE[self.language],
+                "run_cmd": [
+                    "python3",
+                    "../io_check.py",
+                    "../input.txt",
+                    "../expected.txt",
+                    "--",
+                    *CODENET_RUN[self.language],
+                ],
+                "samples": [{"id": str(i), "program": s.code} for i, s in enumerate(samples)],
+            }
+        )
+        files = {
+            "io_check.py": IO_CHECK.read_bytes(),
+            "input.txt": stdin,
+            "expected.txt": expected,
+        }
+        return job, files
+
+
 def executor_name(dataset: str) -> str:
     """Executor di un dataset (SPEC §11.3)."""
     names = {
         "humanevalplus": "evalplus",
         "mbppplus": "evalplus",
         "humanevalpack": "humanevalpack",
+        "codenet": "codenet",
         "codesearchnet": "syntax",
         "thestack_cpp": "syntax",
     }

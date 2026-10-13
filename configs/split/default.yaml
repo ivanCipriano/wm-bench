@@ -4,6 +4,7 @@
 families:
   humaneval: {dev: 24, total: 164}
   mbpp: {dev: 72, total: 378}          # problemi di MBPP+
+  codenet: {dev: 50, total: 250}       # L2: i 250 problemi di codenet_selected.yaml (M9)
 # Soluzioni MBPP originali senza problema in MBPP+ (D7, cluster_info §10.1): solo negativi,
 # assegnati con la proporzione di MBPP+ (596 -> 114 dev / 482 test).
 mbpp_extra_assignment: proportional

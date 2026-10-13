@@ -94,7 +94,7 @@ def test_wrong_counts_and_unknown_family(splitter: ProblemSplitter) -> None:
     with pytest.raises(DataError, match="expected 164"):
         splitter.assign([_problem(f"humaneval/{i}") for i in range(10)])
     with pytest.raises(DataError, match="no split rule"):
-        splitter.assign([_problem("codenet/p1")])
+        splitter.assign([_problem("classeval/p1")])  # nessuna regola: solo test (L3)
 
 
 def test_extra_assignment_variants(cfg: ExperimentConfig) -> None:
