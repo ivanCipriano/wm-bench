@@ -229,3 +229,22 @@ def test_job_name_carries_the_methods_only_for_method_stages(cfg: ExperimentConf
     assert {j.params["name"] for j in detect} == {"wmb-detect.sweet"}
     baseline = submit(c, "generate_baseline", PROFILES, dry_run=True)
     assert {j.params["name"] for j in baseline} == {"wmb-generate_baseline"}
+
+
+def test_execute_of_canonical_and_baseline_is_not_named_after_the_methods(
+    cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Canoniche e baseline non hanno metodo: il job non deve bloccare (né essere bloccato da)
+    l'esecuzione di un metodo, es. ``wmb-execute.sweet`` dell'HPO di un altro utente."""
+    import bench.pipeline.submit as sub
+    from bench.pipeline.stage import Cell
+
+    cells = [Cell(source="canonical", level="L2", language="python")]
+    assert sub.stage_methods(cfg, "execute", cells) == ["canonical"]
+    cells.append(Cell(source="llm_watermarked", method="stone", level="L1", language="cpp"))
+    assert sub.stage_methods(cfg, "execute", cells) == ["canonical", "stone"]
+    assert sub.stage_methods(cfg, "execute", []) == list(cfg.methods)
+    rows = [("1", "s.faraulo", "RUNNING", "wmb-execute.sweet")]
+    monkeypatch.setattr(sub, "queued_jobs", lambda account: rows)
+    assert sub.conflicting_jobs("execute", (1, 1), "acc", ["canonical"]) == []
+    assert sub.conflicting_jobs("execute", (1, 1), "acc", ["llm_baseline"]) == []

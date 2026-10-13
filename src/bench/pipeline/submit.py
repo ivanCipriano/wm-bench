@@ -248,11 +248,22 @@ def job_name(
     return f"wmb-{stage}{tag}" if m == 1 else f"wmb-{stage}{tag}-s{k}of{m}"
 
 
-def stage_methods(cfg: ExperimentConfig, stage: str) -> list[str] | None:
-    """Metodi della configurazione se la fase ha l'asse ``method``, altrimenti ``None``."""
+def stage_methods(
+    cfg: ExperimentConfig, stage: str, cells: Sequence[Cell] | None = None
+) -> list[str] | None:
+    """Etichette del nome del job se la fase ha l'asse ``method``, altrimenti ``None``.
+
+    Con le celle pianificate l'etichetta è il metodo di ogni cella o, per le celle senza metodo
+    (es. ``canonical`` e ``llm_baseline`` di ``execute``), la sua sorgente: così l'esecuzione
+    delle canoniche o della baseline non risulta in conflitto con i job di un metodo, con cui
+    non condivide celle. Senza celle si usano i metodi della configurazione.
+    """
     import bench.pipeline.stages  # noqa: F401  (popola STAGES)
 
-    return list(cfg.methods) if "method" in STAGES.get(stage).cell_axes else None
+    if "method" not in STAGES.get(stage).cell_axes:
+        return None
+    tags = {c.method or c.source for c in cells or ()} - {None}
+    return sorted(str(t) for t in tags) if tags else list(cfg.methods)
 
 
 def queued_jobs(account: str) -> list[tuple[str, str, str, str]]:
@@ -337,7 +348,8 @@ def submit(
     import bench.pipeline.stages  # noqa: F401  (popola STAGES)
 
     k, m = share
-    methods = stage_methods(cfg, stage)
+    groups = list(plan_submission(cfg, stage, profiles))
+    methods = stage_methods(cfg, stage, [c for g in groups for c in g.cells])
     name = job_name(stage, share, methods)
     if not dry_run and not allow_concurrent:
         running = conflicting_jobs(stage, share, cfg.slurm.account, methods)
@@ -350,7 +362,7 @@ def submit(
     jobs: list[SubmittedJob] = []
     cfg_data = cfg.model_dump(mode="json")
     previous: list[str] = []
-    for group in plan_submission(cfg, stage, profiles):
+    for group in groups:
         all_weights = [cell_weight(cfg, c) for c in group.cells]
         mine = split_into_lanes(group.cells, all_weights, m, keep_empty=True)[k - 1]
         weights = [all_weights[group.cells.index(c)] for c in mine]
