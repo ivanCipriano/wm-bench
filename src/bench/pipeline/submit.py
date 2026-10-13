@@ -109,6 +109,9 @@ def executor_parameters(
         "slurm_account": profile.account,
         "slurm_qos": profile.qos,
         "slurm_wckey": None,  # submitit aggiungerebbe --wckey=submitit
+        # --requeue: sul cluster JobRequeue = 0, quindi senza questa opzione `scontrol requeue`
+        # (usato da submitit al timeout) è rifiutato e il job finisce in TIMEOUT senza ripartire.
+        "slurm_additional_parameters": {"requeue": True},
         # umask 002: i file restano scrivibili dal gruppo (due utenti condividono gli artefatti).
         # Poi i comandi del profilo (es. module load apptainer per i job CPU).
         "slurm_setup": [

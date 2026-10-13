@@ -43,6 +43,7 @@ def test_executor_parameters(cfg: ExperimentConfig) -> None:
     assert "slurm_dependency" not in params
     assert "export HF_HUB_OFFLINE=1" in params["slurm_setup"]
     assert "export TRANSFORMERS_OFFLINE=1" in params["slurm_setup"]
+    assert params["slurm_additional_parameters"] == {"requeue": True}  # JobRequeue = 0
     cpu = executor_parameters(cfg, PROFILES["slurm_cpu"], "prepare_data", after="123")
     assert cpu["slurm_partition"] == "defq" and "slurm_gres" not in cpu
     assert cpu["slurm_dependency"] == "afterany:123"
