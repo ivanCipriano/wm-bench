@@ -37,10 +37,30 @@ def _status(path: Path) -> str:
     return str(json.loads(manifest.read_text(encoding="utf-8")).get("status", "?"))
 
 
+_DEFAULTS: dict[str, str] = {}
+
+
+def _default_hash(method: str) -> str:
+    """Hash della configurazione di default del metodo (quella della M7).
+
+    Dalla M8 ``watermarked/<metodo>/<modello>/`` contiene anche le configurazioni della griglia
+    dell'HPO: la M7 riguarda solo il default.
+    """
+    if method not in _DEFAULTS:
+        from bench.config.builder import load_experiment
+        from bench.pipeline.stages.watermark import make_adapter
+
+        cfg = load_experiment(["paths=cluster", "stage=watermark"])
+        for name in LANGS:
+            adapter = make_adapter(cfg, name)
+            _DEFAULTS[name] = adapter.config_hash(adapter.default_hparams())
+    return _DEFAULTS[method]
+
+
 def _cfg(root: Path, method: str, model: str) -> str | None:
-    folder = root / "watermarked" / method / model
-    hashes = sorted(p.name for p in folder.iterdir()) if folder.is_dir() else []
-    return hashes[0] if len(hashes) == 1 else (",".join(hashes) or None)
+    """Configurazione di default, se i suoi campioni marcati esistono."""
+    cfg_hash = _default_hash(method)
+    return cfg_hash if (root / "watermarked" / method / model / cfg_hash).is_dir() else None
 
 
 def cells(root: Path) -> None:
