@@ -345,7 +345,7 @@ def test_prompt_builder_accepts_codenet_without_entry_point(cfg: ExperimentConfi
     from bench.domain.models import Problem
     from bench.generation.prompt_builder import PromptBuilder
 
-    builder = PromptBuilder(repo_root() / "configs" / "prompt" / "drafts", "sys", "x")
+    builder = PromptBuilder(repo_root() / "configs" / "prompt" / "user", "sys", "x")
     for lang in Language:
         problem = Problem(
             problem_key="codenet/p00001",
@@ -382,7 +382,7 @@ def test_prompt_builder_accepts_codenet_without_entry_point(cfg: ExperimentConfi
 def test_codenet_templates_share_the_same_structure() -> None:
     from bench.config.builder import repo_root
 
-    drafts = repo_root() / "configs" / "prompt" / "drafts"
+    drafts = repo_root() / "configs" / "prompt" / "user"
     texts = {lang: (drafts / f"codenet_{lang}.j2").read_text(encoding="utf-8") for lang in Language}
     lines = {lang: t.split("\n") for lang, t in texts.items()}
     assert len({len(v) for v in lines.values()}) == 1
@@ -399,3 +399,48 @@ def test_input_format_in_pre_keeps_spaces_and_newlines() -> None:
     text = describe(html).text
     assert "```\nN\nA_1 A_2 ... A_N\n```" in text
     assert "Read $N$." in text and "Print $xy$." in text and "\ufeff" not in text
+
+
+# --------------------------------------------------------------------------- template approvati
+TEMPLATE_TAGS = {
+    Language.PYTHON: ("python", "print(1)\n"),
+    Language.JAVA: ("java", "public class Main {\n  public static void main(String[] a) {}\n}\n"),
+    Language.CPP: ("cpp", "int main() {\n  return 0;\n}\n"),
+    Language.JAVASCRIPT: ("javascript", "console.log(1);\n"),
+}
+
+
+@pytest.mark.parametrize("lang", list(Language))
+def test_extractor_accepts_the_tag_of_each_codenet_template(lang: Language) -> None:
+    from bench.config.builder import repo_root
+    from bench.domain.enums import Level
+    from bench.domain.models import Problem
+    from bench.generation.code_extractor import FencedCodeExtractor
+
+    tag, code = TEMPLATE_TAGS[lang]
+    template = (repo_root() / "configs" / "prompt" / "user" / f"codenet_{lang}.j2").read_text(
+        encoding="utf-8"
+    )
+    assert f"```{tag} code block" in template  # il tag chiesto dal template
+    problem = Problem(problem_key="codenet/p00001", dataset="codenet", level=Level.L2,
+                      language=lang, split=None, prompt_text="Read N.", entry_point=None,
+                      canonical_solution=None, test_ref="p00001", contamination_risk=False,
+                      loc_to_generate=None)  # fmt: skip
+    other = "javascript" if lang is not Language.JAVASCRIPT else "python"
+    raw = f"Here:\n```{other}\nnot this\n```\n```{tag}\n{code}```\n"
+    extracted, ok = FencedCodeExtractor().extract(raw, problem)
+    assert ok and extracted == code  # blocco col tag atteso, nessun prompt anteposto
+
+
+def test_codenet_templates_are_in_the_prompt_hashes(cfg: ExperimentConfig) -> None:
+    from bench.generation.prompt_builder import PromptBuilder
+
+    hashes = PromptBuilder.from_config(cfg.prompt).prompt_hashes()
+    assert {f"codenet_{lang}.j2" for lang in Language} <= set(hashes)
+    assert "system.txt" in hashes
+
+
+def test_score_line_is_removed() -> None:
+    d = describe('<span class="lang-en"><p>Score : <var>300</var> points</p><p>Do it.</p></span>')
+    assert d.text == "Do it.\n"
+    assert describe("<p>The Score : 3 points rule.</p><p>x</p>").text.startswith("The Score")

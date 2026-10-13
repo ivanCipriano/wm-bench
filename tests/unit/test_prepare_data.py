@@ -113,4 +113,4 @@ def test_second_run_is_skipped(run: tuple[BenchmarkFacade, ExperimentConfig]) ->
 
 def test_unsupported_levels_rejected(cfg: ExperimentConfig) -> None:
     with pytest.raises(ConfigError, match="levels=\\[L1\\]"):
-        BenchmarkFacade(rebuild(cfg, levels=["L1", "L2"])).run_stage("prepare_data")
+        BenchmarkFacade(rebuild(cfg, levels=["L1", "L3"])).run_stage("prepare_data")

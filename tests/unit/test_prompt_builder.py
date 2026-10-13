@@ -90,6 +90,11 @@ def test_hashes_cover_system_and_templates(cfg: ExperimentConfig) -> None:
         "humanevalpack_java.j2",
         "humanevalpack_cpp.j2",
         "humanevalpack_javascript.j2",
+        # Livello 2 (approvati il 13 ottobre 2026)
+        "codenet_python.j2",
+        "codenet_java.j2",
+        "codenet_cpp.j2",
+        "codenet_javascript.j2",
     }
     assert hashes["system.txt"] == cfg.prompt.system_prompt_sha256
 

@@ -33,7 +33,7 @@ import yaml
 
 from bench.config.builder import load_experiment
 from bench.data.codenet import LANG_NAMES
-from bench.data.negatives import StratifiedSampler, code_fingerprint, deduplicate
+from bench.data.negatives import StratifiedSampler, code_fingerprint, deduplicate, ks_statistic
 from bench.data.splitter import ProblemSplitter
 from bench.domain.enums import Language, Level, Split
 from bench.domain.errors import DataError
@@ -47,15 +47,6 @@ from bench.store.artifact_store import ArtifactStore
 
 KS_THRESHOLD = 0.1
 DECILES = [i / 10 for i in range(11)]
-
-
-def ks_statistic(a: Sequence[float], b: Sequence[float]) -> float:
-    """Statistica KS a due campioni: massima distanza fra le funzioni di ripartizione empiriche."""
-    x, y = np.sort(np.asarray(a, dtype=float)), np.sort(np.asarray(b, dtype=float))
-    grid = np.concatenate([x, y])
-    fx = np.searchsorted(x, grid, side="right") / len(x)
-    fy = np.searchsorted(y, grid, side="right") / len(y)
-    return float(np.max(np.abs(fx - fy)))
 
 
 def deciles(values: Sequence[float]) -> str:

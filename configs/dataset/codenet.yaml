@@ -1,6 +1,8 @@
 # Project CodeNet (cluster_info §8.6): usato dalla Milestone 9.
 name: codenet
 version: "1.0.0"
+expected_rows:
+  problems: 250        # selezione del Livello 2 (SPEC §10.2)
 files:
   archive: ${paths.datasets}/Project_CodeNet.tar.gz
   no_solutions: ${paths.datasets}/Project_CodeNet/derived/input_output/no_solutions.txt

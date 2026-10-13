@@ -124,10 +124,13 @@ class DetectStage(Stage):
         cfg_hash = self.config_hash(cell)
         refs: dict[str, list[ArtifactRef]] = {
             "positives": [watermarked_ref(method, model_id, cfg_hash, level, language, split)],
-            "neg_human": [
-                native_ref(Language(language)),
-                integration_ref(Language(language), split),
-            ],
+            # L1: nativi + integrazione della parte; L2: solo i nativi di CodeNet (l'integrazione di
+            # sviluppo combinata L1+L2 si aggiunge alle celle L1, ADR-011).
+            "neg_human": (
+                [native_ref(Language(language)), integration_ref(Language(language), split)]
+                if level == "L1"
+                else [native_ref(Language(language), level)]
+            ),
             "neg_llm": [baseline_ref(model_id, level, language, split)],
         }
         if "neg_llm_twin" in self.subjects(method):

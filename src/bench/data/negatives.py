@@ -191,3 +191,14 @@ class StratifiedSampler:
                 if 0 <= other < len(pools) and cursor[other] < len(pools[other]):
                     return other
         return None
+
+
+def ks_statistic(a: Sequence[float], b: Sequence[float]) -> float:
+    """Statistica di Kolmogorov–Smirnov a due campioni (massima distanza fra le ripartizioni)."""
+    x, y = np.sort(np.asarray(a, dtype=float)), np.sort(np.asarray(b, dtype=float))
+    if not len(x) or not len(y):
+        raise DataError("KS statistic needs two non-empty samples")
+    grid = np.concatenate([x, y])
+    fx = np.searchsorted(x, grid, side="right") / len(x)
+    fy = np.searchsorted(y, grid, side="right") / len(y)
+    return float(np.max(np.abs(fx - fy)))

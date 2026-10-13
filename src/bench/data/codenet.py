@@ -57,6 +57,7 @@ DEFAULT_EXT: dict[Language, str] = {
 N_NEGATIVES = 5
 N_PER_LANGUAGE = 1 + N_NEGATIVES  # canonica + negativi
 N_EXTRACT = 10  # sottomissioni estratte per linguaggio (riserva per la deduplicazione del codice)
+_SCORE = re.compile(r"^Score\s*:\s*\$?\d+\$?\s*points?[ \t]*\n+", re.MULTILINE)
 _JAPANESE = re.compile(r"[぀-ヿ㐀-䶿一-鿿]")
 
 
@@ -235,11 +236,14 @@ def describe(html: str) -> Description:
     - Tabelle: una riga per ``<tr>``, celle separate da `` | ``.
     - Immagini: ``[image]`` (e conteggio, criterio di esclusione).
     - Si toglie il BOM (U+FEFF); gli altri caratteri restano invariati.
+    - Si toglie la riga ``Score : $N$ points`` delle pagine AtCoder: è un metadato della gara
+      (punteggio), non fa parte del compito (decisione dell'utente del 13 ottobre 2026).
     """
     parser = _TextParser()
     parser.feed(_english_part(html))
     parser.close()
     text = _layout(unescape("".join(parser.parts)).replace("﻿", ""))
+    text = _SCORE.sub("", text, count=1)
     return Description(
         text=text,
         n_images=parser.n_images,

@@ -4,15 +4,15 @@ Uso (con bench-core, dopo ``codenet_select.py finalize``):
     python scripts/codenet_preview.py [--pid p02547]
 
 Stampa:
-1. i 4 template in bozza (``configs/prompt/drafts/codenet_<lang>.j2``) riga per riga, con i
+1. i 4 template di CodeNet (``configs/prompt/user/codenet_<lang>.j2``) riga per riga, con i
    caratteri non visibili resi espliciti (``·`` spazio finale, ``⇥`` tabulazione, ``⏎`` fine riga);
 2. per i 250 problemi selezionati: quanti hanno formule, tabelle, blocchi ``<pre>``, immagini e
    caratteri non inglesi dopo la conversione;
 3. un problema selezionato reale (con formule e, se c'è, una tabella), con un frammento dell'HTML
    originale accanto al testo convertito, e il messaggio utente completo per ogni linguaggio.
 
-I template restano bozze finché l'utente non li approva: solo allora vanno in
-``configs/prompt/user/`` (cartella dei testi approvati, i cui hash entrano nei manifest).
+I template sono stati approvati dall'utente il 13 ottobre 2026 e stanno in ``configs/prompt/user/``
+(cartella dei testi approvati, i cui hash entrano nei manifest).
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ from bench.data.codenet import describe
 from bench.domain.enums import Language
 from bench.generation.prompt_builder import load_system_prompt
 
-DRAFTS = Path("configs") / "prompt" / "drafts"
+TEMPLATES = Path("configs") / "prompt" / "user"
 
 
 def _visible(line: str) -> str:
@@ -52,18 +52,18 @@ def main() -> int:
     args = parser.parse_args()
     cfg = load_experiment(["paths=cluster", "stage=prepare_data"])
     spec = cfg.datasets["codenet"]
-    drafts = repo_root() / DRAFTS
+    templates = repo_root() / TEMPLATES
     env = Environment(
-        loader=FileSystemLoader(str(drafts)),
+        loader=FileSystemLoader(str(templates)),
         undefined=StrictUndefined,
         autoescape=False,
         keep_trailing_newline=False,
     )
     out = sys.stdout.write
 
-    out("##### 1. template in bozza (configs/prompt/drafts), riga per riga\n")
+    out("##### 1. template di CodeNet (configs/prompt/user), riga per riga\n")
     for lang in Language:
-        path = drafts / f"codenet_{lang}.j2"
+        path = templates / f"codenet_{lang}.j2"
         out(f"\n--- {path.name}\n")
         for i, line in enumerate(path.read_text(encoding="utf-8").split("\n"), start=1):
             out(f"{i:>2} | {_visible(line)}\n")

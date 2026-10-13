@@ -97,10 +97,20 @@ def human_sample(
     level: Level,
     code: str,
     contamination_risk: bool,
+    sample_index: int | None = None,
 ) -> CodeSample:
-    """Negativo umano con ``split`` ancora da assegnare."""
+    """Negativo umano con ``split`` ancora da assegnare.
+
+    ``sample_index`` distingue più negativi dello stesso problema (CodeNet: 5 per linguaggio);
+    senza indice il ``sample_id`` è quello di sempre (L1).
+    """
     return CodeSample(
-        sample_id=sample_id(source=Source.HUMAN, problem_key=problem_key, language=language),
+        sample_id=sample_id(
+            source=Source.HUMAN,
+            problem_key=problem_key,
+            language=language,
+            sample_index=sample_index,
+        ),
         problem_key=problem_key,
         dataset=dataset,
         language=language,
@@ -111,7 +121,7 @@ def human_sample(
         method=None,
         config_hash=None,
         key_id=None,
-        sample_index=None,
+        sample_index=sample_index,
         seed=None,
         raw_output=None,
         code=normalize_newlines(code),
