@@ -49,7 +49,7 @@ with tables: 0
 with <pre> blocks: 250
 with images: 0
 with Japanese characters after conversion: 0
-AtCoder bilingual pages (only span.lang-en kept): 223
+AtCoder bilingual pages (only span.lang-en kept): 224
 non-ASCII characters left in the texts: '×èéû→⇒≠≤≦、％，＜'
 
 ##### 3. esempio reale: p03401

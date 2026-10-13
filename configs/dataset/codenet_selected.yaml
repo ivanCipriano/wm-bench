@@ -12,17 +12,19 @@ funnel:
   remaining: 3846
 - criterion: not excluded (codenet_excluded.yaml, MCGMark oracle)
   remaining: 3843
+- criterion: not in unverified_accepted_solutions.txt
+  remaining: 3571
 - criterion: description present and in English
-  remaining: 2572
+  remaining: 2368
 - criterion: no images in the description
-  remaining: 2083
+  remaining: 1949
 - criterion: 'compatible versions: >= 6 accepted, verified, distinct users, not near-duplicates, in each
     of the 4 languages'
-  remaining: 665
+  remaining: 654
 - criterion: 'sandbox validation: canonical and 5 negatives pass in all 4 languages'
-  remaining: 503
+  remaining: 500
 - criterion: at most one problem per identical_problem_clusters cluster
-  remaining: 498
+  remaining: 495
 - criterion: 'selected: first 250 by derive_seed(global_seed, ''codenet-select'', pid)'
   remaining: 250
 problems:
@@ -25898,118 +25900,6 @@ problems:
         user_id: u598795006
         original_language: JavaScript (node.js v5.12)
         ext: js
-- problem_key: codenet/p02405
-  rank: 963484963
-  source: AIZU
-  submissions:
-    python:
-      canonical:
-        submission_id: s390153588
-        user_id: u156972400
-        original_language: Python3
-        ext: py
-      negatives:
-      - submission_id: s225933194
-        user_id: u439569116
-        original_language: Python3
-        ext: py
-      - submission_id: s595921738
-        user_id: u240839092
-        original_language: Python3
-        ext: py
-      - submission_id: s613151561
-        user_id: u641357568
-        original_language: Python3
-        ext: py
-      - submission_id: s807612160
-        user_id: u843169619
-        original_language: Python3
-        ext: py
-      - submission_id: s186180079
-        user_id: u634409340
-        original_language: Python3
-        ext: py
-    java:
-      canonical:
-        submission_id: s405152840
-        user_id: u891865669
-        original_language: JAVA
-        ext: java
-      negatives:
-      - submission_id: s571734490
-        user_id: u762017075
-        original_language: JAVA
-        ext: java
-      - submission_id: s801748414
-        user_id: u680769608
-        original_language: JAVA
-        ext: java
-      - submission_id: s920493158
-        user_id: u283560097
-        original_language: JAVA
-        ext: java
-      - submission_id: s265025863
-        user_id: u736538251
-        original_language: JAVA
-        ext: java
-      - submission_id: s542505996
-        user_id: u333762667
-        original_language: JAVA
-        ext: java
-    cpp:
-      canonical:
-        submission_id: s942624552
-        user_id: u295569259
-        original_language: C++
-        ext: cpp
-      negatives:
-      - submission_id: s693295802
-        user_id: u445421877
-        original_language: C++
-        ext: cpp
-      - submission_id: s983894632
-        user_id: u069097478
-        original_language: C++
-        ext: cpp
-      - submission_id: s934354107
-        user_id: u345009498
-        original_language: C++14
-        ext: cpp
-      - submission_id: s644233155
-        user_id: u596129030
-        original_language: C++14
-        ext: cpp
-      - submission_id: s759851912
-        user_id: u407130000
-        original_language: C++14
-        ext: cpp
-    javascript:
-      canonical:
-        submission_id: s029432627
-        user_id: u146816547
-        original_language: JavaScript
-        ext: js
-      negatives:
-      - submission_id: s263677001
-        user_id: u588551436
-        original_language: JavaScript
-        ext: js
-      - submission_id: s357700467
-        user_id: u097797445
-        original_language: JavaScript
-        ext: js
-      - submission_id: s176122069
-        user_id: u227316069
-        original_language: JavaScript
-        ext: js
-      - submission_id: s183812125
-        user_id: u259258361
-        original_language: JavaScript
-        ext: js
-      - submission_id: s868344198
-        user_id: u648117624
-        original_language: JavaScript
-        ext: js
 - problem_key: codenet/p00006
   rank: 964221977
   source: AIZU
@@ -28024,5 +27914,117 @@ problems:
         ext: js
       - submission_id: s555680791
         user_id: u598795006
+        original_language: JavaScript (Node.js 12.16.1)
+        ext: js
+- problem_key: codenet/p03287
+  rank: 1031035525
+  source: AtCoder
+  submissions:
+    python:
+      canonical:
+        submission_id: s660671270
+        user_id: u478870821
+        original_language: Python (3.4.3)
+        ext: py
+      negatives:
+      - submission_id: s023088402
+        user_id: u086056891
+        original_language: Python (3.4.3)
+        ext: py
+      - submission_id: s708906260
+        user_id: u155687575
+        original_language: Python (3.4.3)
+        ext: py
+      - submission_id: s758944219
+        user_id: u908349502
+        original_language: Python (3.4.3)
+        ext: py
+      - submission_id: s800113346
+        user_id: u943657163
+        original_language: Python (3.4.3)
+        ext: py
+      - submission_id: s832664007
+        user_id: u780962115
+        original_language: Python (3.4.3)
+        ext: py
+    java:
+      canonical:
+        submission_id: s033299410
+        user_id: u762187782
+        original_language: Java8 (OpenJDK 1.8.0)
+        ext: java
+      negatives:
+      - submission_id: s496883319
+        user_id: u507706381
+        original_language: Java8 (OpenJDK 1.8.0)
+        ext: java
+      - submission_id: s748712530
+        user_id: u796228844
+        original_language: Java8 (OpenJDK 1.8.0)
+        ext: java
+      - submission_id: s465402836
+        user_id: u334624175
+        original_language: Java8 (OpenJDK 1.8.0)
+        ext: java
+      - submission_id: s482635141
+        user_id: u510349606
+        original_language: Java8 (OpenJDK 1.8.0)
+        ext: java
+      - submission_id: s249229048
+        user_id: u245815044
+        original_language: Java8 (OpenJDK 1.8.0)
+        ext: java
+    cpp:
+      canonical:
+        submission_id: s032492398
+        user_id: u168774513
+        original_language: C++14 (GCC 5.4.1)
+        ext: cpp
+      negatives:
+      - submission_id: s203360143
+        user_id: u737608103
+        original_language: C++14 (GCC 5.4.1)
+        ext: cpp
+      - submission_id: s563204469
+        user_id: u339419997
+        original_language: C++14 (Clang 3.8.0)
+        ext: cpp
+      - submission_id: s511636902
+        user_id: u151267256
+        original_language: C++14 (GCC 5.4.1)
+        ext: cpp
+      - submission_id: s477893456
+        user_id: u218842729
+        original_language: C++14 (GCC 5.4.1)
+        ext: cpp
+      - submission_id: s773646997
+        user_id: u421183662
+        original_language: C++14 (GCC 5.4.1)
+        ext: cpp
+    javascript:
+      canonical:
+        submission_id: s106263458
+        user_id: u043150661
+        original_language: JavaScript (node.js v5.12)
+        ext: js
+      negatives:
+      - submission_id: s283027206
+        user_id: u643613120
+        original_language: JavaScript (node.js v5.12)
+        ext: js
+      - submission_id: s200784456
+        user_id: u266742706
+        original_language: JavaScript (node.js v5.12)
+        ext: js
+      - submission_id: s542609589
+        user_id: u145071961
+        original_language: JavaScript (node.js v5.12)
+        ext: js
+      - submission_id: s375908997
+        user_id: u251786347
+        original_language: JavaScript (node.js v5.12)
+        ext: js
+      - submission_id: s459736665
+        user_id: u222822036
         original_language: JavaScript (Node.js 12.16.1)
         ext: js
