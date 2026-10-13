@@ -1,10 +1,9 @@
 # Riepilogo della Milestone 7 — Rilevazione e calibrazione (SPEC §0, §22)
 
-Data: 12 ottobre 2026. Stato: **quasi chiusa**. SWEET, STONE, MCGMark e PromptMark sono completi su L1 dev.
-ACW è in rilevazione: il primo tentativo si è fermato il 10 ottobre alle 17:34, quando è scaduta la prova di
-Sourcery (canarino dopo ogni lotto, `M7_acw_diag.txt`). Il token è stato sostituito e la ripresa riparte dai 150
-positivi su 576 già scritti per modello. I numeri di ACW si aggiungono a questo riepilogo quando arrivano i log.
-Su richiesta dell'utente si inizia la M8 senza aspettare ACW.
+Data: 12 ottobre 2026, completata il 13 ottobre 2026. Stato: **chiusa**. Tutti e 5 i metodi sono completi su
+L1 dev (`M7_check.txt`: 20 celle `ok`; `M7_metrics.txt`). ACW si era fermato il 10 ottobre alle 17:34 per la
+scadenza della prova di Sourcery (canarino dopo ogni lotto, `M7_acw_diag.txt`); dopo il cambio del token la
+ripresa è arrivata in fondo. La M8 è iniziata prima, su richiesta dell'utente.
 
 ## Criteri di accettazione (SPEC §22)
 
@@ -12,7 +11,7 @@ Su richiesta dell'utente si inizia la M8 senza aspettare ACW.
 |---|---|
 | Fase `detect` (positivi, negativi umani, negativi LLM) | fatta; per MCGMark anche i negativi della baseline gemella (`neg_llm_twin`, D25) |
 | `ThresholdCalibrator`, soglie congelate per la configurazione di default | fatte, ma **provvisorie** (D24): calibrate sui soli negativi umani di L1 dev (2.000 per linguaggio), `provisional = true`; la fase `metrics` rifiuta il test |
-| TPR@1%FPR, AUROC, Pass@1, ΔPass@1 con IC su L1 dev | 4 metodi su 5 (18 celle); ACW in corso |
+| TPR@1%FPR, AUROC, Pass@1, ΔPass@1 con IC su L1 dev | fatti: 5 metodi, 20 celle |
 
 ## Cosa è stato fatto
 
@@ -76,7 +75,8 @@ Legenda delle colonne:
 | MCGMark | DeepSeek | python | 10 | 1,2 [0,5; 2,1] | 0,41 [0,40; 0,42] | 31,3 / 65,3 | 34,0 [26,4; 41,2] |
 | PromptMark | Qwen | python | 2,13 | 4,0 [0,7; 7,8] | 0,63 [0,57; 0,69] | 81,9 / 77,4 | −4,5 [−11,1; 1,6] |
 | PromptMark | DeepSeek | python | 2,13 | 4,3 [1,7; 7,6] | 0,51 [0,45; 0,57] | 64,6 / 65,8 | 1,2 [−4,5; 6,8] |
-| ACW | Qwen, DeepSeek | python | — | in corso | | | |
+| ACW | Qwen | python | 0,977 | 100,0 [100,0; 100,0] | 1,00 [1,00; 1,00] | 77,1 / 77,4 | 0,3 [0,0; 1,4] |
+| ACW | DeepSeek | python | 0,977 | 100,0 [100,0; 100,0] | 1,00 [1,00; 1,00] | 63,0 / 65,8 | 2,8 [0,0; 6,3] |
 
 **Punteggi secondari.**
 
@@ -146,19 +146,25 @@ PromptMark `p_adaptive_paper`: soglia, TPR e AUROC praticamente uguali al princi
   - la variante del paper del p-value non cambia nulla;
   - con Qwen la baseline LLM supera l'1% di FPR (3,1%): il punteggio è un po' più alto sul codice LLM che su
     quello umano.
-- **ACW (TODO 20, 22):** in corso. Il punteggio è discreto (frazione delle regole invariate), quindi la soglia
-  all'1% potrebbe essere irraggiungibile: in quel caso il calibratore la serializza come `Infinity` e il
-  manifest lo segnala (`unreachable`). Nella tesi va dichiarata la verifica "cieca" (TODO 22).
+- **ACW (TODO 20, 22):**
+  - la soglia all'1% è raggiungibile nonostante il punteggio discreto: 0,977 (42 regole invariate su 43), FPR
+    umano raggiunto 0,9% [0,5; 1,4] su 2.000 negativi;
+  - TPR 100% e AUROC 1,00 con entrambi i modelli; inserimento riuscito nel 100% dei campioni, con una media di
+    2,1 regole applicate;
+  - ΔPass@1 basso: 0,3 pp con Qwen e 2,8 pp con DeepSeek; preservazione condizionata 99,6% e 95,8%;
+  - **FPR sui negativi LLM molto alto: 31,8% [28,0; 35,8] con Qwen e 36,1% [32,2; 40,2] con DeepSeek.** Il
+    punteggio misura quante regole di Sourcery lasciano il codice invariato: un terzo del codice LLM non
+    marcato è già nella forma "canonica" e risulta marcato. Non è un errore di integrazione: è il limite della
+    verifica "cieca" con tutte le 43 regole (TODO 22), da dichiarare nella tesi. Con sottoinsiemi più piccoli
+    (griglia della M8) il confronto cambierà.
 - **Positivi con inserimento FAILED:** contano come non rilevati (I2) e il loro codice resta nel Pass@1.
 
 ## Cosa resta aperto
 
-1. **ACW:** detect → calibrate → metrics, poi `report_metrics.py` e `check_m7.py`. I suoi numeri vanno
-   aggiunti a questo riepilogo.
-2. Voci aperte della M6:
+1. Voci aperte della M6:
    - audit di MCGMark, PromptMark e ACW da confermare come approvati;
    - esclusione delle 6 classi ClassEval (D21).
-3. **Smoke test della parte di test:** non c'è ancora una configurazione dedicata. L'opzione
+2. **Smoke test della parte di test:** non c'è ancora una configurazione dedicata. L'opzione
    `detection.allow_provisional_test` è pronta per quando servirà.
 
 ## `TODO(user)` e decisioni per la M8
