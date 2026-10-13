@@ -1,10 +1,15 @@
 ##### artefatti per cella (L1 dev)
-sweet qwen25_coder_7b: watermarked config 2e58eb5d0569,32fb0d8745b4,356dd3cf78ee,46d1e2b3fa8b,58518b53cb33,6df30e3e2c1d,712d5ca7c3bb,dce78fc0821a,e32d3661ee3d
+sweet      qwen25_coder_7b      python     ok
+sweet      qwen25_coder_7b      java       ok
+sweet      qwen25_coder_7b      cpp        ok
+sweet      qwen25_coder_7b      javascript ok
 sweet      deepseek_coder_6p7b  python     ok
 sweet      deepseek_coder_6p7b  java       ok
 sweet      deepseek_coder_6p7b  cpp        ok
 sweet      deepseek_coder_6p7b  javascript ok
-stone qwen25_coder_7b: watermarked config 1398aa522444,20e8b64e0bc5,265eed6aa968,371d7425483f,3b1c8e6fa4a3,425a606aeb6a,452a5a725a39,516ede2a875c,8aca8150359d,8de321b62de6,8e29e090cf01,9aedf9ac0f4b,9f7859eded9c,cb8ceb6c62aa,d0105c864648,d279c037f502,d5d6f30cef0d,d6777f4d1b73
+stone      qwen25_coder_7b      python     ok
+stone      qwen25_coder_7b      java       ok
+stone      qwen25_coder_7b      cpp        ok
 stone      deepseek_coder_6p7b  python     ok
 stone      deepseek_coder_6p7b  java       ok
 stone      deepseek_coder_6p7b  cpp        ok
