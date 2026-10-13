@@ -2,10 +2,11 @@
 
 Regole (cluster_info §8.6, SPEC §10.4; decisioni dell'utente del 7 e del 13 ottobre 2026):
 
-- un problema è idoneo se ha il caso di I/O, non è in ``no_solutions.txt`` né fra gli esclusi
-  dell'oracle, ha una descrizione in inglese senza immagini e, in **ciascuno** dei 4 linguaggi,
-  almeno 6 sottomissioni ``Accepted`` verificate, di utenti distinti, in una versione compatibile
-  con la sandbox (Python 3, C++ compilabile come C++17, Java, JavaScript su Node.js);
+- un problema è idoneo se ha il caso di I/O, non è in ``no_solutions.txt``, in
+  ``unverified_accepted_solutions.txt`` (elenca problemi) né fra gli esclusi dell'oracle, ha una
+  descrizione in inglese senza immagini e, in **ciascuno** dei 4 linguaggi, almeno 6 sottomissioni
+  ``Accepted`` di utenti distinti, in una versione compatibile con la sandbox (Python 3, C++
+  compilabile come C++17, Java, JavaScript su Node.js);
 - le sottomissioni di un linguaggio si ordinano per
   ``derive_seed(global_seed, "codenet-sub", pid, linguaggio, submission_id)``: la prima è la
   soluzione canonica, le 5 successive sono i negativi umani; si salta una sottomissione di un utente
@@ -460,6 +461,15 @@ def find_candidates(
     pids = [p for p in pids if p not in excluded_pids]
     funnel.add("not excluded (codenet_excluded.yaml, MCGMark oracle)", len(pids))
 
+    # unverified_accepted_solutions.txt elenca problemi (una riga "pXXXXX" ciascuno): si escludono
+    # i problemi e, se il file elencasse anche sottomissioni, nessuna di esse si usa mai.
+    unverified_text = files.unverified.read_text(encoding="utf-8", errors="replace")
+    unverified_pids = set(PID.findall(unverified_text))
+    unverified = set(SID.findall(unverified_text))
+    lines = [line.strip() for line in unverified_text.splitlines() if line.strip()]
+    pids = [p for p in pids if p not in unverified_pids]
+    funnel.add("not in unverified_accepted_solutions.txt", len(pids))
+
     texts: dict[str, Description] = {}
     for p in pids:
         path = files.descriptions / f"{p}.html"
@@ -471,7 +481,6 @@ def find_candidates(
     pids = [p for p in pids if texts[p].n_images == 0]
     funnel.add("no images in the description", len(pids))
 
-    unverified = set(SID.findall(files.unverified.read_text(encoding="utf-8", errors="replace")))
     duplicates = duplicate_index(files.duplicates)
     candidates: list[Candidate] = []
     short: dict[str, int] = {str(lang): 0 for lang in LANG_NAMES}
@@ -502,7 +511,12 @@ def find_candidates(
         len(candidates),
     )
     stats = {
-        "unverified_accepted": len(unverified),
+        "unverified_file": {
+            "lines": len(lines),
+            "problem_ids": len(unverified_pids),
+            "submission_ids": len(unverified),
+            "other_lines": sum(1 for x in lines if not PID.fullmatch(x) and not SID.search(x)),
+        },
         "duplicate_submissions_indexed": len(duplicates),
         "problems_short_per_language": short,
         "japanese_descriptions": sum(1 for d in texts.values() if d.has_japanese),

@@ -186,6 +186,7 @@ def _tree(tmp_path: Path) -> CodeNetFiles:
         "p00006": "few_js",
         "p00007": "ok",
         "p00008": "no_solutions",
+        "p00009": "unverified",
     }
     with (meta / "problem_list.csv").open("w", newline="", encoding="utf-8") as fh:
         writer = csv.writer(fh)
@@ -210,7 +211,7 @@ def _tree(tmp_path: Path) -> CodeNetFiles:
                     sid = f"s{int(pid[1:]):04d}{list(Language).index(lang)}{i:04d}"
                     writer.writerow(_row(sid, f"u{i}", lang, problem_id=pid))
     (root / "derived" / "no_solutions.txt").write_text("p00008\n", encoding="utf-8")
-    (root / "derived" / "unverified.txt").write_text("", encoding="utf-8")
+    (root / "derived" / "unverified.txt").write_text("p00009\n", encoding="utf-8")
     (dup / "identical_problem_clusters").write_text("p00001,p00002\n", encoding="utf-8")
     return CodeNetFiles(
         problem_list=meta / "problem_list.csv",
@@ -228,7 +229,13 @@ def test_funnel_counts_each_criterion_in_order(tmp_path: Path) -> None:
     files = _tree(tmp_path)
     excluded = {"codenet/p00007": "oracle_mcgmark"}
     candidates, funnel, stats = find_candidates(files, SEED, excluded)
-    assert [n for _, n in funnel.steps] == [8, 6, 5, 4, 3, 2]
+    assert [n for _, n in funnel.steps] == [9, 7, 6, 5, 4, 3, 2]
+    assert stats["unverified_file"] == {
+        "lines": 1,
+        "problem_ids": 1,
+        "submission_ids": 0,
+        "other_lines": 0,
+    }
     assert sorted(c.pid for c in candidates) == ["p00001", "p00002"]
     assert stats["problems_short_per_language"]["javascript"] == 1
     assert [c.rank for c in candidates] == sorted(c.rank for c in candidates)

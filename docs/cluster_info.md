@@ -238,7 +238,7 @@ Project_CodeNet/
 - **Non** estrarre `Project_CodeNet/data/` per intero (circa 14 milioni di file): in Milestone 9 l'agente fornisce l'elenco dei 250 problemi da estrarre.
 - Regole per la selezione dei 250 problemi (Milestone 9):
   - escludere i problemi elencati in `no_solutions.txt` e quelli senza casi in `input_output/data/`;
-  - non usare come negativi le sottomissioni elencate in `unverified_accepted_solutions.txt`;
+  - `unverified_accepted_solutions.txt` (verificato il 13 ottobre 2026: 272 righe, ognuna un ID di problema come `p00041`, cioè elenca problemi interi): sono esclusi i problemi presenti nell'elenco e, in ogni caso, nessuna sottomissione elencata viene usata come soluzione canonica o come negativo (chiarimento della regola, decisione dell'utente del 13 ottobre 2026);
   - **i problemi dello stesso cluster in `identical_problem_clusters` sono lo stesso problema ai fini dello split (I4)**: vanno nella stessa parte e se ne seleziona al massimo uno per cluster;
   - `duplicates/` (C, C++, Java, Python; manca JavaScript) va usata per escludere sottomissioni quasi duplicate dai negativi umani; per JavaScript la deduplicazione va fatta dall'agente (per esempio con hash del codice normalizzato) e documentata.
 
