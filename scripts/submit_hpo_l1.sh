@@ -10,7 +10,8 @@
 #   aggiungere --dry-run in fondo per vedere solo il piano; K/M divide le celle fra le due persone.
 #
 # Ordine: 0) → 1) → 2) e 3) insieme → 4) dopo 3) → 5) dopo 2) e 4). Le configurazioni già fatte
-# (es. il default della M7) si saltano. Variabile opzionale: JOBS (default 6).
+# (es. il default della M7) si saltano. Variabile opzionale: JOBS (default: tutti i posti liberi,
+# cioè 10 meno i job già in coda o in esecuzione dell'utente; MaxSubmit = 10, cluster_info §4).
 set -euo pipefail
 
 USAGE="usage: submit_hpo_l1.sh trajectories|watermark|execute|detect|calibrate|tune METHOD [K/M] [--dry-run]"
@@ -21,6 +22,12 @@ cd "$REPO_ROOT"
 umask 002
 WMB="${WMB:-/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench}"
 export PATH="$WMB/bench-core/bin:$PATH"  # bench-core anche in una shell nuova
+
+# Posti liberi: MaxSubmit = 10 job per utente (in coda + in esecuzione), cluster_info §4.
+MAX_JOBS=10
+ACTIVE=$(squeue -u "$USER" -h 2>/dev/null | wc -l)
+FREE=$((MAX_JOBS - ACTIVE))
+DEFAULT_JOBS=$(( FREE > 0 ? FREE : 1 ))
 
 case "$METHOD" in
     sweet) LANGS="[python,java,cpp,javascript]" ;;
@@ -38,16 +45,16 @@ case "$STEP" in
     trajectories)
         [ "$METHOD" = "promptmark" ] || { echo "trajectories: only for promptmark" >&2; exit 2; }
         SHARE="${3:?$USAGE}"; MODE="${4:-}"
-        ARGS=(--jobs "${JOBS:-6}" --share "$SHARE" "stage=watermark" "hpo.grid=$METHOD"
+        ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=watermark" "hpo.grid=$METHOD"
               "hpo.part=trajectories" "${COMMON[@]}")
         ;;
     watermark|detect)
         SHARE="${3:?$USAGE}"; MODE="${4:-}"
-        ARGS=(--jobs "${JOBS:-6}" --share "$SHARE" "stage=$STEP" "${SWEEP[@]}" "${COMMON[@]}")
+        ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=$STEP" "${SWEEP[@]}" "${COMMON[@]}")
         ;;
     execute)
         SHARE="${3:?$USAGE}"; MODE="${4:-}"
-        ARGS=(--jobs "${JOBS:-6}" --share "$SHARE" "stage=execute" "${SWEEP[@]}"
+        ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=execute" "${SWEEP[@]}"
               "execution.sources=[llm_watermarked]" "${COMMON[@]}")
         ;;
     calibrate)
@@ -61,6 +68,15 @@ case "$STEP" in
     *) echo "unknown step: $STEP" >&2; exit 2 ;;
 esac
 
+echo "##### job attivi: $ACTIVE, posti liberi: $FREE su $MAX_JOBS"
+if [ "$MODE" != "--dry-run" ]; then
+    NEED=1
+    [ "$STEP" = calibrate ] || [ "$STEP" = tune ] || NEED="${JOBS:-1}"
+    if [ "$FREE" -lt 1 ] || [ "$NEED" -gt "$FREE" ]; then
+        echo "not enough free slots: need $NEED, free $FREE (wait for a job to end or lower JOBS)" >&2
+        exit 2
+    fi
+fi
 echo "##### piano (dry run): HPO $STEP $METHOD, quota $SHARE"
 bench submit --dry-run "${ARGS[@]}" | grep -v "parameters:"
 if [ "$MODE" = "--dry-run" ]; then
