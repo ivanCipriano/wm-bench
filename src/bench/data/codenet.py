@@ -167,7 +167,7 @@ class _TextParser(HTMLParser):
             if self.cell:
                 self._emit(" | ")
             self.cell += 1
-        elif tag == "var":
+        elif tag == "var" and not self.pre:  # nei <pre> i formati restano testo semplice
             self._emit("$")
         elif tag == "img":
             self.n_images += 1
@@ -182,7 +182,7 @@ class _TextParser(HTMLParser):
         elif tag == "pre":
             self.pre = max(0, self.pre - 1)
             self._emit("\n\x00/PRE\n")
-        elif tag == "var":
+        elif tag == "var" and not self.pre:
             self._emit("$")
         elif tag in _BLOCK:
             self._emit("\n\n")
@@ -220,7 +220,7 @@ def _layout(raw: str) -> str:
         lines = [line.strip() for line in chunk.split("\n")]
         out.append(re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip("\n"))
     text = "\n\n".join(part for part in out if part.strip())
-    return re.sub(r"\$\s*\$", "", text).strip() + "\n"
+    return re.sub(r"\$\$", "", text).strip() + "\n"  # <var> vuoti o adiacenti
 
 
 def describe(html: str) -> Description:
@@ -229,14 +229,16 @@ def describe(html: str) -> Description:
     - Testi AtCoder bilingui: solo la parte inglese (``span.lang-en``).
     - Blocchi (paragrafi, titoli, liste) su righe proprie; ``<li>`` → ``- ``.
     - ``<pre>`` (esempi di input/output) in un blocco recintato, con il contenuto invariato.
-    - ``<var>`` → ``$...$``; il TeX già presente (``$...$``, ``\\(...\\)``) resta com'è.
+    - ``<var>`` → ``$...$`` fuori dai ``<pre>``; dentro i ``<pre>`` (formati di input e output)
+      solo il contenuto, con spazi e a capo invariati; il TeX già presente resta com'è.
     - Tabelle: una riga per ``<tr>``, celle separate da `` | ``.
     - Immagini: ``[image]`` (e conteggio, criterio di esclusione).
+    - Si toglie il BOM (U+FEFF); gli altri caratteri restano invariati.
     """
     parser = _TextParser()
     parser.feed(_english_part(html))
     parser.close()
-    text = _layout(unescape("".join(parser.parts)))
+    text = _layout(unescape("".join(parser.parts)).replace("﻿", ""))
     return Description(
         text=text,
         n_images=parser.n_images,

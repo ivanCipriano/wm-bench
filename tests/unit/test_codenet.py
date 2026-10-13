@@ -381,3 +381,14 @@ def test_codenet_templates_share_the_same_structure() -> None:
     assert len({len(v) for v in lines.values()}) == 1
     assert len({v[1] for v in lines.values()}) == 1  # frase su stdin/stdout identica
     assert all(v[-2] == "{{ prompt }}" and v[-3] == "" for v in lines.values())
+
+
+def test_input_format_in_pre_keeps_spaces_and_newlines() -> None:
+    html = (
+        '<span class="lang-en"><p>Read <var>N</var>.</p>'
+        "<pre><var>N</var>\n<var>A_1</var> <var>A_2</var> <var>...</var> <var>A_N</var>\n</pre>"
+        "<p>\ufeffPrint <var>x</var><var>y</var>.</p></span>"
+    )
+    text = describe(html).text
+    assert "```\nN\nA_1 A_2 ... A_N\n```" in text
+    assert "Read $N$." in text and "Print $xy$." in text and "\ufeff" not in text
