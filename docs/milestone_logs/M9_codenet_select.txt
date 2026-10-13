@@ -1,0 +1,51 @@
+  4053  total (problem_list.csv)
+  3846  input/output case present, not in no_solutions.txt
+  3843  not excluded (codenet_excluded.yaml, MCGMark oracle)
+  2572  description present and in English
+  2083  no images in the description
+   665  compatible versions: >= 6 accepted, verified, distinct users, not near-duplicates, in each of the 4 languages
+stats: {"unverified_accepted": 0, "duplicate_submissions_indexed": 2319097, "problems_short_per_language": {"python": 658, "java": 617, "cpp": 78, "javascript": 1418}, "japanese_descriptions": 1271}
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/codenet/candidates.json and /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/codenet/extract_list.txt (26289 files)
+extracted 26289 of 26289 files
+2660 (problem, language) to validate, 0 already done, 32 workers
+  200/2660
+  400/2660
+  600/2660
+  800/2660
+  1000/2660
+  1200/2660
+  1400/2660
+  1600/2660
+  1800/2660
+  2000/2660
+  2200/2660
+  2400/2660
+  2600/2660
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/codenet/validation.jsonl
+  4053  total (problem_list.csv)
+  3846  input/output case present, not in no_solutions.txt
+  3843  not excluded (codenet_excluded.yaml, MCGMark oracle)
+  2572  description present and in English
+  2083  no images in the description
+   665  compatible versions: >= 6 accepted, verified, distinct users, not near-duplicates, in each of the 4 languages
+   503  sandbox validation: canonical and 5 negatives pass in all 4 languages
+   498  at most one problem per identical_problem_clusters cluster
+   250  selected: first 250 by derive_seed(global_seed, 'codenet-select', pid)
+failures in the sandbox validation (problem-language pairs):
+    106  cpp: not all submissions pass the input/output case
+     47  java: not all submissions pass the input/output case
+      2  javascript: fewer than 6 distinct submissions after code deduplication
+     46  javascript: not all submissions pass the input/output case
+     69  python: not all submissions pass the input/output case
+     37  non-passing status cpp:COMPILE_ERROR
+    171  non-passing status cpp:FAILED
+     15  non-passing status cpp:RUNTIME_ERROR
+      2  non-passing status cpp:TIMEOUT
+      6  non-passing status java:COMPILE_ERROR
+    162  non-passing status java:FAILED
+      2  non-passing status java:RUNTIME_ERROR
+    175  non-passing status javascript:FAILED
+      2  non-passing status javascript:RUNTIME_ERROR
+    163  non-passing status python:FAILED
+     48  non-passing status python:RUNTIME_ERROR
+wrote configs/dataset/codenet_selected.yaml: 250 problems
