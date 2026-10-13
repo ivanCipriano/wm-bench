@@ -108,6 +108,8 @@ Installazioni editable negli ambienti (da non rompere: le cartelle in `deps/` no
 | `fatq` | 4:00:00 |
 | `defq` | 9:00:00 |
 
+Limite di job (verificato il 13 ottobre 2026 con `sacctmgr show assoc`): **MaxSubmit = 10 per utente** sull'associazione `did_tesi_nlp_330` (job in coda + in esecuzione), nessun MaxJobs; le QoS dell'account non hanno limiti per utente. Ogni persona usa al più **6** job dell'HPO (`JOBS=6`), lasciando margine per job singoli (`srun`, `sbatch`). Un job rimesso in coda al timeout (submitit, stesso ID) conta come uno.
+
 Profili Hydra attesi: `configs/cluster/slurm_gpu.yaml` → `gpuq` con `did_tesi_nlp_330_gpuq_qos` (alternativa `slurm_gpu_h100.yaml` → `aiq` con `did_tesi_nlp_330_aiq_qos`); `configs/cluster/slurm_cpu.yaml` → `defq` con `did_tesi_nlp_330_defq_qos` e **nessuna** richiesta di GPU (`gres` assente). La `ResourcePolicy` deve rifiutare qualsiasi configurazione che mandi un job GPU su `defq`.
 
 ---

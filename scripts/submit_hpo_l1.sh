@@ -10,7 +10,7 @@
 #   aggiungere --dry-run in fondo per vedere solo il piano; K/M divide le celle fra le due persone.
 #
 # Ordine: 0) → 1) → 2) e 3) insieme → 4) dopo 3) → 5) dopo 2) e 4). Le configurazioni già fatte
-# (es. il default della M7) si saltano. Variabile opzionale: JOBS (default 3).
+# (es. il default della M7) si saltano. Variabile opzionale: JOBS (default 6).
 set -euo pipefail
 
 USAGE="usage: submit_hpo_l1.sh trajectories|watermark|execute|detect|calibrate|tune METHOD [K/M] [--dry-run]"
@@ -38,16 +38,16 @@ case "$STEP" in
     trajectories)
         [ "$METHOD" = "promptmark" ] || { echo "trajectories: only for promptmark" >&2; exit 2; }
         SHARE="${3:?$USAGE}"; MODE="${4:-}"
-        ARGS=(--jobs "${JOBS:-3}" --share "$SHARE" "stage=watermark" "hpo.grid=$METHOD"
+        ARGS=(--jobs "${JOBS:-6}" --share "$SHARE" "stage=watermark" "hpo.grid=$METHOD"
               "hpo.part=trajectories" "${COMMON[@]}")
         ;;
     watermark|detect)
         SHARE="${3:?$USAGE}"; MODE="${4:-}"
-        ARGS=(--jobs "${JOBS:-3}" --share "$SHARE" "stage=$STEP" "${SWEEP[@]}" "${COMMON[@]}")
+        ARGS=(--jobs "${JOBS:-6}" --share "$SHARE" "stage=$STEP" "${SWEEP[@]}" "${COMMON[@]}")
         ;;
     execute)
         SHARE="${3:?$USAGE}"; MODE="${4:-}"
-        ARGS=(--jobs "${JOBS:-3}" --share "$SHARE" "stage=execute" "${SWEEP[@]}"
+        ARGS=(--jobs "${JOBS:-6}" --share "$SHARE" "stage=execute" "${SWEEP[@]}"
               "execution.sources=[llm_watermarked]" "${COMMON[@]}")
         ;;
     calibrate)
