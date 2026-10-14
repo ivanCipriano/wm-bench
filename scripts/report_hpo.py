@@ -28,7 +28,10 @@ def main() -> None:
     args = parser.parse_args()
     root = Path(args.artifacts) / "hpo"
     pattern = f"{args.method or '*'}/*/*.json"
-    paths = sorted((root / "selected").glob(pattern))
+    # Il pattern prende anche i manifest (``<lang>.json.manifest.json``): si escludono.
+    paths = sorted(
+        p for p in (root / "selected").glob(pattern) if not p.name.endswith(".manifest.json")
+    )
     if not paths:
         sys.stdout.write(f"no selections under {root / 'selected'} for {pattern}\n")
         return
