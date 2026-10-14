@@ -215,6 +215,12 @@ class PromptEmbedder(MethodAdapter):
         extra = result.extra if result is not None else {}
         return {name: extra.get(name) for name in EMBED_COLUMNS}
 
+    def request_hparams(self, problems: Sequence[Problem]) -> dict[str, Any]:
+        """Parametri nativi in più che dipendono dai problemi (es. dal livello), non dalla
+        configurazione: entrano nella richiesta al worker e nel manifest, **non** nel
+        ``config_hash``, così la stessa configurazione ha lo stesso hash su tutti i livelli."""
+        return {}
+
     def embed_from_prompts(
         self,
         problems: Sequence[Problem],
@@ -244,6 +250,7 @@ class PromptEmbedder(MethodAdapter):
             native = {**native, "watermark": False}
         seed_of = self._seed_function(problems, model)
         supported = [p for p in problems if self.supports(p.language)]
+        native = {**native, **self.request_hparams(supported)}
         results: dict[tuple[str, int], WorkerResult] = {}
         worker_run: WorkerRun | None = None
         request_dict: dict[str, Any] | None = None
@@ -261,7 +268,7 @@ class PromptEmbedder(MethodAdapter):
                 run_dir,
                 device,
             )
-            if not watermark:
+            if native != request.hparams:  # gemella o parametri del livello
                 request = dataclasses.replace(request, hparams=native)
             request_dict = request.to_dict()
             items = self._embed_items(supported, model, prompts, n, seed_of)

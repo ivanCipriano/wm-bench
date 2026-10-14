@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import logging
 import math
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any, ClassVar
 
 import numpy as np
@@ -45,6 +45,7 @@ from bench.metrics.uncertainty import ClusterBootstrap, bootstrap_seed, pass_at_
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.calibrate import (
     json_threshold,
+    levels_tag,
     primary_view,
     threshold_ref,
     with_secondary,
@@ -61,10 +62,20 @@ MESSAGE_BITS = 12  # D1
 
 
 def metrics_ref(
-    method: str, model_id: str, cfg_hash: str, level: str, language: str, split: str
+    method: str,
+    model_id: str,
+    cfg_hash: str,
+    level: str,
+    language: str,
+    split: str,
+    threshold_levels: Sequence[str] = ("L1",),
 ) -> ArtifactRef:
+    """Metriche di una cella con le soglie calibrate su ``threshold_levels`` (cartella
+    ``metrics_L1L2/`` per le soglie definitive, ``metrics/`` per quelle provvisorie di L1)."""
+    tag = levels_tag(threshold_levels)
+    folder = "metrics" + (f"_{tag}" if tag else "")
     return ArtifactRef.of(
-        "metrics", f"metrics/{method}/{model_id}/{cfg_hash}/{level}_{language}_{split}.parquet"
+        "metrics", f"{folder}/{method}/{model_id}/{cfg_hash}/{level}_{language}_{split}.parquet"
     )
 
 
@@ -159,7 +170,7 @@ class MetricsStage(Stage):
             return execution_ref(c, cfg_hash if with_method else None)
 
         refs = {
-            "threshold": threshold_ref(method, model_id, language, cfg_hash),
+            "threshold": threshold_ref(method, model_id, language, cfg_hash, self.levels()),
             "positives": det("positives"),
             "neg_human": det("neg_human"),
             "neg_llm": det("neg_llm"),
@@ -177,7 +188,12 @@ class MetricsStage(Stage):
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
-        return [metrics_ref(method, model_id, self.config_hash(cell), level, language, split)]
+        cfg_hash = self.config_hash(cell)
+        return [metrics_ref(method, model_id, cfg_hash, level, language, split, self.levels())]
+
+    def levels(self) -> list[str]:
+        """Livelli delle soglie: quelli della configurazione (come ``calibrate``)."""
+        return sorted(str(level) for level in self._cfg().levels)
 
     # ------------------------------------------------------------------ esecuzione
     def run(self, cell: Cell, ctx: StageContext) -> None:
@@ -410,6 +426,14 @@ class MetricsStage(Stage):
         ok = int((positives["embed_status"] == "OK").sum())
         add("embedding_success_rate", ok / n, wilson(ok, n), "wilson", n)
 
+    def _correctness_loop(self, ctx: StageContext, cell: Cell) -> bool | None:
+        """Ciclo di correttezza dei campioni marcati, dal manifest (``native_hparams``)."""
+        if str(cell.method) != "promptmark":
+            return None
+        manifest = ctx.store.read_manifest(self._refs(cell)["watermarked"])
+        native = ((manifest.extra if manifest else None) or {}).get("native_hparams") or {}
+        return bool(native.get("correctness_loop", True))
+
     def _write(
         self,
         ctx: StageContext,
@@ -429,6 +453,8 @@ class MetricsStage(Stage):
             "provisional_thresholds": thresholds.provisional,
             "threshold_levels": thresholds.levels,
             "underpowered": thresholds.underpowered,
+            # PromptMark: ciclo di correttezza attivo nella cella (D27; None per gli altri metodi).
+            "correctness_loop": self._correctness_loop(ctx, cell),
             "not_applicable": not_applicable,
             "metrics": {r.name: r.value for r in rows},
         }

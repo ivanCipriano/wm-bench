@@ -256,14 +256,21 @@ def stage_methods(
     Con le celle pianificate l'etichetta è il metodo di ogni cella o, per le celle senza metodo
     (es. ``canonical`` e ``llm_baseline`` di ``execute``), la sua sorgente: così l'esecuzione
     delle canoniche o della baseline non risulta in conflitto con i job di un metodo, con cui
-    non condivide celle. Senza celle si usano i metodi della configurazione.
+    non condivide celle. Per i livelli diversi da L1 l'etichetta ha il livello in coda
+    (``sweet_L2``): i job di L2 non vanno in conflitto con quelli dell'HPO di L1 dello stesso
+    metodo, e i nomi dei job di L1 restano quelli della M7 e della M8. Senza celle si usano i
+    metodi della configurazione.
     """
     import bench.pipeline.stages  # noqa: F401  (popola STAGES)
 
     if "method" not in STAGES.get(stage).cell_axes:
         return None
-    tags = {c.method or c.source for c in cells or ()} - {None}
-    return sorted(str(t) for t in tags) if tags else list(cfg.methods)
+    tags = set()
+    for c in cells or ():
+        tag = c.method or c.source
+        if tag is not None:
+            tags.add(f"{tag}_{c.level}" if c.level and c.level != "L1" else str(tag))
+    return sorted(tags) if tags else list(cfg.methods)
 
 
 def queued_jobs(account: str) -> list[tuple[str, str, str, str]]:

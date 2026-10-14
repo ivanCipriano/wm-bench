@@ -65,3 +65,24 @@ Nella fase `tune` diventerà una funzione del framework, con gli stessi test.
   registra l'origine (`replayed_from`: hash della traiettoria).
 - Il costo di esecuzione dei test e di rilevazione resta per configurazione (CPU, piccolo).
 - Se in futuro cambiano il codice di PromptMark, lo shim o il decoding, la verifica va ripetuta.
+
+## Validità su L2 (M9, D27)
+
+Su CodeNet il ciclo di correttezza è spento: lo shim passa `test_list` vuota (`correctness_loop: false`
+nella richiesta, ADR-011).
+
+1. **Prima condizione, verificata nel codice (14 ottobre 2026).**
+   - Con `test_list` vuota `evaluate_candidate` esegue comunque il programma (`run_code_with_tests`), ma
+     senza test: `failed` resta 0, e anche il timeout restituisce `(0, len(tests)) = (0, 0)`. Un errore
+     del programma (es. `EOFError`, perché il figlio ha lo standard input vuoto) lascia il risultato di
+     default `(0, 0)`. Quindi `correctness = (failed == 0)` è **sempre vera**.
+   - Lo stop diventa "prima iterazione t < k con `p_exact < norm.sf(η)`" e la candidata senza stop è la
+     prima iterazione, perché `best` cambia solo se arriva una corretta dopo una sbagliata.
+   - Il feedback è sempre quello del watermark (p-value e conteggi dell'iterazione precedente) e i semi
+     non cambiano: nessuno dipende da η o da k, salvo la decisione di fermarsi. La ricostruzione resta
+     quindi esatta; `replay_selection` lo copre con un test (`test_replay_without_correctness_loop_...`).
+   - `embed_from_trajectory` rifiuta una traiettoria con un ciclo di correttezza diverso da quello del
+     candidato.
+2. **Seconda condizione, da verificare sui campioni reali:** `sbatch scripts/m9_promptmark_replay_l2.sh`
+   (configurazioni A e B contro la traiettoria, come su L1, più il controllo che ogni iterazione su L2
+   risulti corretta). Esito: `docs/milestone_logs/M9_promptmark_replay_l2.txt` (da riportare qui).

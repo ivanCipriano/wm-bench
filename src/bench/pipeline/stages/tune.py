@@ -19,6 +19,10 @@ Output:
 - ``hpo/selected/<metodo>/<modello>/<linguaggio>.json``: la configurazione scelta
   (``SelectedConfig``), ``provisional`` se le soglie lo sono (TODO 23).
 
+Con livelli diversi dal solo L1 (scelta definitiva su L1+L2, M9) le cartelle diventano
+``hpo/candidates_L1L2/`` e ``hpo/selected_L1L2/``, con le soglie dello stesso insieme di livelli: la
+scelta provvisoria della M8 resta e non fa saltare quella definitiva.
+
 Un linguaggio non supportato dal metodo dà una selezione ``not_applicable`` senza candidati.
 """
 
@@ -26,6 +30,7 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Sequence
 from dataclasses import replace
 from datetime import UTC, datetime
 from typing import Any, ClassVar
@@ -41,7 +46,12 @@ from bench.hpo.grid import GridPoint, grid_path, load_grid
 from bench.metrics.calibration import detected
 from bench.metrics.uncertainty import pass_at_1
 from bench.pipeline.stage import Cell, Stage, StageContext
-from bench.pipeline.stages.calibrate import CALIBRATION_SPLIT, primary_view, threshold_ref
+from bench.pipeline.stages.calibrate import (
+    CALIBRATION_SPLIT,
+    levels_tag,
+    primary_view,
+    threshold_ref,
+)
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
 from bench.pipeline.stages.watermark import make_adapter
@@ -51,14 +61,23 @@ from bench.store.refs import ArtifactRef
 logger = logging.getLogger(__name__)
 
 
-def candidates_ref(method: str, model_id: str, language: str) -> ArtifactRef:
-    return ArtifactRef.of(
-        "hpo_candidates", f"hpo/candidates/{method}/{model_id}/{language}.parquet"
-    )
+def _hpo_folder(kind: str, levels: Sequence[str]) -> str:
+    tag = levels_tag(levels)
+    return f"hpo/{kind}" + (f"_{tag}" if tag else "")
 
 
-def selected_ref(method: str, model_id: str, language: str) -> ArtifactRef:
-    return ArtifactRef.of("hpo_selected", f"hpo/selected/{method}/{model_id}/{language}.json")
+def candidates_ref(
+    method: str, model_id: str, language: str, levels: Sequence[str] = ("L1",)
+) -> ArtifactRef:
+    folder = _hpo_folder("candidates", levels)
+    return ArtifactRef.of("hpo_candidates", f"{folder}/{method}/{model_id}/{language}.parquet")
+
+
+def selected_ref(
+    method: str, model_id: str, language: str, levels: Sequence[str] = ("L1",)
+) -> ArtifactRef:
+    folder = _hpo_folder("selected", levels)
+    return ArtifactRef.of("hpo_selected", f"{folder}/{method}/{model_id}/{language}.json")
 
 
 def detection_rate(positives: pd.DataFrame, threshold: float) -> tuple[int, int]:
@@ -135,7 +154,7 @@ class TuneStage(Stage):
         method, model_id, language = self._require(cell)
         twin = bool(getattr(self.adapter(method), "twin_baseline", False))
         refs: dict[str, list[ArtifactRef]] = {
-            "threshold": [threshold_ref(method, model_id, language, cfg_hash)],
+            "threshold": [threshold_ref(method, model_id, language, cfg_hash, self.levels())],
             "positives": [],
             "marked": [],
             "reference": [],
@@ -167,9 +186,10 @@ class TuneStage(Stage):
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, language = self._require(cell)
+        levels = self.levels()
         return [
-            candidates_ref(method, model_id, language),
-            selected_ref(method, model_id, language),
+            candidates_ref(method, model_id, language, levels),
+            selected_ref(method, model_id, language, levels),
         ]
 
     # ------------------------------------------------------------------ esecuzione

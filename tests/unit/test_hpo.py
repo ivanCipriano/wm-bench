@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import json
 import math
@@ -225,6 +226,65 @@ def test_embed_from_trajectory(
     assert [m["n_sites"] for m in run.metrics] == [2, 2]
     with pytest.raises(ConfigError, match="lacks"):
         adapter.embed_from_trajectory([problem], hp, model, "k1", 3, trajectory_dir)
+
+
+def test_replay_without_correctness_loop_depends_only_on_p_and_eta() -> None:
+    """L2 (D27): con ``test_list`` vuota ogni iterazione è corretta; lo stop dipende solo da p e η
+    e la candidata senza stop è la prima, come in ``run_phase1`` (ADR-009 valida anche su L2)."""
+    its = [_it(0, True, 0.5), _it(1, True, 0.04), _it(2, True, 0.01), _it(3, True, 0.3)]
+    assert replay_selection(its, 5, 2.12) == (2, 3)
+    assert replay_selection(its, 5, 1.64) == (1, 2)
+    assert replay_selection(its, 2, 2.58) == (0, 2)  # nessuno stop: la prima (best)
+    assert replay_selection(its, 5, 1e6) == (0, 4)
+    extra = replay_result(
+        dataclasses.replace(_trajectory_result("codenet/p0#0"), extra={"iterations": its}),
+        5,
+        1.64,
+    ).extra
+    assert extra["n_retries_correctness"] == 0 and extra["n_retries_watermark"] == 1
+
+
+def test_embed_from_trajectory_checks_the_correctness_loop(
+    cfg: ExperimentConfig, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(MethodAdapter, "source_commit", lambda self: "b" * 40)
+    monkeypatch.setattr(PromptMarkAdapter, "to_native_hparams", lambda self, hp: dict(hp))
+    adapter = PromptMarkAdapter(cfg.methods_catalog["promptmark"], cfg, echo_client(cfg, 60))
+    problem = Problem(
+        problem_key="codenet/p00001",
+        dataset="codenet",
+        level="L2",
+        language="python",
+        split="dev",
+        prompt_text="Read N.",
+        entry_point=None,
+        canonical_solution=None,
+        test_ref=None,
+        contamination_risk=False,
+        loc_to_generate=None,
+    )
+    trajectory_dir = tmp_path / "traj" / "L2_python_dev"
+    trajectory_dir.mkdir(parents=True)
+    hp = {"iter_cap": 5, "z_threshold": 1.64, "green_size": 8}
+    model = cfg.models_catalog[MODEL]
+
+    def write(loop: bool | None) -> None:
+        rows = []
+        for i in range(2):
+            row = _trajectory_result(f"codenet/p00001#{i}").to_dict()
+            if loop is not None:
+                row["extra"]["correctness_loop"] = loop
+            rows.append(row)
+        (trajectory_dir / "results.jsonl").write_text(
+            "".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8"
+        )
+
+    write(None)  # traiettoria senza il campo: ciclo attivo, come su L1
+    with pytest.raises(ConfigError, match="correctness loop differs"):
+        adapter.embed_from_trajectory([problem], hp, model, "k1", 2, trajectory_dir)
+    write(False)
+    run = adapter.embed_from_trajectory([problem], hp, model, "k1", 2, trajectory_dir)
+    assert run.native_hparams["correctness_loop"] is False
 
 
 # ---------------------------------------------------------------------- sweep completo

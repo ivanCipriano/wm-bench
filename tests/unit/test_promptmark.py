@@ -77,6 +77,48 @@ def test_promptmark_embed_columns(cfg: ExperimentConfig, tmp_path: Path) -> None
     assert len(run.metrics) == 2 and set(run.metrics[0]) == set(EMBED_COLUMNS)
 
 
+def test_correctness_loop_off_on_codenet_without_changing_the_hash(
+    cfg: ExperimentConfig, tmp_path: Path
+) -> None:
+    """D27: su CodeNet la richiesta ha ``correctness_loop`` falso; su L1 resta come prima e
+    l'hash della configurazione è lo stesso sui due livelli."""
+    from bench.domain.enums import Language
+    from bench.generation.prompt_builder import PromptBuilder
+
+    client = echo_client()
+    a = PromptMarkAdapter(cfg.methods_catalog["promptmark"], cfg, client)
+    l1 = _problem("humaneval/0", Language.PYTHON)
+    l2 = l1.model_copy(
+        update={"problem_key": "codenet/p00001", "dataset": "codenet", "entry_point": None}
+    )
+    assert a.request_hparams([l1]) == {} and a.request_hparams([]) == {}
+    assert a.request_hparams([l2]) == {"correctness_loop": False}
+    with pytest.raises(ConfigError, match="mix"):
+        a.request_hparams([l1, l2])
+
+    def run(problem: Any, folder: str) -> Any:
+        return a.embed_from_prompts(
+            [problem],
+            a.default_hparams(),
+            cfg.models_catalog["qwen25_coder_7b"],
+            "k1",
+            {},
+            1,
+            PromptBuilder.from_config(cfg.prompt),
+            tmp_path / folder,
+            "cpu",
+        )
+
+    first = run(l1, "l1")
+    assert "correctness_loop" not in first.request["hparams"]
+    assert "correctness_loop" not in first.native_hparams
+    second = run(l2, "l2")
+    assert second.request["hparams"]["correctness_loop"] is False
+    assert second.native_hparams["correctness_loop"] is False
+    # Il parametro del livello non entra negli iperparametri nativi, quindi nemmeno nell'hash.
+    assert "correctness_loop" not in a.to_native_hparams(a.default_hparams())
+
+
 HE_PROMPT = '''from typing import List
 
 

@@ -1,8 +1,8 @@
 """Verifica della griglia di PromptMark ricostruita (Milestone 8). Job GPU su gpuq, circa 30-40 min.
 
 Uso (con bench-core, su un nodo NVIDIA):
-    python scripts/verify_promptmark_replay.py [--artifacts DIR] [--out DIR] [--problems 10]
-                                               [--samples 2]
+    python scripts/verify_promptmark_replay.py [--level L1|L2] [--artifacts DIR] [--out DIR]
+                                               [--problems 10] [--samples 2]
 
 Idea: per una dimensione della green list si esegue **una** traiettoria con 5 iterazioni e soglia
 irraggiungibile (η = z 1e6, p < 0 mai vero) e si ricava a posteriori il risultato di ogni
@@ -21,8 +21,13 @@ carattere per carattere con quelle ricostruite (risposta scelta, iterazione scel
 iterazioni e tutte le risposte intermedie). Per esercitare anche lo stop, si scelgono i problemi
 con il p-value più basso fra le iterazioni corrette della M7 (Qwen, default).
 
-Tutto fuori dagli artefatti del benchmark (``--out``, default ``$WMB/tmp/promptmark_replay``).
-Exit code 1 se una sola differenza.
+Con ``--level L2`` (D27, M9) la verifica si ripete su CodeNet, dove il ciclo di correttezza è
+spento (``test_list`` vuota): ogni iterazione è corretta, quindi lo stop dipende solo da p e η. I
+problemi sono quelli con il p-value più basso fra le iterazioni del default di L2 o di una
+traiettoria di L2, se ci sono già; altrimenti i primi problemi dev in ordine di chiave.
+
+Tutto fuori dagli artefatti del benchmark (``--out``, default
+``$WMB/tmp/promptmark_replay[_L2]``). Exit code 1 se una sola differenza.
 """
 
 from __future__ import annotations
@@ -79,12 +84,20 @@ def _results(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def pick_problems(artifacts: Path, n: int) -> list[str]:
-    """Problemi con il p-value più basso fra le iterazioni corrette della M7 (Qwen, default)."""
+def run_results(artifacts: Path, cfg_hash: str, level: str) -> Path:
+    """``results.jsonl`` del worker di una configurazione (Qwen) su un livello, parte dev."""
     base = artifacts / "_runs" / "watermark" / "promptmark" / MODEL
-    (cfg,) = (p.name for p in base.iterdir())
+    return base / cfg_hash / f"{level}_python_dev" / "results.jsonl"
+
+
+def pick_problems(artifacts: Path, n: int, sources: list[Path], dev_keys: list[str]) -> list[str]:
+    """Problemi con il p-value più basso fra le iterazioni corrette dei risultati ``sources``
+    (il primo file esistente); senza risultati, i primi ``n`` problemi dev in ordine di chiave."""
+    rows = next((_results(p) for p in sources if p.is_file()), [])
+    if not rows:
+        return sorted(dev_keys)[:n]
     best: dict[str, float] = {}
-    for row in _results(base / cfg / "L1_python_dev" / "results.jsonl"):
+    for row in rows:
         problem = str(row["item_id"]).rpartition("#")[0]
         ps = [
             float(it["p_exact"])
@@ -122,8 +135,9 @@ def run_config(diag: Any, problems: list[Any], hp: dict[str, Any], name: str, n:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--level", default="L1", choices=["L1", "L2"])
     parser.add_argument("--artifacts", default=f"{WMB}/artifacts")
-    parser.add_argument("--out", default=f"{WMB}/tmp/promptmark_replay")
+    parser.add_argument("--out", default=None)
     parser.add_argument("--problems", type=int, default=10)
     parser.add_argument("--samples", type=int, default=2)
     args = parser.parse_args()
@@ -138,6 +152,8 @@ def main() -> int:
     from bench.pipeline.stages.watermark import KEY_ID, make_adapter
 
     artifacts = Path(args.artifacts)
+    level = args.level
+    out = args.out or f"{WMB}/tmp/promptmark_replay" + ("" if level == "L1" else f"_{level}")
     cfg = load_experiment(["paths=cluster", "stage=watermark"])
     model = cfg.models_catalog[MODEL]
     adapter = make_adapter(cfg, "promptmark")
@@ -146,12 +162,20 @@ def main() -> int:
         "adapter": adapter,
         "model": model,
         "key_id": KEY_ID,
-        "decoding": {**neutral_settings(decoding_for(cfg, "L1")), "torch_dtype": model.dtype},
+        "decoding": {**neutral_settings(decoding_for(cfg, level)), "torch_dtype": model.dtype},
         "prompts": PromptBuilder.from_config(cfg.prompt),
-        "out": Path(args.out),
+        "out": Path(out),
     }
-    keys = pick_problems(artifacts, args.problems)
-    table = pd.read_parquet(artifacts / "data" / "problems" / "L1_python.parquet")
+    default_hash = adapter.config_hash(default)
+    table = pd.read_parquet(artifacts / "data" / "problems" / f"{level}_python.parquet")
+    table = table[table["split"] == "dev"]
+    trajectories = sorted(
+        (artifacts / "_runs" / "watermark" / "promptmark" / MODEL).glob(
+            f"*/{level}_python_dev/results.jsonl"
+        )
+    )
+    sources = [run_results(artifacts, default_hash, level), *trajectories]
+    keys = pick_problems(artifacts, args.problems, sources, list(table["problem_key"]))
     rows = table[table["problem_key"].isin(keys)].to_dict(orient="records")
     problems = sorted((Problem.model_validate(r) for r in rows), key=lambda p: p.problem_key)
     sys.stdout.write(f"problems ({len(problems)}): {[p.problem_key for p in problems]}\n")
@@ -176,24 +200,41 @@ def main() -> int:
             f"config {name} {hp}: {len(actual)} samples, {stopped} stopped early, "
             f"{identical} identical to the replay\n"
         )
-    # Controllo in più: il default ricostruito contro la M7 (altro nodo: solo informativo).
-    m7 = {
-        str(r["item_id"]): r
-        for r in _results(
-            next((artifacts / "_runs" / "watermark" / "promptmark" / MODEL).iterdir())
-            / "L1_python_dev"
-            / "results.jsonl"
-        )
-    }
-    same = total = 0
-    for item_id, traj in trajectory.items():
-        if item_id in m7:
-            chosen, _ = replay(traj["iterations"], default["iter_cap"], default["z_threshold"])
-            total += 1
-            same += int(m7[item_id].get("raw_output") == traj["iterations"][chosen]["response"])
-    sys.stdout.write(f"default replay vs M7 artifacts (informative): {same}/{total} identical\n")
+    failures += extra_checks(
+        trajectory, run_results(artifacts, default_hash, level), default, level
+    )
     sys.stdout.write("RESULT: " + ("OK" if failures == 0 else f"{failures} mismatches") + "\n")
     return 0 if failures == 0 else 1
+
+
+def extra_checks(
+    trajectory: dict[str, Any], default_results: Path, default: dict[str, Any], level: str
+) -> int:
+    """Controlli in più; restituisce le differenze che contano come errori.
+
+    - Su L2 il ciclo di correttezza è spento (D27): ogni iterazione deve risultare corretta.
+    - Il default ricostruito contro gli artefatti del livello (altro nodo: solo informativo).
+    """
+    failures = 0
+    if level == "L2":
+        wrong = [
+            item_id
+            for item_id, traj in trajectory.items()
+            if not all(it["correctness"] for it in traj["iterations"])
+        ]
+        sys.stdout.write(f"L2: samples with an incorrect iteration: {len(wrong)} (expected 0)\n")
+        failures += len(wrong)
+    stored = {str(r["item_id"]): r for r in _results(default_results)}
+    same = total = 0
+    for item_id, traj in trajectory.items():
+        if item_id in stored:
+            chosen, _ = replay(traj["iterations"], default["iter_cap"], default["z_threshold"])
+            total += 1
+            same += int(stored[item_id].get("raw_output") == traj["iterations"][chosen]["response"])
+    sys.stdout.write(
+        f"default replay vs {level} artifacts (informative): {same}/{total} identical\n"
+    )
+    return failures
 
 
 if __name__ == "__main__":

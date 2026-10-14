@@ -11,7 +11,8 @@ lista di frequenza (D8) è scritta in ``<lavoro>/results/dataset/`` e la cartell
 directory corrente, perché il codice legge ``base_dir="."``.
 
 - **embed** (un campione per item): record con ``prompt`` = messaggio utente del framework e
-  ``test_list`` = esempi del prompt (``examples.prompt_examples``, audit §8); ``run_phase1`` con il
+  ``test_list`` = esempi del prompt (``examples.prompt_examples``, audit §8), vuota se
+  ``correctness_loop`` è falso (L2, D27); ``run_phase1`` con il
   provider ``inprocess_hf`` (seme del campione alla prima generazione, poi
   ``derive_seed(seme, "promptmark-iter", t)``). ``raw_output`` = risposta completa della candidata
   scelta (la regola D4 si applica a quel testo); in ``extra`` tutte le iterazioni e i conteggi.
@@ -210,7 +211,11 @@ class PromptMarkShim(ShimBase):
             raise ValueError("PromptMark generates one sample per item (n must be 1)")
         messages = item.prompt_messages or []
         user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
-        examples = prompt_examples(user)
+        # Ciclo di correttezza spento (L2, D27): ``test_list`` vuota. Il codice del metodo esegue
+        # comunque il programma, senza test: 0 test falliti, quindi la correttezza è sempre vera
+        # e il ciclo itera solo sulla forza del watermark.
+        loop = bool(self.hp.get("correctness_loop", True))
+        examples = prompt_examples(user) if loop else []
         record = {
             "task_id": item.item_id,
             "prompt": user,
@@ -256,6 +261,7 @@ class PromptMarkShim(ShimBase):
             "n_iterations": len(iterations),
             "n_retries_watermark": retries_wm,
             "n_retries_correctness": retries_corr,
+            "correctness_loop": loop,
             "n_example_tests": len(examples),
             "example_tests": examples,
             "selected_iteration": selected.get("iteration"),

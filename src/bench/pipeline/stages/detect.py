@@ -8,7 +8,11 @@ metodo (fino all'HPO). Soggetti, un artefatto ciascuno
 - ``neg_human``: negativi umani della parte (nativi e integrazione, §10.4);
 - ``neg_llm``: baseline senza watermark dello stesso modello;
 - ``neg_llm_twin``: baseline gemella, solo per i metodi che la prevedono (MCGMark, D20; è il
-  riferimento primario del suo ``fpr_llm``, decisione dell'utente del 9 ottobre 2026).
+  riferimento primario del suo ``fpr_llm``, decisione dell'utente del 9 ottobre 2026);
+- ``neg_integration``: integrazione di sviluppo combinata L1+L2 (TODO 3, opzione 2, ADR-011), solo
+  nelle celle L2 dev. È per linguaggio, non per livello: sta nella cella L2 dev perché quelle celle
+  sono tutte nuove, mentre aggiungerla alle celle L1 dev già fatte le rieseguirebbe per intero.
+  Con la calibrazione su L1+L2 sostituisce l'integrazione di L1, i cui punteggi non si riusano.
 
 Contesto di condizionamento (SPEC §9.1): il prompt chat del problema quando esiste (positivi,
 negativi LLM, negativi umani nativi con un problema del livello); contesto vuoto per i negativi
@@ -40,7 +44,11 @@ from bench.hpo.grid import resolve
 from bench.methods.base import DetectInput, Detector
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.generate_baseline import baseline_ref, decoding_for, problems_ref
-from bench.pipeline.stages.prepare_data import integration_ref, native_ref
+from bench.pipeline.stages.prepare_data import (
+    integration_ref,
+    native_ref,
+    pooled_integration_ref,
+)
 from bench.pipeline.stages.watermark import (
     KEY_ID,
     baseline_twin_ref,
@@ -52,7 +60,7 @@ from bench.store.refs import ArtifactRef
 
 logger = logging.getLogger(__name__)
 
-SUBJECTS = ("positives", "neg_human", "neg_llm", "neg_llm_twin")
+SUBJECTS = ("positives", "neg_human", "neg_llm", "neg_llm_twin", "neg_integration")
 EXTRA_COLUMNS = ["problem_key", "sample_index", "dataset", "source", "embed_status", "parent_id"]
 RECORD_COLUMNS = [f for f in DetectionRecord.model_fields if f != "extra"] + ["extra_json"]
 OUTPUT_COLUMNS = [*EXTRA_COLUMNS, *RECORD_COLUMNS]
@@ -115,9 +123,16 @@ class DetectStage(Stage):
         """Hash della configurazione della cella (con un nome di metodo: il default)."""
         return self.cell_config(Cell(method=cell) if isinstance(cell, str) else cell)[1]
 
-    def subjects(self, method: str) -> tuple[str, ...]:
+    def subjects(self, method: str, level: str = "L1", split: str = "dev") -> tuple[str, ...]:
+        """Soggetti di una cella: la gemella solo per i metodi che la prevedono, l'integrazione
+        combinata solo nelle celle L2 dev."""
         twin = getattr(self.adapter(method), "twin_baseline", False)
-        return tuple(s for s in SUBJECTS if s != "neg_llm_twin" or twin)
+        pooled = level == "L2" and split == "dev"
+        return tuple(
+            s
+            for s in SUBJECTS
+            if (s != "neg_llm_twin" or twin) and (s != "neg_integration" or pooled)
+        )
 
     def _sample_refs(self, cell: Cell) -> dict[str, list[ArtifactRef]]:
         method, model_id, level, language, split = self._require(cell)
@@ -133,10 +148,13 @@ class DetectStage(Stage):
             ),
             "neg_llm": [baseline_ref(model_id, level, language, split)],
         }
-        if "neg_llm_twin" in self.subjects(method):
+        subjects = self.subjects(method, level, split)
+        if "neg_llm_twin" in subjects:
             refs["neg_llm_twin"] = [
                 baseline_twin_ref(method, model_id, cfg_hash, level, language, split)
             ]
+        if "neg_integration" in subjects:
+            refs["neg_integration"] = [pooled_integration_ref(Language(language))]
         return refs
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
@@ -151,7 +169,7 @@ class DetectStage(Stage):
         cfg_hash = self.config_hash(cell)
         return [
             detection_ref(method, model_id, cfg_hash, s, level, language, split)
-            for s in self.subjects(method)
+            for s in self.subjects(method, level, split)
         ]
 
     # ------------------------------------------------------------------ campioni
@@ -182,7 +200,8 @@ class DetectStage(Stage):
         }
         decoding = {**neutral_settings(decoding_for(cfg, level)), "torch_dtype": model.dtype}
         device = "cuda:0" if adapter.gpu_for_detect else "cpu"
-        for subject, ref in zip(self.subjects(method), self.outputs(cell), strict=True):
+        subjects = self.subjects(method, level, split)
+        for subject, ref in zip(subjects, self.outputs(cell), strict=True):
             samples = self._samples(ctx, cell, subject)
             inputs = [
                 self._input(adapter, model, prompts, problems, sample, subject)

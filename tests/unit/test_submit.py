@@ -224,9 +224,11 @@ def test_jobs_of_different_methods_do_not_conflict(monkeypatch: pytest.MonkeyPat
 
 
 def test_job_name_carries_the_methods_only_for_method_stages(cfg: ExperimentConfig) -> None:
-    c = rebuild(cfg, methods=["sweet"])
+    c = rebuild(cfg, methods=["sweet"], levels=["L1"])
     detect = submit(c, "detect", PROFILES, dry_run=True)
     assert {j.params["name"] for j in detect} == {"wmb-detect.sweet"}
+    both = submit(rebuild(c, levels=["L1", "L2"]), "detect", PROFILES, dry_run=True)
+    assert {j.params["name"] for j in both} == {"wmb-detect.sweet+sweet_L2"}
     baseline = submit(c, "generate_baseline", PROFILES, dry_run=True)
     assert {j.params["name"] for j in baseline} == {"wmb-generate_baseline"}
 
@@ -239,12 +241,18 @@ def test_execute_of_canonical_and_baseline_is_not_named_after_the_methods(
     import bench.pipeline.submit as sub
     from bench.pipeline.stage import Cell
 
-    cells = [Cell(source="canonical", level="L2", language="python")]
+    cells = [Cell(source="canonical", level="L1", language="python")]
     assert sub.stage_methods(cfg, "execute", cells) == ["canonical"]
     cells.append(Cell(source="llm_watermarked", method="stone", level="L1", language="cpp"))
     assert sub.stage_methods(cfg, "execute", cells) == ["canonical", "stone"]
+    # Livelli diversi da L1: il livello in coda, così L2 non blocca l'HPO di L1 dello stesso metodo.
+    l2 = [Cell(source="llm_watermarked", method="sweet", level="L2", language="cpp")]
+    assert sub.stage_methods(cfg, "execute", l2) == ["sweet_L2"]
+    assert sub.job_name("detect", (1, 1), ["sweet_L2"]) == "wmb-detect.sweet_L2"
     assert sub.stage_methods(cfg, "execute", []) == list(cfg.methods)
     rows = [("1", "s.faraulo", "RUNNING", "wmb-execute.sweet")]
     monkeypatch.setattr(sub, "queued_jobs", lambda account: rows)
     assert sub.conflicting_jobs("execute", (1, 1), "acc", ["canonical"]) == []
     assert sub.conflicting_jobs("execute", (1, 1), "acc", ["llm_baseline"]) == []
+    assert sub.conflicting_jobs("execute", (1, 1), "acc", ["sweet_L2"]) == []
+    assert len(sub.conflicting_jobs("execute", (1, 1), "acc", ["sweet"])) == 1

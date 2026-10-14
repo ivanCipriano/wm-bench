@@ -56,17 +56,44 @@
      ricostruire la sandbox.
    - C'è un solo caso di I/O per problema, che coincide con un esempio del testo: è una minaccia alla
      validità per tutti i metodi (D28).
-7. **Rilevazione.** Una cella L2 legge solo i nativi di L2. L'integrazione combinata si aggiunge alle celle
-   di sviluppo di L1 quando la calibrazione usa L1+L2 (passo successivo della M9).
+7. **Rilevazione.** Una cella L2 legge solo i nativi di L2 (`neg_human`). L'integrazione combinata si
+   rileva come soggetto a sé, `neg_integration`, e solo nelle celle **L2 dev**:
+   - è per linguaggio, non per livello; le celle L2 dev sono tutte nuove, mentre aggiungerla alle celle L1
+     dev già fatte le farebbe rieseguire per intero (la pipeline rifà una cella se manca anche una sola
+     uscita);
+   - i punteggi dei nativi di L1 dev non cambiano (stessi codici, stessa configurazione), quindi si
+     riusano; quelli dell'integrazione di L1 **non** si usano per le soglie definitive.
+8. **Soglie e scelta definitive (L1+L2).** `calibrate` con `levels=[L1,L2]` usa tre parti:
+   - nativi di L1 dev: le righe dei nativi di `neg_human` delle celle L1 dev, riconosciute dai
+     `sample_id` di `negatives/L1_<lang>_native`;
+   - nativi di L2 dev: `neg_human` delle celle L2 dev;
+   - integrazione combinata: `neg_integration` delle celle L2 dev.
+
+   La soglia va in `thresholds/<metodo>/<modello>/<lang>/L1L2/<cfg>.json`, con `provisional = false`; il
+   manifest riporta `fpr_dev_by_part`, cioè negativi, falsi positivi e FPR per ciascuna parte (FPR di
+   sviluppo separato per L1 e per L2, decisione dell'utente del 13 ottobre 2026). Allo stesso modo `tune`
+   scrive in `hpo/candidates_L1L2/` e `hpo/selected_L1L2/` e `metrics` in `metrics_L1L2/`. Le soglie e la
+   scelta provvisorie della M8 restano nei percorsi di prima e non fanno saltare quelle definitive.
+9. **PromptMark su L2 (D27).** L'adapter aggiunge `correctness_loop: false` alla richiesta al worker
+   quando i problemi sono di CodeNet; lo shim passa allora `test_list` vuota. Il parametro **non** entra
+   nel `config_hash`: la stessa configurazione ha lo stesso hash su L1 e su L2, come serve a `tune`, che
+   per ogni candidato legge i due livelli. Il valore è nel manifest dei campioni marcati
+   (`native_hparams`), in quello delle metriche (`correctness_loop`) e nel report di `report_hpo.py
+   --final`.
+10. **Nomi dei job.** Per i livelli diversi da L1 il nome porta il livello (`wmb-detect.sweet_L2`): i job
+    di L2 non vanno in conflitto con quelli dell'HPO di L1 dello stesso metodo, i nomi di L1 non cambiano.
 
 ## Conseguenze
 
 - Comandi:
-  - `scripts/submit_l2.sh data|canonical|baseline|execute`;
-  - stato con `scripts/check_l2.py`.
-- La nuova integrazione cambia i negativi umani di sviluppo di L1: per le soglie definitive la loro
-  rilevazione va rifatta per tutte le configurazioni della M7 e della M8, su percorsi nuovi, così non si
-  riusano i punteggi vecchi.
+  - dati e baseline: `scripts/submit_l2.sh data|canonical|baseline|execute`, stato con
+    `scripts/check_l2.py`;
+  - metodi su L2 dev e scelta definitiva: `scripts/submit_hpo_l2.sh`, stato con
+    `scripts/check_hpo.py <metodo> --level L2`, report con `scripts/report_hpo.py --final`;
+  - verifica dell'ADR-009 su L2: `sbatch scripts/m9_promptmark_replay_l2.sh`.
+- La nuova integrazione cambia i negativi umani di sviluppo: per le soglie definitive si rileva, per ogni
+  configurazione della griglia, solo l'integrazione combinata (soggetto `neg_integration`, percorso
+  nuovo); i punteggi dell'integrazione di L1 non si riusano, quelli dei nativi di L1 sì.
 - I metodi su L2:
   - SWEET su tutti e 4 i linguaggi;
   - STONE senza JavaScript;

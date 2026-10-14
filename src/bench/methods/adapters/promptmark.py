@@ -25,6 +25,10 @@ PROTOCOL = ("iter_cap", "z_threshold", "green_size")
 # derivata dalla chiave in [8, 18] se ``green_size`` è nullo, altrimenti fissata (patch 0002).
 G_MIN, G_MAX = 8, 18
 CANDIDATES = 18  # pool delle iniziali più frequenti (``top_n`` del codice)
+# Dataset su cui il ciclo di correttezza è spento (``test_list`` vuota, D27): su CodeNet gli
+# esempi del testo coincidono con l'unico caso di I/O di Pass@1 e il codice del metodo esegue solo
+# asserzioni su funzioni.
+NO_CORRECTNESS_LOOP = frozenset({"codenet"})
 
 
 def replay_selection(
@@ -138,6 +142,19 @@ class PromptMarkAdapter(PromptEmbedder, Detector):
             "total_identifiers": freqs.total_identifiers,
         }
 
+    def request_hparams(self, problems: Sequence[Problem]) -> dict[str, Any]:
+        """Ciclo di correttezza spento sui dataset di ``NO_CORRECTNESS_LOOP`` (D27).
+
+        Su L1 la richiesta resta identica a quella della M7 e della M8 (nessun parametro in più).
+
+        Raises:
+            ConfigError: se i problemi mescolano dataset con e senza ciclo.
+        """
+        off = {p.dataset in NO_CORRECTNESS_LOOP for p in problems}
+        if off == {True, False}:
+            raise ConfigError("promptmark: problems mix datasets with and without correctness loop")
+        return {"correctness_loop": False} if off == {True} else {}
+
     def embed_metrics(self, result: WorkerResult | None) -> dict[str, Any]:
         """Siti idonei = identificatori scelti liberamente dal modello (audit §10)."""
         metrics = super().embed_metrics(result)
@@ -167,6 +184,18 @@ class PromptMarkAdapter(PromptEmbedder, Detector):
         if not path.is_file():
             raise ConfigError(f"{path} not found: run the trajectory first (hpo.part=trajectories)")
         rows = [WorkerResult.from_dict(row) for row in iter_jsonl(path)]
+        # La traiettoria deve avere lo stesso ciclo di correttezza del candidato (D27).
+        loop = self.request_hparams(problems).get("correctness_loop", True)
+        wrong = [
+            r.item_id
+            for r in rows
+            if r.status == EmbedStatus.OK and (r.extra or {}).get("correctness_loop", True) != loop
+        ]
+        if wrong:
+            raise ConfigError(
+                f"trajectory {trajectory_dir}: correctness loop differs from the candidate's "
+                f"({len(wrong)} sample(s), e.g. {wrong[0]})"
+            )
         results: dict[tuple[str, int], WorkerResult] = {}
         for row in rows:  # in caso di righe ripetute vale l'ultima, come WorkerClient.collect
             problem_key, _, index = row.item_id.rpartition("#")
@@ -181,7 +210,10 @@ class PromptMarkAdapter(PromptEmbedder, Detector):
         return EmbedRun(
             samples=samples,
             worker=None,
-            native_hparams=self.to_native_hparams(hp),
+            native_hparams={
+                **self.to_native_hparams(hp),
+                **self.request_hparams([p for p in problems if self.supports(p.language)]),
+            },
             request=None,
             metrics=metrics,
             replayed_from=trajectory_dir.parent.name,

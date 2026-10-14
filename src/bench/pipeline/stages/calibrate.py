@@ -1,10 +1,18 @@
 """Fase ``calibrate``: soglie congelate sui negativi umani di sviluppo (SPEC §13.2, I3).
 
-Una cella = (metodo, modello, linguaggio): una soglia per la configurazione di default del metodo,
-calcolata sui punteggi ``neg_human`` della parte **dev** di tutti i livelli della configurazione.
-La SPEC usa L1+L2; finché manca L2 (M9) la soglia è **provvisoria** (``provisional=True``,
-``levels`` = livelli usati; decisione dell'utente del 9 ottobre 2026) e la fase ``metrics`` non la
-usa sul test. Output: ``thresholds/<metodo>/<modello>/<lang>/<cfg>.json`` (``ThresholdSet``).
+Una cella = (metodo, modello, linguaggio): una soglia per configurazione, calcolata sui negativi
+umani della parte **dev** dei livelli della configurazione (``levels``).
+
+- **Solo L1** (M7, M8): nativi e integrazione di L1 (``neg_human`` delle celle L1 dev). La soglia è
+  **provvisoria** (``provisional=True``, D24) e la fase ``metrics`` non la usa sul test. Output:
+  ``thresholds/<metodo>/<modello>/<lang>/<cfg>.json``.
+- **L1+L2** (M9, soglie definitive, ADR-011): nativi di sviluppo di L1 (le righe dei nativi di
+  ``neg_human`` delle celle L1 dev: i punteggi dell'integrazione di L1 non si usano), nativi di L2
+  (``neg_human`` delle celle L2 dev) e integrazione combinata L1+L2 (``neg_integration``, TODO 3,
+  opzione 2). Output su un percorso proprio,
+  ``thresholds/<metodo>/<modello>/<lang>/L1L2/<cfg>.json``, così le soglie provvisorie restano e
+  non vengono saltate per errore. Il manifest riporta l'FPR di sviluppo per parte (nativi L1,
+  nativi L2, integrazione), come chiesto dall'utente il 13 ottobre 2026.
 """
 
 from __future__ import annotations
@@ -12,6 +20,7 @@ from __future__ import annotations
 import json
 import logging
 import math
+from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Any, ClassVar
 
@@ -19,12 +28,14 @@ import pandas as pd
 
 from bench.config.resources import ResourceClass
 from bench.config.schema import ExperimentConfig
+from bench.domain.enums import Language
 from bench.domain.errors import ConfigError
 from bench.domain.models import ThresholdSet
 from bench.hpo.grid import resolve
 from bench.metrics.calibration import MIN_SCORE, ThresholdCalibrator
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.detect import detection_ref
+from bench.pipeline.stages.prepare_data import native_ref
 from bench.pipeline.stages.watermark import make_adapter
 from bench.registry import STAGES
 from bench.store.refs import ArtifactRef
@@ -35,9 +46,22 @@ CALIBRATION_SPLIT = "dev"
 FULL_LEVELS = frozenset({"L1", "L2"})  # livelli previsti dalla SPEC per le soglie definitive
 
 
-def threshold_ref(method: str, model_id: str, language: str, cfg_hash: str) -> ArtifactRef:
-    """Soglia congelata di (metodo, modello, linguaggio, configurazione)."""
-    return ArtifactRef.of("threshold", f"thresholds/{method}/{model_id}/{language}/{cfg_hash}.json")
+def levels_tag(levels: Sequence[str]) -> str | None:
+    """Etichetta dei livelli di calibrazione nei percorsi: nessuna per il solo L1 (percorsi della
+    M7 e della M8), altrimenti i livelli concatenati (``L1L2``)."""
+    ordered = sorted({str(level) for level in levels})
+    if not ordered:
+        raise ConfigError("calibration needs at least one level")
+    return None if ordered == ["L1"] else "".join(ordered)
+
+
+def threshold_ref(
+    method: str, model_id: str, language: str, cfg_hash: str, levels: Sequence[str] = ("L1",)
+) -> ArtifactRef:
+    """Soglia congelata di (metodo, modello, linguaggio, configurazione) calibrata su ``levels``."""
+    tag = levels_tag(levels)
+    folder = f"thresholds/{method}/{model_id}/{language}" + (f"/{tag}" if tag else "")
+    return ArtifactRef.of("threshold", f"{folder}/{cfg_hash}.json")
 
 
 def json_threshold(value: float) -> float | str:
@@ -99,6 +123,21 @@ def negative_scores(table: pd.DataFrame) -> list[float]:
     ]
 
 
+def fpr_by_part(table: pd.DataFrame, scores: list[float], threshold: float) -> dict[str, Any]:
+    """Negativi e FPR alla soglia per ogni valore di ``part`` della tabella."""
+    out: dict[str, Any] = {}
+    parts = table["part"].tolist()
+    for part in dict.fromkeys(parts):
+        values = [s for s, p in zip(scores, parts, strict=True) if p == part]
+        hits = sum(1 for s in values if s >= threshold)
+        out[part] = {
+            "n_negatives": len(values),
+            "false_positives": hits,
+            "fpr": round(hits / len(values), 6) if values else None,
+        }
+    return out
+
+
 @STAGES.register("calibrate")
 class CalibrateStage(Stage):
     """Soglia all'FPR obiettivo sui negativi umani di sviluppo."""
@@ -141,27 +180,54 @@ class CalibrateStage(Stage):
     def levels(self) -> list[str]:
         return sorted(str(level) for level in self._cfg().levels)
 
-    def inputs(self, cell: Cell) -> list[ArtifactRef]:
+    def _parts(self, cell: Cell) -> dict[str, ArtifactRef]:
+        """Negativi di sviluppo per parte: ``L1`` (solo L1, provvisorio) oppure ``L1_native``,
+        ``L2_native`` e ``integration_L1L2`` (calibrazione con L2)."""
         method, model_id, language = self._require(cell)
         cfg_hash = self.config_hash(cell)
-        return [
-            detection_ref(
-                method, model_id, cfg_hash, "neg_human", level, language, CALIBRATION_SPLIT
+        levels = self.levels()
+
+        def det(subject: str, level: str) -> ArtifactRef:
+            return detection_ref(
+                method, model_id, cfg_hash, subject, level, language, CALIBRATION_SPLIT
             )
-            for level in self.levels()
-        ]
+
+        if "L2" not in levels:
+            return {level: det("neg_human", level) for level in levels}
+        parts = {f"{level}_native": det("neg_human", level) for level in levels}
+        parts["integration_L1L2"] = det("neg_integration", "L2")
+        return parts
+
+    def inputs(self, cell: Cell) -> list[ArtifactRef]:
+        _, _, language = self._require(cell)
+        refs = list(self._parts(cell).values())
+        if "L1_native" in self._parts(cell):
+            refs.append(native_ref(Language(language)))  # per tenere i soli nativi di L1
+        return refs
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, language = self._require(cell)
-        return [threshold_ref(method, model_id, language, self.config_hash(cell))]
+        return [threshold_ref(method, model_id, language, self.config_hash(cell), self.levels())]
+
+    def _negatives(self, ctx: StageContext, cell: Cell) -> pd.DataFrame:
+        """Tabella dei negativi di sviluppo con la colonna ``part``."""
+        _, _, language = self._require(cell)
+        frames = []
+        for part, ref in self._parts(cell).items():
+            table = ctx.store.read_table(ref)
+            if part == "L1_native":
+                # neg_human di L1 dev = nativi + integrazione di L1: si tengono i soli nativi.
+                natives = ctx.store.read_table(native_ref(Language(language)))
+                table = table[table["sample_id"].isin(set(natives["sample_id"]))]
+            frames.append(table.assign(part=part))
+        return pd.concat(frames, ignore_index=True)
 
     def run(self, cell: Cell, ctx: StageContext) -> None:
         cfg = self._cfg()
         method, model_id, language = self._require(cell)
         cfg_hash = self.config_hash(cell)
-        frames = [ctx.store.read_table(ref) for ref in self.inputs(cell)]
         adapter: Any = make_adapter(cfg, method)
-        table = primary_view(pd.concat(frames, ignore_index=True), adapter)
+        table = primary_view(self._negatives(ctx, cell), adapter)
         calibrator = ThresholdCalibrator(
             target_fpr=cfg.detection.target_fpr, min_negatives=cfg.detection.min_negatives
         )
@@ -176,6 +242,7 @@ class CalibrateStage(Stage):
             }
         levels = self.levels()
         provisional = not set(levels) >= FULL_LEVELS
+        by_part = fpr_by_part(table, scores, result.threshold)
         thresholds = ThresholdSet(
             method=method,
             model_id=model_id,
@@ -202,6 +269,8 @@ class CalibrateStage(Stage):
             "underpowered": result.underpowered,
             "provisional": provisional,
             "levels": levels,
+            # FPR di sviluppo alla soglia, separato per parte (L1 e L2, decisione del 13 ottobre).
+            "fpr_dev_by_part": by_part,
             "unreachable": result.threshold == float("inf"),
             "secondary": {
                 k: {**v, "threshold": json_threshold(v["threshold"])} for k, v in secondary.items()

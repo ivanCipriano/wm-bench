@@ -30,7 +30,8 @@ class FakeBackend:
         if FakeBackend.fail_after is not None and len(FakeBackend.calls) >= FakeBackend.fail_after:
             raise RuntimeError("simulated SLURM timeout")
         user = messages[1]["content"]
-        entry = re.search(r"call `([^`]+)`", user).group(1)  # type: ignore[union-attr]
+        match = re.search(r"call `([^`]+)`", user)
+        entry = match.group(1) if match else "main"  # CodeNet (L2): programma, nessun entry point
         FakeBackend.calls.append(entry)
         outs = [f"```\ndef {entry}(*args):\n    return {seed % 97 + i}\n```" for i in range(n - 1)]
         return [*outs, "I am not able to answer."]
