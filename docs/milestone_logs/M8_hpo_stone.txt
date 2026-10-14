@@ -1,0 +1,54 @@
+
+##### stone deepseek_coder_6p7b cpp
+selected 20e8b64e0bc5 {"delta": 4.0, "gamma": 0.5}
+  TPR 0.0069  Pass@1 0.7361 (baseline 0.6736)  ΔPass@1 -6.25 pp  admissible 7/18  max 3.0 pp  levels ['L1']  provisional
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.6736  ΔPass@1  37.50 pp  τ 4.876
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.1597  ΔPass@1  14.58 pp  τ 4.876
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.0972  ΔPass@1  14.58 pp  τ 4.233
+    -- 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.0278  ΔPass@1   9.72 pp  τ 4.233
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.0278  ΔPass@1  67.36 pp  τ 4.233
+
+##### stone deepseek_coder_6p7b java
+selected 371d7425483f {"delta": 4.0, "gamma": 0.25}
+  TPR 0.0694  Pass@1 0.7361 (baseline 0.6458)  ΔPass@1 -9.03 pp  admissible 14/18  max 3.0 pp  levels ['L1']  provisional
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.7986  ΔPass@1  56.94 pp  τ 3.669
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.1528  ΔPass@1  42.36 pp  τ 3.669
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.0972  ΔPass@1  38.19 pp  τ 5.149
+  * ok 371d7425483f {"delta": 4.0, "gamma": 0.25}  TPR 0.0694  ΔPass@1  -9.03 pp  τ 5.149
+    ok 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.0625  ΔPass@1  -6.25 pp  τ 5.149
+
+##### stone deepseek_coder_6p7b python
+selected 9f7859eded9c {"delta": 3.0, "gamma": 0.25}
+  TPR 0.0260  Pass@1 0.6337 (baseline 0.6580)  ΔPass@1 2.43 pp  admissible 10/18  max 3.0 pp  levels ['L1']  provisional
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.6719  ΔPass@1  48.78 pp  τ 4.811
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.2604  ΔPass@1  22.92 pp  τ 4.811
+    -- 3b1c8e6fa4a3 {"delta": 5.0, "gamma": 0.5}  TPR 0.1250  ΔPass@1  11.81 pp  τ 4.811
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.0677  ΔPass@1  62.67 pp  τ 4.660
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.0608  ΔPass@1  28.82 pp  τ 4.660
+
+##### stone qwen25_coder_7b cpp
+selected 9aedf9ac0f4b {"delta": 1.5, "gamma": 0.5}
+  TPR 0.0486  Pass@1 0.8194 (baseline 0.8333)  ΔPass@1 1.39 pp  admissible 7/18  max 3.0 pp  levels ['L1']  provisional
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.4722  ΔPass@1  41.67 pp  τ 3.720
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.3056  ΔPass@1  38.19 pp  τ 4.454
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.1736  ΔPass@1  17.36 pp  τ 4.454
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.1389  ΔPass@1  22.22 pp  τ 3.720
+    -- 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.0625  ΔPass@1   6.94 pp  τ 4.454
+
+##### stone qwen25_coder_7b java
+selected 1398aa522444 {"delta": 1.0, "gamma": 0.25}
+  TPR 0.1181  Pass@1 0.8611 (baseline 0.8611)  ΔPass@1 0.00 pp  admissible 7/18  max 3.0 pp  levels ['L1']  provisional
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.8403  ΔPass@1  84.72 pp  τ 3.487
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.6875  ΔPass@1  73.61 pp  τ 3.761
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.2153  ΔPass@1  16.67 pp  τ 3.487
+    -- 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.1667  ΔPass@1   5.56 pp  τ 3.487
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.1528  ΔPass@1  14.58 pp  τ 3.761
+
+##### stone qwen25_coder_7b python
+selected 8de321b62de6 {"delta": 3.0, "gamma": 0.5}
+  TPR 0.0608  Pass@1 0.7535 (baseline 0.7743)  ΔPass@1 2.08 pp  admissible 10/18  max 3.0 pp  levels ['L1']  provisional
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.7899  ΔPass@1  59.38 pp  τ 4.575
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.7031  ΔPass@1  54.69 pp  τ 3.606
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.3958  ΔPass@1  22.05 pp  τ 4.575
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.3264  ΔPass@1  20.14 pp  τ 3.606
+    -- 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.1302  ΔPass@1   6.77 pp  τ 4.575
