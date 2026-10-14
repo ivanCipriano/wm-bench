@@ -1,0 +1,27 @@
+##### Livello 2 (CodeNet)
+data         13/13   COMPLETE
+canonical     4/4    COMPLETE
+baseline     16/16   COMPLETE
+execute      16/16   COMPLETE
+
+##### Pass@1 (frazione di campioni PASSED)
+canonical  python                               n=  750  PASSED 1.000  {}
+canonical  java                                 n=  750  PASSED 1.000  {}
+canonical  cpp                                  n=  750  PASSED 1.000  {}
+canonical  javascript                           n=  750  PASSED 1.000  {}
+execute    qwen25_coder_7b python dev           n=  300  PASSED 0.697  {'FAILED': 88, 'RUNTIME_ERROR': 2, 'SYNTAX_ERROR': 1}
+execute    qwen25_coder_7b python test          n= 1200  PASSED 0.697  {'FAILED': 325, 'RUNTIME_ERROR': 28, 'TIMEOUT': 9, 'SYNTAX_ERROR': 2}
+execute    deepseek_coder_6p7b python dev       n=  300  PASSED 0.623  {'FAILED': 89, 'RUNTIME_ERROR': 20, 'TIMEOUT': 4}
+execute    deepseek_coder_6p7b python test      n= 1200  PASSED 0.641  {'FAILED': 358, 'RUNTIME_ERROR': 70, 'TIMEOUT': 2, 'SYNTAX_ERROR': 1}
+execute    qwen25_coder_7b java dev             n=  300  PASSED 0.637  {'FAILED': 97, 'RUNTIME_ERROR': 11, 'COMPILE_ERROR': 1}
+execute    qwen25_coder_7b java test            n= 1200  PASSED 0.713  {'FAILED': 306, 'RUNTIME_ERROR': 26, 'COMPILE_ERROR': 11, 'TIMEOUT': 1}
+execute    deepseek_coder_6p7b java dev         n=  300  PASSED 0.637  {'FAILED': 103, 'COMPILE_ERROR': 2, 'RUNTIME_ERROR': 2, 'TIMEOUT': 2}
+execute    deepseek_coder_6p7b java test        n= 1200  PASSED 0.601  {'FAILED': 426, 'RUNTIME_ERROR': 27, 'COMPILE_ERROR': 25, 'TIMEOUT': 1}
+execute    qwen25_coder_7b cpp dev              n=  300  PASSED 0.590  {'FAILED': 111, 'COMPILE_ERROR': 10, 'TIMEOUT': 2}
+execute    qwen25_coder_7b cpp test             n= 1200  PASSED 0.685  {'FAILED': 321, 'COMPILE_ERROR': 52, 'TIMEOUT': 4, 'RUNTIME_ERROR': 1}
+execute    deepseek_coder_6p7b cpp dev          n=  300  PASSED 0.563  {'FAILED': 121, 'COMPILE_ERROR': 6, 'RUNTIME_ERROR': 3, 'TIMEOUT': 1}
+execute    deepseek_coder_6p7b cpp test         n= 1200  PASSED 0.600  {'FAILED': 441, 'COMPILE_ERROR': 26, 'TIMEOUT': 7, 'RUNTIME_ERROR': 6}
+execute    qwen25_coder_7b javascript dev       n=  300  PASSED 0.613  {'FAILED': 100, 'RUNTIME_ERROR': 15, 'TIMEOUT': 1}
+execute    qwen25_coder_7b javascript test      n= 1200  PASSED 0.611  {'FAILED': 382, 'RUNTIME_ERROR': 70, 'TIMEOUT': 10, 'SYNTAX_ERROR': 5}
+execute    deepseek_coder_6p7b javascript dev   n=  300  PASSED 0.590  {'FAILED': 107, 'RUNTIME_ERROR': 13, 'TIMEOUT': 3}
+execute    deepseek_coder_6p7b javascript test  n= 1200  PASSED 0.601  {'FAILED': 439, 'RUNTIME_ERROR': 34, 'TIMEOUT': 5, 'SYNTAX_ERROR': 1}
