@@ -256,3 +256,14 @@ def test_execute_of_canonical_and_baseline_is_not_named_after_the_methods(
     assert sub.conflicting_jobs("execute", (1, 1), "acc", ["llm_baseline"]) == []
     assert sub.conflicting_jobs("execute", (1, 1), "acc", ["sweet_L2"]) == []
     assert len(sub.conflicting_jobs("execute", (1, 1), "acc", ["sweet"])) == 1
+
+
+def test_executor_parameters_exclude_nodes(
+    cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("WMB_EXCLUDE_NODES", raising=False)
+    params = executor_parameters(cfg, PROFILES["slurm_gpu"], "detect")
+    assert "exclude" not in params["slurm_additional_parameters"]
+    monkeypatch.setenv("WMB_EXCLUDE_NODES", "gnode13")
+    params = executor_parameters(cfg, PROFILES["slurm_gpu"], "detect")
+    assert params["slurm_additional_parameters"] == {"requeue": True, "exclude": "gnode13"}

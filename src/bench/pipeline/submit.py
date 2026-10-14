@@ -21,6 +21,7 @@ libreria) perché il profilo dipende dalla cella.
 from __future__ import annotations
 
 import logging
+import os
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass, field
@@ -38,6 +39,7 @@ logger = logging.getLogger(__name__)
 # Rimesse in coda massime del job (le 16 celle di L1 non stanno in un solo job da 5,5 h).
 MAX_REQUEUES = 30
 _SQUEUE_FIELDS = 4
+EXCLUDE_ENV = "WMB_EXCLUDE_NODES"  # nodi SLURM da escludere (--exclude), opzionale
 
 
 def job_environment(cfg: ExperimentConfig) -> dict[str, str]:
@@ -124,6 +126,11 @@ def executor_parameters(
         params["slurm_gres"] = profile.gres
     if after:
         params["slurm_dependency"] = f"afterany:{after}"
+    # Nodi da evitare (es. un nodo GPU guasto: "No CUDA GPUs are available"), lista SLURM
+    # come ``gnode13`` o ``gnode[12-13]``.
+    exclude = os.environ.get(EXCLUDE_ENV, "").strip()
+    if exclude:
+        params["slurm_additional_parameters"]["exclude"] = exclude
     return params
 
 
