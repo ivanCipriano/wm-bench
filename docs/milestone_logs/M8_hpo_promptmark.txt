@@ -1,0 +1,18 @@
+
+##### promptmark deepseek_coder_6p7b python
+selected 89b82f1fcff1 {"green_size": 8, "iter_cap": 5, "z_threshold": 2.12}
+  TPR 0.0434  Pass@1 0.6458 (baseline 0.6580)  ΔPass@1 1.22 pp  admissible 19/28  max 3.0 pp  levels ['L1']  provisional
+  * ok 89b82f1fcff1 {"green_size": 8, "iter_cap": 5, "z_threshold": 2.12}  TPR 0.0434  ΔPass@1   1.22 pp  τ 2.133
+    ok ed50b87e6e09 {"green_size": null, "iter_cap": 5, "z_threshold": 2.12}  TPR 0.0434  ΔPass@1   1.22 pp  τ 2.133
+    ok a9253bfc9fbf {"green_size": 8, "iter_cap": 5, "z_threshold": 2.58}  TPR 0.0417  ΔPass@1   0.69 pp  τ 2.133
+    ok 1a82b597cbd9 {"green_size": 8, "iter_cap": 3, "z_threshold": 2.58}  TPR 0.0347  ΔPass@1   0.87 pp  τ 2.133
+    ok 11ad743245ff {"green_size": 8, "iter_cap": 3, "z_threshold": 2.12}  TPR 0.0312  ΔPass@1   1.22 pp  τ 2.133
+
+##### promptmark qwen25_coder_7b python
+selected a1a4330d2688 {"green_size": 10, "iter_cap": 5, "z_threshold": 2.58}
+  TPR 0.0538  Pass@1 0.8125 (baseline 0.7743)  ΔPass@1 -3.82 pp  admissible 28/28  max 3.0 pp  levels ['L1']  provisional
+  * ok a1a4330d2688 {"green_size": 10, "iter_cap": 5, "z_threshold": 2.58}  TPR 0.0538  ΔPass@1  -3.82 pp  τ 2.257
+    ok f3a590a9bdd2 {"green_size": 10, "iter_cap": 5, "z_threshold": 2.12}  TPR 0.0521  ΔPass@1  -4.17 pp  τ 2.257
+    ok 50058057c658 {"green_size": 10, "iter_cap": 3, "z_threshold": 2.58}  TPR 0.0521  ΔPass@1  -3.47 pp  τ 2.257
+    ok 680377432d66 {"green_size": 10, "iter_cap": 3, "z_threshold": 2.12}  TPR 0.0503  ΔPass@1  -3.65 pp  τ 2.257
+    ok dc0537864222 {"green_size": 12, "iter_cap": 5, "z_threshold": 2.12}  TPR 0.0469  ΔPass@1  -4.86 pp  τ 1.954
