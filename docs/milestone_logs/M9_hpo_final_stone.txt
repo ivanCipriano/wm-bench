@@ -1,0 +1,60 @@
+
+##### stone deepseek_coder_6p7b cpp
+selected 371d7425483f {"delta": 4.0, "gamma": 0.25}
+  TPR 0.0518  Pass@1 0.5788 (baseline 0.5991)  ΔPass@1 2.03 pp  admissible 12/18  max 3.0 pp  levels ['L1', 'L2']  
+  FPR dev per parte: L1_native 0.0000 (0/24)  L2_native 0.0000 (0/250)  integration_L1L2 0.0116 (20/1726)
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.2095  ΔPass@1  25.45 pp  τ 5.991
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.1847  ΔPass@1  50.23 pp  τ 8.217
+    -- 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.1059  ΔPass@1   4.73 pp  τ 5.991
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.0766  ΔPass@1  59.68 pp  τ 5.991
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.0563  ΔPass@1  34.23 pp  τ 8.217
+
+##### stone deepseek_coder_6p7b java
+selected 9f7859eded9c {"delta": 3.0, "gamma": 0.25}
+  TPR 0.0383  Pass@1 0.6261 (baseline 0.6396)  ΔPass@1 1.35 pp  admissible 11/18  max 3.0 pp  levels ['L1', 'L2']  
+  FPR dev per parte: L1_native 0.0000 (0/24)  L2_native 0.0280 (7/250)  integration_L1L2 0.0075 (13/1726)
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.3559  ΔPass@1  53.83 pp  τ 5.948
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.2185  ΔPass@1  27.93 pp  τ 5.948
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.1441  ΔPass@1  41.22 pp  τ 7.826
+    -- 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.0721  ΔPass@1   9.23 pp  τ 7.826
+    -- 371d7425483f {"delta": 4.0, "gamma": 0.25}  TPR 0.0608  ΔPass@1   4.28 pp  τ 7.826
+
+##### stone deepseek_coder_6p7b python
+selected 8aca8150359d {"delta": 1.5, "gamma": 0.25}
+  TPR 0.0297  Pass@1 0.6347 (baseline 0.6461)  ΔPass@1 1.14 pp  admissible 8/18  max 3.0 pp  levels ['L1', 'L2']  
+  FPR dev per parte: L1_native 0.0048 (1/210)  L2_native 0.0080 (2/250)  integration_L1L2 0.0110 (17/1540)
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.4943  ΔPass@1  52.74 pp  τ 5.058
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.2580  ΔPass@1  21.92 pp  τ 5.058
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.1176  ΔPass@1  31.74 pp  τ 4.851
+    -- 3b1c8e6fa4a3 {"delta": 5.0, "gamma": 0.5}  TPR 0.0982  ΔPass@1   9.25 pp  τ 5.058
+    -- 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.0651  ΔPass@1   9.47 pp  τ 4.851
+
+##### stone qwen25_coder_7b cpp
+selected 516ede2a875c {"delta": 5.0, "gamma": 0.25}
+  TPR 0.0360  Pass@1 0.6734 (baseline 0.6689)  ΔPass@1 -0.45 pp  admissible 12/18  max 3.0 pp  levels ['L1', 'L2']  
+  FPR dev per parte: L1_native 0.0000 (0/24)  L2_native 0.0000 (0/250)  integration_L1L2 0.0116 (20/1726)
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.7117  ΔPass@1  48.42 pp  τ 5.638
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.6892  ΔPass@1  48.42 pp  τ 5.660
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.1959  ΔPass@1   7.43 pp  τ 5.660
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.1734  ΔPass@1  11.26 pp  τ 5.638
+    -- 3b1c8e6fa4a3 {"delta": 5.0, "gamma": 0.5}  TPR 0.0541  ΔPass@1   3.83 pp  τ 5.638
+
+##### stone qwen25_coder_7b java
+selected 516ede2a875c {"delta": 5.0, "gamma": 0.25}
+  TPR 0.0878  Pass@1 0.6937 (baseline 0.7095)  ΔPass@1 1.58 pp  admissible 12/18  max 3.0 pp  levels ['L1', 'L2']  
+  FPR dev per parte: L1_native 0.0417 (1/24)  L2_native 0.0120 (3/250)  integration_L1L2 0.0093 (16/1726)
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.7162  ΔPass@1  68.02 pp  τ 4.217
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.6757  ΔPass@1  60.59 pp  τ 5.784
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.2950  ΔPass@1  15.09 pp  τ 4.217
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.1982  ΔPass@1  14.19 pp  τ 5.784
+  * ok 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.0878  ΔPass@1   1.58 pp  τ 4.217
+
+##### stone qwen25_coder_7b python
+selected 8de321b62de6 {"delta": 3.0, "gamma": 0.5}
+  TPR 0.0342  Pass@1 0.7180 (baseline 0.7477)  ΔPass@1 2.97 pp  admissible 10/18  max 3.0 pp  levels ['L1', 'L2']  
+  FPR dev per parte: L1_native 0.0095 (2/210)  L2_native 0.0000 (0/250)  integration_L1L2 0.0117 (18/1540)
+    -- 452a5a725a39 {"delta": 10.0, "gamma": 0.25}  TPR 0.8447  ΔPass@1  61.87 pp  τ 4.463
+    -- 425a606aeb6a {"delta": 10.0, "gamma": 0.5}  TPR 0.7055  ΔPass@1  56.28 pp  τ 4.124
+    -- d6777f4d1b73 {"delta": 7.0, "gamma": 0.25}  TPR 0.4817  ΔPass@1  29.34 pp  τ 4.463
+    -- cb8ceb6c62aa {"delta": 7.0, "gamma": 0.5}  TPR 0.3219  ΔPass@1  22.03 pp  τ 4.124
+    -- 516ede2a875c {"delta": 5.0, "gamma": 0.25}  TPR 0.1461  ΔPass@1   8.33 pp  τ 4.463
