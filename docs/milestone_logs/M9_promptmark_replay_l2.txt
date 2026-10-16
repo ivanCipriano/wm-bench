@@ -1,0 +1,6 @@
+problems (10): ['codenet/p02765', 'codenet/p02853', 'codenet/p02953', 'codenet/p03037', 'codenet/p03126', 'codenet/p03285', 'codenet/p03315', 'codenet/p03363', 'codenet/p03853', 'codenet/p04001']
+config A {'iter_cap': 3, 'z_threshold': 2.12}: 20 samples, 2 stopped early, 20 identical to the replay
+config B {'iter_cap': 5, 'z_threshold': 1.64}: 20 samples, 8 stopped early, 20 identical to the replay
+L2: samples with an incorrect iteration: 0 (expected 0)
+default replay vs L2 artifacts (informative): 0/0 identical
+RESULT: OK
