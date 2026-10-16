@@ -1,0 +1,26 @@
+##### stone: frozen now
+frozen_at   2026-10-16T17:07:33.309143+00:00
+commit      23a9a44c9fd6c584ac3afc430dd81558f8e2371d (dirty: False)
+levels      ['L1', 'L2']
+grid_sha256 437550cde7504a4499d04508c9d31c98b3a8a59c37e6549caceb5d32bb6f2dfa (18 candidates)
+record      freeze/stone.json (sha256 83a888f7255352439180bfaaeb6fe10829019c5f92122a086556ce30ad8c231f)
+  qwen25_coder_7b      python      8de321b62de6 {'gamma': 0.5, 'delta': 3.0}  τ 4.123858773057611  constraint True
+      selection sha256 24c52d25747d88395140adeb5c3eb0093c03e092fdb0e12aac9ecb6b223986d1
+      threshold sha256 1201c1529b857016e78cea47495deecf7dd04157af050fc8f8a9fc8c29ded747
+  qwen25_coder_7b      java        516ede2a875c {'gamma': 0.25, 'delta': 5.0}  τ 4.216708050200628  constraint True
+      selection sha256 213ccd12a0cbd12e211030282403b5524d7dfe998a5bcf0ac3e35f6bb8d92e4d
+      threshold sha256 ce89430d9c9c253d86c819d1e38b22ad8e44c185ea903a5aa3ccd4bdc67634a9
+  qwen25_coder_7b      cpp         516ede2a875c {'gamma': 0.25, 'delta': 5.0}  τ 5.660041964162018  constraint True
+      selection sha256 b3b99d7689bfa70fd0e79870a7c7eb03e5c81dd8c45448746b934f2c4e8e20ad
+      threshold sha256 bdba843f13897cc88e4613c063849a1638a3ef74229eb6a0c430cde3650ce0df
+  qwen25_coder_7b      javascript  NOT_APPLICABLE
+  deepseek_coder_6p7b  python      8aca8150359d {'gamma': 0.25, 'delta': 1.5}  τ 4.850525107551197  constraint True
+      selection sha256 5772e19b14432525529697373e30d3e2d625a63025f8066d769767b6fd22e485
+      threshold sha256 06ce867820e9e4f11473d5b36f8d0ab637224f3387dc4fca464665e7242f2a0f
+  deepseek_coder_6p7b  java        9f7859eded9c {'gamma': 0.25, 'delta': 3.0}  τ 7.826421504315902  constraint True
+      selection sha256 c247f841e6380f718ac5c73832cc8643d37bf145a321aeb3b6f7b57d1ba742d3
+      threshold sha256 6507b5d9d10c9c734a73f9e7b13e02b49bfa2216f78e4b4426d131f77ac408ed
+  deepseek_coder_6p7b  cpp         371d7425483f {'gamma': 0.25, 'delta': 4.0}  τ 5.991096596964842  constraint True
+      selection sha256 1e5b9de7825ca6be5acf8237370012330ce61c3fcbf327e3f8afbeda2b3c55bf
+      threshold sha256 aa71ffc6fc86c7356003ea68c41315bda5c6ebf600b20f365ed719dd6ccddd7d
+  deepseek_coder_6p7b  javascript  NOT_APPLICABLE

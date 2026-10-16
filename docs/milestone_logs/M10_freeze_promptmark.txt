@@ -1,0 +1,18 @@
+##### promptmark: frozen now
+frozen_at   2026-10-16T17:07:39.057351+00:00
+commit      23a9a44c9fd6c584ac3afc430dd81558f8e2371d (dirty: False)
+levels      ['L1', 'L2']
+grid_sha256 9c481a92906dd4838b15421fe9f0389abba072b1e465a40808ce8fc55e15c4cf (28 candidates)
+record      freeze/promptmark.json (sha256 4987bb22e1d65afe3afef06521194314dbaa74d8c534be3fa100dddf0c34b7bf)
+  qwen25_coder_7b      python      a9253bfc9fbf {'iter_cap': 5, 'z_threshold': 2.58, 'green_size': 8}  τ 2.296767549911426  constraint True
+      selection sha256 0055321feb8c0fb1530b27a212047b9f2995e689312250f5d1c9d8e1d3789b3b
+      threshold sha256 7e69fcc18aa4c6b8a2ff97c444b91ba77de05dbd486be5156a1253605fbe2a56
+  qwen25_coder_7b      java        NOT_APPLICABLE
+  qwen25_coder_7b      cpp         NOT_APPLICABLE
+  qwen25_coder_7b      javascript  NOT_APPLICABLE
+  deepseek_coder_6p7b  python      a9253bfc9fbf {'iter_cap': 5, 'z_threshold': 2.58, 'green_size': 8}  τ 2.296767549911426  constraint True
+      selection sha256 d3dbf8a06fda1e6b16a2dbf0cb27fd2219333c887ed1cb53b2ba7a7cf9e3fe2c
+      threshold sha256 93a52cda581b6a072419ebe64d78f542a71ebfb66fb9c6244b70d770f798d8b3
+  deepseek_coder_6p7b  java        NOT_APPLICABLE
+  deepseek_coder_6p7b  cpp         NOT_APPLICABLE
+  deepseek_coder_6p7b  javascript  NOT_APPLICABLE
