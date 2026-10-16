@@ -169,9 +169,14 @@ class WatermarkStage(Stage):
         return self.cell_config(Cell(method=cell) if isinstance(cell, str) else cell)[1]
 
     def trajectory_hash(self, cell: Cell) -> str | None:
-        """Hash della traiettoria da cui si ricostruisce la cella (ADR-009), se c'è."""
+        """Hash della traiettoria da cui si ricostruisce la cella (ADR-009), se c'è.
+
+        Sulla parte di test la configurazione congelata si esegue direttamente (ADR-013): la
+        ricostruzione serve solo a risparmiare lo sweep su dev, e l'ADR-009 ne garantisce
+        l'equivalenza con l'esecuzione diretta.
+        """
         point = self.cell_config(cell)[2]
-        if point.trajectory is None:
+        if point.trajectory is None or cell.split == "test":
             return None
         return self.adapter(str(cell.method)).config_hash(point.trajectory)
 
@@ -231,9 +236,9 @@ class WatermarkStage(Stage):
             "supported" if supported else "NOT_APPLICABLE",
             cfg_hash,
         )
-        if point.trajectory is not None and self.watermark:
+        trajectory_hash = self.trajectory_hash(cell) if self.watermark else None
+        if trajectory_hash is not None:
             # Candidato ricostruito dalla traiettoria (ADR-009): nessuna generazione.
-            trajectory_hash = adapter.config_hash(point.trajectory)
             trajectory_dir = run_dir.parent.parent / trajectory_hash / run_dir.name
             result = adapter.embed_from_trajectory(  # type: ignore[attr-defined]
                 problems, hp, model, KEY_ID, decoding.n, trajectory_dir

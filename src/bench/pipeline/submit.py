@@ -289,8 +289,9 @@ def stage_methods(
     delle canoniche o della baseline non risulta in conflitto con i job di un metodo, con cui
     non condivide celle. Per i livelli diversi da L1 l'etichetta ha il livello in coda
     (``sweet_L2``): i job di L2 non vanno in conflitto con quelli dell'HPO di L1 dello stesso
-    metodo, e i nomi dei job di L1 restano quelli della M7 e della M8. Senza celle si usano i
-    metodi della configurazione.
+    metodo, e i nomi dei job di L1 restano quelli della M7 e della M8. Le celle della parte di
+    test aggiungono ``_test`` (``stone_test``, M10): non bloccano i job di sviluppo. Senza celle si
+    usano i metodi della configurazione.
     """
     import bench.pipeline.stages  # noqa: F401  (popola STAGES)
 
@@ -300,7 +301,9 @@ def stage_methods(
     for c in cells or ():
         tag = c.method or c.source
         if tag is not None:
-            tags.add(f"{tag}_{c.level}" if c.level and c.level != "L1" else str(tag))
+            suffix = [c.level] if c.level and c.level != "L1" else []
+            suffix += ["test"] if c.split == "test" else []
+            tags.add("_".join([str(tag), *map(str, suffix)]))
     return sorted(tags) if tags else list(cfg.methods)
 
 

@@ -2,11 +2,15 @@
 
 Uso (con bench-core):
     python scripts/report_metrics.py [--artifacts DIR] [--level L1] [--split dev] [--method M]
+                                     [--final]
 
 Per ogni cella stampa la soglia (con FPR raggiunto sui negativi di sviluppo, numerosità e le
 bandiere ``provisional``, ``underpowered`` e ``unreachable``), le soglie dei punteggi secondari e
 tutte le metriche con il loro intervallo; poi il tasso di inserimento riuscito e i siti idonei dei
 campioni marcati (manifest della fase watermark, TODO 15).
+
+Con ``--final`` legge le metriche con le soglie definitive su L1+L2 (``metrics_L1L2/`` e
+``thresholds/.../L1L2/``), come sulla parte di test della M10 (ADR-013).
 """
 
 from __future__ import annotations
@@ -34,11 +38,12 @@ def _fmt(value: object) -> str:
     return str(value)
 
 
-def report(root: Path, level: str, split: str, method: str | None) -> None:
+def report(root: Path, level: str, split: str, method: str | None, final: bool = False) -> None:
     pattern = f"{method or '*'}/*/*/{level}_*_{split}.parquet"
-    paths = sorted((root / "metrics").glob(pattern))
+    folder = root / ("metrics_L1L2" if final else "metrics")
+    paths = sorted(folder.glob(pattern))
     if not paths:
-        sys.stdout.write(f"no metrics under {root / 'metrics'} for {pattern}\n")
+        sys.stdout.write(f"no metrics under {folder} for {pattern}\n")
         return
     for path in paths:
         meth, model, cfg_hash = path.parts[-4:-1]
@@ -47,7 +52,8 @@ def report(root: Path, level: str, split: str, method: str | None) -> None:
         sys.stdout.write(
             f"\n##### {meth} {model} {language} ({level} {split}, config {cfg_hash})\n"
         )
-        threshold_file = root / "thresholds" / meth / model / language / f"{cfg_hash}.json"
+        threshold_dir = root / "thresholds" / meth / model / language
+        threshold_file = (threshold_dir / "L1L2" if final else threshold_dir) / f"{cfg_hash}.json"
         if threshold_file.is_file():
             t = json.loads(threshold_file.read_text(encoding="utf-8"))
             flags = [k for k in ("provisional", "underpowered") if t.get(k)]
@@ -88,8 +94,9 @@ def main() -> None:
     parser.add_argument("--level", default="L1")
     parser.add_argument("--split", default="dev")
     parser.add_argument("--method", default=None)
+    parser.add_argument("--final", action="store_true", help="soglie definitive su L1+L2")
     args = parser.parse_args()
-    report(Path(args.artifacts), args.level, args.split, args.method)
+    report(Path(args.artifacts), args.level, args.split, args.method, args.final)
 
 
 if __name__ == "__main__":

@@ -37,6 +37,7 @@ from bench.config.resources import ResourceClass
 from bench.config.schema import ExperimentConfig
 from bench.domain.errors import ConfigError
 from bench.domain.models import MetricValue, ThresholdSet
+from bench.hpo.freeze import data_sha256, load_freeze
 from bench.hpo.grid import resolve
 from bench.methods.base import Detector
 from bench.metrics.calibration import MIN_SCORE, detected
@@ -192,8 +193,38 @@ class MetricsStage(Stage):
         return [metrics_ref(method, model_id, cfg_hash, level, language, split, self.levels())]
 
     def levels(self) -> list[str]:
-        """Livelli delle soglie: quelli della configurazione (come ``calibrate``)."""
-        return sorted(str(level) for level in self._cfg().levels)
+        """Livelli delle soglie: ``detection.threshold_levels`` se c'è (sul test di L1 le soglie
+        definitive L1+L2, ADR-013), altrimenti quelli della configurazione (come ``calibrate``)."""
+        cfg = self._cfg()
+        levels = cfg.detection.threshold_levels or cfg.levels
+        return sorted(str(level) for level in levels)
+
+    def _check_test(
+        self, ctx: StageContext, cell: Cell, threshold: ArtifactRef, thresholds: ThresholdSet
+    ) -> None:
+        """Sul test: soglie definitive (non provvisorie) e congelate (ADR-013)."""
+        if cell.split != "test" or self._cfg().detection.allow_provisional_test:
+            return
+        if thresholds.provisional:
+            raise ConfigError(
+                f"{cell.key()}: thresholds are provisional (levels {thresholds.levels}); "
+                "no test metrics until they are recalibrated on L1+L2 (Milestone 9)"
+            )
+        method, model_id, language = str(cell.method), str(cell.model_id), str(cell.language)
+        record = load_freeze(ctx.store, method)
+        frozen = record.cell(model_id, language) if record is not None else None
+        if frozen is None:
+            raise ConfigError(f"{cell.key()}: {method} is not frozen (ADR-013): no test metrics")
+        cfg_hash = self.config_hash(cell)
+        if frozen.config_hash != cfg_hash:
+            raise ConfigError(
+                f"{cell.key()}: config {cfg_hash} is not the frozen one ({frozen.config_hash})"
+            )
+        if data_sha256(ctx.store, threshold) != frozen.threshold_sha256:
+            raise ConfigError(
+                f"{cell.key()}: threshold {threshold.path} differs from the frozen one "
+                "(recalibrated after the freeze?)"
+            )
 
     # ------------------------------------------------------------------ esecuzione
     def run(self, cell: Cell, ctx: StageContext) -> None:
@@ -202,11 +233,7 @@ class MetricsStage(Stage):
         cfg_hash = self.config_hash(cell)
         refs = self._refs(cell)
         thresholds = ctx.store.read_model(refs["threshold"], ThresholdSet)
-        if split == "test" and thresholds.provisional and not cfg.detection.allow_provisional_test:
-            raise ConfigError(
-                f"{cell.key()}: thresholds are provisional (levels {thresholds.levels}); "
-                "no test metrics until they are recalibrated on L1+L2 (Milestone 9)"
-            )
+        self._check_test(ctx, cell, refs["threshold"], thresholds)
         tau = thresholds.threshold
         cell_info = {
             "method": method,

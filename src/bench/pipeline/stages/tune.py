@@ -42,6 +42,7 @@ from bench.config.schema import ExperimentConfig
 from bench.domain.errors import ConfigError
 from bench.domain.models import SelectedConfig, ThresholdSet
 from bench.hpo.criterion import Candidate, ConstrainedTprCriterion
+from bench.hpo.freeze import ensure_not_frozen
 from bench.hpo.grid import GridPoint, grid_path, load_grid
 from bench.metrics.calibration import detected
 from bench.metrics.uncertainty import pass_at_1
@@ -109,6 +110,7 @@ class TuneStage(Stage):
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
         self._adapters: dict[str, Any] = {}
+        self._override = False
 
     @classmethod
     def create(cls, config: ExperimentConfig) -> Stage:
@@ -225,6 +227,9 @@ class TuneStage(Stage):
     def run(self, cell: Cell, ctx: StageContext) -> None:
         cfg = self._cfg()
         method, model_id, language = self._require(cell)
+        self._override = ensure_not_frozen(
+            ctx.store, method, self.name, cfg.hpo.allow_frozen_override
+        )
         criterion = ConstrainedTprCriterion(cfg.hpo.max_pass1_drop_pp)
         levels = self.levels()
         now = datetime.now(UTC)
@@ -324,6 +329,8 @@ class TuneStage(Stage):
             "constraint_satisfied": selected.constraint_satisfied,
             "not_applicable": selected.not_applicable,
             "max_pass1_drop_pp": selected.max_pass1_drop_pp,
+            # Nuova scelta per un metodo congelato (ADR-013): deviazione da registrare.
+            "frozen_override": self._override,
         }
         inputs = self.inputs(cell)
         ctx.store.write_table(

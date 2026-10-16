@@ -262,6 +262,9 @@ class DetectionConfig(_Frozen):
     # Metriche sul test con soglie provvisorie: vietate, salvo lo smoke test (decisione
     # dell'utente del 9 ottobre 2026).
     allow_provisional_test: bool = False
+    # Livelli delle soglie usate da ``metrics`` (default: i livelli della configurazione). Sulla
+    # parte di test di L1 si usano le soglie definitive: ``[L1, L2]`` (ADR-013).
+    threshold_levels: list[Level] | None = None
 
 
 class HpoConfig(_Frozen):
@@ -273,6 +276,9 @@ class HpoConfig(_Frozen):
     # celle (``Cell.config_hash``) e parte dello sweep (traiettorie di PromptMark, ADR-009).
     grid: str | None = None
     part: Literal["all", "trajectories", "candidates"] = "all"
+    # Ricalibrare o rifare la scelta di un metodo congelato (ADR-013): solo come deviazione
+    # registrata in docs/deviations.md.
+    allow_frozen_override: bool = False
 
 
 class ExperimentConfig(_Frozen):

@@ -31,6 +31,7 @@ from bench.config.schema import ExperimentConfig
 from bench.domain.enums import Language
 from bench.domain.errors import ConfigError
 from bench.domain.models import ThresholdSet
+from bench.hpo.freeze import ensure_not_frozen
 from bench.hpo.grid import resolve
 from bench.metrics.calibration import MIN_SCORE, ThresholdCalibrator
 from bench.pipeline.stage import Cell, Stage, StageContext
@@ -225,6 +226,7 @@ class CalibrateStage(Stage):
     def run(self, cell: Cell, ctx: StageContext) -> None:
         cfg = self._cfg()
         method, model_id, language = self._require(cell)
+        override = ensure_not_frozen(ctx.store, method, self.name, cfg.hpo.allow_frozen_override)
         cfg_hash = self.config_hash(cell)
         adapter: Any = make_adapter(cfg, method)
         table = primary_view(self._negatives(ctx, cell), adapter)
@@ -277,6 +279,8 @@ class CalibrateStage(Stage):
             },
             # Linguaggio non supportato dal metodo: tutti NOT_APPLICABLE, soglia senza significato.
             "not_applicable": bool((table["status"] == "NOT_APPLICABLE").all()),
+            # Ricalibrazione di un metodo congelato (ADR-013): deviazione da registrare.
+            "frozen_override": override,
         }
         ctx.store.write_model(
             ref,

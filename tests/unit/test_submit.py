@@ -249,12 +249,18 @@ def test_execute_of_canonical_and_baseline_is_not_named_after_the_methods(
     l2 = [Cell(source="llm_watermarked", method="sweet", level="L2", language="cpp")]
     assert sub.stage_methods(cfg, "execute", l2) == ["sweet_L2"]
     assert sub.job_name("detect", (1, 1), ["sweet_L2"]) == "wmb-detect.sweet_L2"
+    # Parte di test (M10): ``_test`` in coda, così non blocca i job di sviluppo del metodo.
+    test = [Cell(method="stone", level="L1", language="cpp", split="test")]
+    assert sub.stage_methods(cfg, "detect", test) == ["stone_test"]
+    test = [Cell(method="stone", level="L2", language="cpp", split="test")]
+    assert sub.stage_methods(cfg, "detect", test) == ["stone_L2_test"]
     assert sub.stage_methods(cfg, "execute", []) == list(cfg.methods)
     rows = [("1", "s.faraulo", "RUNNING", "wmb-execute.sweet")]
     monkeypatch.setattr(sub, "queued_jobs", lambda account: rows)
     assert sub.conflicting_jobs("execute", (1, 1), "acc", ["canonical"]) == []
     assert sub.conflicting_jobs("execute", (1, 1), "acc", ["llm_baseline"]) == []
     assert sub.conflicting_jobs("execute", (1, 1), "acc", ["sweet_L2"]) == []
+    assert sub.conflicting_jobs("execute", (1, 1), "acc", ["sweet_test"]) == []
     assert len(sub.conflicting_jobs("execute", (1, 1), "acc", ["sweet"])) == 1
 
 

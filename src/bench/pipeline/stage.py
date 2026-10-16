@@ -193,7 +193,31 @@ class CellPlanner:
             cell = stage.normalize_cell(Cell(**dict(zip(stage.cell_axes, combo, strict=True))))
             if cell is not None and cell not in cells:
                 cells.append(cell)
-        return self._sweep(stage, cells)
+        return self._selected(stage, self._sweep(stage, cells))
+
+    def _selected(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:
+        """Sulla parte di test: la configurazione congelata del metodo (ADR-013).
+
+        Con ``hpo.use_selected`` (e fuori da uno sweep) ogni cella con metodo, ``split=test`` e
+        senza ``config_hash`` prende l'hash da ``freeze/<metodo>.json``; un metodo non congelato
+        ferma la pianificazione. I linguaggi non applicabili restano senza hash.
+        """
+        cfg = self.config
+        if not cfg.hpo.use_selected or cfg.hpo.grid is not None:
+            return cells
+        if not {"method", "split"} <= set(stage.cell_axes):
+            return cells
+        from bench.hpo.freeze import selected_hash
+
+        store = ArtifactStore(cfg.paths.artifacts)
+        out: list[Cell] = []
+        for cell in cells:
+            if cell.method and cell.split == "test" and cell.config_hash is None:
+                h = selected_hash(store, cell.method, str(cell.model_id), str(cell.language))
+                out.append(replace(cell, config_hash=h))
+            else:
+                out.append(cell)
+        return out
 
     def _sweep(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:
         """Con ``hpo.grid``: una cella per configurazione della griglia, per le celle del metodo.

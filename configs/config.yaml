@@ -46,11 +46,13 @@ hpo:
   max_pass1_drop_pp: 3.0       # provvisorio (protocollo)
   grid: null                   # sweep: metodo della griglia configs/hpo/<metodo>.yaml
   part: all                    # all | trajectories | candidates (PromptMark, ADR-009)
+  allow_frozen_override: false # ricalibrare un metodo congelato: solo come deviazione (ADR-013)
 detection:
   target_fpr: 0.01
   min_negatives: 1000
   n_bootstrap: 1000             # ricampionamenti del bootstrap per problema (SPEC §13.6)
   allow_provisional_test: false # metriche sul test con soglie provvisorie: solo smoke test
+  threshold_levels: null        # livelli delle soglie di metrics (null: quelli della config)
 
 hydra:
   run:
