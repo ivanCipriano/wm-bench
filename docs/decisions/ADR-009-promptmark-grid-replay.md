@@ -83,6 +83,14 @@ nella richiesta, ADR-011).
      quindi esatta; `replay_selection` lo copre con un test (`test_replay_without_correctness_loop_...`).
    - `embed_from_trajectory` rifiuta una traiettoria con un ciclo di correttezza diverso da quello del
      candidato.
-2. **Seconda condizione, da verificare sui campioni reali:** `sbatch scripts/m9_promptmark_replay_l2.sh`
-   (configurazioni A e B contro la traiettoria, come su L1, più il controllo che ogni iterazione su L2
-   risulti corretta). Esito: `docs/milestone_logs/M9_promptmark_replay_l2.txt` (da riportare qui).
+2. **Seconda condizione, verificata sui campioni reali (16 ottobre 2026):**
+   `scripts/m9_promptmark_replay_l2.sh`, Qwen, 10 problemi L2 dev × 2 campioni, scelti fra quelli con il
+   p-value più basso nelle traiettorie di L2 (log: `docs/milestone_logs/M9_promptmark_replay_l2.txt`).
+   - Configurazione A (3 iterazioni, η = 2,12): 20 campioni su 20 identici alla ricostruzione, 2 fermati
+     prima del limite.
+   - Configurazione B (5 iterazioni, η = 1,64): 20 su 20 identici, 8 fermati prima del limite.
+   - Campioni con un'iterazione non corretta: 0 (atteso 0, ciclo di correttezza spento).
+   - **Esito: `RESULT: OK`.** La ricostruzione dei candidati dalle traiettorie vale anche su L2.
+   - Il confronto informativo con gli artefatti del default dà 0/0: su L2 il default non è stato
+     eseguito a parte ma ricostruito dalle traiettorie come gli altri candidati, quindi non esiste un
+     `results.jsonl` del default con cui confrontarsi. Non è un errore.
