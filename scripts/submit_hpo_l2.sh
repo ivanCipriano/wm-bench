@@ -10,6 +10,8 @@
 #   bash scripts/submit_hpo_l2.sh calibrate    stone           # 4) soglie DEFINITIVE su L1+L2
 #   bash scripts/submit_hpo_l2.sh tune         stone           # 5) scelta DEFINITIVA su L1+L2
 #   aggiungere --dry-run in fondo per vedere solo il piano; K/M divide le celle fra le due persone.
+#   K/M:k/m prende la parte k di m della quota K/M (es. 1/2:1/2 e 1/2:2/2 per spartire il resto
+#   della quota 1/2 fra due persone; prima si cancellano i job della quota 1/2 intera).
 #
 # Ordine: 0) → 1) → 2) e 3) insieme → 4) dopo 3) → 5) dopo 2) e 4). Per 4) e 5) servono anche i
 # passi della M8 su L1 (HPO L1 completo del metodo). Le soglie e la scelta definitive vanno in

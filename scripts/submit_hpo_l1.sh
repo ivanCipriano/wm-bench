@@ -8,6 +8,8 @@
 #   bash scripts/submit_hpo_l1.sh calibrate stone              # 4) soglie per configurazione
 #   bash scripts/submit_hpo_l1.sh tune      stone              # 5) scelta della configurazione
 #   aggiungere --dry-run in fondo per vedere solo il piano; K/M divide le celle fra le due persone.
+#   K/M:k/m prende la parte k di m della quota K/M (es. 1/2:1/2 e 1/2:2/2 per spartire il resto
+#   della quota 1/2 fra due persone; prima si cancellano i job della quota 1/2 intera).
 #
 # Ordine: 0) → 1) → 2) e 3) insieme → 4) dopo 3) → 5) dopo 2) e 4). Le configurazioni già fatte
 # (es. il default della M7) si saltano. Variabile opzionale: JOBS (default: tutti i posti liberi,

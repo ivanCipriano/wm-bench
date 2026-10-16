@@ -267,3 +267,35 @@ def test_executor_parameters_exclude_nodes(
     monkeypatch.setenv("WMB_EXCLUDE_NODES", "gnode13")
     params = executor_parameters(cfg, PROFILES["slurm_gpu"], "detect")
     assert params["slurm_additional_parameters"] == {"requeue": True, "exclude": "gnode13"}
+
+
+def test_a_share_can_be_split_again(cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch) -> None:
+    import bench.pipeline.submit as sub
+
+    c = rebuild(cfg, levels=["L1"], splits=["dev", "test"])
+    whole = submit(c, "generate_baseline", PROFILES, dry_run=True, n_jobs=2, share=(1, 2))
+    parts = [
+        submit(c, "generate_baseline", PROFILES, dry_run=True, n_jobs=2, share=(1, 2), sub=(i, 2))
+        for i in (1, 2)
+    ]
+    a, b = ({k for j in p for k in j.cells} for p in parts)
+    assert not a & b and a | b == {k for j in whole for k in j.cells}
+    assert {j.params["name"] for j in parts[1]} == {"wmb-generate_baseline-s1of2p2of2"}
+
+    rows = [("1", "s.faraulo", "RUNNING", "wmb-detect.sweet-s1of2p1of2")]
+    monkeypatch.setattr(sub, "queued_jobs", lambda account: rows)
+    assert sub.conflicting_jobs("detect", (1, 2), "acc", ["sweet"], (2, 2)) == []
+    assert sub.conflicting_jobs("detect", (2, 2), "acc", ["sweet"]) == []
+    assert len(sub.conflicting_jobs("detect", (1, 2), "acc", ["sweet"], (1, 2))) == 1
+    assert len(sub.conflicting_jobs("detect", (1, 2), "acc", ["sweet"])) == 1  # quota intera
+    assert len(sub.conflicting_jobs("detect", (1, 2), "acc", ["sweet"], (1, 3))) == 1
+
+
+def test_parse_shares() -> None:
+    from bench.pipeline.submit import parse_shares
+
+    assert parse_shares("1/2") == ((1, 2), (1, 1))
+    assert parse_shares("1/2:2/2") == ((1, 2), (2, 2))
+    for bad in ("1/1:1/2", "1/2:3/2", "1/2:"):
+        with pytest.raises(ConfigError):
+            parse_shares(bad)

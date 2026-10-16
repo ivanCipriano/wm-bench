@@ -242,17 +242,41 @@ def parse_share(text: str) -> tuple[int, int]:
     return int(head), int(tail)
 
 
+def parse_shares(text: str) -> tuple[tuple[int, int], tuple[int, int]]:
+    """Quota ``"K/M"`` o quota divisa ``"K/M:k/m"`` -> ``((K, M), (k, m))``.
+
+    ``"1/2:2/2"`` è la seconda metà della quota ``1/2``: serve a spartire fra due persone il
+    lavoro rimasto in una quota già assegnata, senza toccare l'altra.
+
+    Raises:
+        ConfigError: se il formato non è valido o si divide la quota ``1/1``.
+    """
+    head, sep, tail = text.partition(":")
+    share = parse_share(head)
+    sub = parse_share(tail) if sep else (1, 1)
+    if sub[1] > 1 and share[1] == 1:
+        raise ConfigError(f"invalid share {text!r}: split K/M with M > 1, or use K/M alone")
+    return share, sub
+
+
 def job_name(
-    stage: str, share: tuple[int, int] = (1, 1), methods: Sequence[str] | None = None
+    stage: str,
+    share: tuple[int, int] = (1, 1),
+    methods: Sequence[str] | None = None,
+    sub: tuple[int, int] = (1, 1),
 ) -> str:
-    """Nome dei job SLURM di una fase: ``wmb-<fase>[.<metodi>][-s<k>of<m>]``.
+    """Nome dei job SLURM di una fase: ``wmb-<fase>[.<metodi>][-s<k>of<m>[p<k>of<m>]]``.
 
     I metodi (separati da ``+``) compaiono solo per le fasi con l'asse ``method``: job di metodi
-    diversi lavorano su celle disgiunte e possono girare insieme (``conflicting_jobs``).
+    diversi lavorano su celle disgiunte e possono girare insieme (``conflicting_jobs``). La
+    parte ``p<k>of<m>`` indica una parte della quota (``--share K/M:k/m``).
     """
     k, m = share
     tag = f".{'+'.join(sorted(methods))}" if methods else ""
-    return f"wmb-{stage}{tag}" if m == 1 else f"wmb-{stage}{tag}-s{k}of{m}"
+    if m == 1:
+        return f"wmb-{stage}{tag}"
+    part = f"p{sub[0]}of{sub[1]}" if sub[1] > 1 else ""
+    return f"wmb-{stage}{tag}-s{k}of{m}{part}"
 
 
 def stage_methods(
@@ -306,7 +330,11 @@ def queued_jobs(account: str) -> list[tuple[str, str, str, str]]:
 
 
 def conflicting_jobs(
-    stage: str, share: tuple[int, int], account: str, methods: Sequence[str] | None = None
+    stage: str,
+    share: tuple[int, int],
+    account: str,
+    methods: Sequence[str] | None = None,
+    sub: tuple[int, int] = (1, 1),
 ) -> list[str]:
     """Job della stessa fase che potrebbero lavorare sulle stesse celle.
 
@@ -314,11 +342,14 @@ def conflicting_jobs(
     di una divisione diversa (es. ``1/3`` contro ``1/2``). Quote diverse della stessa
     divisione (``1/2`` e ``2/2``) sono disgiunte e possono girare insieme. Così pure job con
     metodi disgiunti (``wmb-detect.sweet`` e ``wmb-detect.stone``); un job senza metodi nel nome
-    conta come se li avesse tutti.
+    conta come se li avesse tutti. Dentro la stessa quota, parti diverse della stessa divisione
+    (``1/2:1/2`` e ``1/2:2/2``) sono disgiunte; la quota intera è in conflitto con ogni sua parte.
     """
     k, m = share
     base = f"wmb-{stage}"
-    pattern = re.compile(rf"^{re.escape(base)}(?:\.([A-Za-z0-9_+]+))?(?:-s(\d+)of(\d+))?$")
+    pattern = re.compile(
+        rf"^{re.escape(base)}(?:\.([A-Za-z0-9_+]+))?(?:-s(\d+)of(\d+)(?:p(\d+)of(\d+))?)?$"
+    )
     mine = set(methods or ())
     conflicts = []
     for job_id, user, state, name in queued_jobs(account):
@@ -329,8 +360,12 @@ def conflicting_jobs(
         if mine and theirs and not mine & theirs:
             continue  # metodi diversi: celle disgiunte
         other = (int(match.group(2)), int(match.group(3))) if match.group(2) else (1, 1)
-        if other == share or other[1] != m or m == 1:
-            conflicts.append(f"{job_id} {name} ({user}, {state})")
+        other_sub = (int(match.group(4)), int(match.group(5))) if match.group(4) else (1, 1)
+        if other != share and other[1] == m and m != 1:
+            continue  # quote diverse della stessa divisione: celle disgiunte
+        if other == share and other_sub != sub and other_sub[1] == sub[1] and sub[1] != 1:
+            continue  # parti diverse della stessa quota: celle disgiunte
+        conflicts.append(f"{job_id} {name} ({user}, {state})")
     return conflicts
 
 
@@ -342,13 +377,15 @@ def submit(
     n_jobs: int = 1,
     allow_concurrent: bool = False,
     share: tuple[int, int] = (1, 1),
+    sub: tuple[int, int] = (1, 1),
 ) -> list[SubmittedJob]:
     """Invia ``n_jobs`` job sequenziali per profilo, con celle disgiunte.
 
     Ogni cella appartiene a un solo job, quindi due job non lavorano mai sulla stessa cella.
     Con ``share=(K, M)`` le celle si dividono prima in M quote bilanciate e deterministiche
     (uguali per chiunque lanci lo stesso comando) e si invia solo la quota K: due persone
-    possono così spartirsi il lavoro con ``--share 1/2`` e ``--share 2/2``.
+    possono così spartirsi il lavoro con ``--share 1/2`` e ``--share 2/2``. Con ``sub=(k, m)``
+    la quota si divide a sua volta in m parti (stesso criterio) e si invia solo la parte k.
     Con più profili, i job di un profilo partono dopo quelli del precedente
     (``--dependency=afterany``).
 
@@ -364,9 +401,9 @@ def submit(
     k, m = share
     groups = list(plan_submission(cfg, stage, profiles))
     methods = stage_methods(cfg, stage, [c for g in groups for c in g.cells])
-    name = job_name(stage, share, methods)
+    name = job_name(stage, share, methods, sub)
     if not dry_run and not allow_concurrent:
-        running = conflicting_jobs(stage, share, cfg.slurm.account, methods)
+        running = conflicting_jobs(stage, share, cfg.slurm.account, methods, sub)
         if running:
             raise ConfigError(
                 f"jobs that may run the same cells are already queued or running: "
@@ -379,6 +416,9 @@ def submit(
     for group in groups:
         all_weights = [cell_weight(cfg, c) for c in group.cells]
         mine = split_into_lanes(group.cells, all_weights, m, keep_empty=True)[k - 1]
+        if sub[1] > 1:
+            sub_weights = [all_weights[group.cells.index(c)] for c in mine]
+            mine = split_into_lanes(mine, sub_weights, sub[1], keep_empty=True)[sub[0] - 1]
         weights = [all_weights[group.cells.index(c)] for c in mine]
         after = ":".join(previous) or None
         current: list[str] = []

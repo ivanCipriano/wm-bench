@@ -62,7 +62,8 @@ def _submit(args: Sequence[str]) -> int:
     parser.add_argument(
         "--share",
         default="1/1",
-        help="take only share K of M (e.g. 1/2 and 2/2 to split the cells between two people)",
+        help="take only share K of M (e.g. 1/2 and 2/2 to split the cells between two people); "
+        "K/M:k/m takes part k of m of that share (e.g. 1/2:1/2 and 1/2:2/2)",
     )
     parser.add_argument(
         "--allow-concurrent",
@@ -73,10 +74,10 @@ def _submit(args: Sequence[str]) -> int:
     ns = parser.parse_args(list(args))
 
     from bench.doctor import load_cluster_profiles
-    from bench.pipeline.submit import parse_share, submit
+    from bench.pipeline.submit import parse_shares, submit
 
     try:
-        share = parse_share(ns.share)
+        share, sub = parse_shares(ns.share)
         cfg = load_experiment(ns.overrides)
         # Profili del codice in esecuzione (non di paths.repo, che indica il clone sul cluster).
         profiles = load_cluster_profiles(config_dir() / "cluster")
@@ -88,6 +89,7 @@ def _submit(args: Sequence[str]) -> int:
             n_jobs=ns.jobs,
             allow_concurrent=ns.allow_concurrent,
             share=share,
+            sub=sub,
         )
     except BenchError as exc:
         sys.stderr.write(f"bench submit: {exc}\n")
