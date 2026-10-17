@@ -75,7 +75,7 @@ Legenda: TPR alla soglia dell'1% di FPR. ΔPass@1 = baseline − marcati, in pun
   - Con δ fino a 4 il TPR sale all'8-62%, quasi sempre senza costo su Pass@1.
   - DeepSeek si marca molto più di Qwen in tutti i linguaggi.
   - **La scelta cade sul bordo della griglia (δ = 4, il massimo) in 5 celle su 8:** il TPR migliore potrebbe stare oltre la griglia approvata (vedi le decisioni in fondo).
-- **STONE:** TPR bassi (0,7-11,8%) anche dopo la griglia estesa; i δ alti che marcano davvero costano 20-60 pp di Pass@1 (`M8_hpo_stone.txt`).
+- **STONE:** TPR bassi (0,7-11,8%) anche dopo la griglia estesa; i δ alti che marcano davvero costano decine di punti di Pass@1 (fino a 85 pp) (`M8_hpo_stone.txt`).
 - **Minaccia alla validità, vincolo applicato a stime rumorose** (promessa nel riepilogo della M7):
   - in Java, C++ e JavaScript lo sviluppo di L1 ha solo 24 problemi (144 campioni), quindi Pass@1 ha una risoluzione di 0,69 pp e ΔPass@1 un IC largo vari punti;
   - fra molti candidati il criterio tende a premiare quelli che rispettano il vincolo per caso (winner's curse). I ΔPass@1 negativi scelti lo mostrano: STONE con DeepSeek −9,0 pp in Java e −6,3 pp in C++, PromptMark con Qwen −3,8 pp;
