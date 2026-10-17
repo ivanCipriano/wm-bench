@@ -1,0 +1,72 @@
+
+##### sweet deepseek_coder_6p7b cpp
+selected 11e7f6c8edde {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.5}
+  TPR 0.4514  Pass@1 0.6806 (baseline 0.6736)  ΔPass@1 -0.69 pp  admissible 60/61  max 3.0 pp  levels ['L1']  provisional
+  * ok 11e7f6c8edde {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.4514  ΔPass@1  -0.69 pp  τ 2.673
+    ok 424d8c9b61eb {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.5}  TPR 0.4028  ΔPass@1   0.69 pp  τ 2.462
+    ok 887251018a09 {"delta": 3.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.2847  ΔPass@1   0.69 pp  τ 2.673
+    ok 995bbaceef09 {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.1}  TPR 0.2708  ΔPass@1   2.08 pp  τ 2.434
+    ok 9240c67720bc {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.2708  ΔPass@1   2.08 pp  τ 2.200
+
+##### sweet deepseek_coder_6p7b java
+selected 995bbaceef09 {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.1}
+  TPR 0.3750  Pass@1 0.6319 (baseline 0.6458)  ΔPass@1 1.39 pp  admissible 61/61  max 3.0 pp  levels ['L1']  provisional
+  * ok 995bbaceef09 {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.1}  TPR 0.3750  ΔPass@1   1.39 pp  τ 2.904
+    ok 1e00069b1188 {"delta": 3.0, "entropy_threshold": 0.3, "gamma": 0.1}  TPR 0.3194  ΔPass@1   1.39 pp  τ 2.904
+    ok ccc631fa5e9f {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.2917  ΔPass@1  -6.94 pp  τ 2.435
+    ok e052fd2aa3c7 {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.1}  TPR 0.2708  ΔPass@1   0.69 pp  τ 2.897
+    ok 11e7f6c8edde {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.2500  ΔPass@1  -1.39 pp  τ 2.832
+
+##### sweet deepseek_coder_6p7b javascript
+selected 5dea927e685a {"delta": 3.0, "entropy_threshold": 0.9, "gamma": 0.1}
+  TPR 0.1736  Pass@1 0.7083 (baseline 0.7361)  ΔPass@1 2.78 pp  admissible 43/61  max 3.0 pp  levels ['L1']  provisional
+    -- 995bbaceef09 {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.1}  TPR 0.3472  ΔPass@1  11.81 pp  τ 2.983
+    -- 1e00069b1188 {"delta": 3.0, "entropy_threshold": 0.3, "gamma": 0.1}  TPR 0.3125  ΔPass@1   6.94 pp  τ 2.983
+    -- ccc631fa5e9f {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.2917  ΔPass@1  13.19 pp  τ 2.578
+    -- 11e7f6c8edde {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.2708  ΔPass@1   7.64 pp  τ 2.828
+    -- 58e915246e55 {"delta": 3.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.2500  ΔPass@1   4.17 pp  τ 2.578
+
+##### sweet deepseek_coder_6p7b python
+selected 9240c67720bc {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.25}
+  TPR 0.6198  Pass@1 0.6615 (baseline 0.6580)  ΔPass@1 -0.35 pp  admissible 52/61  max 3.0 pp  levels ['L1']  provisional
+  * ok 9240c67720bc {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.6198  ΔPass@1  -0.35 pp  τ 2.449
+    ok feafbfb60dfb {"delta": 3.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.4323  ΔPass@1   1.39 pp  τ 2.449
+    ok ccc631fa5e9f {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.3993  ΔPass@1  -0.69 pp  τ 2.691
+    ok 05877f819f63 {"delta": 4.0, "entropy_threshold": 0.9, "gamma": 0.25}  TPR 0.2726  ΔPass@1   1.56 pp  τ 2.785
+    ok 58e915246e55 {"delta": 3.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.2361  ΔPass@1   0.17 pp  τ 2.691
+
+##### sweet qwen25_coder_7b cpp
+selected 5dea927e685a {"delta": 3.0, "entropy_threshold": 0.9, "gamma": 0.1}
+  TPR 0.0833  Pass@1 0.8333 (baseline 0.8333)  ΔPass@1 0.00 pp  admissible 32/61  max 3.0 pp  levels ['L1']  provisional
+    -- feafbfb60dfb {"delta": 3.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.2083  ΔPass@1   6.25 pp  τ 2.484
+    -- 9240c67720bc {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.2083  ΔPass@1  11.81 pp  τ 2.484
+    -- 11e7f6c8edde {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.1736  ΔPass@1   9.03 pp  τ 2.335
+    -- 229750e823b1 {"delta": 2.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.1250  ΔPass@1   4.86 pp  τ 2.484
+    -- 887251018a09 {"delta": 3.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.1250  ΔPass@1  11.11 pp  τ 2.335
+
+##### sweet qwen25_coder_7b java
+selected e052fd2aa3c7 {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.1}
+  TPR 0.1736  Pass@1 0.8333 (baseline 0.8611)  ΔPass@1 2.78 pp  admissible 56/61  max 3.0 pp  levels ['L1']  provisional
+  * ok e052fd2aa3c7 {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.1}  TPR 0.1736  ΔPass@1   2.78 pp  τ 2.646
+    -- 9240c67720bc {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.1736  ΔPass@1  11.11 pp  τ 2.562
+    ok d64d67380ca7 {"delta": 2.0, "entropy_threshold": 0.6, "gamma": 0.1}  TPR 0.1667  ΔPass@1   0.00 pp  τ 2.646
+    ok 883b7e20f4da {"delta": 3.0, "entropy_threshold": 0.6, "gamma": 0.1}  TPR 0.1667  ΔPass@1   0.00 pp  τ 2.646
+    -- feafbfb60dfb {"delta": 3.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.1389  ΔPass@1   6.94 pp  τ 2.562
+
+##### sweet qwen25_coder_7b javascript
+selected 15ad64fc4709 {"delta": 2.0, "entropy_threshold": 0.6, "gamma": 0.25}
+  TPR 0.0833  Pass@1 0.8333 (baseline 0.8333)  ΔPass@1 0.00 pp  admissible 51/61  max 3.0 pp  levels ['L1']  provisional
+    -- ccc631fa5e9f {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.1250  ΔPass@1   7.64 pp  τ 2.554
+  * ok 15ad64fc4709 {"delta": 2.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.0833  ΔPass@1   0.00 pp  τ 2.554
+    -- 58e915246e55 {"delta": 3.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.0833  ΔPass@1   3.47 pp  τ 2.554
+    -- 9240c67720bc {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.0833  ΔPass@1   7.64 pp  τ 2.668
+    ok 11e7f6c8edde {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.0625  ΔPass@1   2.78 pp  τ 2.610
+
+##### sweet qwen25_coder_7b python
+selected 05877f819f63 {"delta": 4.0, "entropy_threshold": 0.9, "gamma": 0.25}
+  TPR 0.2656  Pass@1 0.7500 (baseline 0.7743)  ΔPass@1 2.43 pp  admissible 42/61  max 3.0 pp  levels ['L1']  provisional
+    -- 11e7f6c8edde {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.5226  ΔPass@1   6.94 pp  τ 2.429
+    -- 424d8c9b61eb {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.5}  TPR 0.4375  ΔPass@1   6.25 pp  τ 2.357
+    -- 887251018a09 {"delta": 3.0, "entropy_threshold": 0.3, "gamma": 0.5}  TPR 0.4097  ΔPass@1   5.90 pp  τ 2.429
+    -- ccc631fa5e9f {"delta": 4.0, "entropy_threshold": 0.6, "gamma": 0.25}  TPR 0.3681  ΔPass@1   3.12 pp  τ 2.681
+    -- 9240c67720bc {"delta": 4.0, "entropy_threshold": 0.3, "gamma": 0.25}  TPR 0.3576  ΔPass@1   7.64 pp  τ 2.778
