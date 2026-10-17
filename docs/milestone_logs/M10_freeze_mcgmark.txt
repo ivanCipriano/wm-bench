@@ -1,0 +1,18 @@
+##### mcgmark: frozen now
+frozen_at   2026-10-17T08:43:10.554315+00:00
+commit      60f4f650ea889cbf4924936931b4dba7beb6648a (dirty: False)
+levels      ['L1', 'L2']
+grid_sha256 8a111e597f9e0cc76450585a842ff76652e66d820a6e66226e921c26d48f55fb (1 candidates)
+record      freeze/mcgmark.json (sha256 d48e820cc3cbc448bff8969051ac59f37354718033f6f11308144cc8ee662e0b)
+  qwen25_coder_7b      python      9df49d3f4f38 {}  τ 10.0  constraint False
+      selection sha256 2106ae02f042251f7c41d4f70fd6215d3aeee68333a7e678f2f6edaf5535c95d
+      threshold sha256 25b94b3c860f3259c2c22112b282f9c1292ece56cf7fca02b7c6b94dc6eb90ab
+  qwen25_coder_7b      java        NOT_APPLICABLE
+  qwen25_coder_7b      cpp         NOT_APPLICABLE
+  qwen25_coder_7b      javascript  NOT_APPLICABLE
+  deepseek_coder_6p7b  python      9df49d3f4f38 {}  τ 10.0  constraint False
+      selection sha256 39bddeb0fb8aaa93ab4936da391aff9827e6265405a3a8958381f4993fed1888
+      threshold sha256 e5df8c80ab2cc813cb5e876ae1f5e331d01a3b2bbca0df66eafb7d763db9c0d2
+  deepseek_coder_6p7b  java        NOT_APPLICABLE
+  deepseek_coder_6p7b  cpp         NOT_APPLICABLE
+  deepseek_coder_6p7b  javascript  NOT_APPLICABLE
