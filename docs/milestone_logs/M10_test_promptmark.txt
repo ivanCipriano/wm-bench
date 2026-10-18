@@ -1,0 +1,28 @@
+
+##### promptmark deepseek_coder_6p7b python (L1 test, config a9253bfc9fbf)
+threshold 2.296767549911426  achieved FPR dev 0.0100  n_neg 2000  levels ['L1', 'L2']  
+  secondary p_adaptive_paper: threshold 2.380458730037234  achieved FPR dev 0.0100
+  tpr_at_fpr                          0.0456  [0.0299, 0.0617]  n=2676  cluster_bootstrap
+  fpr_human                           0.0032  [0.0007, 0.0094]  n=928  clopper_pearson
+  fpr_llm                             0.0064  [0.0037, 0.0102]  n=2676  clopper_pearson
+  auroc                               0.5994  [0.5667, 0.6291]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_p_adaptive_paper         0.0377  [0.0239, 0.0531]  n=2676  cluster_bootstrap
+  auroc_p_adaptive_paper              0.5994  [0.5654, 0.6318]  n=3604  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.7089  [0.6700, 0.7455]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.6999  [0.6599, 0.7399]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                 -0.8969  [-3.1390, 1.2715]  n=446  cluster_bootstrap
+  embed_success_rate 0.9996  n_sites {"n": 2675, "mean": 2.329, "median": 2.0, "min": 0.0, "max": 14.0}
+
+##### promptmark qwen25_coder_7b python (L1 test, config a9253bfc9fbf)
+threshold 2.296767549911426  achieved FPR dev 0.0100  n_neg 2000  levels ['L1', 'L2']  
+  secondary p_adaptive_paper: threshold 2.380458730037234  achieved FPR dev 0.0100
+  tpr_at_fpr                          0.0250  [0.0131, 0.0389]  n=2676  cluster_bootstrap
+  fpr_human                           0.0032  [0.0007, 0.0094]  n=928  clopper_pearson
+  fpr_llm                             0.0120  [0.0082, 0.0168]  n=2676  clopper_pearson
+  auroc                               0.6518  [0.6213, 0.6827]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_p_adaptive_paper         0.0168  [0.0078, 0.0277]  n=2676  cluster_bootstrap
+  auroc_p_adaptive_paper              0.6518  [0.6234, 0.6817]  n=3604  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.7720  [0.7332, 0.8102]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.7646  [0.7272, 0.8012]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                 -0.7474  [-3.0278, 1.5349]  n=446  cluster_bootstrap
+  embed_success_rate 0.9996  n_sites {"n": 2675, "mean": 2.775, "median": 3.0, "min": 0.0, "max": 15.0}
