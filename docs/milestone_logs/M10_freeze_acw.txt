@@ -1,0 +1,18 @@
+##### acw: frozen now
+frozen_at   2026-10-18T09:56:54.710539+00:00
+commit      9e4d1a1f80109dcad77b0b0987126cd963ec5d83 (dirty: False)
+levels      ['L1', 'L2']
+grid_sha256 8b96cd777f8a6a3ba43acd7e6e2061b2a2bce332ecf9629a59481b940166573b (4 candidates)
+record      freeze/acw.json (sha256 322660925d96b1c453a219c6b06b25bcbc7e131832879893d6bc18bda0dd54ea)
+  qwen25_coder_7b      python      86851261a344 {'num_transforms': 30}  τ 1.0  constraint True
+      selection sha256 fc8ab3e5bf4a0cd80f8fbad37461258a0c1d8b09b33c717c4a0dbcfe3513a3db
+      threshold sha256 75e843e4eaff537bd9224d40aca9dcdae7c09c0a25a570d4613a1a63e6efd2af
+  qwen25_coder_7b      java        NOT_APPLICABLE
+  qwen25_coder_7b      cpp         NOT_APPLICABLE
+  qwen25_coder_7b      javascript  NOT_APPLICABLE
+  deepseek_coder_6p7b  python      86851261a344 {'num_transforms': 30}  τ 1.0  constraint True
+      selection sha256 8dfb4867b15e615af9d4ae7b49c2a02fe80f2ba53e6dfc4775891d71f4ea1b7f
+      threshold sha256 9b35485b16ce8338932cc84965738d902457e6e7d04f7a6ca42b5612e10aa988
+  deepseek_coder_6p7b  java        NOT_APPLICABLE
+  deepseek_coder_6p7b  cpp         NOT_APPLICABLE
+  deepseek_coder_6p7b  javascript  NOT_APPLICABLE
