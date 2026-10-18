@@ -216,3 +216,16 @@ def test_unsupported_language_gives_not_applicable_metrics(facade: BenchmarkFaca
     assert facade.store.read_table(ref).empty
     manifest = facade.store.read_manifest(ref)
     assert manifest is not None and manifest.extra["not_applicable"] is True
+
+
+def test_neg_human_uses_integration_only_where_the_part_has_one(cfg: ExperimentConfig) -> None:
+    """SPEC §10.2: i negativi umani di L1 test Python sono i soli nativi (niente integrazione)."""
+    stage = DetectStage(cfg)
+    model = cfg.models[0]
+    for lang, split, expected in (
+        ("python", "test", [native_ref(Language.PYTHON)]),
+        ("python", "dev", [native_ref(Language.PYTHON), integration_ref(Language.PYTHON, "dev")]),
+        ("java", "test", [native_ref(Language.JAVA), integration_ref(Language.JAVA, "test")]),
+    ):
+        cell = Cell(method="sweet", model_id=model, level="L1", language=lang, split=split)
+        assert stage._sample_refs(cell)["neg_human"] == expected

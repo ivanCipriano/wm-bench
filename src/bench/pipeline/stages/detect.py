@@ -137,14 +137,17 @@ class DetectStage(Stage):
     def _sample_refs(self, cell: Cell) -> dict[str, list[ArtifactRef]]:
         method, model_id, level, language, split = self._require(cell)
         cfg_hash = self.config_hash(cell)
+        lang = Language(language)
+        # L1: nativi + integrazione della parte, se la parte ne ha una (SPEC §10.2: Python test usa
+        # solo i 928 nativi); L2: solo i nativi di CodeNet (l'integrazione di sviluppo combinata
+        # L1+L2 si aggiunge alle celle L1, ADR-011).
+        integration = split in self._cfg().negatives.sources.get(lang, {})
         refs: dict[str, list[ArtifactRef]] = {
             "positives": [watermarked_ref(method, model_id, cfg_hash, level, language, split)],
-            # L1: nativi + integrazione della parte; L2: solo i nativi di CodeNet (l'integrazione di
-            # sviluppo combinata L1+L2 si aggiunge alle celle L1, ADR-011).
             "neg_human": (
-                [native_ref(Language(language)), integration_ref(Language(language), split)]
+                [native_ref(lang), *([integration_ref(lang, split)] if integration else [])]
                 if level == "L1"
-                else [native_ref(Language(language), level)]
+                else [native_ref(lang, level)]
             ),
             "neg_llm": [baseline_ref(model_id, level, language, split)],
         }
