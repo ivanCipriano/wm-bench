@@ -1,0 +1,18 @@
+
+##### acw deepseek_coder_6p7b python
+selected 86851261a344 {"num_transforms": 30}
+  TPR 0.9703  Pass@1 0.6210 (baseline 0.6461)  ΔPass@1 2.51 pp  admissible 4/4  max 3.0 pp  levels ['L1', 'L2']  
+  FPR dev per parte: L1_native 0.0000 (0/210)  L2_native 0.0080 (2/250)  integration_L1L2 0.0000 (0/1540)
+    ok e76fada1f265 {"num_transforms": 20}  TPR 0.9703  ΔPass@1   2.51 pp  τ 1.000
+  * ok 86851261a344 {"num_transforms": 30}  TPR 0.9703  ΔPass@1   2.51 pp  τ 1.000
+    ok 1a28456b87b9 {"num_transforms": 43}  TPR 0.9635  ΔPass@1   2.51 pp  τ 1.000
+    ok afdaacc3a4d1 {"num_transforms": 10}  TPR 0.0000  ΔPass@1   0.00 pp  τ inf
+
+##### acw qwen25_coder_7b python
+selected 86851261a344 {"num_transforms": 30}
+  TPR 0.9612  Pass@1 0.7363 (baseline 0.7477)  ΔPass@1 1.14 pp  admissible 4/4  max 3.0 pp  levels ['L1', 'L2']  
+  FPR dev per parte: L1_native 0.0000 (0/210)  L2_native 0.0080 (2/250)  integration_L1L2 0.0000 (0/1540)
+    ok e76fada1f265 {"num_transforms": 20}  TPR 0.9612  ΔPass@1   1.14 pp  τ 1.000
+  * ok 86851261a344 {"num_transforms": 30}  TPR 0.9612  ΔPass@1   1.14 pp  τ 1.000
+    ok 1a28456b87b9 {"num_transforms": 43}  TPR 0.9463  ΔPass@1   1.14 pp  τ 1.000
+    ok afdaacc3a4d1 {"num_transforms": 10}  TPR 0.0000  ΔPass@1   0.00 pp  τ inf
