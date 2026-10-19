@@ -7,7 +7,8 @@
 #   bash scripts/check_attacks_canonical.sh --languages java --attacks T1.2
 #
 # Il log va in $WMB/logs/check_attacks_canonical_<jobid>.log; a job finito si copia in
-# docs/milestone_logs/M10_canonical_attacks.txt (comando stampato qui sotto).
+# docs/milestone_logs/M10_canonical_attacks.txt (comando stampato qui sotto). Il job è uno script
+# bash di login (`bash -l`): `module` esiste solo lì, non nella shell `sh` di `sbatch --wrap`.
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WMB="${WMB:-/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench}"
@@ -16,17 +17,19 @@ EXCLUDE=()
 if [ -n "${WMB_EXCLUDE_NODES:-}" ]; then
     EXCLUDE=(--exclude "$WMB_EXCLUDE_NODES")
 fi
-ARGS="$*"
+JOB_SCRIPT="$WMB/logs/check_attacks_canonical.sbatch"
+cat > "$JOB_SCRIPT" <<EOF
+#!/bin/bash -l
+set -e
+module load apptainer/apptainer.module
+export PATH=$WMB/bench-core/bin:\$PATH
+cd $REPO_ROOT
+umask 002
+echo "##### nodo \$(hostname), commit \$(git rev-parse --short HEAD)"
+python scripts/check_attacks_canonical.py $*
+EOF
 JOB=$(sbatch --parsable -p defq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_defq_qos \
-    -c 16 --mem 64G -t 420 "${EXCLUDE[@]}" --job-name wmb-check-attacks-canonical \
-    -o "$WMB/logs/check_attacks_canonical_%j.log" --wrap "
-        set -e
-        module load apptainer/apptainer.module
-        export PATH=$WMB/bench-core/bin:\$PATH
-        cd $REPO_ROOT
-        umask 002
-        echo \"##### nodo \$(hostname), commit \$(git rev-parse --short HEAD)\"
-        python scripts/check_attacks_canonical.py $ARGS
-    ")
+    -c 16 --mem 64G -t 420 ${EXCLUDE[@]+"${EXCLUDE[@]}"} --job-name wmb-check-attacks-canonical \
+    -o "$WMB/logs/check_attacks_canonical_%j.log" "$JOB_SCRIPT")
 echo "job $JOB submitted; log: $WMB/logs/check_attacks_canonical_$JOB.log"
 echo "a job finito: cp $WMB/logs/check_attacks_canonical_$JOB.log docs/milestone_logs/M10_canonical_attacks.txt"
