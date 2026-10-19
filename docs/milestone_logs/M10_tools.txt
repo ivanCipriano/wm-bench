@@ -1,0 +1,79 @@
+##### 1) JavaScript (tools/js)
+package-lock.json missing: generating it (commit it afterwards)
+
+up to date in 3s
+npm warn deprecated eslint@9.14.0: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 101 packages in 4s
+##### 2a) google-java-format
+google-java-format 1.24.0: downloaded and verified (/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/tools/java/google-java-format-1.24.0-all-deps.jar)
+##### 2b) OpenRewrite (repository Maven in tools/java/m2)
+--- online run: diff
+7,8c7,11
+<         if (xs.size() == 0) return true;
+<         int a = 0, b = 1;
+---
+>         if (xs.isEmpty()) {
+>             return true;
+>         }
+>         int a = 0;
+>         int b = 1;
+--- offline run (-o): OK
+##### 3) ricette di CommonStaticAnalysis
+recipes: 65 active, identical to docs/attacks/t1_2_java_recipes.txt
+##### 4) prova dei tool su file minimi
+black: OK
+ruff: OK
+google-java-format: OK
+clang-format: OK
+3 warnings generated.
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/setup_tools.RvqjR4/a.cpp:2:9: warning: statement should be inside braces [readability-braces-around-statements]
+    2 |   if (x)
+      |         ^
+      |          {
+    3 |     return 1;
+    4 |   else
+      |   } 
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/setup_tools.RvqjR4/a.cpp:2:9: note: FIX-IT applied suggested code changes
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/setup_tools.RvqjR4/a.cpp:4:3: note: FIX-IT applied suggested code changes
+    4 |   else
+      |   ^
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/setup_tools.RvqjR4/a.cpp:4:3: warning: do not use 'else' after 'return' [readability-else-after-return]
+    4 |   else
+      |   ^~~~
+      |       return 2
+    5 |     return 2;
+      |     ~~~~~~~~
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/setup_tools.RvqjR4/a.cpp:4:3: note: FIX-IT applied suggested code changes
+/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/setup_tools.RvqjR4/a.cpp:4:7: warning: statement should be inside braces [readability-braces-around-statements]
+    4 |   else
+      |       ^
+note: this fix will not be applied because it overlaps with another fix
+clang-tidy applied 3 of 3 suggested fixes.
+clang-tidy: OK
+prettier: OK
+eslint: OK
+int f(int x) {
+  if (x) {
+    return 1;
+  }     return 2;
+}
+##### versioni effettive
+node        v20.20.2
+npm         10.8.2
+prettier    3.3.3
+eslint      v9.14.0
+terser      terser 5.36.0
+esbuild     0.24.0
+java        openjdk version "17.0.18-internal" 2026-01-20
+mvn         Apache Maven 3.9.16 (50e2c7eb1a9cd50ab041c0f7591d943eeb409f68)
+gjf         google-java-format: Version 1.24.0
+clang-format clang-format version 18.1.8 (https://github.com/conda-forge/clangdev-feedstock 3c15221e001c9fe87fcc807876aa06d599616b01)
+clang-tidy    LLVM version 18.1.8
+black       black, 24.10.0 (compiled: yes)
+ruff        ruff 0.7.4
+libcst      1.5.0
+codebleu    0.7.0
+python-minifier 2.11.3
+tree-sitter 0.22.3
+##### fatto
