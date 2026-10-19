@@ -1,0 +1,41 @@
+##### stone attacks T1.1 on L1 test
+attack        6/6    COMPLETE
+execute       6/6    COMPLETE
+detect        6/6    COMPLETE
+metrics       6/6    COMPLETE
+
+##### T1.1 {} qwen25_coder_7b python
+  status {'APPLIED': 1516, 'UNCHANGED': 1158, 'TOOL_ERROR': 2}  changed 0.566517  1-CodeBLEU 0.021239 (changed only 0.03749)
+  detail means {}
+  tools {"black": "24.10.0"}
+  tpr_at_fpr 0.0194  auroc 0.8000  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5665  tool_error_fraction 0.0007  codebleu_distance 0.0212
+
+##### T1.1 {} qwen25_coder_7b java
+  status {'APPLIED': 804, 'TOOL_ERROR': 36}  changed 0.957143  1-CodeBLEU 0.19751 (changed only 0.206353)
+  detail means {}
+  tools {"google-java-format": "google-java-format: Version 1.24.0"}
+  tpr_at_fpr 0.0524  auroc 0.6393  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9571  tool_error_fraction 0.0429  codebleu_distance 0.1975
+
+##### T1.1 {} qwen25_coder_7b cpp
+  status {'APPLIED': 840}  changed 1.0  1-CodeBLEU 0.082599 (changed only 0.082599)
+  detail means {}
+  tools {"clang-format": "clang-format version 18.1.8 (https://github.com/conda-forge/clangdev-feedstock 3c15221e001c9fe87fcc807876aa06d599616b01)"}
+  tpr_at_fpr 0.0131  auroc 0.6636  pass_at_1 0.7679  delta_pass_at_1_pp 2.3810  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.0826
+
+##### T1.1 {} deepseek_coder_6p7b python
+  status {'APPLIED': 1365, 'UNCHANGED': 1309, 'TOOL_ERROR': 2}  changed 0.51009  1-CodeBLEU 0.055312 (changed only 0.108435)
+  detail means {}
+  tools {"black": "24.10.0"}
+  tpr_at_fpr 0.0056  auroc 0.6063  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5101  tool_error_fraction 0.0007  codebleu_distance 0.0553
+
+##### T1.1 {} deepseek_coder_6p7b java
+  status {'APPLIED': 828, 'TOOL_ERROR': 12}  changed 0.985714  1-CodeBLEU 0.200461 (changed only 0.203366)
+  detail means {}
+  tools {"google-java-format": "google-java-format: Version 1.24.0"}
+  tpr_at_fpr 0.0000  auroc 0.5513  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9857  tool_error_fraction 0.0143  codebleu_distance 0.2005
+
+##### T1.1 {} deepseek_coder_6p7b cpp
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.093002 (changed only 0.093113)
+  detail means {}
+  tools {"clang-format": "clang-format version 18.1.8 (https://github.com/conda-forge/clangdev-feedstock 3c15221e001c9fe87fcc807876aa06d599616b01)"}
+  tpr_at_fpr 0.0000  auroc 0.4679  pass_at_1 0.6119  delta_pass_at_1_pp 3.9286  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.0930
