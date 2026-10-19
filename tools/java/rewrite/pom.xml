@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Progetto modello dell'attacco T1.2 per Java (SPEC §12, §20.2; ADR-012): OpenRewrite con la
+  ricetta CommonStaticAnalysis a versioni fissate (rewrite-maven-plugin 5.45.0 e
+  rewrite-static-analysis 1.20.0, rilasciati insieme il 13 novembre 2024). Il ToolRunner copia
+  questo file in un progetto temporaneo con i sorgenti in src/main/java/ e lancia Maven offline
+  (-o) con il repository locale tools/java/m2 popolato da scripts/setup_tools.sh.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>wmbench.attacks</groupId>
+  <artifactId>t1-2-java</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
+    <!-- Ricetta attiva: CommonStaticAnalysis; -Dwmb.recipe=<ricetta> la sostituisce solo nella
+         diagnosi delle canoniche rotte (scripts/check_attacks_canonical.py, una ricetta alla volta). -->
+    <wmb.recipe>org.openrewrite.staticanalysis.CommonStaticAnalysis</wmb.recipe>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openrewrite.maven</groupId>
+        <artifactId>rewrite-maven-plugin</artifactId>
+        <version>5.45.0</version>
+        <configuration>
+          <activeRecipes>
+            <recipe>${wmb.recipe}</recipe>
+          </activeRecipes>
+          <exportDatatables>false</exportDatatables>
+          <failOnInvalidActiveRecipes>true</failOnInvalidActiveRecipes>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-static-analysis</artifactId>
+            <version>1.20.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+</project>

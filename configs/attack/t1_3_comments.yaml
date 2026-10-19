@@ -1,0 +1,6 @@
+# T1.3 commenti (SPEC §12): (a) rimozione, (b) inserimento di un commento ogni 3 righe di codice
+# (density 1/3, decisione dell'utente del 16 ottobre 2026).
+attack_id: T1.3
+points:
+  - {mode: remove}
+  - {mode: insert, density: 0.333}

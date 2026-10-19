@@ -46,7 +46,7 @@ def test_thestack_partition_is_by_repository(tcfg: ExperimentConfig) -> None:
     )
     assert stack.bucket("org/x") == stack.bucket("org/x")
     buckets = Counter(stack.bucket(f"r{i}") for i in range(4000))
-    assert set(buckets) == {"l3_test", "l1_test", "dev", "promptmark"}
+    assert set(buckets) == {"l3_test", "l1_test", "dev", "attack_pools"}
     assert all(800 < n < 1200 for n in buckets.values())  # frazioni 0,25
 
     pools, stats = stack.candidates(["l1_test", "dev"])

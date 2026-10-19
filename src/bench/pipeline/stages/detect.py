@@ -12,7 +12,10 @@ metodo (fino all'HPO). Soggetti, un artefatto ciascuno
 - ``neg_integration``: integrazione di sviluppo combinata L1+L2 (TODO 3, opzione 2, ADR-011), solo
   nelle celle L2 dev. È per linguaggio, non per livello: sta nella cella L2 dev perché quelle celle
   sono tutte nuove, mentre aggiungerla alle celle L1 dev già fatte le rieseguirebbe per intero.
-  Con la calibrazione su L1+L2 sostituisce l'integrazione di L1, i cui punteggi non si riusano.
+  Con la calibrazione su L1+L2 sostituisce l'integrazione di L1, i cui punteggi non si riusano;
+- ``attacked/<attacco>/<params_hash>``: campioni attaccati (M10, ADR-012), unico soggetto delle
+  celle con attacco (``Cell.attack_id``); come i positivi, con il prompt del problema e il messaggio
+  atteso del campione.
 
 Contesto di condizionamento (SPEC §9.1): il prompt chat del problema quando esiste (positivi,
 negativi LLM, negativi umani nativi con un problema del livello); contesto vuoto per i negativi
@@ -70,7 +73,7 @@ def detection_ref(
     method: str, model_id: str, cfg_hash: str, subject: str, level: str, language: str, split: str
 ) -> ArtifactRef:
     """Punteggi di un soggetto di una cella."""
-    if subject not in SUBJECTS:
+    if subject not in SUBJECTS and not subject.startswith("attacked/"):
         raise ConfigError(f"unknown detection subject {subject!r}")
     return ArtifactRef.of(
         "detection",
@@ -85,7 +88,14 @@ class DetectStage(Stage):
     name: ClassVar[str] = "detect"
     resources: ClassVar[ResourceClass] = ResourceClass.GPU_NVIDIA
     output_kinds: ClassVar[frozenset[str]] = frozenset({"detection"})
-    cell_axes: ClassVar[tuple[str, ...]] = ("method", "model_id", "level", "language", "split")
+    cell_axes: ClassVar[tuple[str, ...]] = (
+        "method",
+        "model_id",
+        "level",
+        "language",
+        "split",
+        "attack_id",
+    )
     sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
@@ -123,9 +133,18 @@ class DetectStage(Stage):
         """Hash della configurazione della cella (con un nome di metodo: il default)."""
         return self.cell_config(Cell(method=cell) if isinstance(cell, str) else cell)[1]
 
+    def cell_subjects(self, cell: Cell) -> tuple[str, ...]:
+        """Soggetti di una cella: quello dell'attacco per le celle con attacco."""
+        if cell.attack_id:
+            from bench.pipeline.stages.attack import attacked_subject
+
+            return (attacked_subject(cell.attack_id, str(cell.attack_params_hash)),)
+        method, _, level, _, split = self._require(cell)
+        return self.subjects(method, level, split)
+
     def subjects(self, method: str, level: str = "L1", split: str = "dev") -> tuple[str, ...]:
-        """Soggetti di una cella: la gemella solo per i metodi che la prevedono, l'integrazione
-        combinata solo nelle celle L2 dev."""
+        """Soggetti di una cella senza attacco: la gemella solo per i metodi che la prevedono,
+        l'integrazione combinata solo nelle celle L2 dev."""
         twin = getattr(self.adapter(method), "twin_baseline", False)
         pooled = level == "L2" and split == "dev"
         return tuple(
@@ -137,6 +156,14 @@ class DetectStage(Stage):
     def _sample_refs(self, cell: Cell) -> dict[str, list[ArtifactRef]]:
         method, model_id, level, language, split = self._require(cell)
         cfg_hash = self.config_hash(cell)
+        if cell.attack_id:
+            from bench.pipeline.stages.attack import attacked_ref
+
+            ref = attacked_ref(
+                cell.attack_id, str(cell.attack_params_hash), method, model_id, cfg_hash, level,
+                language, split,
+            )  # fmt: skip
+            return {self.cell_subjects(cell)[0]: [ref]}
         lang = Language(language)
         # L1: nativi + integrazione della parte, se la parte ne ha una (SPEC §10.2: Python test usa
         # solo i 928 nativi); L2: solo i nativi di CodeNet (l'integrazione di sviluppo combinata
@@ -172,7 +199,7 @@ class DetectStage(Stage):
         cfg_hash = self.config_hash(cell)
         return [
             detection_ref(method, model_id, cfg_hash, s, level, language, split)
-            for s in self.subjects(method, level, split)
+            for s in self.cell_subjects(cell)
         ]
 
     # ------------------------------------------------------------------ campioni
@@ -203,7 +230,7 @@ class DetectStage(Stage):
         }
         decoding = {**neutral_settings(decoding_for(cfg, level)), "torch_dtype": model.dtype}
         device = "cuda:0" if adapter.gpu_for_detect else "cpu"
-        subjects = self.subjects(method, level, split)
+        subjects = self.cell_subjects(cell)
         for subject, ref in zip(subjects, self.outputs(cell), strict=True):
             samples = self._samples(ctx, cell, subject)
             inputs = [
@@ -229,7 +256,7 @@ class DetectStage(Stage):
     ) -> DetectInput:
         problem = problems.get(sample.problem_key)
         messages = prompts.build(problem) if problem is not None else None  # D3 senza prompt
-        if subject == "positives":
+        if subject == "positives" or subject.startswith("attacked/"):
             message = sample.expected_message
         else:
             message = adapter.message_for(

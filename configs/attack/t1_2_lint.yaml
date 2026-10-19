@@ -1,0 +1,6 @@
+# T1.2 lint con correzione automatica (SPEC §12): ruff (regole di default), OpenRewrite
+# CommonStaticAnalysis (docs/attacks/t1_2_java_recipes.txt), clang-tidy (tools/cpp/.clang-tidy),
+# eslint (tools/js/eslint.config.mjs).
+attack_id: T1.2
+points:
+  - {}

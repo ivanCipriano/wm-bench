@@ -19,6 +19,14 @@ metodo. Output ``metrics/<metodo>/<modello>/<cfg>/<L>_<lang>_<parte>.parquet``, 
 - ``conditional_preservation`` (solo ACW): P(corretto dopo | corretto prima), Wilson;
 - capacità (solo MCGMark): ``message_accuracy``, ``bit_accuracy``, ``embedding_success_rate``.
 
+**Celle con attacco** (M10, ADR-012; ``Cell.attack_id``): stessa soglia congelata della cella senza
+attacco; output ``<cartella>/attacked/<attacco>/<params_hash>/<metodo>/...``. Metriche:
+``tpr_at_fpr`` e ``auroc`` sugli attaccati (con i punteggi secondari), ``pass_at_1`` degli
+attaccati, ``delta_pass_at_1_pp`` (riferimento − attaccato, come per i marcati: gemella per
+MCGMark), ``delta_pass_at_1_pp_vs_marked`` (marcato non attaccato − attaccato),
+``changed_fraction`` (campioni modificati, Wilson) e ``codebleu_distance`` (1 − CodeBLEU medio,
+bootstrap per problema): l'intensità dell'attacco accanto al suo effetto.
+
 **Soglie provvisorie** (decisione dell'utente del 9 ottobre 2026): sulla parte di test la fase si
 rifiuta di usarle, salvo ``detection.allow_provisional_test`` (solo smoke test).
 """
@@ -28,6 +36,7 @@ from __future__ import annotations
 import logging
 import math
 from collections.abc import Callable, Sequence
+from dataclasses import replace
 from typing import Any, ClassVar
 
 import numpy as np
@@ -70,11 +79,15 @@ def metrics_ref(
     language: str,
     split: str,
     threshold_levels: Sequence[str] = ("L1",),
+    attack: tuple[str, str] | None = None,
 ) -> ArtifactRef:
     """Metriche di una cella con le soglie calibrate su ``threshold_levels`` (cartella
-    ``metrics_L1L2/`` per le soglie definitive, ``metrics/`` per quelle provvisorie di L1)."""
+    ``metrics_L1L2/`` per le soglie definitive, ``metrics/`` per quelle provvisorie di L1); con
+    ``attack`` = (attacco, params_hash) la sottocartella ``attacked/<attacco>/<params_hash>/``."""
     tag = levels_tag(threshold_levels)
     folder = "metrics" + (f"_{tag}" if tag else "")
+    if attack is not None:
+        folder += f"/attacked/{attack[0]}/{attack[1]}"
     return ArtifactRef.of(
         "metrics", f"{folder}/{method}/{model_id}/{cfg_hash}/{level}_{language}_{split}.parquet"
     )
@@ -109,6 +122,13 @@ def _detected(table: pd.DataFrame, threshold: float) -> pd.Series:
     )
 
 
+def _attack_info(cell: Cell) -> dict[str, str]:
+    """Chiavi dell'attacco nella cella della metrica (vuote senza attacco)."""
+    if not cell.attack_id:
+        return {}
+    return {"attack_id": cell.attack_id, "attack_params_hash": str(cell.attack_params_hash)}
+
+
 @STAGES.register("metrics")
 class MetricsStage(Stage):
     """Metriche di una cella sulla parte indicata."""
@@ -116,7 +136,14 @@ class MetricsStage(Stage):
     name: ClassVar[str] = "metrics"
     resources: ClassVar[ResourceClass] = ResourceClass.CPU
     output_kinds: ClassVar[frozenset[str]] = frozenset({"metrics"})
-    cell_axes: ClassVar[tuple[str, ...]] = ("method", "model_id", "level", "language", "split")
+    cell_axes: ClassVar[tuple[str, ...]] = (
+        "method",
+        "model_id",
+        "level",
+        "language",
+        "split",
+        "attack_id",
+    )
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
@@ -170,6 +197,26 @@ class MetricsStage(Stage):
             )
             return execution_ref(c, cfg_hash if with_method else None)
 
+        if cell.attack_id:
+            from bench.pipeline.stages.attack import attacked_ref, attacked_subject
+
+            attack_id, params_hash = cell.attack_id, str(cell.attack_params_hash)
+            attacked_cell = replace(cell, source="attacked")  # esecuzione degli attaccati
+            refs = {
+                "threshold": threshold_ref(method, model_id, language, cfg_hash, self.levels()),
+                "attacked_det": det(attacked_subject(attack_id, params_hash)),
+                "neg_human": det("neg_human"),
+                "attacked": attacked_ref(
+                    attack_id, params_hash, method, model_id, cfg_hash, level, language, split
+                ),
+                "exec_attacked": execution_ref(attacked_cell, cfg_hash),
+                "watermarked": watermarked_ref(method, model_id, cfg_hash, level, language, split),
+                "exec_marked": exe("llm_watermarked", True),
+                "exec_baseline": exe("llm_baseline", False),
+            }
+            if self._twin(method):
+                refs["exec_twin"] = exe("baseline_twin", True)
+            return refs
         refs = {
             "threshold": threshold_ref(method, model_id, language, cfg_hash, self.levels()),
             "positives": det("positives"),
@@ -190,7 +237,10 @@ class MetricsStage(Stage):
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
         cfg_hash = self.config_hash(cell)
-        return [metrics_ref(method, model_id, cfg_hash, level, language, split, self.levels())]
+        attack = (cell.attack_id, str(cell.attack_params_hash)) if cell.attack_id else None
+        return [
+            metrics_ref(method, model_id, cfg_hash, level, language, split, self.levels(), attack)
+        ]
 
     def levels(self) -> list[str]:
         """Livelli delle soglie: ``detection.threshold_levels`` se c'è (sul test di L1 le soglie
@@ -242,6 +292,7 @@ class MetricsStage(Stage):
             "language": language,
             "split": split,
             "config_hash": cfg_hash,
+            **_attack_info(cell),
         }
         rows: list[MetricValue] = []
         n_boot = cfg.detection.n_bootstrap
@@ -266,6 +317,10 @@ class MetricsStage(Stage):
 
         # Punteggio principale del metodo (per STONE z_nonsyntax, D16), come in calibrazione.
         adapter = self.adapter(method)
+        if cell.attack_id:
+            self._attacked_metrics(ctx, cell, refs, add, boot, tau, thresholds)
+            self._write(ctx, cell, rows, cfg_hash, thresholds, not_applicable=False)
+            return
         positives = primary_view(ctx.store.read_table(refs["positives"]), adapter)
         applicable = positives[positives["status"] != "NOT_APPLICABLE"]
         if applicable.empty:
@@ -308,13 +363,44 @@ class MetricsStage(Stage):
         )
 
         # --- punteggi secondari (varianti del paper): soglia propria, stessi positivi e negativi
+        self._secondary_metrics(cell, add, applicable, neg_human, thresholds)
+
+        # --- preservazione funzionale
+        marked_exec = ctx.store.read_table(refs["exec_marked"])
+        reference = "exec_twin" if self._twin(method) else "exec_baseline"
+        self._pass_metrics(add, boot, marked_exec, ctx.store.read_table(refs[reference]), "")
+        if self._twin(method):
+            self._pass_metrics(
+                add, boot, marked_exec, ctx.store.read_table(refs["exec_baseline"]), "_baseline",
+                only_delta=True,
+            )  # fmt: skip
+        if method == "acw":
+            self._conditional_preservation(
+                add, ctx.store.read_table(refs["watermarked"]), marked_exec,
+                ctx.store.read_table(refs["exec_baseline"]),
+            )  # fmt: skip
+        if self._multibit(method):
+            self._capacity(add, boot, applicable)
+        self._write(ctx, cell, rows, cfg_hash, thresholds, not_applicable=False)
+
+    def _secondary_metrics(
+        self,
+        cell: Cell,
+        add: Callable[..., None],
+        positives: pd.DataFrame,
+        neg_human: pd.DataFrame,
+        thresholds: ThresholdSet,
+    ) -> None:
+        """TPR e AUROC dei punteggi secondari (varianti del paper), ognuno con la sua soglia."""
+        cfg = self._cfg()
+        adapter = self.adapter(str(cell.method))
+        n_boot = cfg.detection.n_bootstrap
         for name in adapter.secondary_scores:
             sec = thresholds.secondary.get(name)
             if sec is None:
                 raise ConfigError(f"{cell.key()}: no threshold for the secondary score {name}")
-            sec_pos = with_secondary(applicable, adapter, name)
-            sec_hits = _detected(sec_pos, sec["threshold"]).astype(float)
-            sec_table = sec_pos.assign(hit=sec_hits)
+            sec_pos = with_secondary(positives, adapter, name)
+            sec_table = sec_pos.assign(hit=_detected(sec_pos, sec["threshold"]).astype(float))
             add(
                 f"tpr_at_fpr_{name}",
                 float(sec_table["hit"].mean()),
@@ -342,23 +428,73 @@ class MetricsStage(Stage):
                 len(sec_scores) + len(sec_neg),
             )
 
+    def _attacked_metrics(
+        self,
+        ctx: StageContext,
+        cell: Cell,
+        refs: dict[str, ArtifactRef],
+        add: Callable[..., None],
+        boot: Callable[[str], ClusterBootstrap],
+        tau: float,
+        thresholds: ThresholdSet,
+    ) -> None:
+        """Metriche di una cella con attacco (ADR-012): effetto e intensità dell'attacco."""
+        cfg = self._cfg()
+        method = str(cell.method)
+        adapter = self.adapter(method)
+        n_boot = cfg.detection.n_bootstrap
+        attacked = primary_view(ctx.store.read_table(refs["attacked_det"]), adapter)
+        attacked = attacked[attacked["status"] != "NOT_APPLICABLE"]
+        neg_human = primary_view(ctx.store.read_table(refs["neg_human"]), adapter)
+        table = attacked.assign(hit=_detected(attacked, tau).astype(float))
+        add(
+            "tpr_at_fpr",
+            float(table["hit"].mean()),
+            ratio_interval(
+                table, "hit", bootstrap_seed(cfg.global_seed, "tpr_at_fpr", cell.key()), n_boot
+            ),
+            "cluster_bootstrap",
+            len(table),
+        )
+        pos_scores = attacked.assign(score=_scores(attacked, with_embed=True))
+        neg_scores = _scores(neg_human)
+        add(
+            "auroc",
+            auroc(pos_scores["score"].to_numpy(dtype=float), neg_scores),
+            auroc_interval(
+                pos_scores, neg_scores, bootstrap_seed(cfg.global_seed, "auroc", cell.key()), n_boot
+            ),
+            "cluster_bootstrap+negative_resampling",
+            len(pos_scores) + len(neg_scores),
+        )
+        self._secondary_metrics(cell, add, attacked, neg_human, thresholds)
         # --- preservazione funzionale
-        marked_exec = ctx.store.read_table(refs["exec_marked"])
+        attacked_exec = ctx.store.read_table(refs["exec_attacked"])
         reference = "exec_twin" if self._twin(method) else "exec_baseline"
-        self._pass_metrics(add, boot, marked_exec, ctx.store.read_table(refs[reference]), "")
-        if self._twin(method):
-            self._pass_metrics(
-                add, boot, marked_exec, ctx.store.read_table(refs["exec_baseline"]), "_baseline",
-                only_delta=True,
-            )  # fmt: skip
-        if method == "acw":
-            self._conditional_preservation(
-                add, ctx.store.read_table(refs["watermarked"]), marked_exec,
-                ctx.store.read_table(refs["exec_baseline"]),
-            )  # fmt: skip
-        if self._multibit(method):
-            self._capacity(add, boot, applicable)
-        self._write(ctx, cell, rows, cfg_hash, thresholds, not_applicable=False)
+        self._pass_metrics(add, boot, attacked_exec, ctx.store.read_table(refs[reference]), "")
+        self._pass_metrics(
+            add, boot, attacked_exec, ctx.store.read_table(refs["exec_marked"]), "_vs_marked",
+            only_delta=True,
+        )  # fmt: skip
+        # --- intensità dell'attacco
+        samples = ctx.store.read_table(refs["attacked"])
+        samples = samples[samples["attack_status"] != "NOT_APPLICABLE"]
+        changed = int((samples["attack_status"] == "APPLIED").sum())
+        add("changed_fraction", changed / len(samples) if len(samples) else math.nan,
+            wilson(changed, len(samples)), "wilson", len(samples))  # fmt: skip
+        tool_errors = int((samples["attack_status"] == "TOOL_ERROR").sum())
+        add("tool_error_fraction", tool_errors / len(samples) if len(samples) else math.nan,
+            wilson(tool_errors, len(samples)), "wilson", len(samples))  # fmt: skip
+        per_problem = (
+            samples["codebleu_distance"].astype(float).groupby(samples["problem_key"]).mean()
+        ).to_numpy(dtype=float)
+        add(
+            "codebleu_distance",
+            float(samples["codebleu_distance"].astype(float).mean()) if len(samples) else math.nan,
+            boot("codebleu_distance").mean_interval(per_problem),
+            "cluster_bootstrap",
+            len(samples),
+        )
 
     def _multibit(self, method: str) -> bool:
         """Metodi con messaggio (ridefiniscono ``Detector.message_for``): capacità §13.5."""

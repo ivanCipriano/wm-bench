@@ -1,0 +1,14 @@
+# Controlli dell'attacco T1.2 per C++ (SPEC §12, ADR-012): solo controlli con correzione
+# automatica (--fix) che non dipendono da un progetto o da un database di compilazione.
+Checks: >
+  -*,
+  readability-braces-around-statements,
+  readability-else-after-return,
+  readability-simplify-boolean-expr,
+  readability-isolate-declaration,
+  modernize-use-auto,
+  modernize-loop-convert,
+  modernize-use-nullptr
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: none

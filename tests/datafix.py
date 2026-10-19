@@ -139,7 +139,12 @@ def tiny_config(cfg: ExperimentConfig) -> ExperimentConfig:
     neg = data["negatives"]
     neg["min_dev_negatives"] = MIN_DEV
     neg["l1_test_total"] = L1_TEST_TOTAL
-    neg["thestack_partition"] = {"l3_test": 0.25, "l1_test": 0.25, "dev": 0.25, "promptmark": 0.25}
+    neg["thestack_partition"] = {
+        "l3_test": 0.25,
+        "l1_test": 0.25,
+        "dev": 0.25,
+        "attack_pools": 0.25,
+    }
     data["levels"] = ["L1"]
     return rebuild(cfg, **{k: data[k] for k in ("datasets", "split", "negatives", "levels")})
 

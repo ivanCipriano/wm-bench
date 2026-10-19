@@ -4,6 +4,8 @@ Gli import sono espliciti (niente scoperta dal filesystem, SPEC §7.1).
 """
 
 from bench.pipeline.stages import (
+    attack,
+    attack_pools,
     calibrate,
     detect,
     evalplus_groundtruth,
@@ -19,6 +21,8 @@ from bench.pipeline.stages import (
 )
 
 __all__ = [
+    "attack",
+    "attack_pools",
     "calibrate",
     "detect",
     "evalplus_groundtruth",

@@ -1,0 +1,4 @@
+# T1.1 formattazione (SPEC §12): una configurazione; tool e versioni in ADR-012.
+attack_id: T1.1
+points:
+  - {}

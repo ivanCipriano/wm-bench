@@ -1,0 +1,14 @@
+{
+  "name": "wm-bench-tools-js",
+  "private": true,
+  "description": "Tool JavaScript degli attacchi (SPEC 20.2): versioni esatte, installazione con npm ci",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@eslint/js": "9.14.0",
+    "esbuild": "0.24.0",
+    "eslint": "9.14.0",
+    "globals": "15.12.0",
+    "prettier": "3.3.3",
+    "terser": "5.36.0"
+  }
+}

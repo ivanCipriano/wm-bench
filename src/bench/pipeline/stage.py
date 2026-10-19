@@ -174,7 +174,9 @@ class CellPlanner:
             "language": [str(x) for x in config.languages],
             "level": [str(x) for x in config.levels],
             "split": [str(x) for x in config.splits],
-            "attack_id": list(config.attacks),
+            # Senza attacchi l'asse vale None: le fasi che lo hanno (execute, detect, metrics)
+            # pianificano le celle senza attacco come prima della M10.
+            "attack_id": list(config.attacks) or [None],  # type: ignore[list-item]
             "source": list(config.execution.sources),
         }
 
@@ -193,7 +195,25 @@ class CellPlanner:
             cell = stage.normalize_cell(Cell(**dict(zip(stage.cell_axes, combo, strict=True))))
             if cell is not None and cell not in cells:
                 cells.append(cell)
-        return self._selected(stage, self._sweep(stage, cells))
+        return self._selected(stage, self._attack_grid(stage, self._sweep(stage, cells)))
+
+    @staticmethod
+    def _attack_grid(stage: type[Stage], cells: list[Cell]) -> list[Cell]:
+        """Una cella per combinazione dei parametri di ogni attacco (``configs/attack/*.yaml``):
+        ``Cell.attack_params_hash``, come lo sweep dell'HPO per i metodi (ADR-012)."""
+        if "attack_id" not in stage.cell_axes:
+            return cells
+        from bench.attacks.base import grid_attacks
+
+        out: list[Cell] = []
+        for cell in cells:
+            if cell.attack_id is None or cell.attack_params_hash is not None:
+                out.append(cell)
+            else:
+                out.extend(
+                    replace(cell, attack_params_hash=h) for h in grid_attacks(cell.attack_id)
+                )
+        return out
 
     def _selected(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:
         """Sulla parte di test: la configurazione congelata del metodo (ADR-013).

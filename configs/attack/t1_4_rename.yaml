@@ -1,0 +1,5 @@
+# T1.4 rinomina di variabili locali e parametri (SPEC §12): r × tipo di nome = 8 configurazioni.
+attack_id: T1.4
+space:
+  ratio: [0.25, 0.5, 0.75, 1.0]
+  name_kind: [random, natural]

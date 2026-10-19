@@ -10,3 +10,8 @@ containers/sandbox_dir/
 .mypy_cache/
 .ruff_cache/
 .local_wmb/
+
+# Tool degli attacchi (scripts/setup_tools.sh): installati sul cluster, non versionati
+tools/js/node_modules/
+tools/java/*.jar
+tools/java/m2/

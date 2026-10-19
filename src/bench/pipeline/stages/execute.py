@@ -7,11 +7,14 @@ Celle:
 - ``source=llm_baseline``: campioni della baseline di (modello, livello, linguaggio, parte);
 - ``source=llm_watermarked``: campioni marcati di (metodo, modello, livello, linguaggio, parte), con
   la configurazione di default del metodo (fino all'HPO); servono a Pass@1 e ΔPass@1 (M7);
-- ``source=baseline_twin``: baseline gemella dei metodi che la prevedono (MCGMark, D20).
+- ``source=baseline_twin``: baseline gemella dei metodi che la prevedono (MCGMark, D20);
+- ``source=attacked``: campioni attaccati di (metodo, ..., attacco, ``attack_params_hash``),
+  M10 (I5: dopo ogni attacco si eseguono sempre i test).
 
 Output: ``execution/canonical/<L>_<lang>.parquet``,
 ``execution/llm_baseline/<modello>/<L>_<lang>_<parte>.parquet`` e, per le fonti di un metodo,
-``execution/<fonte>/<metodo>/<modello>/<config_hash>/<L>_<lang>_<parte>.parquet``; una riga
+``execution/<fonte>/<metodo>/<modello>/<config_hash>/<L>_<lang>_<parte>.parquet`` (per gli
+attaccati ``execution/attacked/<attacco>/<params_hash>/<metodo>/...``); una riga
 per campione in input (I1) con i campi di ``ExecutionRecord`` più ``problem_key``,
 ``sample_index`` e ``dataset``. Un'invocazione della sandbox per problema; i problemi girano in
 parallelo su ``max_workers`` thread (il lavoro è nei sottoprocessi della sandbox).
@@ -30,6 +33,7 @@ import threading
 import time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, ClassVar
 
@@ -64,7 +68,7 @@ EXTRA_COLUMNS = ["problem_key", "sample_index", "dataset"]
 OUTPUT_COLUMNS = [*EXTRA_COLUMNS, *ExecutionRecord.model_fields]
 
 
-METHOD_SOURCES = ("llm_watermarked", "baseline_twin")
+METHOD_SOURCES = ("llm_watermarked", "baseline_twin", "attacked")
 
 
 def execution_ref(cell: Cell, config_hash: str | None = None) -> ArtifactRef:
@@ -76,6 +80,12 @@ def execution_ref(cell: Cell, config_hash: str | None = None) -> ArtifactRef:
     if cell.source in METHOD_SOURCES:
         if not config_hash:
             raise ConfigError(f"execute: {cell.source} needs the method config hash")
+        if cell.source == "attacked":
+            return ArtifactRef.of(
+                "execution",
+                f"execution/attacked/{cell.attack_id}/{cell.attack_params_hash}/{cell.method}/"
+                f"{cell.model_id}/{config_hash}/{cell.level}_{cell.language}_{cell.split}.parquet",
+            )
         return ArtifactRef.of(
             "execution",
             f"execution/{cell.source}/{cell.method}/{cell.model_id}/{config_hash}/"
@@ -125,6 +135,7 @@ class ExecuteStage(Stage):
         "level",
         "language",
         "split",
+        "attack_id",
     )
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
@@ -136,6 +147,9 @@ class ExecuteStage(Stage):
 
     @classmethod
     def normalize_cell(cls, cell: Cell) -> Cell | None:
+        if cell.source == "attacked":
+            return cell if cell.attack_id and cell.method else None
+        cell = replace(cell, attack_id=None, attack_params_hash=None)
         if cell.source == "canonical":
             return Cell(source="canonical", level=cell.level, language=cell.language)
         if cell.source == "llm_baseline":
@@ -171,6 +185,8 @@ class ExecuteStage(Stage):
         complete = bool(cell.model_id and cell.level and cell.language and cell.split)
         if cell.source == "llm_baseline" and complete:
             return
+        if cell.source == "attacked" and not (cell.attack_id and cell.attack_params_hash):
+            raise ConfigError(f"execute: attacked cell without attack: {cell.key()}")
         if cell.source in METHOD_SOURCES and complete and cell.method:
             return
         raise ConfigError(f"execute: incomplete or unknown cell {cell.key()}")
@@ -202,6 +218,13 @@ class ExecuteStage(Stage):
             return baseline_twin_ref(
                 str(cell.method), str(cell.model_id), str(cfg_hash), level, language, split
             )
+        if cell.source == "attacked":
+            from bench.pipeline.stages.attack import attacked_ref
+
+            return attacked_ref(
+                str(cell.attack_id), str(cell.attack_params_hash), str(cell.method),
+                str(cell.model_id), str(cfg_hash), level, language, split,
+            )  # fmt: skip
         return None
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:

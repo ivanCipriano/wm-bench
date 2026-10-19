@@ -233,7 +233,9 @@ class ExecutionConfig(_Frozen):
     network_none: bool = True
     node_local: bool = True  # immagine e cartelle di lavoro sul disco locale del nodo
     apptainer_module: str
-    sources: list[Literal["canonical", "llm_baseline", "llm_watermarked", "baseline_twin"]]
+    sources: list[
+        Literal["canonical", "llm_baseline", "llm_watermarked", "baseline_twin", "attacked"]
+    ]
     timeouts_s: dict[str, float]
     compile_timeout_s: float = Field(gt=0)
     mem_mb: dict[str, int | None]

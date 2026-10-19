@@ -13,4 +13,5 @@ thestack_partition:
   l3_test: 0.4                 # prompt e negativi del Livello 3 (Milestone 13)
   l1_test: 0.2                 # integrazione dei negativi di test L1 C++
   dev: 0.2                     # integrazione dei negativi di sviluppo C++
-  promptmark: 0.2              # liste di frequenza di PromptMark (Milestone 6)
+  attack_pools: 0.2            # commenti e nomi degli attacchi T1.3 e T1.4 (M10); era "promptmark",
+                               # mai usato (D22): stesso posto, gli altri repository non cambiano

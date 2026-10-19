@@ -1,0 +1,2 @@
+# Stile dell'attacco T1.1 per C++ (SPEC §12): Google, coerente con google-java-format.
+BasedOnStyle: Google
