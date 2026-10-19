@@ -350,3 +350,39 @@ def test_attack_grids() -> None:
     assert len(hashes) == 8 and all(len(h) == 12 for h in hashes)
     density = [a.params for a in grid_attacks("T1.3").values() if a.params["mode"] == "insert"]
     assert density == [{"mode": "insert", "density": 0.333}]
+
+
+RECURSIVE = {
+    "python": "def fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n",
+    "java": (
+        "class S {\n    int fib(int n) {\n        if (n < 2) return n;\n"
+        "        return fib(n - 1) + this.fib(n - 2);\n    }\n}\n"
+    ),
+    "cpp": "int fib(int n) {\n    if (n < 2) return n;\n    return fib(n - 1) + fib(n - 2);\n}\n",
+}
+
+
+@pytest.mark.parametrize("language", list(RECURSIVE))
+def test_local_edits_no_log_in_recursive_functions(language: str) -> None:
+    from bench.attacks.t1.common import statement_sites
+    from bench.attacks.t1.local_edits import log_sites
+
+    code = RECURSIVE[language]
+    sites = statement_sites(code, Language(language), default_parsers())
+    assert log_sites(sites, Language(language), exclude_recursive=False)
+    assert log_sites(sites, Language(language)) == []
+    marker = {"python": "stderr", "java": "System.err", "cpp": "cerr"}[language]
+    for seed in range(10):
+        out = make_attack("T1.5", {"k": 5}).safe_apply(
+            code, Language(language), _ctx(language, seed)
+        )
+        assert marker not in out.code
+        assert out.detail["n_stderr_log"] == 0
+
+
+def test_local_edits_never_log_in_javascript() -> None:
+    for seed in range(20):
+        out = _apply("T1.5", {"k": 5}, "javascript", seed)
+        assert "console.error" not in out.code
+        assert out.detail["n_stderr_log"] == 0
+        assert out.detail["n_edits"] == 5  # k invariato: gli altri due tipi

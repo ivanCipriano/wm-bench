@@ -8,8 +8,12 @@ il codice si rianalizza. Tipi:
   ``[[maybe_unused]] int x = 0;`` / ``let x = 0;``);
 - ``stderr_log``: log su **stderr**, mai su stdout (CodeNet confronta stdout):
   ``print(..., file=__import__("sys").stderr)`` / ``System.err.println`` / ``std::cerr`` (con
-  ``#include <iostream>`` se manca) / ``console.error``; solo nel corpo diretto delle funzioni,
-  non dentro cicli o rami;
+  ``#include <iostream>`` se manca). Solo in punti eseguiti al massimo una volta per chiamata: nel
+  corpo diretto delle funzioni (mai in cicli o rami) e mai in funzioni che richiamano sé stesse
+  (versione 2, decisione dell'utente del 19 ottobre 2026: un log eseguito milioni di volte non è
+  "senza effetto" e fa scadere i test). **Mai in JavaScript** (D30): il valutatore di
+  HumanEvalPack considera fallito ogni programma JavaScript che scrive su stderr; lì le ``k``
+  modifiche si scelgono fra gli altri due tipi;
 - ``extract``: un'espressione binaria senza effetti collaterali, presa da un'istruzione semplice
   (espressione, ``return``, dichiarazione con un solo dichiaratore) che non contiene chiamate,
   ``new``, incrementi o assegnazioni annidate, si sposta in una temporanea prima dell'istruzione
@@ -45,6 +49,8 @@ from bench.lang.parsers import iter_nodes
 from bench.registry import ATTACKS
 
 EDIT_TYPES = ("unused_var", "stderr_log", "extract")
+# Linguaggi con il log su stderr (D30: in JavaScript l'harness di HumanEvalPack conta stderr).
+LOG_LANGUAGES = frozenset({Language.PYTHON, Language.JAVA, Language.CPP})
 
 _BINARY = {
     Language.PYTHON: frozenset({"binary_operator", "comparison_operator", "boolean_operator"}),
@@ -203,6 +209,56 @@ def _extract_candidates(site: Site, lang: Language) -> list[Node]:
     ]
 
 
+def _function_name(fn: Node, lang: Language) -> str | None:
+    """Nome di una funzione (``None`` per lambda e funzioni anonime)."""
+    name = fn.child_by_field_name("name")
+    if name is None and lang is Language.CPP:
+        decl = fn.child_by_field_name("declarator")
+        while decl is not None and decl.type != "function_declarator":
+            decl = decl.child_by_field_name("declarator")
+        name = decl.child_by_field_name("declarator") if decl is not None else None
+        while name is not None and name.child_by_field_name("name") is not None:
+            name = name.child_by_field_name("name")  # nome qualificato: A::f -> f
+    return name.text.decode("utf-8") if name is not None and name.text is not None else None
+
+
+def _callee(node: Node, lang: Language) -> str | None:
+    """Nome della funzione chiamata da un nodo di chiamata (``None`` se non è una chiamata)."""
+    if lang is Language.JAVA:
+        target = node.child_by_field_name("name") if node.type == "method_invocation" else None
+    elif node.type in ("call", "call_expression"):
+        target = node.child_by_field_name("function")
+        while target is not None and target.type in (
+            "attribute", "field_expression", "qualified_identifier", "template_function",
+            "member_expression",
+        ):  # fmt: skip
+            target = (
+                target.child_by_field_name("attribute")
+                or target.child_by_field_name("field")
+                or target.child_by_field_name("name")
+                or target.child_by_field_name("property")
+            )
+    else:
+        return None
+    return target.text.decode("utf-8") if target is not None and target.text is not None else None
+
+
+def recursive(fn: Node, lang: Language) -> bool:
+    """La funzione contiene una chiamata al proprio nome (ricorsione diretta, anche come metodo)."""
+    name = _function_name(fn, lang)
+    return name is not None and any(_callee(n, lang) == name for n in iter_nodes(fn))
+
+
+def log_sites(sites: list[Site], lang: Language, exclude_recursive: bool = True) -> list[Site]:
+    """Punti del log su stderr: corpo diretto di una funzione non ricorsiva (vuoto in JS)."""
+    if Language(lang) not in LOG_LANGUAGES:
+        return []
+    out = [s for s in sites if s.function_body]
+    if exclude_recursive:
+        out = [s for s in out if s.block.parent is None or not recursive(s.block.parent, lang)]
+    return out
+
+
 def _unused_var(lang: Language, name: str) -> str:
     return {
         Language.PYTHON: f"{name} = 0",
@@ -242,6 +298,7 @@ class LocalEditsAttack(Attack):
 
     attack_id: ClassVar[str] = "T1.5"
     group: ClassVar[str] = "T1"
+    version: ClassVar[int] = 2  # 2: log su stderr mai in funzioni ricorsive né in JavaScript
 
     def __init__(self, params: dict[str, Any]) -> None:
         super().__init__(params)
@@ -258,7 +315,7 @@ class LocalEditsAttack(Attack):
             sites = [
                 s for s in statement_sites(new, lang, ctx.parsers) if not _excluded_site(s, lang)
             ]
-            top = [s for s in sites if s.function_body]
+            top = log_sites(sites, lang)
             extract = [(s, e) for s in sites for e in _extract_candidates(s, lang)]
             options: dict[str, Callable[[str], str]] = {}
             if sites:

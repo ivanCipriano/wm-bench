@@ -30,6 +30,8 @@ from pathlib import Path
 from typing import Any
 
 from bench.attacks.base import AttackContext, AttackPools, grid_attacks, sample_rng
+from bench.attacks.t1.common import statement_sites
+from bench.attacks.t1.local_edits import LOG_LANGUAGES, _excluded_site, log_sites
 from bench.attacks.tools import ToolRunner
 from bench.config.builder import load_experiment, repo_root
 from bench.data.attack_pools import AttackPool
@@ -128,6 +130,8 @@ def check_language(cfg: Any, store: ArtifactStore, language: str, attack_ids: li
         f"\n########## {language}: {len(checker.problems)} canoniche, {n_before} passano senza "
         "attacco (esecuzione delle canoniche della M4)\n"
     )
+    if "T1.5" in attack_ids:
+        report_log_sites(checker, language)
     for attack_id in attack_ids:
         for params_hash, attack in grid_attacks(attack_id).items():
             if attack.needs_pools and not (pools.comments and pools.names):
@@ -174,6 +178,28 @@ def check_language(cfg: Any, store: ArtifactStore, language: str, attack_ids: li
                 )
             if attack_id == "T1.2" and lang is Language.JAVA and broken:
                 isolate_recipes(checker, tools, broken)
+
+
+def report_log_sites(checker: Checker, language: str) -> None:
+    """T1.5: punti del log su stderr nelle canoniche, con e senza l'esclusione delle funzioni
+    ricorsive (decisione dell'utente del 19 ottobre 2026)."""
+    lang = Language(language)
+    parsers = default_parsers()
+    with_rec = without_rec = recursive_codes = 0
+    for code in checker.codes.values():
+        sites = [s for s in statement_sites(code, lang, parsers) if not _excluded_site(s, lang)]
+        everywhere = log_sites(sites, lang, exclude_recursive=False)
+        kept = log_sites(sites, lang)
+        with_rec += len(everywhere)
+        without_rec += len(kept)
+        recursive_codes += len(kept) < len(everywhere)
+    lost = with_rec - without_rec
+    sys.stdout.write(
+        f"T1.5 punti del log su stderr: {with_rec} nel corpo delle funzioni, {without_rec} dopo "
+        f"aver escluso le ricorsive (persi {lost}, in {recursive_codes} canoniche)"
+        + (" [JavaScript: nessun log, D30]" if lang not in LOG_LANGUAGES else "")
+        + "\n"
+    )
 
 
 def isolate_recipes(checker: Checker, tools: ToolRunner, broken: list[str]) -> None:

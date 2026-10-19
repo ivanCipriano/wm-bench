@@ -62,7 +62,12 @@ Note sui singoli tool:
   - **Nomi nuovi:** `random` = lettera + 7 caratteri alfanumerici; `natural` = dalla raccolta, con ripiego su un nome casuale (contato) dopo 50 tentativi. Mai collisioni con parole riservate o con parole presenti nel file.
 - **T1.5 modifiche localizzate** (`k` ∈ {1, 3, 5}). Per ogni modifica l'RNG sceglie il tipo fra quelli con punti disponibili, poi il punto.
   - **Variabile inutilizzata.** In C++ si usa `[[maybe_unused]]`, per non dipendere dai flag di avviso.
-  - **Log su stderr.** Solo fra le istruzioni del corpo diretto della funzione (non in cicli o rami, per non moltiplicare l'output). In C++ si aggiunge `#include <iostream>` se manca.
+  - **Log su stderr.** In C++ si aggiunge `#include <iostream>` se manca. Precisazione della definizione dell'attacco (versione 2, decisione dell'utente del 19 ottobre 2026): il log va solo in punti eseguiti **al massimo una volta per chiamata di funzione**, cioè:
+    - fra le istruzioni del corpo diretto della funzione, mai dentro cicli o rami;
+    - mai in funzioni che richiamano sé stesse (ricorsione diretta, anche come metodo).
+
+    Motivo: il protocollo definisce T1.5 come modifiche senza effetto sul risultato, e SPEC §21.3 chiede che le canoniche continuino a passare. Un log eseguito milioni di volte viola entrambe le condizioni: nella prima verifica, `mbpp/389` e `mbpp/583` (ricorsione esponenziale) andavano in `TIMEOUT`. I punti persi con la regola sono riportati da `check_attacks_canonical.py`.
+  - **Niente log in JavaScript** (D30): il valutatore di HumanEvalPack considera fallito ogni programma JavaScript che scrive su stderr. Le `k` modifiche si scelgono fra gli altri due tipi, con `k` invariato. In Java e C++ il valutatore guarda solo il codice di uscita (ADR-001), quindi lì il log resta.
   - **Estrazione di un'espressione binaria in una temporanea.** Solo da istruzioni semplici con un solo dichiaratore, che non contengono:
     - chiamate, `new`, incrementi, assegnazioni annidate, lambda;
     - `instanceof` (Java);
