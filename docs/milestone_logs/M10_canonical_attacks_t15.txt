@@ -1,1 +1,26 @@
-##### nodo tnode04, commit d2ea783
+##### nodo tnode04, commit 1e66040
+##### attacchi T1 sulle canoniche di L1 (repo /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench)
+
+########## python: 542 canoniche, 542 passano senza attacco (esecuzione delle canoniche della M4)
+T1.5 punti del log su stderr: 1215 nel corpo delle funzioni, 1186 dopo aver escluso le ricorsive (persi 29, in 10 canoniche)
+T1.5 {"k": 1}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.1141
+T1.5 {"k": 3}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.1826
+T1.5 {"k": 5}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.2100
+
+########## java: 164 canoniche, 164 passano senza attacco (esecuzione delle canoniche della M4)
+T1.5 punti del log su stderr: 610 nel corpo delle funzioni, 600 dopo aver escluso le ricorsive (persi 10, in 3 canoniche)
+T1.5 {"k": 1}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0655
+T1.5 {"k": 3}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1399
+T1.5 {"k": 5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1733
+
+########## cpp: 164 canoniche, 164 passano senza attacco (esecuzione delle canoniche della M4)
+T1.5 punti del log su stderr: 711 nel corpo delle funzioni, 711 dopo aver escluso le ricorsive (persi 0, in 0 canoniche)
+T1.5 {"k": 1}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1046
+T1.5 {"k": 3}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1707
+T1.5 {"k": 5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1945
+
+########## javascript: 164 canoniche, 164 passano senza attacco (esecuzione delle canoniche della M4)
+T1.5 punti del log su stderr: 0 nel corpo delle funzioni, 0 dopo aver escluso le ricorsive (persi 0, in 0 canoniche) [JavaScript: nessun log, D30]
+T1.5 {"k": 1}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1730
+T1.5 {"k": 3}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2546
+T1.5 {"k": 5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2921

@@ -1,0 +1,8 @@
+##### nodo tnode04, commit d2ea783
+##### attacchi T1 sulle canoniche di L1 (repo /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench)
+
+########## cpp: 164 canoniche, 164 passano senza attacco (esecuzione delle canoniche della M4)
+T1.2 {}: passano 164/164, rotte 0, stati {'APPLIED': 141, 'UNCHANGED': 20, 'TOOL_ERROR': 3}, modificate 141/164, 1-CodeBLEU 0.1327
+    TOOL_ERROR: exit 1: 561 warnings and 1 error generated.
+Error while processing /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/attack_canonical/clang-tidy_v8jfgdpb/f00000.cpp.
+
