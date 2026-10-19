@@ -41,7 +41,7 @@ Note sui singoli tool:
   - `modernize-loop-convert`;
   - `modernize-use-nullptr`.
 
-  Con errori di compilazione (es. header assenti nell'ambiente) clang-tidy non applica le correzioni e il campione risulta `TOOL_ERROR`.
+  Con errori di compilazione (es. header assenti nell'ambiente) clang-tidy non applica le correzioni e il campione risulta `TOOL_ERROR`. clang-tidy di conda non ha gli header interni del compilatore (`stddef.h`): si passano quelli del gcc di `bench-core` con `-isystem $(c++ -print-file-name=include)` (prima verifica sulle canoniche: 164/164 `TOOL_ERROR` senza).
 - **google-java-format** con le impostazioni di default ordina gli import e toglie quelli inutilizzati: fa parte del formatter, si tiene.
 - **ESLint** si lancia con `-c tools/js/eslint.config.mjs` dalla cartella dei file: con `-c` la base dei percorsi è la cartella corrente.
 

@@ -92,7 +92,9 @@ fi
 echo "##### 4) prova dei tool su file minimi"
 printf 'def f( x ):\n  return x+1\n' > "$WORK/a.py"
 printf 'class A { int f(int x){return x+1;} }\n' > "$WORK/A.java"
-printf 'int f(int x){if(x) return 1; else return 2;}\n' > "$WORK/a.cpp"
+printf '#include <stdio.h>\n#include <math.h>\n#include <vector>\nusing namespace std;\nint f(vector<int> v){if(v.size()) return 1; else return 2;}\n' > "$WORK/a.cpp"
+# Header interni del compilatore per clang-tidy (stddef.h…): quelli del gcc di conda (ADR-012).
+CXX_INCLUDE="$(c++ -print-file-name=include)"
 printf 'const f = (x)=>{return x+1}\nmodule.exports = f;\n' > "$WORK/a.js"
 BIN="$REPO_ROOT/tools/js/node_modules/.bin"
 black -q "$WORK/a.py" && echo "black: OK"
@@ -100,7 +102,7 @@ ruff check --fix --isolated --no-cache -q "$WORK/a.py" && echo "ruff: OK"
 java "${GJF_FLAGS[@]}" -jar "$GJF" --replace "$WORK/A.java" && echo "google-java-format: OK"
 clang-format -i --style="file:$REPO_ROOT/tools/cpp/.clang-format" "$WORK/a.cpp" && echo "clang-format: OK"
 clang-tidy --quiet --fix --config-file="$REPO_ROOT/tools/cpp/.clang-tidy" "$WORK/a.cpp" -- -std=c++17 \
-    && echo "clang-tidy: OK"
+    -isystem "$CXX_INCLUDE" && echo "clang-tidy: OK"
 "$BIN/prettier" --write --log-level warn --no-editorconfig \
     --config "$REPO_ROOT/tools/js/.prettierrc.json" "$WORK/a.js" && echo "prettier: OK"
 (cd "$WORK" && "$BIN/eslint" --fix -c "$REPO_ROOT/tools/js/eslint.config.mjs" a.js) && echo "eslint: OK"

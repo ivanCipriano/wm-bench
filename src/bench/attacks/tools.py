@@ -120,6 +120,7 @@ class ToolRunner:
         self.timeout_s = timeout_s
         self.per_file_s = per_file_s
         self._versions: dict[str, str] = {}
+        self._includes: list[str] | None = None
 
     # ------------------------------------------------------------------ ambiente
     def env(self) -> dict[str, str]:
@@ -259,14 +260,36 @@ class ToolRunner:
             ],
         )  # fmt: skip
 
+    def compiler_includes(self) -> list[str]:
+        """Header interni del compilatore (``stddef.h``…) per clang-tidy.
+
+        clang-tidy di conda non ha la cartella delle risorse di clang: senza, ogni file che
+        include la libreria standard dà ``'stddef.h' file not found``. Si usa quella del
+        compilatore C++ di ``bench-core`` (``c++ -print-file-name=include``, il gcc di conda).
+        """
+        if self._includes is None:
+            self._includes = []
+            try:
+                proc = subprocess.run(
+                    ["c++", "-print-file-name=include"],
+                    capture_output=True, text=True, timeout=60, env=self.env(), check=False,
+                )  # fmt: skip
+                path = proc.stdout.strip()
+                if proc.returncode == 0 and path and Path(path).is_dir():
+                    self._includes = ["-isystem", path]
+            except (OSError, subprocess.TimeoutExpired):
+                pass
+        return self._includes
+
     def _clang_tidy(self) -> _ToolSpec:
         config = self.tools_root / "cpp" / ".clang-tidy"
+        includes = self.compiler_includes()
         return _ToolSpec(
             "clang-tidy",
             _flat(".cpp"),
             lambda root, files: [
                 "clang-tidy", "--quiet", "--fix", f"--config-file={config}",
-                *(f.name for f in files), "--", "-std=c++17",
+                *(f.name for f in files), "--", "-std=c++17", *includes,
             ],
             per_file_s=10.0,
         )  # fmt: skip
