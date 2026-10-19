@@ -1,0 +1,3859 @@
+##### nodo tnode01, commit 69bf9c4
+##### attacchi T1 sulle canoniche di L1 (repo /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench)
+
+########## python: 542 canoniche, 542 passano senza attacco (esecuzione delle canoniche della M4)
+T1.1 {}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.0335
+T1.2 {}: passano 542/542, rotte 0, stati {'UNCHANGED': 528, 'APPLIED': 14}, modificate 14/542, 1-CodeBLEU 0.0804
+T1.3 {"mode": "remove"}: passano 542/542, rotte 0, stati {'UNCHANGED': 528, 'APPLIED': 14}, modificate 14/542, 1-CodeBLEU 0.0832
+T1.3 {"density": 0.333, "mode": "insert"}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.0708
+T1.4 {"name_kind": "random", "ratio": 0.25}: passano 542/542, rotte 0, stati {'APPLIED': 541, 'UNCHANGED': 1}, modificate 541/542, 1-CodeBLEU 0.0681
+T1.4 {"name_kind": "natural", "ratio": 0.25}: passano 542/542, rotte 0, stati {'APPLIED': 541, 'UNCHANGED': 1}, modificate 541/542, 1-CodeBLEU 0.0678
+T1.4 {"name_kind": "random", "ratio": 0.5}: passano 542/542, rotte 0, stati {'APPLIED': 541, 'UNCHANGED': 1}, modificate 541/542, 1-CodeBLEU 0.0876
+T1.4 {"name_kind": "natural", "ratio": 0.5}: passano 542/542, rotte 0, stati {'APPLIED': 541, 'UNCHANGED': 1}, modificate 541/542, 1-CodeBLEU 0.0865
+T1.4 {"name_kind": "random", "ratio": 0.75}: passano 542/542, rotte 0, stati {'APPLIED': 541, 'UNCHANGED': 1}, modificate 541/542, 1-CodeBLEU 0.1041
+T1.4 {"name_kind": "natural", "ratio": 0.75}: passano 542/542, rotte 0, stati {'APPLIED': 541, 'UNCHANGED': 1}, modificate 541/542, 1-CodeBLEU 0.1051
+T1.4 {"name_kind": "random", "ratio": 1.0}: passano 542/542, rotte 0, stati {'APPLIED': 541, 'UNCHANGED': 1}, modificate 541/542, 1-CodeBLEU 0.1167
+T1.4 {"name_kind": "natural", "ratio": 1.0}: passano 542/542, rotte 0, stati {'APPLIED': 541, 'UNCHANGED': 1}, modificate 541/542, 1-CodeBLEU 0.1164
+T1.5 {"k": 1}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.1153
+T1.5 {"k": 3}: passano 540/542, rotte 2, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.1832
+  ROTTA mbpp/389: TIMEOUT 'plus tests: fail (time limit of test 3)'
+      @@ -8,4 +8,7 @@
+       		return 2
+      +	scjr5cv4 = 0
+       	if (n == 1): 
+       		return 1
+      +	print("trace 85b0ca", file=__import__("sys").stderr)
+      +	print("trace 67725f", file=__import__("sys").stderr)
+       	return find_lucas(n - 1) + find_lucas(n - 2) 
+  ROTTA mbpp/583: TIMEOUT 'plus tests: fail (time limit of test 16)'
+      @@ -6,6 +6,9 @@
+       def catalan_number(num):
+      +    print("trace ab5948", file=__import__("sys").stderr)
+           if num <= 1:
+                return 1   
+      +    ct96zbxz = 0
+           res_num = 0
+           for i in range(num):
+      +        wquafp6j = 0
+               res_num += catalan_number(i) * catalan_number(num - i - 1)
+T1.5 {"k": 5}: passano 540/542, rotte 2, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.2088
+  ROTTA mbpp/389: TIMEOUT 'plus tests: fail (time limit of test 3)'
+      @@ -7,5 +7,10 @@
+       	if (n == 0): 
+      +		nf5vukc8 = 0
+       		return 2
+      +	print("trace 1e9434", file=__import__("sys").stderr)
+       	if (n == 1): 
+      +		pfc3h92q = 0
+       		return 1
+      +	print("trace 25d914", file=__import__("sys").stderr)
+      +	print("trace 0aa378", file=__import__("sys").stderr)
+       	return find_lucas(n - 1) + find_lucas(n - 2) 
+  ROTTA mbpp/583: TIMEOUT 'plus tests: fail (time limit of test 16)'
+      @@ -6,2 +6,3 @@
+       def catalan_number(num):
+      +    bmp5fezp = 0
+           if num <= 1:
+      @@ -9,4 +10,8 @@
+           res_num = 0
+      +    print("trace 9de8a5", file=__import__("sys").stderr)
+      +    rzzp4isk = 0
+           for i in range(num):
+               res_num += catalan_number(i) * catalan_number(num - i - 1)
+      +    dzppvhzr = 0
+      +    print("trace 108dd8", file=__import__("sys").stderr)
+           return res_num
+
+########## java: 164 canoniche, 164 passano senza attacco (esecuzione delle canoniche della M4)
+T1.1 {}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2071
+T1.2 {}: passano 164/164, rotte 0, stati {'APPLIED': 54, 'UNCHANGED': 110}, modificate 54/164, 1-CodeBLEU 0.0674
+T1.3 {"mode": "remove"}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2960
+T1.3 {"density": 0.333, "mode": "insert"}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0992
+T1.4 {"name_kind": "random", "ratio": 0.25}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0530
+T1.4 {"name_kind": "natural", "ratio": 0.25}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0535
+T1.4 {"name_kind": "random", "ratio": 0.5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0784
+T1.4 {"name_kind": "natural", "ratio": 0.5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0810
+T1.4 {"name_kind": "random", "ratio": 0.75}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1055
+T1.4 {"name_kind": "natural", "ratio": 0.75}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1058
+T1.4 {"name_kind": "random", "ratio": 1.0}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1284
+T1.4 {"name_kind": "natural", "ratio": 1.0}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1285
+T1.5 {"k": 1}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0678
+T1.5 {"k": 3}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1335
+T1.5 {"k": 5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1671
+
+########## cpp: 164 canoniche, 164 passano senza attacco (esecuzione delle canoniche della M4)
+T1.1 {}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1646
+T1.2 {}: passano 164/164, rotte 0, stati {'TOOL_ERROR': 164}, modificate 0/164, 1-CodeBLEU 0.0000
+    TOOL_ERROR: exit 1: 531 warnings and 1 error generated.
+Error while processing /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/attack_canonical/clang-tidy_wms_x8hw/f00000.cpp.
+
+T1.3 {"mode": "remove"}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.3636
+T1.3 {"density": 0.333, "mode": "insert"}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1055
+T1.4 {"name_kind": "random", "ratio": 0.25}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0592
+T1.4 {"name_kind": "natural", "ratio": 0.25}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0596
+T1.4 {"name_kind": "random", "ratio": 0.5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0859
+T1.4 {"name_kind": "natural", "ratio": 0.5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0871
+T1.4 {"name_kind": "random", "ratio": 0.75}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1019
+T1.4 {"name_kind": "natural", "ratio": 0.75}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1025
+T1.4 {"name_kind": "random", "ratio": 1.0}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1135
+T1.4 {"name_kind": "natural", "ratio": 1.0}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1134
+T1.5 {"k": 1}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0980
+T1.5 {"k": 3}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1691
+T1.5 {"k": 5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1910
+
+########## javascript: 164 canoniche, 164 passano senza attacco (esecuzione delle canoniche della M4)
+T1.1 {}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0948
+T1.2 {}: passano 164/164, rotte 0, stati {'UNCHANGED': 164}, modificate 0/164, 1-CodeBLEU 0.0000
+T1.3 {"mode": "remove"}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.3051
+T1.3 {"density": 0.333, "mode": "insert"}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.0733
+T1.4 {"name_kind": "random", "ratio": 0.25}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1224
+T1.4 {"name_kind": "natural", "ratio": 0.25}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1275
+T1.4 {"name_kind": "random", "ratio": 0.5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1786
+T1.4 {"name_kind": "natural", "ratio": 0.5}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1811
+T1.4 {"name_kind": "random", "ratio": 0.75}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2146
+T1.4 {"name_kind": "natural", "ratio": 0.75}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2118
+T1.4 {"name_kind": "random", "ratio": 1.0}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2515
+T1.4 {"name_kind": "natural", "ratio": 1.0}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2544
+T1.5 {"k": 1}: passano 81/164, rotte 83, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.1732
+  ROTTA humaneval/1: RUNTIME_ERROR 'trace 598e9a\ntrace 598e9a\ntrace 598e9a\ntrace 598e9a'
+      @@ -10,2 +10,3 @@
+         var current_string = [];
+      +  console.error("trace 598e9a");
+         var current_depth = 0;
+  ROTTA humaneval/10: RUNTIME_ERROR 'trace ba4bc3\ntrace ba4bc3\ntrace ba4bc3\ntrace ba4bc3'
+      @@ -22,2 +22,3 @@
+           beginning_of_suffix += 1;
+      +  console.error("trace ba4bc3");
+         return string + string.slice(0, beginning_of_suffix).split('').reverse().join('');
+  ROTTA humaneval/100: RUNTIME_ERROR 'trace b30c65\ntrace b30c65\ntrace b30c65\ntrace b30c65\ntrace b30c65'
+      @@ -18,2 +18,3 @@
+         }
+      +  console.error("trace b30c65");
+         return t
+  ROTTA humaneval/101: RUNTIME_ERROR 'trace 61c3a5\ntrace 61c3a5\ntrace 61c3a5\ntrace 61c3a5\ntrace 61c3a5\ntrace 61c3a5'
+      @@ -11,2 +11,3 @@
+         let p = []
+      +  console.error("trace 61c3a5");
+         let k = 0
+  ROTTA humaneval/104: RUNTIME_ERROR 'trace bddaca\ntrace bddaca\ntrace bddaca\ntrace bddaca'
+      @@ -41,2 +41,3 @@
+         }
+      +  console.error("trace bddaca");
+         return p
+  ROTTA humaneval/105: RUNTIME_ERROR 'trace ca370c\ntrace ca370c\ntrace ca370c\ntrace ca370c\ntrace ca370c'
+      @@ -39,2 +39,3 @@
+         }
+      +  console.error("trace ca370c");
+         let l = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
+  ROTTA humaneval/106: RUNTIME_ERROR 'trace 31b7ba\ntrace 31b7ba\ntrace 31b7ba\ntrace 31b7ba'
+      @@ -11,2 +11,3 @@
+         let p = 0
+      +  console.error("trace 31b7ba");
+         let k = []
+  ROTTA humaneval/109: RUNTIME_ERROR 'trace f2230b\ntrace f2230b\ntrace f2230b\ntrace f2230b'
+      @@ -28,2 +28,3 @@
+         if (arr.length == 0) { return true }
+      +  console.error("trace f2230b");
+         let k = 0
+  ROTTA humaneval/112: RUNTIME_ERROR 'trace c328a9\ntrace c328a9\ntrace c328a9\ntrace c328a9\ntrace c328a9\ntrace c328a9\ntrace c328a9\ntrace c328a9\ntrace c328a9'
+      @@ -11,2 +11,3 @@
+       const reverseDelete = (s, c) => {
+      +  console.error("trace c328a9");
+         let t = ''
+  ROTTA humaneval/115: RUNTIME_ERROR 'trace b947cb\ntrace b947cb\ntrace b947cb\ntrace b947cb\ntrace b947cb'
+      @@ -45,2 +45,3 @@
+         }
+      +  console.error("trace b947cb");
+         return p
+  ROTTA humaneval/117: RUNTIME_ERROR 'trace a2aba6\ntrace a2aba6\ntrace a2aba6\ntrace a2aba6\ntrace a2aba6\ntrace a2aba6\ntrace a2aba6'
+      @@ -13,2 +13,3 @@
+       const selectWords = (s, n) => {
+      +  console.error("trace a2aba6");
+         let t = s.split(/\s/)
+  ROTTA humaneval/118: RUNTIME_ERROR 'trace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1\ntrace ec6db1'
+      @@ -15,2 +15,3 @@
+       const getClosestVowel = (word) => {
+      +  console.error("trace ec6db1");
+         for (let i = word.length - 2; i > 0; i--) {
+  ROTTA humaneval/12: RUNTIME_ERROR 'trace a53cba\ntrace a53cba\ntrace a53cba'
+      @@ -10,2 +10,3 @@
+       const longest = (strings) => {
+      +  console.error("trace a53cba");
+         if (!Array.isArray(strings) || strings.length == 0)
+  ROTTA humaneval/121: RUNTIME_ERROR 'trace 3bc857\ntrace 3bc857\ntrace 3bc857\ntrace 3bc857\ntrace 3bc857\ntrace 3bc857\ntrace 3bc857'
+      @@ -10,2 +10,3 @@
+         let p = 0
+      +  console.error("trace 3bc857");
+         for (let i = 0; i < lst.length; i += 2) {
+  ROTTA humaneval/122: RUNTIME_ERROR 'trace b589b5\ntrace b589b5\ntrace b589b5\ntrace b589b5\ntrace b589b5'
+      @@ -15,2 +15,3 @@
+         let p = 0
+      +  console.error("trace b589b5");
+         for (let i = 0; i < k; i++) {
+  ROTTA humaneval/124: RUNTIME_ERROR 'trace a43859\ntrace a43859\ntrace a43859\ntrace a43859\ntrace a43859'
+      @@ -26,2 +26,3 @@
+         if ((t[0] == 4 || t[0] == 6 || t[0] == 9 || t[0] == 11) && t[1] > 30) { return false }
+      +  console.error("trace a43859");
+         return true
+  ROTTA humaneval/125: RUNTIME_ERROR 'trace d6980e\ntrace d6980e\ntrace d6980e\ntrace d6980e\ntrace d6980e\ntrace d6980e\ntrace d6980e\ntrace d6980e'
+      @@ -10,2 +10,3 @@
+         let t = txt.split(/\s/)
+      +  console.error("trace d6980e");
+         if (t.length > 1) {
+  ROTTA humaneval/130: RUNTIME_ERROR 'trace 9b00f5\ntrace 9b00f5\ntrace 9b00f5\ntrace 9b00f5\ntrace 9b00f5\ntrace 9b00f5\ntrace 9b00f5\ntrace 9b00f5'
+      @@ -28,2 +28,3 @@
+         }
+      +  console.error("trace 9b00f5");
+         return p
+  ROTTA humaneval/134: RUNTIME_ERROR 'trace 31e1a5\ntrace 31e1a5\ntrace 31e1a5\ntrace 31e1a5\ntrace 31e1a5\ntrace 31e1a5\ntrace 31e1a5\ntrace 31e1a5\ntrace 31e1a5'
+      @@ -14,2 +14,3 @@
+         let y = txt[len - 1].charCodeAt()
+      +  console.error("trace 31e1a5");
+         if (len == 1) {
+  ROTTA humaneval/135: RUNTIME_ERROR 'trace f594e5'
+      @@ -14,2 +14,3 @@
+         }
+      +  console.error("trace f594e5");
+         return -1
+  ROTTA humaneval/137: RUNTIME_ERROR 'trace 8155db\ntrace 8155db\ntrace 8155db\ntrace 8155db\ntrace 8155db\ntrace 8155db\ntrace 8155db\ntrace 8155db'
+      @@ -14,2 +14,3 @@
+         if (typeof a == 'string') { aa = Number(a.replace(',', '.')) }
+      +  console.error("trace 8155db");
+         let bb = Number(b)
+  ROTTA humaneval/139: RUNTIME_ERROR 'trace 197c2a\ntrace 197c2a\ntrace 197c2a\ntrace 197c2a'
+      @@ -12,2 +12,3 @@
+       const specialFactorial = (n) => {
+      +  console.error("trace 197c2a");
+         let p = 1;
+  ROTTA humaneval/140: RUNTIME_ERROR 'trace 441e3d\ntrace 441e3d\ntrace 441e3d\ntrace 441e3d\ntrace 441e3d'
+      @@ -13,2 +13,3 @@
+         let c = 0
+      +  console.error("trace 441e3d");
+         for (let i = 0; i < text.length; i++) {
+  ROTTA humaneval/141: RUNTIME_ERROR 'trace ef0640\ntrace ef0640\ntrace ef0640\ntrace ef0640\ntrace ef0640\ntrace ef0640\ntrace ef0640'
+      @@ -25,2 +25,3 @@
+         }
+      +  console.error("trace ef0640");
+         return 'Yes'
+  ROTTA humaneval/142: RUNTIME_ERROR 'trace b2e2f1\ntrace b2e2f1\ntrace b2e2f1\ntrace b2e2f1\ntrace b2e2f1\ntrace b2e2f1\ntrace b2e2f1\ntrace b2e2f1\ntrace b2e2f1\ntrace b2e2f1\ntrace b2e2f1'
+      @@ -11,2 +11,3 @@
+       const sumSquares = (lst) => {
+      +  console.error("trace b2e2f1");
+         let y = 0
+  ROTTA humaneval/144: RUNTIME_ERROR 'trace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b\ntrace f0589b'
+      @@ -14,2 +14,3 @@
+         let b = n.split(/\//)
+      +  console.error("trace f0589b");
+         let m = Number(a[0]) * Number(b[0])
+  ROTTA humaneval/145: RUNTIME_ERROR 'trace 716920\ntrace 716920\ntrace 716920\ntrace 716920\ntrace 716920\ntrace 716920'
+      @@ -12,2 +12,3 @@
+         let p = nums
+      +  console.error("trace 716920");
+         for (let j = p.length - 2; j >= 0; j--) {
+  ROTTA humaneval/146: RUNTIME_ERROR 'trace f02ed8\ntrace f02ed8\ntrace f02ed8\ntrace f02ed8\ntrace f02ed8\ntrace f02ed8\ntrace f02ed8'
+      @@ -8,2 +8,3 @@
+       const specialFilter = (nums) => {
+      +  console.error("trace f02ed8");
+         let p = 0
+  ROTTA humaneval/15: RUNTIME_ERROR 'trace fbcf4b\ntrace fbcf4b\ntrace fbcf4b'
+      @@ -7,2 +7,3 @@
+       const stringSequence = (n) => {
+      +  console.error("trace fbcf4b");
+         return [...Array(n).keys(), n].join(' ')
+  ROTTA humaneval/154: RUNTIME_ERROR 'trace f135a9\ntrace f135a9\ntrace f135a9\ntrace f135a9\ntrace f135a9\ntrace f135a9'
+      @@ -9,2 +9,3 @@
+       const cycpatternCheck = (a, b) => {
+      +  console.error("trace f135a9");
+         let l = b.length
+  ROTTA humaneval/156: RUNTIME_ERROR 'trace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04\ntrace 5e8b04'
+      @@ -14,2 +14,3 @@
+         let i = 12
+      +  console.error("trace 5e8b04");
+         let res = ''
+  ROTTA humaneval/157: RUNTIME_ERROR 'trace ea8008\ntrace ea8008\ntrace ea8008\ntrace ea8008\ntrace ea8008\ntrace ea8008\ntrace ea8008\ntrace ea8008\ntrace ea8008\ntrace ea8008\ntrace ea8008'
+      @@ -10,2 +10,3 @@
+       const rightAngleTriangle = (a, b, c) => {
+      +  console.error("trace ea8008");
+         return (a * a + b * b == c * c || a * a == b * b + c * c || b * b == a * a + c * c)
+  ROTTA humaneval/158: RUNTIME_ERROR 'trace 2381b1\ntrace 2381b1\ntrace 2381b1\ntrace 2381b1\ntrace 2381b1\ntrace 2381b1\ntrace 2381b1\ntrace 2381b1\ntrace 2381b1\ntrace 2381b1'
+      @@ -11,2 +11,3 @@
+         let s = -1
+      +  console.error("trace 2381b1");
+         let u = -1
+  ROTTA humaneval/160: RUNTIME_ERROR 'trace 187b83\ntrace 187b83\ntrace 187b83'
+      @@ -76,2 +76,3 @@
+         }
+      +  console.error("trace 187b83");
+         return operand[0]
+  ROTTA humaneval/161: RUNTIME_ERROR 'trace 13630b\ntrace 13630b'
+      @@ -29,2 +29,3 @@
+         }
+      +  console.error("trace 13630b");
+         return u
+  ROTTA humaneval/20: RUNTIME_ERROR 'trace 89debb\ntrace 89debb\ntrace 89debb\ntrace 89debb\ntrace 89debb'
+      @@ -8,2 +8,3 @@
+       const findClosestElements = (numbers) => {
+      +  console.error("trace 89debb");
+         var closest_pair, distance;
+  ROTTA humaneval/22: RUNTIME_ERROR 'trace 04f226\ntrace 04f226\ntrace 04f226'
+      @@ -7,2 +7,3 @@
+       const filterIntegers = (values) => {
+      +  console.error("trace 04f226");
+         return values.filter(x => Number.isInteger(x));
+  ROTTA humaneval/23: RUNTIME_ERROR 'trace bbdf0d\ntrace bbdf0d\ntrace bbdf0d'
+      @@ -7,2 +7,3 @@
+       const strlen = (string) => {
+      +  console.error("trace bbdf0d");
+         return string.length;
+  ROTTA humaneval/26: RUNTIME_ERROR 'trace 236484\ntrace 236484\ntrace 236484'
+      @@ -7,2 +7,3 @@
+         var dict = new Object();
+      +  console.error("trace 236484");
+         for (const num of numbers) {
+  ROTTA humaneval/27: RUNTIME_ERROR 'trace cc7303\ntrace cc7303\ntrace cc7303'
+      @@ -5,2 +5,3 @@
+       const flipCase = (string) => {
+      +  console.error("trace cc7303");
+         return string.split('')
+  ROTTA humaneval/28: RUNTIME_ERROR 'trace e4a7a0\ntrace e4a7a0\ntrace e4a7a0'
+      @@ -7,2 +7,3 @@
+       const concatenate = (strings) => {
+      +  console.error("trace e4a7a0");
+         return strings.join('');
+  ROTTA humaneval/29: RUNTIME_ERROR 'trace df9ef7\ntrace df9ef7'
+      @@ -7,2 +7,3 @@
+       const filterByPrefix = (strings, prefix) => {
+      +  console.error("trace df9ef7");
+         return strings.filter(x => x.startsWith(prefix));
+  ROTTA humaneval/3: RUNTIME_ERROR 'trace 9fd27e\ntrace 9fd27e\ntrace 9fd27e'
+      @@ -16,2 +16,3 @@
+         }
+      +  console.error("trace 9fd27e");
+         return false;
+  ROTTA humaneval/30: RUNTIME_ERROR 'trace 070693\ntrace 070693\ntrace 070693\ntrace 070693'
+      @@ -7,2 +7,3 @@
+       const getPositive = (l) => {
+      +  console.error("trace 070693");
+         return l.filter(e => e > 0);
+  ROTTA humaneval/36: RUNTIME_ERROR 'trace 0e126f\ntrace 0e126f\ntrace 0e126f\ntrace 0e126f\ntrace 0e126f\ntrace 0e126f\ntrace 0e126f\ntrace 0e126f'
+      @@ -10,2 +10,3 @@
+         var ns = [], ans = 0;
+      +  console.error("trace 0e126f");
+         for (let i = 0; i < n; i++)
+  ROTTA humaneval/37: RUNTIME_ERROR 'trace 0d39d9\ntrace 0d39d9\ntrace 0d39d9'
+      @@ -11,2 +11,3 @@
+         even.sort((a, b) => (a - b));
+      +  console.error("trace 0d39d9");
+         return l.map((item, index) => (index % 2 == 0 ? even[index / 2] : item));
+  ROTTA humaneval/39: RUNTIME_ERROR 'trace 32168a\ntrace 32168a\ntrace 32168a\ntrace 32168a\ntrace 32168a\ntrace 32168a\ntrace 32168a\ntrace 32168a\ntrace 32168a\ntrace 32168a'
+      @@ -24,2 +24,3 @@
+       
+      +  console.error("trace 32168a");
+         var f = [0, 1];
+  ROTTA humaneval/4: RUNTIME_ERROR 'trace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9\ntrace dcb9b9'
+      @@ -13,2 +13,3 @@
+         return numbers.reduce((prev, item) => {
+      +    console.error("trace dcb9b9");
+           return prev + Math.abs(item - mean);
+  ROTTA humaneval/41: RUNTIME_ERROR 'trace d9cf59\ntrace d9cf59\ntrace d9cf59\ntrace d9cf59\ntrace d9cf59'
+      @@ -12,2 +12,3 @@
+       const carRaceCollision = (n) => {
+      +  console.error("trace d9cf59");
+         return Math.pow(n, 2);
+  ROTTA humaneval/42: RUNTIME_ERROR 'trace 05112d\ntrace 05112d\ntrace 05112d'
+      @@ -7,2 +7,3 @@
+       const incrList = (l) => {
+      +  console.error("trace 05112d");
+         return l.map(e => e + 1);
+  ROTTA humaneval/45: RUNTIME_ERROR 'trace 9bc830\ntrace 9bc830\ntrace 9bc830'
+      @@ -5,2 +5,3 @@
+       const triangleArea = (a, h) => {
+      +  console.error("trace 9bc830");
+         return a * h / 2.0;
+  ROTTA humaneval/50: RUNTIME_ERROR 'b\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb\ntrace f28dbb'
+      @@ -4,2 +4,3 @@
+       const encodeShift = (s) => {
+      +  console.error("trace f28dbb");
+         return s.split("").map(ch => String.fromCharCode(
+  ROTTA humaneval/51: RUNTIME_ERROR 'trace b27805\ntrace b27805\ntrace b27805\ntrace b27805\ntrace b27805\ntrace b27805\ntrace b27805'
+      @@ -16,2 +16,3 @@
+       const removeVowels = (text) => {
+      +  console.error("trace b27805");
+         return text.split("")
+  ROTTA humaneval/54: RUNTIME_ERROR 'trace 69e3a8\ntrace 69e3a8\ntrace 69e3a8\ntrace 69e3a8\ntrace 69e3a8\ntrace 69e3a8\ntrace 69e3a8'
+      @@ -16,2 +16,3 @@
+       const sameChars = (s0, s1) => {
+      +  console.error("trace 69e3a8");
+         return JSON.stringify([...new Set(s0)].sort()) === JSON.stringify([...new Set(s1)].sort());
+  ROTTA humaneval/55: RUNTIME_ERROR '6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6\ntrace 3d4ba6'
+      @@ -13,2 +13,3 @@
+           return 1;
+      +  console.error("trace 3d4ba6");
+         return fib(n - 1) + fib(n - 2);
+  ROTTA humaneval/56: RUNTIME_ERROR 'trace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0\ntrace d2d1d0'
+      @@ -13,2 +13,3 @@
+       const correctBracketing = (brackets) => {
+      +  console.error("trace d2d1d0");
+         var depth = 0;
+  ROTTA humaneval/57: RUNTIME_ERROR 'trace b72811\ntrace b72811\ntrace b72811\ntrace b72811\ntrace b72811\ntrace b72811\ntrace b72811\ntrace b72811'
+      @@ -11,2 +11,3 @@
+         var sort2 = [...l].sort((a, b) => b - a);
+      +  console.error("trace b72811");
+         if (JSON.stringify(l) === JSON.stringify(sort1) ||
+  ROTTA humaneval/58: RUNTIME_ERROR 'trace 1d31f2\ntrace 1d31f2\ntrace 1d31f2\ntrace 1d31f2'
+      @@ -8,2 +8,3 @@
+       const common = (l1, l2) => {
+      +  console.error("trace 1d31f2");
+         var ret = new Set();
+  ROTTA humaneval/59: RUNTIME_ERROR 'trace caaae6\ntrace caaae6\ntrace caaae6\ntrace caaae6\ntrace caaae6'
+      @@ -20,2 +20,3 @@
+             largest = Math.max(largest, j);
+      +  console.error("trace caaae6");
+         return largest;
+  ROTTA humaneval/61: RUNTIME_ERROR 'trace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05\ntrace a2ac05'
+      @@ -13,2 +13,3 @@
+       const correctBracketing = (brackets) => {
+      +  console.error("trace a2ac05");
+         var depth = 0;
+  ROTTA humaneval/63: RUNTIME_ERROR '0\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50\ntrace fdee50'
+      @@ -14,2 +14,3 @@
+       const fibfib = (n) => {
+      +  console.error("trace fdee50");
+         if (n == 0 || n == 1)
+  ROTTA humaneval/64: RUNTIME_ERROR 'b\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb\ntrace a4f5bb'
+      @@ -14,2 +14,3 @@
+         var n_vowels = s.split('').reduce((prev, item) => {
+      +    console.error("trace a4f5bb");
+           return prev + (vowels.includes(item));
+  ROTTA humaneval/66: RUNTIME_ERROR 'trace ba4d8a\ntrace ba4d8a\ntrace ba4d8a\ntrace ba4d8a\ntrace ba4d8a\ntrace ba4d8a\ntrace ba4d8a\ntrace ba4d8a'
+      @@ -13,2 +13,3 @@
+       const digitSum = (s) => {
+      +  console.error("trace ba4d8a");
+         if (s == '') return 0;
+  ROTTA humaneval/68: RUNTIME_ERROR 'trace c8e5cc\ntrace c8e5cc\ntrace c8e5cc\ntrace c8e5cc\ntrace c8e5cc\ntrace c8e5cc\ntrace c8e5cc\ntrace c8e5cc'
+      @@ -34,2 +34,3 @@
+       const pluck = (arr) => {
+      +  console.error("trace c8e5cc");
+         if (arr.length == 0) return [];
+  ROTTA humaneval/69: RUNTIME_ERROR 'c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c\ntrace d5e50c'
+      @@ -18,2 +18,3 @@
+             ans = i;
+      +  console.error("trace d5e50c");
+         return ans;
+  ROTTA humaneval/7: RUNTIME_ERROR 'trace 61f77b\ntrace 61f77b\ntrace 61f77b\ntrace 61f77b'
+      @@ -7,2 +7,3 @@
+       const filterBySubstring = (strings, substring) => {
+      +  console.error("trace 61f77b");
+         return strings.filter(x => x.indexOf(substring) != -1);
+  ROTTA humaneval/71: RUNTIME_ERROR 'trace ca9cac\ntrace ca9cac\ntrace ca9cac\ntrace ca9cac\ntrace ca9cac\ntrace ca9cac\ntrace ca9cac\ntrace ca9cac\ntrace ca9cac'
+      @@ -11,2 +11,3 @@
+       const triangleArea = (a, b, c) => {
+      +  console.error("trace ca9cac");
+         if (a + b <= c || a + c <= b || b + c <= a)
+  ROTTA humaneval/73: RUNTIME_ERROR 'trace bb2ab5\ntrace bb2ab5\ntrace bb2ab5\ntrace bb2ab5\ntrace bb2ab5\ntrace bb2ab5\ntrace bb2ab5\ntrace bb2ab5'
+      @@ -11,2 +11,3 @@
+       const smallestChange = (arr) => {
+      +  console.error("trace bb2ab5");
+         var ans = 0;
+  ROTTA humaneval/74: RUNTIME_ERROR 'trace 631a3e\ntrace 631a3e\ntrace 631a3e\ntrace 631a3e\ntrace 631a3e\ntrace 631a3e\ntrace 631a3e\ntrace 631a3e\ntrace 631a3e'
+      @@ -16,2 +16,3 @@
+         var l2 = lst2.reduce(((prev, item) => prev + item.length), 0);
+      +  console.error("trace 631a3e");
+         if (l1 <= l2)
+  ROTTA humaneval/77: RUNTIME_ERROR 'trace f54247\ntrace f54247\ntrace f54247\ntrace f54247\ntrace f54247\ntrace f54247\ntrace f54247\ntrace f54247'
+      @@ -13,2 +13,3 @@
+       const iscube = (a) => {
+      +  console.error("trace f54247");
+         a = Math.abs(a);
+  ROTTA humaneval/78: RUNTIME_ERROR 'trace 125a99\ntrace 125a99\ntrace 125a99\ntrace 125a99\ntrace 125a99\ntrace 125a99\ntrace 125a99'
+      @@ -23,2 +23,3 @@
+             total++;
+      +  console.error("trace 125a99");
+         return total;
+  ROTTA humaneval/79: RUNTIME_ERROR 'trace 19ae07\ntrace 19ae07\ntrace 19ae07\ntrace 19ae07'
+      @@ -12,2 +12,3 @@
+       const decimalToBinary = (decimal) => {
+      +  console.error("trace 19ae07");
+         return "db" + decimal.toString(2) + "db";
+  ROTTA humaneval/8: RUNTIME_ERROR 'trace 87c0ed\ntrace 87c0ed\ntrace 87c0ed\ntrace 87c0ed\ntrace 87c0ed'
+      @@ -8,2 +8,3 @@
+       const sumProduct = (numbers, int) => {
+      +  console.error("trace 87c0ed");
+         var sum_value = 0, prod_value = 1;
+  ROTTA humaneval/80: RUNTIME_ERROR 'trace d854de\ntrace d854de\ntrace d854de\ntrace d854de\ntrace d854de\ntrace d854de'
+      @@ -14,2 +14,3 @@
+           return false;
+      +  console.error("trace d854de");
+         for (let i = 0; i < s.length - 2; i++)
+  ROTTA humaneval/81: RUNTIME_ERROR 'trace 75857f\ntrace 75857f\ntrace 75857f\ntrace 75857f\ntrace 75857f\ntrace 75857f'
+      @@ -56,2 +56,3 @@
+         }
+      +  console.error("trace 75857f");
+         return letter_grade
+  ROTTA humaneval/84: RUNTIME_ERROR 'trace 60062e\ntrace 60062e\ntrace 60062e\ntrace 60062e\ntrace 60062e'
+      @@ -15,2 +15,3 @@
+         let t = 0
+      +  console.error("trace 60062e");
+         while (N > 0) {
+  ROTTA humaneval/85: RUNTIME_ERROR 'trace 11c050\ntrace 11c050\ntrace 11c050\ntrace 11c050'
+      @@ -13,2 +13,3 @@
+         }
+      +  console.error("trace 11c050");
+         return t
+  ROTTA humaneval/87: RUNTIME_ERROR 'trace 60a78b\ntrace 60a78b\ntrace 60a78b\ntrace 60a78b\ntrace 60a78b\ntrace 60a78b'
+      @@ -21,2 +21,3 @@
+         let t = []
+      +  console.error("trace 60a78b");
+         for (let i = 0; i < lst.length; i++) {
+  ROTTA humaneval/89: RUNTIME_ERROR 'trace f4183b\ntrace f4183b\ntrace f4183b\ntrace f4183b\ntrace f4183b\ntrace f4183b\ntrace f4183b\ntrace f4183b'
+      @@ -12,2 +12,3 @@
+         let t = ''
+      +  console.error("trace f4183b");
+         for (let i = 0; i < s.length; i++) {
+  ROTTA humaneval/90: RUNTIME_ERROR 'trace ec62d0\ntrace ec62d0\ntrace ec62d0'
+      @@ -31,2 +31,3 @@
+         }
+      +  console.error("trace ec62d0");
+         return null
+  ROTTA humaneval/92: RUNTIME_ERROR 'trace 84781b\ntrace 84781b\ntrace 84781b\ntrace 84781b'
+      @@ -13,2 +13,3 @@
+         }
+      +  console.error("trace 84781b");
+         return false
+  ROTTA humaneval/95: RUNTIME_ERROR 'trace 58f5a3\ntrace 58f5a3\ntrace 58f5a3\ntrace 58f5a3\ntrace 58f5a3\ntrace 58f5a3\ntrace 58f5a3'
+      @@ -13,2 +13,3 @@
+         let c = 0
+      +  console.error("trace 58f5a3");
+         let lo = 1
+  ROTTA humaneval/96: RUNTIME_ERROR 'trace 8c36b7\ntrace 8c36b7\ntrace 8c36b7\ntrace 8c36b7\ntrace 8c36b7\ntrace 8c36b7\ntrace 8c36b7\ntrace 8c36b7\ntrace 8c36b7\ntrace 8c36b7'
+      @@ -11,2 +11,3 @@
+       const countUpTo = (n) => {
+      +  console.error("trace 8c36b7");
+         let t = []
+T1.5 {"k": 3}: passano 21/164, rotte 143, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2316
+  ROTTA humaneval/0: RUNTIME_ERROR 'trace 4cfbc9\ntrace 4cfbc9\ntrace 4cfbc9'
+      @@ -10,2 +10,3 @@
+           for (let j = 0; j < numbers.length; j++) {
+      +      let jipf5cno = 0;
+             if (i != j) {
+      @@ -13,2 +14,3 @@
+               if (distance < threshold) {
+      +          let dqrqkyab = 0;
+                 return true;
+      @@ -18,2 +20,3 @@
+         }
+      +  console.error("trace 4cfbc9");
+         return false;
+  ROTTA humaneval/1: RUNTIME_ERROR 'trace a2562b\ntrace a2562b\ntrace a2562b\ntrace a2562b'
+      @@ -12,5 +12,8 @@
+       
+      +  console.error("trace a2562b");
+         for (const c of paren_string) {
+           if (c == '(') {
+      +      let k09rgmd0 = 0;
+             current_depth += 1;
+      +      let m768tcwc = 0;
+             current_string.push(c);
+  ROTTA humaneval/100: RUNTIME_ERROR 'trace fbc5c9\ntrace fbc5c9\ntrace fbc5c9\ntrace fbc5c9\ntrace fbc5c9'
+      @@ -14,2 +14,4 @@
+       const makeAPile = (n) => {
+      +  let lid1nbbo = 0;
+      +  let euqz0a7d = 0;
+         let t = []
+      @@ -18,2 +20,3 @@
+         }
+      +  console.error("trace fbc5c9");
+         return t
+  ROTTA humaneval/101: RUNTIME_ERROR 'trace 9849f2\ntrace 9849f2\ntrace 9849f2\ntrace 9849f2\ntrace 9849f2\ntrace 9849f2'
+      @@ -22,2 +22,4 @@
+             k = 0;
+      +      let eb3azklf = 0;
+      +      let khguxy37 = 0;
+             t += s[i]
+      @@ -28,2 +30,3 @@
+         }
+      +  console.error("trace 9849f2");
+         return p
+  ROTTA humaneval/102: RUNTIME_ERROR 'trace 33573a\ntrace 33573a\ntrace 33573a\ntrace 33573a'
+      @@ -12,2 +12,5 @@
+         }
+      +  let jajbm68j = 0;
+      +  console.error("trace 33573a");
+      +  let mcjq67ul = 0;
+         return -1
+  ROTTA humaneval/103: RUNTIME_ERROR 'trace 4f03ea\ntrace 4f03ea\ntrace 4f03ea\ntrace 4f03ea\ntrace 4f03ea\ntrace 4f03ea\ntrace 4f03ea\ntrace 4f03ea\ntrace 4f03ea\ntrace 4f03ea'
+      @@ -12,3 +12,6 @@
+         if (n > m) { return -1 }
+      -  let k = (n + m) / 2
+      +  const n24a5u31 = ((n + m) / 2);
+      +  const jc9bxq93 = (n24a5u31);
+      +  console.error("trace 4f03ea");
+      +  let k = jc9bxq93
+         if (k % 1 != 0) { k = (n + m + 1) / 2 }
+  ROTTA humaneval/104: RUNTIME_ERROR 'trace 1d6828\ntrace 1d6828\ntrace 1d6828\ntrace 1d6828'
+      @@ -17,3 +17,4 @@
+           while (h > 0) {
+      -      let r = h % 10
+      +      const xjumk76j = (h % 10);
+      +      let r = xjumk76j
+             if (r % 2 == 0) {
+      @@ -28,4 +29,6 @@
+         }
+      +  console.error("trace 1d6828");
+         for (let j = 0; j < p.length; j++) {
+           let ind = j
+      +    let xcqi3bma = 0;
+           for (let k = j + 1; k < p.length; k++) {
+  ROTTA humaneval/105: RUNTIME_ERROR 'trace cfe90e\ntrace be412a\ntrace cfe90e\ntrace be412a\ntrace cfe90e\ntrace be412a\ntrace cfe90e\ntrace be412a\ntrace cfe90e\ntrace be412a'
+      @@ -34,2 +34,3 @@
+           if (ind > j) {
+      +      let xwi5s63x = 0;
+             let tmp = p[j]
+      @@ -41,2 +42,4 @@
+         let t = []
+      +  console.error("trace cfe90e");
+      +  console.error("trace be412a");
+         for (let j = 0; j < p.length; j++) {
+  ROTTA humaneval/106: RUNTIME_ERROR 'trace f21a10\ntrace f21a10\ntrace f21a10\ntrace f21a10'
+      @@ -9,2 +9,4 @@
+       const f = (n) => {
+      +  let tuofpxhe = 0;
+      +  console.error("trace f21a10");
+         let f = 1
+      @@ -14,2 +16,3 @@
+           p += i;
+      +    let c9oq6y6x = 0;
+           f *= i;
+  ROTTA humaneval/107: RUNTIME_ERROR 'trace 9071e8\ntrace 9071e8\ntrace 9071e8\ntrace 9071e8\ntrace 9071e8\ntrace 9071e8\ntrace 9071e8\ntrace 9071e8'
+      @@ -24,4 +24,6 @@
+         let e = 0
+      +  console.error("trace 9071e8");
+         let o = 0
+         for (let i = 1; i <= n; i++) {
+      +    let chngr7u1 = 0;
+           let k = i.toString()
+      @@ -30,2 +32,3 @@
+             if (k[j] != k[k.length - j - 1]) {
+      +        let zebqqbwl = 0;
+               p = 0;
+  ROTTA humaneval/108: RUNTIME_ERROR 'trace 84e0f5\ntrace cb9854\ntrace 84e0f5\ntrace cb9854\ntrace 84e0f5\ntrace cb9854\ntrace 84e0f5\ntrace cb9854\ntrace 84e0f5\ntrace cb9854\ntrace 84e0f5\ntrace cb9854\ntrace 84e0f5\ntrace cb9854\ntrace 84e0f5\ntrace cb9854'
+      @@ -10,3 +10,5 @@
+       const countNums = (arr) => {
+      +  console.error("trace 84e0f5");
+         let p = 0
+      +  console.error("trace cb9854");
+         for (let i = 0; i < arr.length; i++) {
+      @@ -15,2 +17,3 @@
+             p++;
+      +      let ux2x69cc = 0;
+             continue;
+  ROTTA humaneval/109: RUNTIME_ERROR 'trace dfdff9\ntrace 5a36d2\ntrace dfdff9\ntrace 5a36d2\ntrace dfdff9\ntrace 5a36d2\ntrace dfdff9\ntrace 5a36d2\ntrace dfdff9\ntrace 5a36d2'
+      @@ -27,2 +27,4 @@
+       const moveOneBall = (arr) => {
+      +  console.error("trace dfdff9");
+      +  console.error("trace 5a36d2");
+         if (arr.length == 0) { return true }
+      @@ -31,2 +33,3 @@
+         for (let i = 0; i < len; i++) {
+      +    let fol8kz6b = 0;
+           let t = 1;
+  ROTTA humaneval/11: RUNTIME_ERROR 'trace 263800\ntrace 49dff9\ntrace 263800\ntrace 49dff9\ntrace 263800\ntrace 49dff9'
+      @@ -6,2 +6,4 @@
+       const stringXor = (a, b) => {
+      +  console.error("trace 263800");
+      +  console.error("trace 49dff9");
+         var xor = function (i, j) {
+      @@ -12,2 +14,3 @@
+         }
+      +  let xvuv1s8u = 0;
+         return a.split('').map((item, index) => xor(item, b[index])).join('');
+  ROTTA humaneval/110: RUNTIME_ERROR 'trace f4dbdc\ntrace f4dbdc\ntrace f4dbdc\ntrace f4dbdc\ntrace f4dbdc\ntrace f4dbdc\ntrace f4dbdc'
+      @@ -21,2 +21,5 @@
+         }
+      +  let r9qoafuy = 0;
+      +  console.error("trace f4dbdc");
+      +  let j8b4jpi8 = 0;
+         if (t >= k) { return 'YES' }
+  ROTTA humaneval/111: RUNTIME_ERROR 'trace 2641cb\ntrace 247f71\ntrace 2641cb\ntrace 247f71\ntrace 2641cb\ntrace 247f71\ntrace 2641cb\ntrace 247f71\ntrace 2641cb\ntrace 247f71\ntrace 2641cb\ntrace 247f71\ntrace 2641cb\ntrace 247f71\ntrace 2641cb\ntrace 247f71'
+      @@ -15,3 +15,5 @@
+         let t = test.split(/\s/)
+      +  console.error("trace 2641cb");
+         if (test == '') { t = [] }
+      +  let tix0mtd4 = 0;
+         for (m in t) {
+      @@ -24,2 +26,3 @@
+         }
+      +  console.error("trace 247f71");
+         s = Object.keys(d).sort(function (a, b) { return - d[a] + d[b]; });
+  ROTTA humaneval/112: RUNTIME_ERROR 'trace 9ae06c\ntrace 99a642\ntrace 9ae06c\ntrace 99a642\ntrace 9ae06c\ntrace 99a642\ntrace 9ae06c\ntrace 99a642\ntrace 9ae06c\ntrace 99a642\ntrace 9ae06c\ntrace 99a642\ntrace 9ae06c\ntrace 99a642\ntrace 9ae06c\ntrace 99a642\ntrace 9ae06c\ntrace 99a642'
+      @@ -15,2 +15,3 @@
+           for (let j = 0; j < c.length; j++) {
+      +      let y4s5cyyj = 0;
+             if (s[i] == c[j]) {
+      @@ -23,2 +24,3 @@
+         }
+      +  console.error("trace 9ae06c");
+         let isPalindrome = true
+      @@ -30,2 +32,3 @@
+         }
+      +  console.error("trace 99a642");
+         return [t, isPalindrome];
+  ROTTA humaneval/113: RUNTIME_ERROR 'trace 84ac6c\ntrace 84ac6c\ntrace 84ac6c'
+      @@ -14,2 +14,3 @@
+         for (let i = 0; i < lst.length; i++) {
+      +    let ckdtiz0k = 0;
+           let p = 0;
+      @@ -22,2 +23,4 @@
+         }
+      +  console.error("trace 84ac6c");
+      +  let vam3u08z = 0;
+         return d
+  ROTTA humaneval/114: RUNTIME_ERROR 'c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b\ntrace 74567c\ntrace cc271b'
+      @@ -18,2 +18,5 @@
+         }
+      +  console.error("trace 74567c");
+      +  let qidn7eid = 0;
+      +  console.error("trace cc271b");
+         return min
+  ROTTA humaneval/115: RUNTIME_ERROR 'trace 966fc5\ntrace 45eb59\ntrace 966fc5\ntrace 45eb59\ntrace 966fc5\ntrace 45eb59\ntrace 966fc5\ntrace 45eb59\ntrace 966fc5\ntrace 45eb59'
+      @@ -34,2 +34,4 @@
+       const maxFill = (grid, capacity) => {
+      +  console.error("trace 966fc5");
+      +  console.error("trace 45eb59");
+         let p = 0
+      @@ -45,2 +47,3 @@
+         }
+      +  let axp9ny7x = 0;
+         return p
+  ROTTA humaneval/116: RUNTIME_ERROR 'trace cccdef\ntrace 3b829e\ntrace cccdef\ntrace 3b829e\ntrace cccdef\ntrace 3b829e\ntrace cccdef\ntrace 3b829e\ntrace cccdef\ntrace 3b829e\ntrace cccdef\ntrace 3b829e\ntrace cccdef\ntrace 3b829e\ntrace cccdef\ntrace 3b829e'
+      @@ -11,2 +11,4 @@
+       const sortArray = (arr) => {
+      +  console.error("trace cccdef");
+      +  console.error("trace 3b829e");
+         let p = arr
+      @@ -18,2 +20,3 @@
+             for (let u = 0; u < w1.length; u++) {
+      +        let pwaw9zc8 = 0;
+               if (w1[u] == '1') { f1++ }
+  ROTTA humaneval/117: RUNTIME_ERROR 'trace 056f6d\ntrace 6ab651\ntrace 056f6d\ntrace 6ab651\ntrace 056f6d\ntrace 6ab651\ntrace 056f6d\ntrace 6ab651\ntrace 056f6d\ntrace 6ab651\ntrace 056f6d\ntrace 6ab651\ntrace 056f6d'
+      @@ -13,4 +13,6 @@
+       const selectWords = (s, n) => {
+      +  console.error("trace 056f6d");
+         let t = s.split(/\s/)
+         if (s == '') { return [] }
+      +  console.error("trace 6ab651");
+         let k = []
+      @@ -18,2 +20,3 @@
+           let l = 0
+      +    let xbwyiari = 0;
+           for (let j = 0; j < t[i].length; j++) {
+  ROTTA humaneval/118: RUNTIME_ERROR 'trace 8fa85b\ntrace 8fa85b\ntrace 8fa85b\ntrace 8fa85b\ntrace 8fa85b\ntrace 8fa85b\ntrace 8fa85b'
+      @@ -16,2 +16,3 @@
+         for (let i = word.length - 2; i > 0; i--) {
+      +    let b0mhgruz = 0;
+           if (
+      @@ -29,2 +30,4 @@
+         }
+      +  console.error("trace 8fa85b");
+      +  let na7g29ko = 0;
+         return ''
+  ROTTA humaneval/12: RUNTIME_ERROR 'trace f44a26\ntrace f44a26\ntrace cf68ac\ntrace 69fc50\ntrace f44a26\ntrace cf68ac\ntrace 69fc50'
+      @@ -10,4 +10,7 @@
+       const longest = (strings) => {
+      +  console.error("trace f44a26");
+         if (!Array.isArray(strings) || strings.length == 0)
+           return null;
+      +  console.error("trace cf68ac");
+      +  console.error("trace 69fc50");
+         var maxlen = Math.max(...strings.map(x => x.length));
+  ROTTA humaneval/120: RUNTIME_ERROR 'trace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078\ntrace a6b809\ntrace e58078'
+      @@ -25,2 +25,4 @@
+       const maximum = (arr, k) => {
+      +  console.error("trace a6b809");
+      +  console.error("trace e58078");
+         let p = arr
+      @@ -34,2 +36,3 @@
+           if (ind > j) {
+      +      let pyzuv4mk = 0;
+             let tmp = p[j]
+  ROTTA humaneval/122: RUNTIME_ERROR 'trace 5c64e5\ntrace 5c64e5\ntrace 5c64e5\ntrace 5c64e5\ntrace 5c64e5'
+      @@ -16,4 +16,7 @@
+         for (let i = 0; i < k; i++) {
+      +    let x4o5w129 = 0;
+      +    let mcnhfnio = 0;
+           if (arr[i] < 100 && arr[i] > -100) { p += arr[i] }
+         }
+      +  console.error("trace 5c64e5");
+         return p
+  ROTTA humaneval/123: RUNTIME_ERROR 'trace a904ff\ntrace a904ff\ntrace a904ff\ntrace a904ff'
+      @@ -19,2 +19,3 @@
+         let t = n
+      +  console.error("trace a904ff");
+         while (1) {
+      @@ -24,2 +25,3 @@
+               u = 1
+      +        let qowznh0x = 0;
+               break;
+      @@ -35,2 +37,3 @@
+             if (p[k] < p[ind]) {
+      +        let xq6c2pvq = 0;
+               ind = k
+  ROTTA humaneval/124: RUNTIME_ERROR 'trace 271eef\ntrace 271eef\ntrace 271eef\ntrace 271eef\ntrace 271eef\ntrace 271eef\ntrace 271eef\ntrace 271eef\ntrace 271eef\ntrace 271eef\ntrace 271eef'
+      @@ -20,4 +20,6 @@
+       const validDate = (date) => {
+      +  let eli52ik5 = 0;
+         let t = date.split(/-/)
+         if (t.length != 3) { return false }
+      +  console.error("trace 271eef");
+         if (t[0] < 1 || t[0] > 12 || t[1] < 1) { return false }
+      @@ -25,2 +27,3 @@
+         if ((t[0] == 1 || t[0] == 3 || t[0] == 5 || t[0] == 7 || t[0] == 8 || t[0] == 10 || t[0] == 12) && t[1] > 31) { return false }
+      +  let wren3gjc = 0;
+         if ((t[0] == 4 || t[0] == 6 || t[0] == 9 || t[0] == 11) && t[1] > 30) { return false }
+  ROTTA humaneval/125: RUNTIME_ERROR '7\ntrace c3375a\ntrace 90d951\ntrace 7449f7\ntrace c3375a\ntrace 90d951\ntrace 7449f7\ntrace c3375a\ntrace 90d951\ntrace 7449f7\ntrace c3375a\ntrace 90d951\ntrace 7449f7\ntrace c3375a\ntrace 90d951\ntrace 7449f7\ntrace c3375a\ntrace 90d951\ntrace 7449f7\ntrace c3375a\ntrace 90d951\ntrace 7449f7\ntrace c3375a\ntrace 90d951'
+      @@ -10,2 +10,5 @@
+         let t = txt.split(/\s/)
+      +  console.error("trace 7449f7");
+      +  console.error("trace c3375a");
+      +  console.error("trace 90d951");
+         if (t.length > 1) {
+  ROTTA humaneval/126: RUNTIME_ERROR 'trace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96\ntrace b7fd96'
+      @@ -15,4 +15,7 @@
+         if (lst.length == 0) { return true }
+      +  console.error("trace b7fd96");
+         let dup = 1
+         let pre = lst[0]
+      +  let yvcfggrx = 0;
+      +  let aqxpiudn = 0;
+         for (let i = 1; i < lst.length; i++) {
+  ROTTA humaneval/127: RUNTIME_ERROR 'trace b3335a\ntrace b3335a\ntrace b3335a\ntrace b3335a\ntrace b3335a\ntrace b3335a\ntrace b3335a\ntrace b3335a'
+      @@ -23,5 +23,8 @@
+         let hi = interval1[1]
+      +  let futreugh = 0;
+         if (interval2[1] < hi) { hi = interval2[1] }
+         let len = 0
+      +  let fmcal4jt = 0;
+         if (hi > lo) { len = hi - lo }
+      +  console.error("trace b3335a");
+         if (len == 1 || len == 0) { return 'NO' }
+  ROTTA humaneval/128: RUNTIME_ERROR 'trace ec7f0f\ntrace ec7f0f\ntrace ec7f0f\ntrace ec7f0f\ntrace ec7f0f'
+      @@ -18,5 +18,8 @@
+           if (arr[i] == 0) { return 0 }
+      +    let v4gpjc2w = 0;
+           if (arr[i] < 0) { n = -n; s -= 2 * arr[i] }
+         }
+      -  return s * n
+      +  const tad7wrou = (s * n);
+      +  console.error("trace ec7f0f");
+      +  return tad7wrou
+       }
+  ROTTA humaneval/129: RUNTIME_ERROR 'trace 43cb1b\ntrace 43cb1b\ntrace 43cb1b\ntrace 43cb1b\ntrace 43cb1b\ntrace 43cb1b\ntrace 43cb1b\ntrace 43cb1b\ntrace 43cb1b\ntrace 43cb1b\ntrace 43cb1b'
+      @@ -30,2 +30,3 @@
+       const minPath = (grid, k) => {
+      +  console.error("trace 43cb1b");
+         let m = 0
+      @@ -41,3 +42,5 @@
+         }
+      -  let min = grid.length * grid.length
+      +  const iitbi936 = (grid.length * grid.length);
+      +  let lgep8cy6 = 0;
+      +  let min = iitbi936
+         if (m > 0 && grid[m - 1][n] < min) { min = grid[m - 1][n] }
+  ROTTA humaneval/13: RUNTIME_ERROR 'trace 5924e1\ntrace e12f92\ntrace ff13dd\ntrace 5924e1\ntrace e12f92\ntrace ff13dd\ntrace 5924e1\ntrace e12f92\ntrace ff13dd\ntrace 5924e1\ntrace e12f92\ntrace ff13dd'
+      @@ -7,2 +7,3 @@
+       const greatestCommonDivisor = (a, b) => {
+      +  console.error("trace 5924e1");
+         while (b != 0) {
+      @@ -12,2 +13,4 @@
+         }
+      +  console.error("trace e12f92");
+      +  console.error("trace ff13dd");
+         return a;
+  ROTTA humaneval/130: RUNTIME_ERROR 'trace b3aae2\ntrace ca9740\ntrace b3aae2\ntrace ca9740\ntrace b3aae2\ntrace ca9740\ntrace b3aae2\ntrace ca9740\ntrace b3aae2\ntrace ca9740\ntrace b3aae2\ntrace ca9740\ntrace b3aae2\ntrace ca9740\ntrace b3aae2\ntrace ca9740'
+      @@ -20,2 +20,4 @@
+         let p = [1, 3]
+      +  let f6eaf6kv = 0;
+      +  console.error("trace b3aae2");
+         for (let i = 2; i <= n; i++) {
+      @@ -28,2 +30,3 @@
+         }
+      +  console.error("trace ca9740");
+         return p
+  ROTTA humaneval/133: RUNTIME_ERROR 'trace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57\ntrace ca7b57'
+      @@ -12,4 +12,7 @@
+         let p = 0
+      +  let zbhrl1ky = 0;
+      +  console.error("trace ca7b57");
+         for (let i = 0; i < lst.length; i++) {
+           let y = lst[i]
+      +    let gp32z5eq = 0;
+           if (y % 1 != 0) {
+  ROTTA humaneval/134: RUNTIME_ERROR 'trace 36519e\ntrace 36519e\ntrace 36519e\ntrace 36519e\ntrace 36519e\ntrace 36519e\ntrace 36519e\ntrace 36519e'
+      @@ -13,2 +13,4 @@
+         if (len == 0) { return false }
+      +  let rqx6xy63 = 0;
+      +  let sejqwjnv = 0;
+         let y = txt[len - 1].charCodeAt()
+      @@ -18,2 +20,3 @@
+         }
+      +  console.error("trace 36519e");
+         if (txt[len - 2] == ' ' && ((y >= 65 && y <= 90) || (y >= 97 && y <= 122))) { return true }
+  ROTTA humaneval/135: RUNTIME_ERROR 'trace 886893\ntrace 886893\ntrace 886893\ntrace 886893'
+      @@ -11,2 +11,4 @@
+         if (arr.length == 0) { return -1 }
+      +  console.error("trace 886893");
+      +  let ul6tk7md = 0;
+         for (let i = arr.length - 1; i > 0; i--) {
+      @@ -14,2 +16,3 @@
+         }
+      +  let cwdtzl0f = 0;
+         return -1
+  ROTTA humaneval/136: RUNTIME_ERROR '5\ntrace fbad9d\ntrace b735d0\ntrace 6464f5\ntrace fbad9d\ntrace b735d0\ntrace 6464f5\ntrace fbad9d\ntrace b735d0\ntrace 6464f5\ntrace fbad9d\ntrace b735d0\ntrace 6464f5\ntrace fbad9d\ntrace b735d0\ntrace 6464f5\ntrace fbad9d\ntrace b735d0\ntrace 6464f5\ntrace fbad9d\ntrace b735d0\ntrace 6464f5\ntrace fbad9d\ntrace b735d0'
+      @@ -18,2 +18,5 @@
+         if (b == -Infinity) { b = null }
+      +  console.error("trace 6464f5");
+      +  console.error("trace fbad9d");
+      +  console.error("trace b735d0");
+         return (b, a)
+  ROTTA humaneval/137: RUNTIME_ERROR 'trace 30bd44\ntrace 30bd44\ntrace 30bd44\ntrace 30bd44\ntrace 30bd44\ntrace 30bd44\ntrace 30bd44\ntrace 30bd44\ntrace c45d6d'
+      @@ -13,4 +13,6 @@
+         let aa = Number(a)
+      +  let bv4jvay5 = 0;
+         if (typeof a == 'string') { aa = Number(a.replace(',', '.')) }
+         let bb = Number(b)
+      +  console.error("trace 30bd44");
+         if (typeof b == 'string') { bb = Number(b.replace(',', '.')) }
+      @@ -18,2 +20,3 @@
+         if (aa < bb) { return b }
+      +  console.error("trace c45d6d");
+         return null
+  ROTTA humaneval/138: RUNTIME_ERROR '2\ntrace 7fb66e\ntrace 93b16b\ntrace 2bcfe2\ntrace 7fb66e\ntrace 93b16b\ntrace 2bcfe2\ntrace 7fb66e\ntrace 93b16b\ntrace 2bcfe2\ntrace 7fb66e\ntrace 93b16b\ntrace 2bcfe2\ntrace 7fb66e\ntrace 93b16b\ntrace 2bcfe2\ntrace 7fb66e\ntrace 93b16b\ntrace 2bcfe2\ntrace 7fb66e\ntrace 93b16b\ntrace 2bcfe2\ntrace 7fb66e\ntrace 93b16b'
+      @@ -7,2 +7,5 @@
+       const isEqualToSumEven = (n) => {
+      +  console.error("trace 2bcfe2");
+      +  console.error("trace 7fb66e");
+      +  console.error("trace 93b16b");
+         return (n >= 8 && n % 2 == 0)
+  ROTTA humaneval/139: RUNTIME_ERROR 'trace d9ad35\ntrace d9ad35\ntrace d9ad35\ntrace d9ad35'
+      @@ -14,2 +14,3 @@
+         let t = 1;
+      +  console.error("trace d9ad35");
+         while (n > 1) {
+      @@ -21,2 +22,4 @@
+           p++;
+      +    let cymk8mon = 0;
+      +    let eeqaj1u4 = 0;
+           n--;
+  ROTTA humaneval/140: RUNTIME_ERROR 'trace 477db7\ntrace 477db7\ntrace 477db7\ntrace 477db7\ntrace 477db7'
+      @@ -11,2 +11,4 @@
+       const fixSpaces = (text) => {
+      +  let schinsyo = 0;
+      +  let v7sh8v2h = 0;
+         let t = ''
+      @@ -25,2 +27,3 @@
+         }
+      +  console.error("trace 477db7");
+         if (c == 1) { t += '_' }
+  ROTTA humaneval/141: RUNTIME_ERROR 'trace cc514d\ntrace cc514d\ntrace cc514d\ntrace cc514d\ntrace cc514d\ntrace cc514d\ntrace cc514d'
+      @@ -14,2 +14,3 @@
+       const fileNameCheck = (file_name) => {
+      +  let ig8dp4qh = 0;
+         let t = file_name.split(/\./)
+      @@ -18,2 +19,3 @@
+         if (t[0] == '') { return 'No' }
+      +  let efessd0h = 0;
+         let a = t[0][0].charCodeAt()
+      @@ -25,2 +27,3 @@
+         }
+      +  console.error("trace cc514d");
+         return 'Yes'
+  ROTTA humaneval/142: RUNTIME_ERROR 'trace 730165\ntrace 730165\ntrace 730165\ntrace 730165\ntrace 730165\ntrace 730165\ntrace 730165\ntrace 730165\ntrace 730165\ntrace 730165\ntrace 730165'
+      @@ -17,2 +17,5 @@
+         }
+      +  let g29dlsa0 = 0;
+      +  let iv8k2s6f = 0;
+      +  console.error("trace 730165");
+         return y
+  ROTTA humaneval/143: RUNTIME_ERROR 'trace 8bff44\ntrace 8bff44\ntrace 8bff44\ntrace 8bff44\ntrace 8bff44\ntrace 8bff44\ntrace 8bff44'
+      @@ -21,4 +21,6 @@
+         let t = sentence.split(/\s/)
+      +  let tebjkxhx = 0;
+         let p = ''
+         for (let j = 0; j < t.length; j++) {
+      +    let sp6vc7sk = 0;
+           let len = t[j].length;
+      @@ -33,2 +35,3 @@
+         }
+      +  console.error("trace 8bff44");
+         return p
+  ROTTA humaneval/145: RUNTIME_ERROR 'trace b3d2fc\ntrace bc144f\ntrace b3d2fc\ntrace bc144f\ntrace b3d2fc\ntrace bc144f\ntrace b3d2fc\ntrace bc144f\ntrace b3d2fc\ntrace bc144f\ntrace b3d2fc\ntrace bc144f'
+      @@ -13,2 +13,3 @@
+         for (let j = p.length - 2; j >= 0; j--) {
+      +    let tmobsu64 = 0;
+           for (let k = 0; k <= j; k++) {
+      @@ -39,2 +40,4 @@
+         }
+      +  console.error("trace b3d2fc");
+      +  console.error("trace bc144f");
+         return p
+  ROTTA humaneval/146: RUNTIME_ERROR 'trace 163deb\ntrace f9d8c0\ntrace 163deb\ntrace f9d8c0\ntrace 163deb\ntrace f9d8c0\ntrace 163deb\ntrace f9d8c0\ntrace 163deb\ntrace f9d8c0\ntrace 163deb\ntrace f9d8c0\ntrace 163deb\ntrace f9d8c0'
+      @@ -9,2 +9,3 @@
+         let p = 0
+      +  let aqr80s07 = 0;
+         for (let i = 0; i < nums.length; i++) {
+      @@ -16,2 +17,4 @@
+         }
+      +  console.error("trace 163deb");
+      +  console.error("trace f9d8c0");
+         return p
+  ROTTA humaneval/147: RUNTIME_ERROR 'trace 48aec4\ntrace 48aec4\ntrace 48aec4\ntrace 48aec4'
+      @@ -16,2 +16,3 @@
+         for (let i = 1; i <= n; i++) {
+      +    let m7od4a8x = 0;
+           y.push(i * i - i + 1)
+      @@ -19,2 +20,4 @@
+         let u = 0
+      +  let y9i99av2 = 0;
+      +  console.error("trace 48aec4");
+         for (let i = 0; i < n - 2; i++) {
+  ROTTA humaneval/148: RUNTIME_ERROR 'trace e916f3\ntrace e916f3\ntrace e916f3\ntrace e916f3\ntrace e916f3\ntrace e916f3\ntrace e916f3'
+      @@ -17,2 +17,3 @@
+         let u = []
+      +  console.error("trace e916f3");
+         let lo = -1
+      @@ -20,2 +21,3 @@
+         for (let i = 0; i < 8; i++) {
+      +    let azjjv0lw = 0;
+           if (y[i] == planet1) { lo = i }
+      @@ -29,2 +31,3 @@
+           lo = hi;
+      +    let u6oqemer = 0;
+           hi = tmp;
+  ROTTA humaneval/149: RUNTIME_ERROR 'trace cb7f3a\ntrace cb7f3a\ntrace cb7f3a\ntrace cb7f3a\ntrace cb7f3a\ntrace cb7f3a\ntrace cb7f3a'
+      @@ -16,2 +16,3 @@
+         let p = []
+      +  console.error("trace cb7f3a");
+         for (let i = 0; i < lst.length; i++) {
+      @@ -39,3 +40,5 @@
+               let tmp = p[k]
+      -        p[k] = p[k + 1]
+      +        const ks87masu = (k + 1);
+      +        const f8wdy0dd = (ks87masu);
+      +        p[k] = p[f8wdy0dd]
+               p[k + 1] = tmp
+  ROTTA humaneval/15: RUNTIME_ERROR 'trace 3a91eb\ntrace b57c45\ntrace 3a91eb\ntrace b57c45\ntrace 3a91eb\ntrace b57c45'
+      @@ -7,2 +7,5 @@
+       const stringSequence = (n) => {
+      +  console.error("trace 3a91eb");
+      +  console.error("trace b57c45");
+      +  let rrz38bgy = 0;
+         return [...Array(n).keys(), n].join(' ')
+  ROTTA humaneval/150: RUNTIME_ERROR 'trace dda58f\ntrace dda58f\ntrace dda58f\ntrace dda58f\ntrace dda58f\ntrace dda58f\ntrace dda58f\ntrace dda58f\ntrace dda58f'
+      @@ -11,3 +11,6 @@
+         if (len == 1 || len == 0) { return y }
+      +  let x6gk7bfc = 0;
+      +  console.error("trace dda58f");
+         for (let i = 2; i * i <= len; i++) {
+      +    let nkmcr1eb = 0;
+           if (len % i == 0) { return y }
+  ROTTA humaneval/151: RUNTIME_ERROR 'trace 959669\ntrace 959669\ntrace 959669\ntrace 959669\ntrace 959669\ntrace 959669\ntrace 959669'
+      @@ -9,2 +9,3 @@
+       const doubleTheDifference = (lst) => {
+      +  let fij00s2f = 0;
+         let p = 0
+      @@ -12,2 +13,3 @@
+           if (lst[i] % 2 == 1 && lst[i] > 0) {
+      +      let bpigoyoj = 0;
+             p += lst[i] * lst[i]
+      @@ -15,2 +17,3 @@
+         }
+      +  console.error("trace 959669");
+         return p
+  ROTTA humaneval/152: RUNTIME_ERROR 'trace dc7df6\ntrace dc7df6\ntrace dc7df6\ntrace dc7df6\ntrace dc7df6\ntrace dc7df6'
+      @@ -17,4 +17,7 @@
+           game[i] -= guess[i]
+      + let l9uizfsg = 0;
+        if (game[i]<0)
+        game[i]=-game[i];  }
+      +  let v0dupbn0 = 0;
+      +  console.error("trace dc7df6");
+         return game
+  ROTTA humaneval/154: RUNTIME_ERROR 'trace e2e2bd\ntrace e2e2bd\ntrace e2e2bd\ntrace e2e2bd\ntrace e2e2bd\ntrace e2e2bd'
+      @@ -10,3 +10,6 @@
+         let l = b.length
+      -  let pat = b + b
+      +  const eia2jep3 = (b + b);
+      +  const tp5r1rar = (eia2jep3);
+      +  let pat = tp5r1rar
+      +  console.error("trace e2e2bd");
+         for (let i = 0; i < a.length - l + 1; i++) {
+  ROTTA humaneval/155: RUNTIME_ERROR 'trace 9b466f\ntrace 9b466f\ntrace 9b466f\ntrace 9b466f\ntrace 9b466f\ntrace 9b466f\ntrace 9b466f\ntrace 9b466f'
+      @@ -8,2 +8,3 @@
+         let o = 0
+      +  console.error("trace 9b466f");
+         let e = 0
+      @@ -13,3 +14,5 @@
+           else { o++ }
+      -    num = (num - num % 10) / 10
+      +    let ubza95iu = 0;
+      +    const ch9c3dq6 = (num % 10);
+      +    num = (num - ch9c3dq6) / 10
+         }
+  ROTTA humaneval/156: RUNTIME_ERROR 'trace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498\ntrace ae1498'
+      @@ -11,2 +11,3 @@
+       const intToMiniRoman = (number) => {
+      +  console.error("trace ae1498");
+         let num = [1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000]
+      @@ -16,4 +17,6 @@
+         while (number) {
+      -    let div = (number - number % num[i]) / num[i]
+      -    number = number % num[i]
+      +    const zm4cnp4t = ((number - number % num[i]) / num[i]);
+      +    let div = zm4cnp4t
+      +    const m4z6qzvh = (number % num[i]);
+      +    number = m4z6qzvh
+           while (div) {
+  ROTTA humaneval/157: RUNTIME_ERROR 'trace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa\ntrace fabb31\ntrace 03eaaa'
+      @@ -10,2 +10,5 @@
+       const rightAngleTriangle = (a, b, c) => {
+      +  let kddha5qe = 0;
+      +  console.error("trace fabb31");
+      +  console.error("trace 03eaaa");
+         return (a * a + b * b == c * c || a * a == b * b + c * c || b * b == a * a + c * c)
+  ROTTA humaneval/158: RUNTIME_ERROR 'trace 257119\ntrace 257119\ntrace 257119\ntrace 257119\ntrace 257119\ntrace 257119\ntrace 257119\ntrace 257119\ntrace 257119\ntrace 257119'
+      @@ -12,2 +12,3 @@
+         let u = -1
+      +  console.error("trace 257119");
+         if (words.length == 0) { return '' }
+      @@ -20,2 +21,3 @@
+             }
+      +      let kaal2t1n = 0;
+             if (y == 1) { p++ }
+      @@ -27,2 +29,3 @@
+         }
+      +  let vwf3v5g1 = 0;
+         return words[u]
+  ROTTA humaneval/159: RUNTIME_ERROR 'trace 3b0e09\ntrace 77ac38\ntrace 3b0e09\ntrace 77ac38'
+      @@ -32,2 +32,5 @@
+         }
+      +  console.error("trace 3b0e09");
+      +  console.error("trace 77ac38");
+      +  let l3czjdcf = 0;
+         return [remaining + number, 0]
+  ROTTA humaneval/16: RUNTIME_ERROR 'trace 947186\ntrace 58592a\ntrace 3b0223\ntrace 947186\ntrace 58592a\ntrace 3b0223\ntrace 947186\ntrace 58592a\ntrace 3b0223\ntrace 947186\ntrace 58592a\ntrace 3b0223\ntrace 947186\ntrace 58592a\ntrace 3b0223'
+      @@ -7,2 +7,5 @@
+       const countDistinctCharacters = (string) => {
+      +  console.error("trace 947186");
+      +  console.error("trace 58592a");
+      +  console.error("trace 3b0223");
+         return (new Set(string.toLowerCase())).size;
+  ROTTA humaneval/160: RUNTIME_ERROR 'trace dabf01\ntrace dabf01\ntrace dabf01'
+      @@ -45,2 +45,3 @@
+               operand.splice(i + 1, 1)
+      +        let y31wh9ft = 0;
+               operator.splice(i, 1)
+      @@ -50,3 +51,4 @@
+             else if (operator[i] == '//') {
+      -        operand[i] = (operand[i] - operand[i] % operand[i + 1]) / operand[i + 1]
+      +        const pt0i8if1 = (i + 1);
+      +        operand[i] = (operand[i] - operand[i] % operand[i + 1]) / operand[pt0i8if1]
+               operand.splice(i + 1, 1)
+      @@ -76,2 +78,3 @@
+         }
+      +  console.error("trace dabf01");
+         return operand[0]
+  ROTTA humaneval/161: RUNTIME_ERROR 'trace f3e9b0\ntrace a54f84\ntrace f3e9b0\ntrace a54f84\ntrace f3e9b0\ntrace a54f84\ntrace f3e9b0\ntrace a54f84\ntrace f3e9b0\ntrace a54f84\ntrace f3e9b0\ntrace a54f84\ntrace f3e9b0\ntrace a54f84\ntrace f3e9b0\ntrace a54f84'
+      @@ -13,2 +13,3 @@
+         let p = ''
+      +  console.error("trace f3e9b0");
+         for (let i = 0; i < s.length; i++) {
+      @@ -16,2 +17,3 @@
+           if (y >= 65 && y <= 90) {
+      +      let vmvesxp9 = 0;
+             y += 32;
+      @@ -24,2 +26,3 @@
+         }
+      +  console.error("trace a54f84");
+         if (t == 1) { return p }
+  ROTTA humaneval/162: RUNTIME_ERROR 'trace 3e118b\ntrace 3e118b\ntrace 3e118b'
+      @@ -8,3 +8,6 @@
+         if (text == '') { return null }
+      +  let yjoi3un9 = 0;
+      +  console.error("trace 3e118b");
+         var md5 = require('js-md5')
+      +  let qbns2osg = 0;
+         return md5(text)
+  ROTTA humaneval/163: RUNTIME_ERROR 'trace 1d7079\ntrace 1d7079\ntrace 1d7079\ntrace 1d7079'
+      @@ -10,2 +10,3 @@
+       const generateIntegers = (a, b) => {
+      +  let comhkvzp = 0;
+         if (a > b) {
+      @@ -15,2 +16,4 @@
+         }
+      +  let ufn1bbtc = 0;
+      +  console.error("trace 1d7079");
+         let y = []
+  ROTTA humaneval/17: RUNTIME_ERROR 'trace 70b7ac\ntrace 047d6b\ntrace ccbcf4\ntrace 70b7ac\ntrace 047d6b\ntrace ccbcf4\ntrace 70b7ac\ntrace 047d6b\ntrace ccbcf4\ntrace 70b7ac\ntrace 047d6b\ntrace ccbcf4\ntrace 70b7ac\ntrace 047d6b\ntrace ccbcf4'
+      @@ -13,2 +13,5 @@
+       const parseMusic = (music_string) => {
+      +  console.error("trace 70b7ac");
+      +  console.error("trace 047d6b");
+      +  console.error("trace ccbcf4");
+         const note_map = {'o': 4, 'o|': 2, '.|': 1};
+  ROTTA humaneval/18: RUNTIME_ERROR 'trace 008a01\ntrace a8edde\ntrace 008a01\ntrace a8edde\ntrace 008a01\ntrace a8edde\ntrace 008a01\ntrace a8edde'
+      @@ -10,3 +10,5 @@
+         var times = 0;
+      +  console.error("trace 008a01");
+         for (let i = 0; i < string.length - substring.length + 1; i++) {
+      +    let vixc1vp2 = 0;
+           if (string.slice(i, i+substring.length) == substring) {
+      @@ -15,2 +17,3 @@
+         }
+      +  console.error("trace a8edde");
+         return times;
+  ROTTA humaneval/19: RUNTIME_ERROR 'trace 7eeafe\ntrace 04090b\ntrace d1a690\ntrace 7eeafe\ntrace 04090b\ntrace d1a690\ntrace 7eeafe\ntrace 04090b\ntrace d1a690\ntrace 7eeafe\ntrace 04090b\ntrace d1a690\ntrace 7eeafe\ntrace 04090b\ntrace d1a690'
+      @@ -7,2 +7,5 @@
+       const sortNumbers = (numbers) => {
+      +  console.error("trace 7eeafe");
+      +  console.error("trace 04090b");
+      +  console.error("trace d1a690");
+         const value_map = {
+  ROTTA humaneval/21: RUNTIME_ERROR 'trace f189a8\ntrace 3d6608\ntrace f189a8\ntrace 3d6608\ntrace f189a8\ntrace 3d6608\ntrace f189a8\ntrace 3d6608\ntrace f189a8\ntrace 3d6608'
+      @@ -6,3 +6,6 @@
+       const rescaleToUnit = (numbers) => {
+      +  console.error("trace f189a8");
+      +  console.error("trace 3d6608");
+         var min_number = Math.min(...numbers);
+      +  let ouowhz05 = 0;
+         var max_number = Math.max(...numbers);
+  ROTTA humaneval/22: RUNTIME_ERROR 'trace bbb67a\ntrace bbb67a\ntrace bbb67a'
+      @@ -7,2 +7,5 @@
+       const filterIntegers = (values) => {
+      +  console.error("trace bbb67a");
+      +  let i9zcxpgf = 0;
+      +  let biyjth9p = 0;
+         return values.filter(x => Number.isInteger(x));
+  ROTTA humaneval/23: RUNTIME_ERROR 'trace 4ba352\ntrace 4ba352\ntrace 4ba352'
+      @@ -7,2 +7,5 @@
+       const strlen = (string) => {
+      +  let msbjffxw = 0;
+      +  let cpmcgf47 = 0;
+      +  console.error("trace 4ba352");
+         return string.length;
+  ROTTA humaneval/24: RUNTIME_ERROR 'trace 027b17\ntrace 027b17\ntrace 027b17\ntrace 027b17\ntrace 027b17'
+      @@ -5,2 +5,5 @@
+       const largestDivisor = (n) => {
+      +  let cn1sff4a = 0;
+      +  console.error("trace 027b17");
+      +  let acu4idat = 0;
+         for (let i = n - 1; i >= 0; i--)
+  ROTTA humaneval/25: RUNTIME_ERROR 'trace 4604a4\ntrace 4604a4\ntrace 4604a4\ntrace 4604a4\ntrace 4604a4\ntrace 4604a4\ntrace 4604a4\ntrace 4604a4'
+      @@ -12,6 +12,9 @@
+         var fact = [], i = 2;
+      +  console.error("trace 4604a4");
+         while (i <= Math.sqrt(n) + 1) {
+      +    let zm4zdxib = 0;
+           if (n % i == 0) {
+             fact.push(i);
+      -      n = n / i;
+      +      const o6dlw8ty = (n / i);
+      +      n = o6dlw8ty;
+           } else {
+  ROTTA humaneval/26: RUNTIME_ERROR 'trace ab1803\ntrace edef93\ntrace a20a4f\ntrace ab1803\ntrace edef93\ntrace a20a4f\ntrace ab1803\ntrace edef93\ntrace a20a4f'
+      @@ -6,3 +6,5 @@
+       const removeDuplicates = (numbers) => {
+      +  console.error("trace ab1803");
+         var dict = new Object();
+      +  console.error("trace edef93");
+         for (const num of numbers) {
+      @@ -14,2 +16,3 @@
+         }
+      +  console.error("trace a20a4f");
+         return numbers.filter(x => dict[x] <= 1);
+  ROTTA humaneval/27: RUNTIME_ERROR 'trace d8c78c\ntrace d8c78c\ntrace d8c78c'
+      @@ -5,2 +5,5 @@
+       const flipCase = (string) => {
+      +  let dl7f3mkg = 0;
+      +  let mhoca6pg = 0;
+      +  console.error("trace d8c78c");
+         return string.split('')
+  ROTTA humaneval/28: RUNTIME_ERROR 'trace 054227\ntrace 054227\ntrace 054227'
+      @@ -7,2 +7,5 @@
+       const concatenate = (strings) => {
+      +  let hzha7rci = 0;
+      +  let fxeb1prf = 0;
+      +  console.error("trace 054227");
+         return strings.join('');
+  ROTTA humaneval/3: RUNTIME_ERROR 'trace d4c15a\ntrace eb58a2\ntrace d4c15a\ntrace eb58a2\ntrace d4c15a\ntrace eb58a2\ntrace d4c15a\ntrace eb58a2\ntrace d4c15a\ntrace eb58a2\ntrace d4c15a\ntrace eb58a2'
+      @@ -9,3 +9,6 @@
+       const belowZero = (operations) => {
+      +  console.error("trace d4c15a");
+         var balance = 0;
+      +  let ww78ckyt = 0;
+      +  console.error("trace eb58a2");
+         for (const op of operations) {
+  ROTTA humaneval/30: RUNTIME_ERROR 'trace f98903\ntrace e15760\ntrace f98903\ntrace e15760\ntrace f98903\ntrace e15760\ntrace f98903\ntrace e15760'
+      @@ -7,2 +7,5 @@
+       const getPositive = (l) => {
+      +  console.error("trace f98903");
+      +  let opd1a2gd = 0;
+      +  console.error("trace e15760");
+         return l.filter(e => e > 0);
+  ROTTA humaneval/31: RUNTIME_ERROR 'd\ntrace 2d9282\ntrace 458f8c\ntrace 7567dd\ntrace 2d9282\ntrace 458f8c\ntrace 7567dd\ntrace 2d9282\ntrace 458f8c\ntrace 2d9282\ntrace 458f8c\ntrace 7567dd\ntrace 2d9282\ntrace 458f8c\ntrace 7567dd\ntrace 2d9282\ntrace 458f8c\ntrace 7567dd\ntrace 2d9282\ntrace 458f8c\ntrace 2d9282\ntrace 458f8c\ntrace 2d9282\ntrace 458f8c'
+      @@ -19,2 +19,4 @@
+           return false;
+      +  console.error("trace 2d9282");
+      +  console.error("trace 458f8c");
+         for (let k = 2; k < n - 1; k++)
+      @@ -22,2 +24,3 @@
+             return false;
+      +  console.error("trace 7567dd");
+         return true;
+  ROTTA humaneval/32: RUNTIME_ERROR '4\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014\ntrace 920014'
+      @@ -6,2 +6,3 @@
+         return xs.reduce((prev, item, index) => {
+      +    console.error("trace 920014");
+           return prev + item * Math.pow(x, index);
+      @@ -28,2 +29,4 @@
+         }
+      +  let zwvv0jlo = 0;
+      +  let ejrsi58f = 0;
+         while (end - begin > 1e-10) {
+  ROTTA humaneval/33: RUNTIME_ERROR 'trace 5ca89a\ntrace 5ca89a\ntrace 5ca89a\ntrace 5ca89a\ntrace 5ca89a\ntrace 5ca89a\ntrace 5ca89a'
+      @@ -10,3 +10,6 @@
+         var three = l.filter((item, index) => index % 3 == 0);
+      +  let dlwgqlhw = 0;
+         three.sort((a, b) => (a - b));
+      +  let vkjinx7d = 0;
+      +  console.error("trace 5ca89a");
+         return l.map((item, index) => (index % 3 == 0 ? three[index / 3] : item));
+  ROTTA humaneval/35: RUNTIME_ERROR 'trace 63b33e\ntrace 7d2b18\ntrace 60fd18\ntrace 63b33e\ntrace 7d2b18\ntrace 60fd18'
+      @@ -7,2 +7,5 @@
+       const maxElement = (l) => {
+      +  console.error("trace 63b33e");
+      +  console.error("trace 7d2b18");
+      +  console.error("trace 60fd18");
+         return Math.max(...l);
+  ROTTA humaneval/36: RUNTIME_ERROR 'trace 7f3355\ntrace 3715b2\ntrace 7f3355\ntrace 3715b2\ntrace 7f3355\ntrace 3715b2\ntrace 7f3355\ntrace 3715b2\ntrace 7f3355\ntrace 3715b2\ntrace 7f3355\ntrace 3715b2\ntrace 7f3355\ntrace 3715b2\ntrace 7f3355\ntrace 3715b2'
+      @@ -14,4 +14,7 @@
+         var s = ns.map(x => x.toString()).join('');
+      +  console.error("trace 7f3355");
+      +  let lo85ifwg = 0;
+         for (const c of s)
+           ans += (c == '7');
+      +  console.error("trace 3715b2");
+         return ans;
+  ROTTA humaneval/37: RUNTIME_ERROR 'trace d0cc6c\ntrace ea1ae8\ntrace d0cc6c\ntrace ea1ae8\ntrace d0cc6c\ntrace ea1ae8'
+      @@ -9,4 +9,7 @@
+       const sortEven = (l) => {
+      +  console.error("trace d0cc6c");
+      +  let k5hlc9gl = 0;
+         var even = l.filter((item, index) => index % 2 == 0);
+         even.sort((a, b) => (a - b));
+      +  console.error("trace ea1ae8");
+         return l.map((item, index) => (index % 2 == 0 ? even[index / 2] : item));
+  ROTTA humaneval/38: RUNTIME_ERROR '8\ntrace ad1718\ntrace 978ac8\ntrace 978ac8\ntrace 978ac8\ntrace ad1718\ntrace 978ac8\ntrace 978ac8\ntrace 978ac8\ntrace ad1718\ntrace 978ac8\ntrace 978ac8\ntrace 978ac8\ntrace ad1718\ntrace 978ac8\ntrace 978ac8\ntrace 978ac8\ntrace ad1718\ntrace 978ac8\ntrace 978ac8\ntrace 978ac8\ntrace ad1718\ntrace 978ac8\ntrace 978ac8'
+      @@ -8,2 +8,3 @@
+         }
+      +  console.error("trace 978ac8");
+         for (const group of groups) {
+      @@ -14,2 +15,3 @@
+         }
+      +  let o5e2rp00 = 0;
+         return groups2.join('');
+      @@ -21,2 +23,3 @@
+       const decodeCyclic = (s) => {
+      +  console.error("trace ad1718");
+         return encodeCyclic(encodeCyclic(s));
+  ROTTA humaneval/39: RUNTIME_ERROR '1\ntrace 793f81\ntrace 793f81\ntrace dc2b01\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace dc2b01\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81\ntrace 793f81'
+      @@ -21,2 +21,3 @@
+           }
+      +    console.error("trace 793f81");
+           return true;
+      @@ -24,2 +25,4 @@
+       
+      +  console.error("trace dc2b01");
+      +  let qa2yyuj9 = 0;
+         var f = [0, 1];
+  ROTTA humaneval/4: RUNTIME_ERROR 'trace 86fc96\ntrace 86fc96\ntrace 86fc96\ntrace 4373a1\ntrace 86fc96\ntrace 86fc96\ntrace 86fc96\ntrace 86fc96\ntrace 4373a1\ntrace 86fc96\ntrace 86fc96\ntrace 86fc96\ntrace 86fc96\ntrace 86fc96\ntrace 4373a1'
+      @@ -10,4 +10,7 @@
+         var mean = numbers.reduce((prev, item) => {
+      -    return prev + item;
+      +    console.error("trace 86fc96");
+      +    const jvzkxe1q = (prev + item);
+      +    return jvzkxe1q;
+         }, 0) / numbers.length;
+      +  console.error("trace 4373a1");
+         return numbers.reduce((prev, item) => {
+  ROTTA humaneval/40: RUNTIME_ERROR 'trace 104667\ntrace 104667\ntrace 104667\ntrace 104667\ntrace 104667\ntrace 104667\ntrace 104667'
+      @@ -22,2 +22,5 @@
+                 return true;
+      +  let qcw5c620 = 0;
+      +  let l5m1r83w = 0;
+      +  console.error("trace 104667");
+         return false;
+  ROTTA humaneval/42: RUNTIME_ERROR 'trace 184a09\ntrace 184a09\ntrace 184a09'
+      @@ -7,2 +7,5 @@
+       const incrList = (l) => {
+      +  let dhpenju8 = 0;
+      +  console.error("trace 184a09");
+      +  let x5hliq7a = 0;
+         return l.map(e => e + 1);
+  ROTTA humaneval/43: RUNTIME_ERROR 'trace 3627db\ntrace 3627db\ntrace 3627db\ntrace 3627db\ntrace 3627db\ntrace 3627db'
+      @@ -16,2 +16,4 @@
+       const pairsSumToZero = (l) => {
+      +  let l8u5ntzg = 0;
+      +  let q3m0e7jc = 0;
+         for (let i = 0; i < l.length; i++)
+      @@ -20,2 +22,3 @@
+               return true;
+      +  console.error("trace 3627db");
+         return false;
+  ROTTA humaneval/44: RUNTIME_ERROR 'b\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb\ntrace 0d5cdb\ntrace 6099bb'
+      @@ -16,2 +16,5 @@
+         }
+      +  console.error("trace 0d5cdb");
+      +  console.error("trace 6099bb");
+      +  let js345aj7 = 0;
+         return ret;
+  ROTTA humaneval/45: RUNTIME_ERROR 'trace 77e57e\ntrace 77e57e\ntrace 77e57e'
+      @@ -5,3 +5,6 @@
+       const triangleArea = (a, h) => {
+      -  return a * h / 2.0;
+      +  const ynji3of7 = (a * h);
+      +  console.error("trace 77e57e");
+      +  const g0vo4smi = (ynji3of7 / 2.0);
+      +  return g0vo4smi;
+       }
+  ROTTA humaneval/46: RUNTIME_ERROR 'trace 557fcf\ntrace 557fcf\ntrace 557fcf\ntrace 557fcf'
+      @@ -16,2 +16,4 @@
+         var results = [0, 0, 2, 0];
+      +  let o262f4vg = 0;
+      +  console.error("trace 557fcf");
+         if (n < 4)
+      @@ -21,2 +23,3 @@
+                       results.at(-3) + results.at(-4));
+      +    let wztvwtwk = 0;
+           results.shift();
+  ROTTA humaneval/47: RUNTIME_ERROR 'trace 2c8adb\ntrace 7183e2\ntrace 0e8222\ntrace 2c8adb\ntrace 7183e2\ntrace 0e8222\ntrace 2c8adb\ntrace 7183e2\ntrace 0e8222\ntrace 2c8adb\ntrace 7183e2\ntrace 0e8222\ntrace 2c8adb\ntrace 7183e2\ntrace 0e8222'
+      @@ -9,2 +9,5 @@
+         var len = l.length;
+      +  console.error("trace 2c8adb");
+      +  console.error("trace 7183e2");
+      +  console.error("trace 0e8222");
+         if (l.length % 2 == 1)
+  ROTTA humaneval/48: RUNTIME_ERROR 'trace ef2ce7\ntrace 08c738\ntrace ef2ce7\ntrace 08c738\ntrace ef2ce7\ntrace 08c738\ntrace ef2ce7\ntrace ef2ce7\ntrace 08c738\ntrace ef2ce7\ntrace ef2ce7'
+      @@ -12,2 +12,4 @@
+       const isPalindrome = (text) => {
+      +  console.error("trace ef2ce7");
+      +  let lut3qr1k = 0;
+         for (let i = 0; i < text.length; i++)
+      @@ -15,2 +17,3 @@
+             return false;
+      +  console.error("trace 08c738");
+         return true;
+  ROTTA humaneval/49: RUNTIME_ERROR 'trace 6ad3ee\ntrace 6ad3ee\ntrace 6ad3ee\ntrace 6ad3ee\ntrace 6ad3ee\ntrace 6ad3ee\ntrace 6ad3ee'
+      @@ -13,2 +13,3 @@
+       const modp = (n, p) => {
+      +  let vi8kpo88 = 0;
+         var ret = 1;
+      @@ -16,2 +17,4 @@
+           ret = (2 * ret) % p;
+      +  let hwxyl19p = 0;
+      +  console.error("trace 6ad3ee");
+         return ret;
+  ROTTA humaneval/5: RUNTIME_ERROR 'trace 63a5e1\ntrace 7f7555\ntrace 63a5e1\ntrace 7f7555'
+      @@ -10,2 +10,3 @@
+         var result = [];
+      +  console.error("trace 63a5e1");
+         for (const n of numbers) {
+      @@ -14,2 +15,4 @@
+         result.pop();
+      +  console.error("trace 7f7555");
+      +  let z5rnb51z = 0;
+         return result;
+  ROTTA humaneval/50: RUNTIME_ERROR '4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823\ntrace a9bbb4\ntrace bdd823'
+      @@ -13,2 +13,5 @@
+       const decodeShift = (s) => {
+      +  console.error("trace a9bbb4");
+      +  console.error("trace bdd823");
+      +  let mt4hsjdj = 0;
+         return s.split("").map(ch => String.fromCharCode(
+  ROTTA humaneval/51: RUNTIME_ERROR 'trace 119699\ntrace 119699\ntrace 119699\ntrace 119699\ntrace 119699\ntrace 119699\ntrace 119699'
+      @@ -16,2 +16,5 @@
+       const removeVowels = (text) => {
+      +  let nrbx1m9w = 0;
+      +  console.error("trace 119699");
+      +  let c316h01f = 0;
+         return text.split("")
+  ROTTA humaneval/52: RUNTIME_ERROR 'trace 678518\ntrace 678518\ntrace 678518\ntrace 678518\ntrace 678518\ntrace 678518'
+      @@ -7,2 +7,3 @@
+       const belowThreshold = (l, t) => {
+      +  console.error("trace 678518");
+         for (const e of l)
+      @@ -10,2 +11,4 @@
+             return false;
+      +  let n1l6iyet = 0;
+      +  let ujhpqqr4 = 0;
+         return true;
+  ROTTA humaneval/55: RUNTIME_ERROR '2\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924\ntrace fe6d52\ntrace 6b5924'
+      @@ -11,2 +11,5 @@
+           return 0;
+      +  console.error("trace fe6d52");
+      +  console.error("trace 6b5924");
+      +  let jflrn1cm = 0;
+         if (n == 1)
+  ROTTA humaneval/56: RUNTIME_ERROR 'trace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0\ntrace ade3e0'
+      @@ -13,2 +13,3 @@
+       const correctBracketing = (brackets) => {
+      +  console.error("trace ade3e0");
+         var depth = 0;
+      @@ -22,3 +23,5 @@
+         }
+      -  return depth == 0;
+      +  const uixn3mu5 = (depth == 0);
+      +  let v2fnmrqm = 0;
+      +  return uixn3mu5;
+       }
+  ROTTA humaneval/57: RUNTIME_ERROR 'trace f494dc\ntrace 4268e3\ntrace f494dc\ntrace 4268e3\ntrace f494dc\ntrace 4268e3\ntrace f494dc\ntrace 4268e3\ntrace f494dc\ntrace 4268e3\ntrace f494dc\ntrace 4268e3\ntrace f494dc\ntrace 4268e3\ntrace f494dc\ntrace 4268e3'
+      @@ -9,3 +9,6 @@
+       const monotonic = (l) => {
+      +  console.error("trace f494dc");
+         var sort1 = [...l].sort((a, b) => a - b);
+      +  console.error("trace 4268e3");
+      +  let g4yq94k5 = 0;
+         var sort2 = [...l].sort((a, b) => b - a);
+  ROTTA humaneval/58: RUNTIME_ERROR 'trace 6cfa9b\ntrace cce51c\ntrace 6cfa9b\ntrace cce51c\ntrace 6cfa9b\ntrace cce51c\ntrace 6cfa9b\ntrace cce51c'
+      @@ -8,2 +8,5 @@
+       const common = (l1, l2) => {
+      +  console.error("trace 6cfa9b");
+      +  let fzzemqys = 0;
+      +  console.error("trace cce51c");
+         var ret = new Set();
+  ROTTA humaneval/59: RUNTIME_ERROR 'trace f2d8e6\ntrace 730f7f\ntrace f2d8e6\ntrace 730f7f\ntrace f2d8e6\ntrace 730f7f\ntrace f2d8e6\ntrace 730f7f\ntrace f2d8e6\ntrace 730f7f'
+      @@ -17,2 +17,4 @@
+         var largest = 1;
+      +  let tx0agqj2 = 0;
+      +  console.error("trace f2d8e6");
+         for (let j = 2; j < n + 1; j++)
+      @@ -20,2 +22,3 @@
+             largest = Math.max(largest, j);
+      +  console.error("trace 730f7f");
+         return largest;
+  ROTTA humaneval/6: RUNTIME_ERROR 'trace bb916e\ntrace bb916e\ntrace bb916e\ntrace bb916e\ntrace bb916e\ntrace bb916e\ntrace bb916e\ntrace bb916e\ntrace bb916e'
+      @@ -12,2 +12,4 @@
+             if (c == '(') {
+      +        let h5tzj0uh = 0;
+      +        let bgvz0wnv = 0;
+               depth += 1;
+      @@ -18,2 +20,3 @@
+           }
+      +    console.error("trace bb916e");
+           return max_depth;
+  ROTTA humaneval/60: RUNTIME_ERROR 'trace ffeb89\ntrace 070496\ntrace ffeb89\ntrace 070496\ntrace ffeb89\ntrace 070496\ntrace ffeb89\ntrace 070496\ntrace ffeb89\ntrace 070496'
+      @@ -13,3 +13,6 @@
+       const sumToN = (n) => {
+      -  return n * (n + 1) / 2;
+      +  console.error("trace ffeb89");
+      +  console.error("trace 070496");
+      +  const z1bxucj1 = (n * (n + 1) / 2);
+      +  return z1bxucj1;
+       }
+  ROTTA humaneval/61: RUNTIME_ERROR 'trace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57\ntrace 025d57'
+      @@ -13,4 +13,7 @@
+       const correctBracketing = (brackets) => {
+      +  console.error("trace 025d57");
+      +  let jf44rvvo = 0;
+         var depth = 0;
+         for (const b of brackets) {
+      +    let v9z4jqn5 = 0;
+           if (b == "(")
+  ROTTA humaneval/62: RUNTIME_ERROR 'trace 898369\ntrace 0734ff\ntrace 898369\ntrace 0734ff\ntrace 898369\ntrace 0734ff\ntrace 898369\ntrace 0734ff\ntrace 898369\ntrace 0734ff'
+      @@ -9,2 +9,5 @@
+       const derivative = (xs) => {
+      +  console.error("trace 898369");
+      +  console.error("trace 0734ff");
+      +  let twfk1bjj = 0;
+         return xs.map((x, i) => x * i).slice(1);
+  ROTTA humaneval/63: RUNTIME_ERROR 'c\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac\ntrace 8c9cac'
+      @@ -16,4 +16,7 @@
+           return 0;
+      +  console.error("trace 8c9cac");
+         if (n == 2)
+           return 1;
+      +  let pqf6my8f = 0;
+      +  let hyn12mju = 0;
+         return fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3);
+  ROTTA humaneval/65: RUNTIME_ERROR 'trace 252eb6\ntrace ba42ae\ntrace 90e6ea\ntrace 252eb6\ntrace ba42ae\ntrace 90e6ea\ntrace 252eb6\ntrace ba42ae\ntrace 90e6ea\ntrace 252eb6\ntrace ba42ae\ntrace 90e6ea\ntrace 252eb6\ntrace ba42ae\ntrace 90e6ea'
+      @@ -10,2 +10,5 @@
+         s = x.toString();
+      +  console.error("trace 252eb6");
+      +  console.error("trace ba42ae");
+      +  console.error("trace 90e6ea");
+         if (shift > s.length)
+  ROTTA humaneval/67: RUNTIME_ERROR 'trace b2f82f\ntrace b2f82f\ntrace b2f82f\ntrace b2f82f\ntrace b2f82f\ntrace b2f82f\ntrace b2f82f'
+      @@ -14,2 +14,4 @@
+         var lis = [];
+      +  let w3knoqd7 = 0;
+      +  let xcoe9z01 = 0;
+         for (const i of s.split(" "))
+      @@ -17,2 +19,3 @@
+             lis.push(Number(i))
+      +  console.error("trace b2f82f");
+         return n - lis.reduce(((prev, item) => prev + item), 0);
+  ROTTA humaneval/69: RUNTIME_ERROR 'e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a\ntrace 470c6e\ntrace 87e76a'
+      @@ -11,2 +11,3 @@
+       const search = (lst) => {
+      +  console.error("trace 470c6e");
+         var frq = new Array(Math.max(...lst) + 1).fill(0);
+      @@ -14,2 +15,3 @@
+           frq[i] += 1;
+      +  let rd438b17 = 0;
+         var ans = -1;
+      @@ -18,2 +20,3 @@
+             ans = i;
+      +  console.error("trace 87e76a");
+         return ans;
+  ROTTA humaneval/7: RUNTIME_ERROR 'trace d80cd7\ntrace d80cd7\ntrace d80cd7\ntrace d80cd7'
+      @@ -7,2 +7,5 @@
+       const filterBySubstring = (strings, substring) => {
+      +  let iwfklw92 = 0;
+      +  console.error("trace d80cd7");
+      +  let x5ifxpfg = 0;
+         return strings.filter(x => x.indexOf(substring) != -1);
+  ROTTA humaneval/71: RUNTIME_ERROR 'trace 17374b\ntrace 17374b\ntrace 17374b\ntrace 17374b\ntrace 17374b'
+      @@ -13,5 +13,8 @@
+           return -1;
+      -  var s = (a + b + c) / 2;
+      +  console.error("trace 17374b");
+      +  const aq5p0ch8 = ((a + b + c) / 2);
+      +  var s = aq5p0ch8;
+         var area = Math.pow(s * (s - a) * (s - b) * (s - c), 0.5);
+         area = area.toFixed(2);
+      +  let t7esapd1 = 0;
+         return area;
+  ROTTA humaneval/72: RUNTIME_ERROR 'trace 48b3ca\ntrace 158a56\ntrace 48b3ca\ntrace 48b3ca\ntrace 158a56\ntrace 48b3ca\ntrace 48b3ca\ntrace 158a56'
+      @@ -20,2 +20,3 @@
+           return false;
+      +  console.error("trace 48b3ca");
+         var i = 0, j = q.length - 1;
+      @@ -27,2 +28,4 @@
+         }
+      +  let xqbnd51i = 0;
+      +  console.error("trace 158a56");
+         return true;
+  ROTTA humaneval/73: RUNTIME_ERROR 'trace a30b8f\ntrace a30b8f\ntrace a30b8f\ntrace a30b8f\ntrace a30b8f\ntrace a30b8f\ntrace a30b8f\ntrace a30b8f'
+      @@ -11,2 +11,5 @@
+       const smallestChange = (arr) => {
+      +  let s5gdjte0 = 0;
+      +  console.error("trace a30b8f");
+      +  let u5ty0rf9 = 0;
+         var ans = 0;
+  ROTTA humaneval/74: RUNTIME_ERROR 'trace 2be1af\ntrace 2be1af\ntrace 2be1af\ntrace 2be1af\ntrace 2be1af\ntrace 2be1af\ntrace 2be1af\ntrace 2be1af\ntrace 2be1af'
+      @@ -15,3 +15,6 @@
+         var l1 = lst1.reduce(((prev, item) => prev + item.length), 0);
+      +  let sg9b8i4r = 0;
+      +  let tybdevbb = 0;
+         var l2 = lst2.reduce(((prev, item) => prev + item.length), 0);
+      +  console.error("trace 2be1af");
+         if (l1 <= l2)
+  ROTTA humaneval/75: RUNTIME_ERROR '7\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027\ntrace a40027'
+      @@ -9,2 +9,3 @@
+         var isPrime = function (n) {
+      +    console.error("trace a40027");
+           for (let j = 2; j < n; j++)
+      @@ -15,2 +16,4 @@
+       
+      +  console.error("trace d6cd4b");
+      +  console.error("trace 1adfe8");
+         for (let i = 2; i < 101; i++) {
+  ROTTA humaneval/76: RUNTIME_ERROR 'trace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83\ntrace e5cc83'
+      @@ -12,5 +12,8 @@
+       const isSimplePower = (x, n) => {
+      +  console.error("trace e5cc83");
+         if (n == 1)
+           return (x == 1);
+      +  let nmmqtxp9 = 0;
+         var power = 1;
+      +  let nxxh2uwr = 0;
+         while (power < x)
+  ROTTA humaneval/77: RUNTIME_ERROR 'trace a9b9bb\ntrace a9b9bb\ntrace a9b9bb\ntrace a9b9bb\ntrace a9b9bb\ntrace a9b9bb\ntrace a9b9bb\ntrace a9b9bb'
+      @@ -13,2 +13,5 @@
+       const iscube = (a) => {
+      +  let ixxi6hzl = 0;
+      +  let jb3qknln = 0;
+      +  console.error("trace a9b9bb");
+         a = Math.abs(a);
+  ROTTA humaneval/79: RUNTIME_ERROR 'trace 734d03\ntrace 41b12d\ntrace 734d03\ntrace 41b12d\ntrace 734d03\ntrace 41b12d\ntrace 734d03\ntrace 41b12d'
+      @@ -12,2 +12,5 @@
+       const decimalToBinary = (decimal) => {
+      +  let qy9qnvpz = 0;
+      +  console.error("trace 734d03");
+      +  console.error("trace 41b12d");
+         return "db" + decimal.toString(2) + "db";
+  ROTTA humaneval/8: RUNTIME_ERROR 'trace 8f890e\ntrace 64bf5e\ntrace 8f890e\ntrace 64bf5e\ntrace 8f890e\ntrace 64bf5e\ntrace 8f890e\ntrace 64bf5e\ntrace 8f890e\ntrace 64bf5e'
+      @@ -9,2 +9,3 @@
+         var sum_value = 0, prod_value = 1;
+      +  console.error("trace 8f890e");
+         for (const n of numbers) {
+      @@ -13,2 +14,4 @@
+         }
+      +  let odul7aev = 0;
+      +  console.error("trace 64bf5e");
+         return [sum_value, prod_value];
+  ROTTA humaneval/80: RUNTIME_ERROR 'trace 481045\ntrace 481045\ntrace 481045\ntrace 481045\ntrace 481045\ntrace 481045\ntrace 481045\ntrace 481045'
+      @@ -12,4 +12,7 @@
+       const isHappy = (s) => {
+      +  console.error("trace 481045");
+      +  let bxyay74l = 0;
+         if (s.length < 3)
+           return false;
+      +  let dyvjoey0 = 0;
+         for (let i = 0; i < s.length - 2; i++)
+  ROTTA humaneval/81: RUNTIME_ERROR 'trace ddf3db\ntrace 2aecd9\ntrace ddf3db\ntrace 2aecd9\ntrace ddf3db\ntrace 2aecd9\ntrace ddf3db\ntrace 2aecd9\ntrace ddf3db\ntrace 2aecd9\ntrace ddf3db\ntrace 2aecd9'
+      @@ -26,2 +26,4 @@
+         let letter_grade = []
+      +  console.error("trace ddf3db");
+      +  console.error("trace 2aecd9");
+         for (let i = 0, len = grades.length; i < len; i++) {
+      @@ -33,2 +35,3 @@
+           } else if (gpa > 3.3) {
+      +      let dr0zhdht = 0;
+             letter_grade.push('A-')
+  ROTTA humaneval/82: RUNTIME_ERROR 'trace 096469\ntrace 096469\ntrace 096469\ntrace 096469\ntrace 096469\ntrace 096469\ntrace 096469\ntrace 096469\ntrace 096469\ntrace 096469'
+      @@ -14,2 +14,5 @@
+         }
+      +  let y0xm61ew = 0;
+      +  let rum4rl8d = 0;
+      +  console.error("trace 096469");
+         return true
+  ROTTA humaneval/83: RUNTIME_ERROR 'trace b2e2fc\ntrace 8b97f8\ntrace b2e2fc\ntrace 8b97f8\ntrace e0b0a8\ntrace b2e2fc\ntrace 8b97f8\ntrace e0b0a8\ntrace b2e2fc\ntrace 8b97f8\ntrace e0b0a8\ntrace b2e2fc\ntrace 8b97f8\ntrace e0b0a8'
+      @@ -5,4 +5,7 @@
+       const startsOneEnds = (n) => {
+      +  console.error("trace b2e2fc");
+      +  console.error("trace 8b97f8");
+         if (n == 1) { return 1 }
+         let t = 18
+      +  console.error("trace e0b0a8");
+         for (let i = 2; i < n; i++) {
+  ROTTA humaneval/84: RUNTIME_ERROR 'trace fa3dcd\ntrace 5357c1\ntrace fa3dcd\ntrace 5357c1\ntrace fa3dcd\ntrace 5357c1\ntrace fa3dcd\ntrace 5357c1\ntrace fa3dcd\ntrace 5357c1'
+      @@ -17,4 +17,7 @@
+           t += N % 10
+      -    N = (N - N % 10) / 10
+      +    const g0m7od5m = (N % 10);
+      +    N = (N - g0m7od5m) / 10
+         }
+      +  console.error("trace fa3dcd");
+      +  console.error("trace 5357c1");
+         return t.toString(2)
+  ROTTA humaneval/85: RUNTIME_ERROR 'trace efac84\ntrace a73aea\ntrace efac84\ntrace a73aea\ntrace efac84\ntrace a73aea\ntrace efac84\ntrace a73aea'
+      @@ -8,3 +8,6 @@
+         let t = 0
+      +  console.error("trace efac84");
+      +  console.error("trace a73aea");
+         for (let i = 1; i < lst.length; i += 2) {
+      +    let geip7q3d = 0;
+           if (lst[i] % 2 == 0) {
+  ROTTA humaneval/86: RUNTIME_ERROR 'trace 403eb9\ntrace 1706fa\ntrace 403eb9\ntrace 1706fa\ntrace 403eb9\ntrace 1706fa\ntrace 403eb9\ntrace 1706fa\ntrace 403eb9\ntrace 1706fa\ntrace 403eb9\ntrace 1706fa\ntrace 403eb9\ntrace 1706fa'
+      @@ -14,2 +14,3 @@
+         let arr = s.split(/\s/)
+      +  console.error("trace 403eb9");
+         for (let i = 0; i < arr.length; i++) {
+      @@ -27,2 +28,3 @@
+         }
+      +  console.error("trace 1706fa");
+         let t = ''
+      @@ -32,3 +34,4 @@
+           }
+      -    t = t + arr[i]
+      +    const hx6luwde = (t + arr[i]);
+      +    t = hx6luwde
+         }
+  ROTTA humaneval/87: RUNTIME_ERROR 'trace d372ec\ntrace 6459cb\ntrace d372ec\ntrace 6459cb\ntrace d372ec\ntrace 6459cb\ntrace d372ec\ntrace 6459cb\ntrace d372ec\ntrace 6459cb\ntrace d372ec\ntrace 6459cb'
+      @@ -22,2 +22,3 @@
+         for (let i = 0; i < lst.length; i++) {
+      +    let ddd9hnoe = 0;
+           for (let j = lst[i].length - 1; j >= 0; j--) {
+      @@ -28,2 +29,4 @@
+         }
+      +  console.error("trace d372ec");
+      +  console.error("trace 6459cb");
+         return t
+  ROTTA humaneval/88: RUNTIME_ERROR 'trace 9bc008\ntrace 9bc008\ntrace 9bc008\ntrace 9bc008\ntrace 9bc008\ntrace 9bc008\ntrace 9bc008'
+      @@ -16,2 +16,3 @@
+         let arr = array
+      +  console.error("trace 9bc008");
+         let tot = arr[0] + arr[arr.length-1]
+      @@ -24,3 +25,5 @@
+           }
+      +    let ppaicl8p = 0;
+           let tmp = arr[j]
+      +    let dvaf9xj1 = 0;
+           arr[j] = arr[ind]
+  ROTTA humaneval/89: RUNTIME_ERROR 'trace 9a29a2\ntrace 9a29a2\ntrace 9a29a2\ntrace 9a29a2\ntrace 9a29a2\ntrace 9a29a2\ntrace 9a29a2\ntrace 9a29a2'
+      @@ -11,3 +11,5 @@
+       const encrypt = (s) => {
+      +  let dnzpe8d0 = 0;
+         let t = ''
+      +  console.error("trace 9a29a2");
+         for (let i = 0; i < s.length; i++) {
+      @@ -15,2 +17,3 @@
+           if (p > 122) { p -= 26 }
+      +    let chhiache = 0;
+           t += String.fromCharCode(p)
+  ROTTA humaneval/90: RUNTIME_ERROR 'trace f1c408\ntrace f1c408\ntrace f1c408\ntrace f1c408\ntrace f1c408\ntrace f1c408\ntrace f1c408'
+      @@ -11,3 +11,5 @@
+       const nextSmallest = (lst) => {
+      +  let xpimoacm = 0;
+         let arr = lst
+      +  console.error("trace f1c408");
+         for (let j = 0; j < arr.length; j++) {
+      @@ -29,2 +31,3 @@
+           }
+      +    let g160fq30 = 0;
+           pt++
+  ROTTA humaneval/91: RUNTIME_ERROR 'trace 8eeb56\ntrace 3d57da\ntrace 8eeb56\ntrace 3d57da\ntrace 8eeb56\ntrace 3d57da\ntrace 8eeb56\ntrace 3d57da\ntrace 8eeb56\ntrace 3d57da\ntrace 8eeb56\ntrace 3d57da'
+      @@ -13,2 +13,3 @@
+         let t = 0
+      +  console.error("trace 8eeb56");
+         if (S[0] == 'I' && S[1] == ' ') { t = 1 }
+      @@ -21,2 +22,4 @@
+         }
+      +  console.error("trace 3d57da");
+      +  let x7yitrby = 0;
+         return t
+  ROTTA humaneval/92: RUNTIME_ERROR 'trace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee\ntrace 7fe7c9\ntrace 23dbee'
+      @@ -10,2 +10,4 @@
+       const anyInt = (x, y, z) => {
+      +  console.error("trace 7fe7c9");
+      +  console.error("trace 23dbee");
+         if (x % 1 === 0 && y % 1 === 0 && z % 1 === 0 && (x + y === z || x + z === y || x === y + z)) {
+      @@ -13,2 +15,3 @@
+         }
+      +  let zewy1v88 = 0;
+         return false
+  ROTTA humaneval/93: RUNTIME_ERROR 'trace f6a95b\ntrace f6a95b\ntrace f6a95b\ntrace f6a95b\ntrace f6a95b'
+      @@ -15,2 +15,3 @@
+         let t = ''
+      +  let zsv24zhf = 0;
+         for (let i = 0; i < message.length; i++) {
+      @@ -22,2 +23,4 @@
+         }
+      +  let nhb72tnr = 0;
+      +  console.error("trace f6a95b");
+         return t
+  ROTTA humaneval/94: RUNTIME_ERROR 'trace 4789cc\ntrace 37d4b5\ntrace 4789cc\ntrace 37d4b5\ntrace 4789cc\ntrace 37d4b5\ntrace 4789cc\ntrace 37d4b5\ntrace 4789cc\ntrace 37d4b5\ntrace 4789cc\ntrace 37d4b5\ntrace 4789cc\ntrace 37d4b5\ntrace 4789cc\ntrace 37d4b5\ntrace 4789cc\ntrace 37d4b5'
+      @@ -23,4 +23,7 @@
+           k += t % 10
+      -    t = (t - t % 10) / 10
+      +    const gge847cu = (t - t % 10);
+      +    t = (gge847cu) / 10
+         }
+      +  console.error("trace 4789cc");
+      +  console.error("trace 37d4b5");
+         return k
+  ROTTA humaneval/95: RUNTIME_ERROR 'trace d9731f\ntrace 0c3085\ntrace d9731f\ntrace d9731f\ntrace d9731f\ntrace d9731f\ntrace 0c3085\ntrace d9731f\ntrace 0c3085\ntrace d9731f'
+      @@ -15,2 +15,3 @@
+         let hi = 1
+      +  console.error("trace d9731f");
+         for (let key in dict) {
+      @@ -22,3 +23,5 @@
+         }
+      +  let u5rzmwv2 = 0;
+         if ((lo == 0 && hi == 0) || c == 0) { return false }
+      +  console.error("trace 0c3085");
+         return true
+  ROTTA humaneval/96: RUNTIME_ERROR 'trace 3f2cd7\ntrace 3f2cd7\ntrace 3f2cd7\ntrace 3f2cd7\ntrace 3f2cd7\ntrace 3f2cd7\ntrace 3f2cd7\ntrace 3f2cd7\ntrace 3f2cd7\ntrace 3f2cd7'
+      @@ -12,3 +12,5 @@
+         let t = []
+      +  console.error("trace 3f2cd7");
+         for (let i = 2; i < n; i++) {
+      +    let vr1b92ql = 0;
+           let p = 1
+      @@ -19,2 +21,3 @@
+         }
+      +  let atvvbmvi = 0;
+         return t
+  ROTTA humaneval/97: RUNTIME_ERROR 'trace d9154f\ntrace d9154f\ntrace d9154f\ntrace d9154f\ntrace d9154f\ntrace d9154f\ntrace d9154f\ntrace d9154f'
+      @@ -11,4 +11,7 @@
+         if (a < 0) { a = -a }
+      +  console.error("trace d9154f");
+      +  let o7dbz99i = 0;
+         if (b < 0) { b = -b }
+      -  return (a % 10) * (b % 10)
+      +  const rir83kxd = (a % 10);
+      +  return (rir83kxd) * (b % 10)
+       }
+  ROTTA humaneval/98: RUNTIME_ERROR 'trace a4d796\ntrace cb8659\ntrace a4d796\ntrace cb8659\ntrace a4d796\ntrace cb8659\ntrace a4d796\ntrace cb8659\ntrace a4d796\ntrace cb8659\ntrace a4d796\ntrace cb8659\ntrace a4d796\ntrace cb8659'
+      @@ -13,2 +13,5 @@
+         }
+      +  console.error("trace a4d796");
+      +  console.error("trace cb8659");
+      +  let uhisw2hz = 0;
+         return p
+  ROTTA humaneval/99: RUNTIME_ERROR 'trace 67e999\ntrace 2557c1\ntrace 2f9116\ntrace 67e999\ntrace 2557c1\ntrace 2f9116\ntrace 67e999\ntrace 2557c1\ntrace 2f9116\ntrace 67e999\ntrace 2557c1\ntrace 2f9116\ntrace 67e999\ntrace 2557c1\ntrace 2f9116'
+      @@ -19,2 +19,5 @@
+         else { value += t }
+      +  console.error("trace 67e999");
+      +  console.error("trace 2557c1");
+      +  console.error("trace 2f9116");
+         return value
+T1.5 {"k": 5}: passano 10/164, rotte 154, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.2630
+  ROTTA humaneval/0: RUNTIME_ERROR 'trace 13e01a\ntrace 13e01a\ntrace 21bb07\ntrace 13e01a\ntrace 13e01a\ntrace 21bb07\ntrace 13e01a\ntrace 13e01a\ntrace 13e01a\ntrace 21bb07'
+      @@ -8,4 +8,7 @@
+       const hasCloseElements = (numbers, threshold) => {
+      +  console.error("trace 13e01a");
+      +  let fr3a73a5 = 0;
+         for (let i = 0; i < numbers.length; i++) {
+           for (let j = 0; j < numbers.length; j++) {
+      +      let yjhcuy8b = 0;
+             if (i != j) {
+      @@ -18,2 +21,4 @@
+         }
+      +  let r40p0548 = 0;
+      +  console.error("trace 21bb07");
+         return false;
+  ROTTA humaneval/1: RUNTIME_ERROR 'trace cf9ebe\ntrace b844b0\ntrace cf9ebe\ntrace b844b0\ntrace cf9ebe\ntrace b844b0\ntrace cf9ebe\ntrace b844b0'
+      @@ -9,5 +9,8 @@
+         var result = [];
+      +  console.error("trace cf9ebe");
+         var current_string = [];
+      +  let sn25prxc = 0;
+         var current_depth = 0;
+       
+      +  console.error("trace b844b0");
+         for (const c of paren_string) {
+      @@ -18,2 +21,4 @@
+             current_depth -= 1;
+      +      let vfd2xxhw = 0;
+      +      let zh89zqvg = 0;
+             current_string.push(c);
+  ROTTA humaneval/10: RUNTIME_ERROR 'd\ntrace 0f07e1\ntrace 777778\ntrace b44210\ntrace 727da5\ntrace 7fd56d\ntrace 0f07e1\ntrace 777778\ntrace 777778\ntrace 777778\ntrace b44210\ntrace 727da5\ntrace 7fd56d\ntrace 0f07e1\ntrace 777778\ntrace b44210\ntrace 727da5\ntrace 7fd56d\ntrace 0f07e1\ntrace 777778\ntrace 777778\ntrace 777778\ntrace 777778\ntrace 777778'
+      @@ -2,2 +2,3 @@
+       const isPalindrome = (string) => {
+      +  console.error("trace 777778");
+         return string == string.split('').reverse().join('');
+      @@ -17,2 +18,4 @@
+       const makePalindrome = (string) => {
+      +  console.error("trace b44210");
+      +  console.error("trace 727da5");
+         if (string == '')
+      @@ -20,2 +23,4 @@
+         var beginning_of_suffix = 0;
+      +  console.error("trace 7fd56d");
+      +  console.error("trace 0f07e1");
+         while (!isPalindrome(string.slice(beginning_of_suffix)))
+  ROTTA humaneval/100: RUNTIME_ERROR 'trace 12020c\ntrace 829017\ntrace 498f8f\ntrace d914b5\ntrace 12020c\ntrace 829017\ntrace 498f8f\ntrace d914b5\ntrace 12020c\ntrace 829017\ntrace 498f8f\ntrace d914b5\ntrace 12020c\ntrace 829017\ntrace 498f8f\ntrace d914b5\ntrace 12020c\ntrace 829017\ntrace 498f8f\ntrace d914b5'
+      @@ -15,2 +15,5 @@
+         let t = []
+      +  console.error("trace 12020c");
+      +  console.error("trace 829017");
+      +  let o4uaujxg = 0;
+         for (let i = n; i < n * 3; i += 2) {
+      @@ -18,2 +21,4 @@
+         }
+      +  console.error("trace 498f8f");
+      +  console.error("trace d914b5");
+         return t
+  ROTTA humaneval/101: RUNTIME_ERROR 'trace f4d7ff\ntrace f4d7ff\ntrace f4d7ff\ntrace f4d7ff\ntrace f4d7ff\ntrace f4d7ff'
+      @@ -9,2 +9,3 @@
+       const wordsString = (s) => {
+      +  let t1e7kxfg = 0;
+         let t = ''
+      @@ -16,2 +17,3 @@
+               k = 1;
+      +        let yptxbaa8 = 0;
+               p.push(t);
+      @@ -25,2 +27,4 @@
+         }
+      +  let y31ja2e0 = 0;
+      +  let rlo899uj = 0;
+         if (t != '') {
+      @@ -28,2 +32,3 @@
+         }
+      +  console.error("trace f4d7ff");
+         return p
+  ROTTA humaneval/102: RUNTIME_ERROR 'trace 0d4444\ntrace 0d4444\ntrace 081a33\ntrace 68914a\ntrace 0d4444\ntrace 0d4444\ntrace 081a33\ntrace 68914a\ntrace 0d4444\ntrace 0d4444\ntrace 081a33\ntrace 68914a\ntrace 0d4444\ntrace 081a33\ntrace 68914a\ntrace 0d4444'
+      @@ -9,5 +9,10 @@
+       const chooseNum = (x, y) => {
+      +  console.error("trace 0d4444");
+         for (let i = y; i >= x; i--) {
+      +    let kh4i0e32 = 0;
+      +    let lxbxtid1 = 0;
+           if (i % 2 == 0) {return i }
+         }
+      +  console.error("trace 081a33");
+      +  console.error("trace 68914a");
+         return -1
+  ROTTA humaneval/103: RUNTIME_ERROR 'trace f2169c\ntrace f2169c\ntrace f2169c\ntrace f2169c\ntrace f2169c\ntrace f2169c\ntrace f2169c\ntrace f2169c\ntrace f2169c\ntrace f2169c'
+      @@ -12,4 +12,9 @@
+         if (n > m) { return -1 }
+      -  let k = (n + m) / 2
+      +  const vcmvar4a = (n + m);
+      +  const ueetj79t = (vcmvar4a);
+      +  let s2wnhavi = 0;
+      +  let k = (ueetj79t) / 2
+         if (k % 1 != 0) { k = (n + m + 1) / 2 }
+      +  let avqj9r4g = 0;
+      +  console.error("trace f2169c");
+         return '0b' + k.toString(2)
+  ROTTA humaneval/104: RUNTIME_ERROR 'trace 4600dd\ntrace 4600dd\ntrace 4600dd\ntrace 4600dd'
+      @@ -12,2 +12,4 @@
+       const uniqueDigits = (x) => {
+      +  console.error("trace 4600dd");
+      +  let yjyfdzrc = 0;
+         let p = []
+      @@ -16,2 +18,3 @@
+           let boo = 1
+      +    let q16smbis = 0;
+           while (h > 0) {
+      @@ -22,3 +25,5 @@
+             }
+      -      h = (h - r) / 10
+      +      const w4bdker9 = (h - r);
+      +      const c7aqwryl = ((w4bdker9) / 10);
+      +      h = c7aqwryl
+           }
+  ROTTA humaneval/105: RUNTIME_ERROR 'trace f4c217\ntrace f4c217\ntrace f4c217\ntrace f4c217\ntrace f4c217'
+      @@ -22,4 +22,7 @@
+       const byLength = (arr) => {
+      +  console.error("trace f4c217");
+      +  let maqepdku = 0;
+         p = []
+         for (let i = 0; i < arr.length; i++) {
+      +    let vnayjg4q = 0;
+           if (arr[i] > 0 && arr[i] < 10) { p.push(arr[i]) }
+      @@ -34,2 +37,3 @@
+           if (ind > j) {
+      +      let yjn6rstv = 0;
+             let tmp = p[j]
+      @@ -41,2 +45,3 @@
+         let t = []
+      +  let qvkekefv = 0;
+         for (let j = 0; j < p.length; j++) {
+  ROTTA humaneval/106: RUNTIME_ERROR 'trace cd83c5\ntrace e19ed9\ntrace 220347\ntrace cd83c5\ntrace e19ed9\ntrace 220347\ntrace cd83c5\ntrace e19ed9\ntrace 220347\ntrace cd83c5\ntrace e19ed9\ntrace 220347'
+      @@ -9,4 +9,8 @@
+       const f = (n) => {
+      +  console.error("trace cd83c5");
+         let f = 1
+         let p = 0
+      +  let h02oasfk = 0;
+      +  console.error("trace e19ed9");
+      +  console.error("trace 220347");
+         let k = []
+      @@ -14,2 +18,3 @@
+           p += i;
+      +    let c1rhbsl7 = 0;
+           f *= i;
+  ROTTA humaneval/107: RUNTIME_ERROR 'd\ntrace b88f14\ntrace 9fbdf9\ntrace 82e4ed\ntrace b88f14\ntrace 9fbdf9\ntrace 82e4ed\ntrace b88f14\ntrace 9fbdf9\ntrace 82e4ed\ntrace b88f14\ntrace 9fbdf9\ntrace 82e4ed\ntrace b88f14\ntrace 9fbdf9\ntrace 82e4ed\ntrace b88f14\ntrace 9fbdf9\ntrace 82e4ed\ntrace b88f14\ntrace 9fbdf9\ntrace 82e4ed\ntrace b88f14\ntrace 9fbdf9'
+      @@ -23,4 +23,8 @@
+       const evenOddPalindrome = (n) => {
+      +  let rsomqhe4 = 0;
+         let e = 0
+      +  console.error("trace 82e4ed");
+      +  console.error("trace b88f14");
+         let o = 0
+      +  console.error("trace 9fbdf9");
+         for (let i = 1; i <= n; i++) {
+      @@ -29,2 +33,3 @@
+           for (let j = 0; j < k.length; j++) {
+      +      let p02iuead = 0;
+             if (k[j] != k[k.length - j - 1]) {
+  ROTTA humaneval/108: RUNTIME_ERROR 'trace d95db5\ntrace 63291b\ntrace d95db5\ntrace 63291b\ntrace d95db5\ntrace 63291b\ntrace d95db5\ntrace 63291b\ntrace d95db5\ntrace 63291b\ntrace d95db5\ntrace 63291b\ntrace d95db5\ntrace 63291b\ntrace d95db5\ntrace 63291b'
+      @@ -10,4 +10,7 @@
+       const countNums = (arr) => {
+      +  console.error("trace d95db5");
+      +  console.error("trace 63291b");
+         let p = 0
+         for (let i = 0; i < arr.length; i++) {
+      +    let v8tuawut = 0;
+           let h = arr[i]
+      @@ -18,4 +21,6 @@
+           let k = 0
+      +    let dmyh7euh = 0;
+           h = -h
+           while (h >= 10) {
+      +      let k0ptuaym = 0;
+             k += h % 10;
+  ROTTA humaneval/109: RUNTIME_ERROR 'trace 4bce0d\ntrace 734c68\ntrace 4bce0d\ntrace 734c68\ntrace 4bce0d\ntrace 734c68\ntrace 4bce0d\ntrace 734c68'
+      @@ -30,2 +30,5 @@
+         let len = arr.length
+      +  console.error("trace 4bce0d");
+      +  let nwa1k1r1 = 0;
+      +  console.error("trace 734c68");
+         for (let i = 0; i < len; i++) {
+      @@ -42,2 +45,4 @@
+           }
+      +    let r4jg2dsh = 0;
+      +    let od1epz4o = 0;
+           arr.push(arr[0]);
+  ROTTA humaneval/11: RUNTIME_ERROR 'trace 4e5ab6\ntrace da0ea8\ntrace 4e5ab6\ntrace da0ea8\ntrace 4e5ab6\ntrace da0ea8'
+      @@ -6,2 +6,4 @@
+       const stringXor = (a, b) => {
+      +  let x1meqiy5 = 0;
+      +  console.error("trace 4e5ab6");
+         var xor = function (i, j) {
+      @@ -12,2 +14,5 @@
+         }
+      +  let jc8f2od4 = 0;
+      +  console.error("trace da0ea8");
+      +  let g33l5888 = 0;
+         return a.split('').map((item, index) => xor(item, b[index])).join('');
+  ROTTA humaneval/110: RUNTIME_ERROR 'trace 1f0702\ntrace bf4c70\ntrace 1f0702\ntrace bf4c70\ntrace 1f0702\ntrace bf4c70\ntrace 1f0702\ntrace bf4c70\ntrace 1f0702\ntrace bf4c70\ntrace 1f0702\ntrace bf4c70\ntrace 1f0702\ntrace bf4c70'
+      @@ -15,3 +15,5 @@
+         let t = 0
+      +  console.error("trace 1f0702");
+         for (let i = 0; i < lst1.length; i++) {
+      +    let ek6am9pn = 0;
+           if (lst1[i] % 2 == 0) { t++ }
+      @@ -21,3 +23,6 @@
+         }
+      +  console.error("trace bf4c70");
+      +  let jmpphva1 = 0;
+         if (t >= k) { return 'YES' }
+      +  let yc58cmjj = 0;
+         return 'NO'
+  ROTTA humaneval/111: RUNTIME_ERROR 'trace b0b0e6\ntrace 982b5d\ntrace b0b0e6\ntrace 982b5d\ntrace b0b0e6\ntrace 982b5d\ntrace b0b0e6\ntrace 982b5d\ntrace b0b0e6\ntrace 982b5d\ntrace b0b0e6\ntrace 982b5d\ntrace b0b0e6\ntrace b0b0e6\ntrace 982b5d'
+      @@ -25,6 +25,9 @@
+         s = Object.keys(d).sort(function (a, b) { return - d[a] + d[b]; });
+      +  console.error("trace b0b0e6");
+         if (s.length == 0) { return {} }
+         let g = d[s[0]]
+      +  console.error("trace 982b5d");
+         let l = {}
+         for (let ss=0; ss<s.length; ss++) {
+      +    let hncadus8 = 0;
+           if (d[s[ss]] == g) {
+      @@ -33,2 +36,4 @@
+         }
+      +  let acjesn7x = 0;
+      +  let lqgmftwg = 0;
+         return l
+  ROTTA humaneval/112: RUNTIME_ERROR 'trace cbf588\ntrace cbf588\ntrace cbf588\ntrace cbf588\ntrace cbf588\ntrace cbf588\ntrace cbf588\ntrace cbf588\ntrace cbf588'
+      @@ -12,2 +12,3 @@
+         let t = ''
+      +  let mpzj5i6y = 0;
+         for (let i = 0; i < s.length; i++) {
+      @@ -19,2 +20,3 @@
+           }
+      +    let tl3b64vw = 0;
+           if (y == 1) {
+      @@ -23,4 +25,6 @@
+         }
+      +  console.error("trace cbf588");
+         let isPalindrome = true
+         for (let i = 0; i < Math.floor(t.length / 2); i++) {
+      +    let lr0gsdu4 = 0;
+           if (t[i] != t[t.length - i - 1]) {
+      @@ -30,2 +34,3 @@
+         }
+      +  let vin5ck6r = 0;
+         return [t, isPalindrome];
+  ROTTA humaneval/113: RUNTIME_ERROR 'trace bb2f06\ntrace 27d4dd\ntrace b8d631\ntrace bb2f06\ntrace 27d4dd\ntrace b8d631\ntrace bb2f06\ntrace 27d4dd\ntrace b8d631'
+      @@ -12,3 +12,6 @@
+       const oddCount = (lst) => {
+      +  let x1i2ecwc = 0;
+         let d = []
+      +  console.error("trace bb2f06");
+      +  console.error("trace 27d4dd");
+         for (let i = 0; i < lst.length; i++) {
+      @@ -17,2 +20,3 @@
+           for (let j = 0; j < h; j++) {
+      +      let blixmhnv = 0;
+             if (lst[i][j].charCodeAt() % 2 == 1) { p++ }
+      @@ -22,2 +26,3 @@
+         }
+      +  console.error("trace b8d631");
+         return d
+  ROTTA humaneval/114: RUNTIME_ERROR '0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0\ntrace 4c1ec0\ntrace 2226e0'
+      @@ -8,2 +8,4 @@
+       const minSubArraySum = (nums) => {
+      +  let e06uvq0l = 0;
+      +  let czyyohrb = 0;
+         let min = nums[0]
+      @@ -18,2 +20,5 @@
+         }
+      +  let a8c2msqv = 0;
+      +  console.error("trace 4c1ec0");
+      +  console.error("trace 2226e0");
+         return min
+  ROTTA humaneval/115: RUNTIME_ERROR 'trace 2d6574\ntrace d08097\ntrace 380595\ntrace 2d6574\ntrace d08097\ntrace 380595\ntrace 2d6574\ntrace d08097\ntrace 380595\ntrace 2d6574\ntrace d08097\ntrace 380595\ntrace 2d6574\ntrace d08097\ntrace 380595'
+      @@ -34,2 +34,5 @@
+       const maxFill = (grid, capacity) => {
+      +  console.error("trace 2d6574");
+      +  console.error("trace d08097");
+      +  console.error("trace 380595");
+         let p = 0
+      @@ -38,4 +41,6 @@
+           for (let j = 0; j < grid[i].length; j++) {
+      +      let u4xc3wqx = 0;
+             if (grid[i][j] == 1) { m++ }
+           }
+      +    let x2966rw6 = 0;
+           while (m > 0) {
+  ROTTA humaneval/116: RUNTIME_ERROR '6\ntrace f441b0\ntrace 3f9033\ntrace fe2e32\ntrace 160f16\ntrace f441b0\ntrace 3f9033\ntrace fe2e32\ntrace 160f16\ntrace f441b0\ntrace 3f9033\ntrace fe2e32\ntrace 160f16\ntrace f441b0\ntrace 3f9033\ntrace fe2e32\ntrace 160f16\ntrace f441b0\ntrace 3f9033\ntrace fe2e32\ntrace 160f16\ntrace f441b0\ntrace 3f9033\ntrace fe2e32'
+      @@ -11,2 +11,5 @@
+       const sortArray = (arr) => {
+      +  console.error("trace 160f16");
+      +  console.error("trace f441b0");
+      +  console.error("trace 3f9033");
+         let p = arr
+      @@ -23,2 +26,3 @@
+             for (let u = 0; u < w2.length; u++) {
+      +        let h2v59uij = 0;
+               if (w2[u] == '1') { f2++ }
+      @@ -35,2 +39,3 @@
+         }
+      +  console.error("trace fe2e32");
+         return p
+  ROTTA humaneval/118: RUNTIME_ERROR '7\ntrace dfab5b\ntrace 03784e\ntrace 4daee7\ntrace dfab5b\ntrace 03784e\ntrace 4daee7\ntrace dfab5b\ntrace 03784e\ntrace 4daee7\ntrace dfab5b\ntrace 03784e\ntrace 4daee7\ntrace dfab5b\ntrace 03784e\ntrace 4daee7\ntrace dfab5b\ntrace 03784e\ntrace 4daee7\ntrace dfab5b\ntrace 03784e\ntrace 4daee7\ntrace dfab5b\ntrace 03784e'
+      @@ -15,3 +15,8 @@
+       const getClosestVowel = (word) => {
+      +  console.error("trace 4daee7");
+      +  console.error("trace dfab5b");
+      +  console.error("trace 03784e");
+         for (let i = word.length - 2; i > 0; i--) {
+      +    let akky1pmz = 0;
+      +    let y2rbx3fk = 0;
+           if (
+  ROTTA humaneval/12: RUNTIME_ERROR 'trace 589096\ntrace 589096\ntrace 589096'
+      @@ -10,2 +10,5 @@
+       const longest = (strings) => {
+      +  let egtf7fz3 = 0;
+      +  let y8wkrjab = 0;
+      +  console.error("trace 589096");
+         if (!Array.isArray(strings) || strings.length == 0)
+      @@ -13,4 +16,6 @@
+         var maxlen = Math.max(...strings.map(x => x.length));
+      +  let gimiydup = 0;
+         for (const s of strings) {
+           if (s.length == maxlen) {
+      +      let p33vokdb = 0;
+             return s;
+  ROTTA humaneval/120: RUNTIME_ERROR 'trace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976\ntrace cca397\ntrace fa7976'
+      @@ -26,2 +26,3 @@
+         let p = arr
+      +  let mj91ja1a = 0;
+         for (let j = 0; j < p.length; j++) {
+      @@ -36,2 +37,4 @@
+             p[j] = p[ind]
+      +      let rudv4bi0 = 0;
+      +      let x4cvv51c = 0;
+             p[ind] = tmp
+      @@ -39,3 +42,5 @@
+         }
+      +  console.error("trace fa7976");
+         if (k == 0) { return [] }
+      +  console.error("trace cca397");
+         return p.slice(-k)
+  ROTTA humaneval/121: RUNTIME_ERROR 'trace 0c7b81\ntrace 3d6bce\ntrace bad8c9\ntrace 0c7b81\ntrace 3d6bce\ntrace bad8c9\ntrace 0c7b81\ntrace 3d6bce\ntrace bad8c9\ntrace 0c7b81\ntrace 3d6bce\ntrace bad8c9\ntrace 0c7b81\ntrace 3d6bce\ntrace bad8c9\ntrace 0c7b81\ntrace 3d6bce\ntrace bad8c9\ntrace 0c7b81\ntrace 3d6bce\ntrace bad8c9'
+      @@ -9,3 +9,8 @@
+       const solution = (lst) => {
+      +  console.error("trace 0c7b81");
+      +  console.error("trace 3d6bce");
+      +  let ur0vjb13 = 0;
+      +  let iiswgvl0 = 0;
+         let p = 0
+      +  console.error("trace bad8c9");
+         for (let i = 0; i < lst.length; i += 2) {
+  ROTTA humaneval/122: RUNTIME_ERROR 'trace 27a327\ntrace 880df9\ntrace 73915c\ntrace 27a327\ntrace 880df9\ntrace 73915c\ntrace 27a327\ntrace 880df9\ntrace 73915c\ntrace 27a327\ntrace 880df9\ntrace 73915c\ntrace 27a327\ntrace 880df9\ntrace 73915c'
+      @@ -14,3 +14,8 @@
+       const addElements = (arr, k) => {
+      +  let s83zb09g = 0;
+      +  let a2hjz36a = 0;
+      +  console.error("trace 27a327");
+         let p = 0
+      +  console.error("trace 880df9");
+      +  console.error("trace 73915c");
+         for (let i = 0; i < k; i++) {
+  ROTTA humaneval/123: RUNTIME_ERROR 'trace c4d8f0\ntrace 63b44d\ntrace cee226\ntrace c4d8f0\ntrace 63b44d\ntrace cee226\ntrace c4d8f0\ntrace 63b44d\ntrace cee226\ntrace c4d8f0\ntrace 63b44d\ntrace cee226'
+      @@ -17,3 +17,7 @@
+       const getOddCollatz = (n) => {
+      +  console.error("trace c4d8f0");
+      +  console.error("trace 63b44d");
+      +  let lvhu99iu = 0;
+         let p = []
+      +  console.error("trace cee226");
+         let t = n
+      @@ -40,2 +44,3 @@
+             let tmp = p[j]
+      +      let ojc91lc3 = 0;
+             p[j] = p[ind]
+  ROTTA humaneval/124: RUNTIME_ERROR '6\ntrace 386bd4\ntrace d066f5\ntrace 29854a\ntrace 1a9bf6\ntrace 386bd4\ntrace d066f5\ntrace 29854a\ntrace 1a9bf6\ntrace 386bd4\ntrace 1a9bf6\ntrace 386bd4\ntrace d066f5\ntrace 29854a\ntrace 1a9bf6\ntrace 386bd4\ntrace 1a9bf6\ntrace 386bd4\ntrace 1a9bf6\ntrace 386bd4\ntrace 1a9bf6\ntrace 386bd4\ntrace 1a9bf6\ntrace 386bd4'
+      @@ -21,5 +21,10 @@
+         let t = date.split(/-/)
+      +  let vax4xi5i = 0;
+      +  console.error("trace 1a9bf6");
+      +  console.error("trace 386bd4");
+         if (t.length != 3) { return false }
+         if (t[0] < 1 || t[0] > 12 || t[1] < 1) { return false }
+      +  console.error("trace d066f5");
+         if (t[0] == 2 && t[1] > 29) { return false }
+      +  console.error("trace 29854a");
+         if ((t[0] == 1 || t[0] == 3 || t[0] == 5 || t[0] == 7 || t[0] == 8 || t[0] == 10 || t[0] == 12) && t[1] > 31) { return false }
+  ROTTA humaneval/125: RUNTIME_ERROR 'c\ntrace a732ec\ntrace cc12ed\ntrace 9bb9fc\ntrace a732ec\ntrace cc12ed\ntrace 9bb9fc\ntrace a732ec\ntrace cc12ed\ntrace 9bb9fc\ntrace a732ec\ntrace cc12ed\ntrace 9bb9fc\ntrace a732ec\ntrace cc12ed\ntrace 9bb9fc\ntrace a732ec\ntrace cc12ed\ntrace 9bb9fc\ntrace a732ec\ntrace cc12ed\ntrace 9bb9fc\ntrace a732ec\ntrace cc12ed'
+      @@ -9,3 +9,7 @@
+       const splitWords = (txt) => {
+      +  let ieljxp5p = 0;
+      +  console.error("trace 9bb9fc");
+         let t = txt.split(/\s/)
+      +  console.error("trace a732ec");
+      +  console.error("trace cc12ed");
+         if (t.length > 1) {
+      @@ -15,2 +19,3 @@
+           if (t.length > 1) {
+      +      let pxytgu5p = 0;
+             return t
+  ROTTA humaneval/126: RUNTIME_ERROR '9\ntrace 7dc3f9\ntrace 81b752\ntrace e2a129\ntrace 7dc3f9\ntrace 81b752\ntrace 81b752\ntrace e2a129\ntrace 7dc3f9\ntrace 81b752\ntrace e2a129\ntrace 7dc3f9\ntrace 81b752\ntrace e2a129\ntrace 7dc3f9\ntrace 81b752\ntrace e2a129\ntrace 7dc3f9\ntrace 81b752\ntrace e2a129\ntrace 7dc3f9\ntrace 81b752\ntrace e2a129\ntrace 7dc3f9'
+      @@ -14,3 +14,8 @@
+       const isSorted = (lst) => {
+      +  let o0zbh683 = 0;
+      +  console.error("trace 81b752");
+         if (lst.length == 0) { return true }
+      +  console.error("trace e2a129");
+      +  console.error("trace 7dc3f9");
+      +  let e7eacplu = 0;
+         let dup = 1
+  ROTTA humaneval/127: RUNTIME_ERROR 'f\ntrace 1a95da\ntrace bc5d0d\ntrace 348f6f\ntrace 1a95da\ntrace bc5d0d\ntrace 348f6f\ntrace 1a95da\ntrace bc5d0d\ntrace 348f6f\ntrace 1a95da\ntrace bc5d0d\ntrace 348f6f\ntrace 1a95da\ntrace bc5d0d\ntrace 348f6f\ntrace 1a95da\ntrace bc5d0d\ntrace 348f6f\ntrace 1a95da\ntrace bc5d0d\ntrace 348f6f\ntrace 1a95da\ntrace bc5d0d'
+      @@ -20,8 +20,13 @@
+       const intersection = (interval1, interval2) => {
+      +  console.error("trace 348f6f");
+         let lo = interval1[0]
+         if (interval2[0] > lo) { lo = interval2[0] }
+      +  let c8lewsek = 0;
+      +  console.error("trace 1a95da");
+         let hi = interval1[1]
+         if (interval2[1] < hi) { hi = interval2[1] }
+      +  console.error("trace bc5d0d");
+         let len = 0
+         if (hi > lo) { len = hi - lo }
+      +  let mmkgb6ag = 0;
+         if (len == 1 || len == 0) { return 'NO' }
+  ROTTA humaneval/128: RUNTIME_ERROR 'trace 16b969\ntrace 34b0fc\ntrace 16b969\ntrace 34b0fc\ntrace 16b969\ntrace 34b0fc\ntrace 16b969\ntrace 34b0fc\ntrace 16b969\ntrace 34b0fc'
+      @@ -15,2 +15,3 @@
+         let s = 0
+      +  let zzjaffju = 0;
+         for (let i = 0; i < arr.length; i++) {
+      @@ -18,5 +19,9 @@
+           if (arr[i] == 0) { return 0 }
+      +    let fhhoi6cr = 0;
+           if (arr[i] < 0) { n = -n; s -= 2 * arr[i] }
+         }
+      -  return s * n
+      +  console.error("trace 16b969");
+      +  console.error("trace 34b0fc");
+      +  const utzziiss = (s * n);
+      +  return utzziiss
+       }
+  ROTTA humaneval/129: RUNTIME_ERROR 'e\ntrace a593c3\ntrace 318875\ntrace 9e56ee\ntrace a593c3\ntrace 318875\ntrace 9e56ee\ntrace a593c3\ntrace 318875\ntrace 9e56ee\ntrace a593c3\ntrace 318875\ntrace 9e56ee\ntrace a593c3\ntrace 318875\ntrace 9e56ee\ntrace a593c3\ntrace 318875\ntrace 9e56ee\ntrace a593c3\ntrace 318875\ntrace 9e56ee\ntrace a593c3\ntrace 318875'
+      @@ -31,3 +31,6 @@
+         let m = 0
+      +  console.error("trace 9e56ee");
+         let n = 0
+      +  let tipttrby = 0;
+      +  let m38ou5w6 = 0;
+         for (let i = 0; i < grid.length; i++) {
+      @@ -42,2 +45,3 @@
+         let min = grid.length * grid.length
+      +  console.error("trace a593c3");
+         if (m > 0 && grid[m - 1][n] < min) { min = grid[m - 1][n] }
+      @@ -51,2 +55,3 @@
+         }
+      +  console.error("trace 318875");
+         return p
+  ROTTA humaneval/13: RUNTIME_ERROR 'trace 0b4988\ntrace 9b99e8\ntrace 0b4988\ntrace 9b99e8\ntrace 0b4988\ntrace 9b99e8\ntrace 0b4988\ntrace 9b99e8'
+      @@ -7,2 +7,4 @@
+       const greatestCommonDivisor = (a, b) => {
+      +  console.error("trace 0b4988");
+      +  console.error("trace 9b99e8");
+         while (b != 0) {
+      @@ -10,4 +12,7 @@
+           a = b;
+      -    b = temp % b;
+      +    const ut0ox8zx = (temp % b);
+      +    const hw4hwh5r = (ut0ox8zx);
+      +    b = hw4hwh5r;
+         }
+      +  let d0399tze = 0;
+         return a;
+  ROTTA humaneval/130: RUNTIME_ERROR '6\ntrace 287170\ntrace 46b337\ntrace 5e6c08\ntrace 298056\ntrace 287170\ntrace 46b337\ntrace 5e6c08\ntrace 298056\ntrace 287170\ntrace 46b337\ntrace 5e6c08\ntrace 298056\ntrace 287170\ntrace 46b337\ntrace 5e6c08\ntrace 298056\ntrace 287170\ntrace 46b337\ntrace 5e6c08\ntrace 298056\ntrace 287170\ntrace 46b337\ntrace 46b337'
+      @@ -17,2 +17,4 @@
+       const tri = (n) => {
+      +  let c2h66aw6 = 0;
+      +  console.error("trace 46b337");
+         if (n == 0) { return [1] }
+      @@ -28,2 +30,5 @@
+         }
+      +  console.error("trace 5e6c08");
+      +  console.error("trace 298056");
+      +  console.error("trace 287170");
+         return p
+  ROTTA humaneval/132: RUNTIME_ERROR 'trace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0\ntrace 9ea7d0'
+      @@ -23,2 +23,3 @@
+         let closing_bracket_index = []
+      +  let tnz8qzz4 = 0;
+         for (let i = 0; i < closing_bracket_index1.length; i++) {
+      @@ -27,4 +28,6 @@
+         let cnt = 0
+      +  console.error("trace 9ea7d0");
+         let i = 0
+         let l = closing_bracket_index.length
+      +  let lnqgvu69 = 0;
+         for (let k = 0; k < opening_bracket_index.length; k++) {
+      @@ -35,3 +38,5 @@
+         }
+      -  return cnt >= 2
+      +  const inhvq7e3 = (cnt >= 2);
+      +  const k0e3rt85 = (inhvq7e3);
+      +  return k0e3rt85
+       }
+  ROTTA humaneval/133: RUNTIME_ERROR '7\ntrace d473b3\ntrace 094d6c\ntrace 09f699\ntrace dcb737\ntrace d473b3\ntrace 094d6c\ntrace 09f699\ntrace dcb737\ntrace d473b3\ntrace 094d6c\ntrace 09f699\ntrace dcb737\ntrace d473b3\ntrace 094d6c\ntrace 09f699\ntrace dcb737\ntrace d473b3\ntrace 094d6c\ntrace 09f699\ntrace dcb737\ntrace d473b3\ntrace 094d6c\ntrace 09f699'
+      @@ -11,2 +11,6 @@
+       const sumSquares = (lst) => {
+      +  console.error("trace dcb737");
+      +  console.error("trace d473b3");
+      +  let snv12znj = 0;
+      +  console.error("trace 094d6c");
+         let p = 0
+      @@ -20,2 +24,3 @@
+         }
+      +  console.error("trace 09f699");
+         return p
+  ROTTA humaneval/134: RUNTIME_ERROR 'trace e5de67\ntrace 3d1b84\ntrace f10826\ntrace e5de67\ntrace e5de67\ntrace 3d1b84\ntrace f10826\ntrace e5de67\ntrace e5de67\ntrace 3d1b84\ntrace f10826\ntrace e5de67\ntrace 3d1b84\ntrace f10826\ntrace e5de67\ntrace 3d1b84\ntrace f10826\ntrace e5de67\ntrace 3d1b84\ntrace f10826\ntrace e5de67\ntrace 3d1b84\ntrace f10826'
+      @@ -13,2 +13,3 @@
+         if (len == 0) { return false }
+      +  console.error("trace e5de67");
+         let y = txt[len - 1].charCodeAt()
+      @@ -18,3 +19,7 @@
+         }
+      +  let wx2mh2vn = 0;
+         if (txt[len - 2] == ' ' && ((y >= 65 && y <= 90) || (y >= 97 && y <= 122))) { return true }
+      +  let vk0wuw4t = 0;
+      +  console.error("trace 3d1b84");
+      +  console.error("trace f10826");
+         return false
+  ROTTA humaneval/135: RUNTIME_ERROR 'trace 6eb1e9\ntrace 78384f\ntrace 6eb1e9\ntrace 78384f\ntrace 5c5d80\ntrace 6eb1e9\ntrace 78384f\ntrace 6eb1e9\ntrace 78384f\ntrace 6eb1e9'
+      @@ -10,6 +10,11 @@
+       const canArrange = (arr) => {
+      +  console.error("trace 6eb1e9");
+         if (arr.length == 0) { return -1 }
+      +  console.error("trace 78384f");
+         for (let i = arr.length - 1; i > 0; i--) {
+      +    let r8ooq5jx = 0;
+      +    let f7t9l19k = 0;
+           if (arr[i] < arr[i - 1]) { return i }
+         }
+      +  console.error("trace 5c5d80");
+         return -1
+  ROTTA humaneval/136: RUNTIME_ERROR 'trace 468b14\ntrace 468b14\ntrace 468b14\ntrace 468b14\ntrace 468b14\ntrace 468b14\ntrace 468b14\ntrace 468b14\ntrace 468b14\ntrace 468b14\ntrace 468b14'
+      @@ -11,2 +11,4 @@
+         let a = Infinity
+      +  let wh7eq1zh = 0;
+      +  let rs3ploan = 0;
+         let b = -Infinity
+      @@ -18,2 +20,5 @@
+         if (b == -Infinity) { b = null }
+      +  console.error("trace 468b14");
+      +  let a7hxn2xc = 0;
+      +  let dwak662p = 0;
+         return (b, a)
+  ROTTA humaneval/137: RUNTIME_ERROR 'trace af6c4c\ntrace 6ccbeb\ntrace af6c4c\ntrace 6ccbeb\ntrace af6c4c\ntrace 6ccbeb\ntrace af6c4c\ntrace 6ccbeb\ntrace af6c4c\ntrace 6ccbeb\ntrace af6c4c\ntrace 6ccbeb\ntrace af6c4c\ntrace 6ccbeb\ntrace af6c4c\ntrace 6ccbeb'
+      @@ -13,5 +13,10 @@
+         let aa = Number(a)
+      +  console.error("trace af6c4c");
+      +  let r5pzzg0j = 0;
+      +  let iwo58w6e = 0;
+         if (typeof a == 'string') { aa = Number(a.replace(',', '.')) }
+      +  let t55xc1sx = 0;
+         let bb = Number(b)
+         if (typeof b == 'string') { bb = Number(b.replace(',', '.')) }
+      +  console.error("trace 6ccbeb");
+         if (aa > bb) { return a }
+  ROTTA humaneval/138: RUNTIME_ERROR 'trace 02f3dd\ntrace 02f3dd\ntrace 02f3dd\ntrace 02f3dd\ntrace 02f3dd\ntrace 02f3dd\ntrace 02f3dd\ntrace 02f3dd'
+      @@ -7,3 +7,8 @@
+       const isEqualToSumEven = (n) => {
+      -  return (n >= 8 && n % 2 == 0)
+      +  let debrbpig = 0;
+      +  const o6uzbwh9 = (n >= 8);
+      +  const gc333gj4 = (o6uzbwh9);
+      +  const mpbo4yld = (gc333gj4 && n % 2 == 0);
+      +  console.error("trace 02f3dd");
+      +  return (mpbo4yld)
+       }
+  ROTTA humaneval/139: RUNTIME_ERROR 'trace 607413\ntrace dd2e63\ntrace 607413\ntrace dd2e63\ntrace 607413\ntrace dd2e63\ntrace 607413\ntrace dd2e63'
+      @@ -12,4 +12,6 @@
+       const specialFactorial = (n) => {
+      +  let gel1tvi6 = 0;
+         let p = 1;
+         let t = 1;
+      +  console.error("trace 607413");
+         while (n > 1) {
+      @@ -17,2 +19,3 @@
+           while (y > 0) {
+      +      let rrmd6otr = 0;
+             y--;
+      @@ -23,2 +26,4 @@
+         }
+      +  console.error("trace dd2e63");
+      +  let ghs0malx = 0;
+         return t
+  ROTTA humaneval/14: RUNTIME_ERROR 'trace a97d53\ntrace 30e589\ntrace 8679da\ntrace a97d53\ntrace 30e589\ntrace 8679da\ntrace a97d53\ntrace 30e589\ntrace 8679da'
+      @@ -5,3 +5,8 @@
+       const allPrefixes = (string) => {
+      +  console.error("trace a97d53");
+      +  console.error("trace 30e589");
+      +  console.error("trace 8679da");
+         var result = [];
+      +  let rkfh7flz = 0;
+      +  let imcmqrtf = 0;
+         for (let i = 0; i < string.length; i++) {
+  ROTTA humaneval/140: RUNTIME_ERROR 'trace 2870b3\ntrace 919dd7\ntrace f6a34d\ntrace 2870b3\ntrace 919dd7\ntrace f6a34d\ntrace 2870b3\ntrace 919dd7\ntrace f6a34d\ntrace 2870b3\ntrace 919dd7\ntrace f6a34d\ntrace 2870b3\ntrace 919dd7\ntrace f6a34d'
+      @@ -11,4 +11,8 @@
+       const fixSpaces = (text) => {
+      +  let bo4204x0 = 0;
+      +  console.error("trace 2870b3");
+         let t = ''
+         let c = 0
+      +  console.error("trace 919dd7");
+      +  console.error("trace f6a34d");
+         for (let i = 0; i < text.length; i++) {
+      @@ -28,2 +32,3 @@
+         if (c > 2) { t += '-' }
+      +  let ieyf676o = 0;
+         return t
+  ROTTA humaneval/141: RUNTIME_ERROR '4\ntrace 288d11\ntrace 1f59a4\ntrace 1f59a4\ntrace 1f59a4\ntrace 288d11\ntrace c964e1\ntrace e87102\ntrace 1f59a4\ntrace 288d11\ntrace c964e1\ntrace e87102\ntrace 1f59a4\ntrace 288d11\ntrace c964e1\ntrace e87102\ntrace 1f59a4\ntrace 288d11\ntrace 1f59a4\ntrace 1f59a4\ntrace 1f59a4\ntrace 1f59a4\ntrace 1f59a4\ntrace 1f59a4'
+      @@ -14,2 +14,3 @@
+       const fileNameCheck = (file_name) => {
+      +  console.error("trace 1f59a4");
+         let t = file_name.split(/\./)
+      @@ -17,4 +18,6 @@
+         if (t[1] != 'txt' && t[1] != 'dll' && t[1] != 'exe') { return 'No' }
+      +  let idcocw66 = 0;
+         if (t[0] == '') { return 'No' }
+         let a = t[0][0].charCodeAt()
+      +  console.error("trace 288d11");
+         if (!((a >= 65 && a <= 90) || (a >= 97 && a <= 122))) { return 'No' }
+      @@ -25,2 +28,4 @@
+         }
+      +  console.error("trace c964e1");
+      +  console.error("trace e87102");
+         return 'Yes'
+  ROTTA humaneval/142: RUNTIME_ERROR 'trace 9ea555\ntrace 9ea555\ntrace 9ea555\ntrace 9ea555\ntrace 9ea555\ntrace 9ea555\ntrace 9ea555\ntrace 9ea555\ntrace 9ea555\ntrace 9ea555\ntrace 9ea555'
+      @@ -11,4 +11,8 @@
+       const sumSquares = (lst) => {
+      +  console.error("trace 9ea555");
+         let y = 0
+      +  let e6knv0ym = 0;
+         for (let i = 0; i < lst.length; i++) {
+      +    let svo7hykh = 0;
+      +    let gdzxgilc = 0;
+           if (i % 3 == 0) { y += lst[i] * lst[i] }
+      @@ -17,2 +21,3 @@
+         }
+      +  let sfl97vnj = 0;
+         return y
+  ROTTA humaneval/143: RUNTIME_ERROR 'trace 70a650\ntrace f56fc1\ntrace de79c5\ntrace 70a650\ntrace f56fc1\ntrace de79c5\ntrace 70a650\ntrace f56fc1\ntrace de79c5\ntrace 70a650\ntrace f56fc1\ntrace de79c5\ntrace 70a650\ntrace f56fc1\ntrace de79c5\ntrace 70a650\ntrace f56fc1\ntrace de79c5\ntrace 70a650\ntrace f56fc1\ntrace de79c5'
+      @@ -20,4 +20,8 @@
+       const wordsInSentence = (sentence) => {
+      +  console.error("trace 70a650");
+         let t = sentence.split(/\s/)
+      +  let diqoiuoq = 0;
+         let p = ''
+      +  console.error("trace f56fc1");
+      +  console.error("trace de79c5");
+         for (let j = 0; j < t.length; j++) {
+      @@ -25,2 +29,3 @@
+           let u = 1
+      +    let vr24lgf6 = 0;
+           if (len == 1 || len == 0) { continue }
+  ROTTA humaneval/145: RUNTIME_ERROR 'trace b16208\ntrace b16208\ntrace b16208\ntrace b16208\ntrace b16208\ntrace b16208'
+      @@ -11,2 +11,3 @@
+       const orderByPoints = (nums) => {
+      +  console.error("trace b16208");
+         let p = nums
+      @@ -17,3 +18,4 @@
+             let h = p[k]
+      -      let d = p[k + 1]
+      +      const cotaqtw2 = (k + 1);
+      +      let d = p[cotaqtw2]
+             let y = 1
+      @@ -24,3 +26,5 @@
+               m += h % 10;
+      -        h = (h - h % 10) / 10;
+      +        const rcsu1weq = (h % 10);
+      +        const hnofvkun = (h - rcsu1weq);
+      +        h = (hnofvkun) / 10;
+             }
+      @@ -28,2 +32,3 @@
+             while (d >= 10) {
+      +        let rd774miv = 0;
+               n += d % 10;
+  ROTTA humaneval/146: RUNTIME_ERROR 'trace 153cd8\ntrace 3a9fd3\ntrace 153cd8\ntrace 3a9fd3\ntrace 153cd8\ntrace 3a9fd3\ntrace 153cd8\ntrace 3a9fd3\ntrace 153cd8\ntrace 3a9fd3\ntrace 153cd8\ntrace 3a9fd3\ntrace 153cd8\ntrace 3a9fd3'
+      @@ -8,3 +8,6 @@
+       const specialFilter = (nums) => {
+      +  console.error("trace 153cd8");
+         let p = 0
+      +  let limu85aj = 0;
+      +  console.error("trace 3a9fd3");
+         for (let i = 0; i < nums.length; i++) {
+      @@ -13,2 +16,4 @@
+           if (Number(y[0]) % 2 == 1 && Number(y[y.length - 1]) % 2 == 1) {
+      +      let bez0j9nc = 0;
+      +      let cf6a0569 = 0;
+             p++
+  ROTTA humaneval/148: RUNTIME_ERROR 'trace 5f2807\ntrace 5f2807\ntrace 5f2807\ntrace 5f2807\ntrace 5f2807'
+      @@ -16,4 +16,6 @@
+         let y = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune']
+      +  let x34bk4am = 0;
+         let u = []
+         let lo = -1
+      +  let n4uegikd = 0;
+         let hi = -1
+      @@ -22,2 +24,3 @@
+         }
+      +  let bgfbpgr9 = 0;
+         for (let i = 0; i < 8; i++) {
+      @@ -26,2 +29,3 @@
+         if (lo == -1 || hi == -1 || lo == hi) { return [] }
+      +  console.error("trace 5f2807");
+         if (lo > hi) {
+      @@ -32,2 +36,3 @@
+         for (let i = lo + 1; i < hi; i++) {
+      +    let f217il86 = 0;
+           u.push(y[i])
+  ROTTA humaneval/149: RUNTIME_ERROR 'trace 95b8c8\ntrace 6c428d\ntrace eb0348\ntrace 95b8c8\ntrace 6c428d\ntrace eb0348\ntrace 95b8c8\ntrace 6c428d\ntrace eb0348\ntrace 95b8c8\ntrace 6c428d\ntrace eb0348\ntrace 95b8c8\ntrace 6c428d\ntrace eb0348\ntrace 95b8c8\ntrace 6c428d\ntrace eb0348\ntrace 95b8c8\ntrace 6c428d\ntrace eb0348'
+      @@ -16,3 +16,5 @@
+         let p = []
+      +  console.error("trace 95b8c8");
+         for (let i = 0; i < lst.length; i++) {
+      +    let nevy65qm = 0;
+           if (lst[i].length % 2 == 0) {
+      @@ -23,2 +25,3 @@
+           for (let k = 0; k <= j; k++) {
+      +      let bn1u0961 = 0;
+             let f = 0
+      @@ -44,2 +47,4 @@
+         }
+      +  console.error("trace 6c428d");
+      +  console.error("trace eb0348");
+         return p
+  ROTTA humaneval/15: RUNTIME_ERROR 'trace db9ba6\ntrace 53e7ef\ntrace 5aaed8\ntrace db9ba6\ntrace 53e7ef\ntrace 5aaed8\ntrace db9ba6\ntrace 53e7ef\ntrace 5aaed8'
+      @@ -7,2 +7,7 @@
+       const stringSequence = (n) => {
+      +  console.error("trace db9ba6");
+      +  let m1gkke9h = 0;
+      +  console.error("trace 53e7ef");
+      +  console.error("trace 5aaed8");
+      +  let natp8n21 = 0;
+         return [...Array(n).keys(), n].join(' ')
+  ROTTA humaneval/150: RUNTIME_ERROR 'trace d2700c\ntrace a9efcb\ntrace d2700c\ntrace d2700c\ntrace a9efcb\ntrace d2700c\ntrace a9efcb\ntrace d2700c\ntrace a9efcb\ntrace d2700c\ntrace d2700c\ntrace d2700c\ntrace d2700c\ntrace d2700c\ntrace a9efcb'
+      @@ -9,2 +9,4 @@
+       const xOrY = (n, x, y) => {
+      +  let j9djy7q8 = 0;
+      +  console.error("trace d2700c");
+         let len = n
+      @@ -12,4 +14,7 @@
+         for (let i = 2; i * i <= len; i++) {
+      +    let ly4b0okq = 0;
+      +    let esyj62v7 = 0;
+           if (len % i == 0) { return y }
+         }
+      +  console.error("trace a9efcb");
+         return x
+  ROTTA humaneval/151: RUNTIME_ERROR 'trace b4e4ae\ntrace 2f0fa3\ntrace b4e4ae\ntrace 2f0fa3\ntrace b4e4ae\ntrace 2f0fa3\ntrace b4e4ae\ntrace 2f0fa3\ntrace b4e4ae\ntrace 2f0fa3\ntrace b4e4ae\ntrace 2f0fa3\ntrace b4e4ae\ntrace 2f0fa3'
+      @@ -10,4 +10,7 @@
+         let p = 0
+      +  let k6iuowgs = 0;
+      +  console.error("trace b4e4ae");
+         for (let i = 0; i < lst.length; i++) {
+           if (lst[i] % 2 == 1 && lst[i] > 0) {
+      +      let dcsk3sfb = 0;
+             p += lst[i] * lst[i]
+      @@ -15,2 +18,4 @@
+         }
+      +  console.error("trace 2f0fa3");
+      +  let z21j1mdh = 0;
+         return p
+  ROTTA humaneval/152: RUNTIME_ERROR 'trace 60cc00\ntrace 60cc00\ntrace 60cc00\ntrace 60cc00\ntrace 60cc00\ntrace 60cc00'
+      @@ -15,3 +15,8 @@
+       const compare = (game, guess) => {
+      +  let qhde7lpw = 0;
+      +  console.error("trace 60cc00");
+         for (let i = 0; i < guess.length; i++) {
+      +    let yj3ivevt = 0;
+      +    let zyyauav0 = 0;
+      +    let gqznsl23 = 0;
+           game[i] -= guess[i]
+  ROTTA humaneval/154: RUNTIME_ERROR 'trace aa7be2\ntrace 69b94f\ntrace 7a1ae2\ntrace 30305e\ntrace aa7be2\ntrace 69b94f\ntrace 7a1ae2\ntrace aa7be2\ntrace 69b94f\ntrace 7a1ae2\ntrace 30305e\ntrace aa7be2\ntrace 69b94f\ntrace 7a1ae2\ntrace aa7be2\ntrace 69b94f\ntrace 7a1ae2\ntrace 30305e\ntrace aa7be2\ntrace 69b94f\ntrace 7a1ae2'
+      @@ -9,3 +9,7 @@
+       const cycpatternCheck = (a, b) => {
+      +  console.error("trace aa7be2");
+         let l = b.length
+      +  console.error("trace 69b94f");
+      +  let vuklf1zz = 0;
+      +  console.error("trace 7a1ae2");
+         let pat = b + b
+      @@ -22,2 +26,3 @@
+         }
+      +  console.error("trace 30305e");
+         return false
+  ROTTA humaneval/155: RUNTIME_ERROR '0\ntrace 60bc8a\ntrace a487c7\ntrace 3e3bd0\ntrace 60bc8a\ntrace a487c7\ntrace 3e3bd0\ntrace 60bc8a\ntrace a487c7\ntrace 3e3bd0\ntrace 60bc8a\ntrace a487c7\ntrace 3e3bd0\ntrace 60bc8a\ntrace a487c7\ntrace 3e3bd0\ntrace 60bc8a\ntrace a487c7\ntrace 3e3bd0\ntrace 60bc8a\ntrace a487c7\ntrace 3e3bd0\ntrace 60bc8a\ntrace a487c7'
+      @@ -7,3 +7,8 @@
+       const evenOddCount = (num) => {
+      +  let grfdb3z8 = 0;
+      +  let uoh0du18 = 0;
+      +  console.error("trace 3e3bd0");
+      +  console.error("trace 60bc8a");
+         let o = 0
+      +  console.error("trace a487c7");
+         let e = 0
+  ROTTA humaneval/156: RUNTIME_ERROR 'trace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d\ntrace 13fd7d'
+      @@ -15,5 +15,10 @@
+         let res = ''
+      +  console.error("trace 13fd7d");
+      +  let hk613xv7 = 0;
+         while (number) {
+           let div = (number - number % num[i]) / num[i]
+      -    number = number % num[i]
+      +    let fdckijhe = 0;
+      +    const c4yomc8k = (number % num[i]);
+      +    const fb1crkfj = (c4yomc8k);
+      +    number = fb1crkfj
+           while (div) {
+  ROTTA humaneval/157: RUNTIME_ERROR 'trace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0\ntrace bea6da\ntrace 6880f0'
+      @@ -10,2 +10,7 @@
+       const rightAngleTriangle = (a, b, c) => {
+      +  console.error("trace bea6da");
+      +  console.error("trace 6880f0");
+      +  let u8l3qmud = 0;
+      +  let fmes7o1n = 0;
+      +  let p65ltvj1 = 0;
+         return (a * a + b * b == c * c || a * a == b * b + c * c || b * b == a * a + c * c)
+  ROTTA humaneval/158: RUNTIME_ERROR '9\ntrace b9fea5\ntrace ebe68f\ntrace ddf1b9\ntrace b9fea5\ntrace ebe68f\ntrace ddf1b9\ntrace b9fea5\ntrace ebe68f\ntrace ddf1b9\ntrace b9fea5\ntrace ebe68f\ntrace ddf1b9\ntrace b9fea5\ntrace ebe68f\ntrace ddf1b9\ntrace b9fea5\ntrace ebe68f\ntrace ddf1b9\ntrace b9fea5\ntrace ebe68f\ntrace ddf1b9\ntrace b9fea5\ntrace ebe68f'
+      @@ -11,2 +11,6 @@
+         let s = -1
+      +  console.error("trace ddf1b9");
+      +  console.error("trace b9fea5");
+      +  let xmgankoj = 0;
+      +  console.error("trace ebe68f");
+         let u = -1
+      @@ -18,2 +22,3 @@
+             for (let k = 0; k < j; k++) {
+      +        let u3k37v3l = 0;
+               if (words[i][j] == words[i][k]) { y = 0 }
+  ROTTA humaneval/159: RUNTIME_ERROR 'trace 4649ad\ntrace cab58b\ntrace 4649ad\ntrace cab58b\ntrace 4649ad\ntrace cab58b\ntrace 4649ad\ntrace cab58b\ntrace 4649ad\ntrace cab58b\ntrace 4649ad\ntrace cab58b'
+      @@ -29,6 +29,11 @@
+       const eat = (number, need, remaining) => {
+      +  console.error("trace 4649ad");
+      +  console.error("trace cab58b");
+         if (need <= remaining) {
+      -    return [need + number, remaining - need]
+      +    const lgrrpjc4 = (remaining - need);
+      +    const qdya092t = (lgrrpjc4);
+      +    return [need + number, qdya092t]
+         }
+      -  return [remaining + number, 0]
+      +  const z3aibq7b = (remaining + number);
+      +  return [z3aibq7b, 0]
+       }
+  ROTTA humaneval/16: RUNTIME_ERROR 'trace ee4d05\ntrace 7b1586\ntrace ee4d05\ntrace 7b1586\ntrace ee4d05\ntrace 7b1586\ntrace ee4d05\ntrace 7b1586\ntrace ee4d05\ntrace 7b1586'
+      @@ -7,2 +7,7 @@
+       const countDistinctCharacters = (string) => {
+      +  console.error("trace ee4d05");
+      +  let xmwx6eb8 = 0;
+      +  let ri0hi8rc = 0;
+      +  console.error("trace 7b1586");
+      +  let mxh6ujk9 = 0;
+         return (new Set(string.toLowerCase())).size;
+  ROTTA humaneval/160: RUNTIME_ERROR 'trace 6f3cfb\ntrace 44cba9\ntrace 6f3cfb\ntrace 44cba9\ntrace 6f3cfb\ntrace 44cba9'
+      @@ -25,2 +25,3 @@
+       const doAlgebra = (operator, operand) => {
+      +  console.error("trace 6f3cfb");
+         while (operator.length > 0) {
+      @@ -42,2 +43,3 @@
+           for (let i = 0; i < operator.length; i++) {
+      +      let qtfan45n = 0;
+             if (operator[i] == '*') {
+      @@ -69,2 +71,3 @@
+               operand.splice(i + 1, 1)
+      +        let kq36ah1l = 0;
+               operator.splice(i, 1)
+      @@ -76,2 +79,4 @@
+         }
+      +  console.error("trace 44cba9");
+      +  let i6m7hbbf = 0;
+         return operand[0]
+  ROTTA humaneval/161: RUNTIME_ERROR 'trace c43205\ntrace 81567b\ntrace c43205\ntrace 81567b\ntrace c43205\ntrace 81567b\ntrace c43205\ntrace 81567b\ntrace c43205\ntrace 81567b\ntrace c43205\ntrace 81567b\ntrace c43205\ntrace 81567b\ntrace c43205\ntrace 81567b'
+      @@ -12,2 +12,5 @@
+         let t = 0
+      +  console.error("trace c43205");
+      +  console.error("trace 81567b");
+      +  let gdom7xfx = 0;
+         let p = ''
+      @@ -24,4 +27,6 @@
+         }
+      +  let ajg0ab5e = 0;
+         if (t == 1) { return p }
+         let u = ''
+      +  let rs40kl8b = 0;
+         for (let i = 0; i < p.length; i++) {
+  ROTTA humaneval/162: RUNTIME_ERROR 'trace f8aef6\ntrace f8aef6\ntrace f8aef6'
+      @@ -8,2 +8,7 @@
+         if (text == '') { return null }
+      +  let bnifoyhf = 0;
+      +  let gf1onpqa = 0;
+      +  let do44m7t7 = 0;
+      +  let sexanhwk = 0;
+      +  console.error("trace f8aef6");
+         var md5 = require('js-md5')
+  ROTTA humaneval/163: RUNTIME_ERROR 'trace 0c2492\ntrace 65275d\ntrace b6f453\ntrace 0c2492\ntrace 65275d\ntrace b6f453\ntrace 0c2492\ntrace 65275d\ntrace b6f453\ntrace 0c2492\ntrace 65275d\ntrace b6f453'
+      @@ -10,2 +10,4 @@
+       const generateIntegers = (a, b) => {
+      +  let w69bbw02 = 0;
+      +  console.error("trace 0c2492");
+         if (a > b) {
+      @@ -16,2 +18,5 @@
+         let y = []
+      +  let idvpnrhu = 0;
+      +  console.error("trace 65275d");
+      +  console.error("trace b6f453");
+         for (let i = a; i <= b; i++) {
+  ROTTA humaneval/17: RUNTIME_ERROR 'trace 86919e\ntrace 5d121a\ntrace 2466ed\ntrace 33fd30\ntrace 86919e\ntrace 5d121a\ntrace 2466ed\ntrace 33fd30\ntrace 86919e\ntrace 5d121a\ntrace 2466ed\ntrace 33fd30\ntrace 86919e\ntrace 5d121a\ntrace 2466ed\ntrace 33fd30\ntrace 86919e\ntrace 5d121a\ntrace 2466ed\ntrace 33fd30'
+      @@ -13,2 +13,7 @@
+       const parseMusic = (music_string) => {
+      +  console.error("trace 86919e");
+      +  console.error("trace 5d121a");
+      +  console.error("trace 2466ed");
+      +  console.error("trace 33fd30");
+      +  let at5o8lq3 = 0;
+         const note_map = {'o': 4, 'o|': 2, '.|': 1};
+  ROTTA humaneval/18: RUNTIME_ERROR 'trace 2c2ff7\ntrace 120416\ntrace 9f2d95\ntrace 2c2ff7\ntrace 120416\ntrace 9f2d95\ntrace 2c2ff7\ntrace 120416\ntrace 9f2d95\ntrace 2c2ff7\ntrace 120416\ntrace 9f2d95'
+      @@ -9,3 +9,7 @@
+       const howManyTimes = (string, substring) => {
+      +  console.error("trace 2c2ff7");
+         var times = 0;
+      +  console.error("trace 120416");
+      +  let j2o4qap6 = 0;
+      +  let n4nat79m = 0;
+         for (let i = 0; i < string.length - substring.length + 1; i++) {
+      @@ -15,2 +19,3 @@
+         }
+      +  console.error("trace 9f2d95");
+         return times;
+  ROTTA humaneval/19: RUNTIME_ERROR 'trace 96f0c6\ntrace 8b8ad4\ntrace 0870ee\ntrace 96f0c6\ntrace 8b8ad4\ntrace 0870ee\ntrace 96f0c6\ntrace 8b8ad4\ntrace 0870ee\ntrace 96f0c6\ntrace 8b8ad4\ntrace 0870ee\ntrace 96f0c6\ntrace 8b8ad4\ntrace 0870ee'
+      @@ -7,2 +7,3 @@
+       const sortNumbers = (numbers) => {
+      +  let rz0aty79 = 0;
+         const value_map = {
+      @@ -19,2 +20,6 @@
+         };
+      +  console.error("trace 96f0c6");
+      +  let o9px9fwe = 0;
+      +  console.error("trace 8b8ad4");
+      +  console.error("trace 0870ee");
+         return numbers.split(' ')
+  ROTTA humaneval/2: RUNTIME_ERROR 'trace e3b1ee\ntrace e3b1ee\ntrace e3b1ee'
+      @@ -9,3 +9,8 @@
+       const truncateNumber = (number) => {
+      -  return number % 1.0;
+      +  const i5rtqgmb = (number % 1.0);
+      +  const w66mhq3p = (i5rtqgmb);
+      +  console.error("trace e3b1ee");
+      +  const hr4xm700 = (w66mhq3p);
+      +  let gnvygqu5 = 0;
+      +  return hr4xm700;
+       }
+  ROTTA humaneval/20: RUNTIME_ERROR 'trace d50f6c\ntrace fa2b22\ntrace 1d2480\ntrace d50f6c\ntrace fa2b22\ntrace 1d2480\ntrace d50f6c\ntrace fa2b22\ntrace 1d2480\ntrace d50f6c\ntrace fa2b22\ntrace 1d2480\ntrace d50f6c\ntrace fa2b22\ntrace 1d2480'
+      @@ -9,2 +9,4 @@
+         var closest_pair, distance;
+      +  let mqq0so8o = 0;
+      +  console.error("trace d50f6c");
+         for (let i = 0; i < numbers.length; i++)
+      @@ -20,2 +22,3 @@
+                   distance = new_distance;
+      +            let e7dlyfcx = 0;
+                   closest_pair = [Math.min(a, b), Math.max(a, b)];
+      @@ -24,2 +27,4 @@
+             }
+      +  console.error("trace fa2b22");
+      +  console.error("trace 1d2480");
+         return closest_pair;
+  ROTTA humaneval/21: RUNTIME_ERROR 'trace 9b1af9\ntrace 06c427\ntrace 9b1af9\ntrace 06c427\ntrace 9b1af9\ntrace 06c427\ntrace 9b1af9\ntrace 06c427\ntrace 9b1af9\ntrace 06c427'
+      @@ -7,3 +7,8 @@
+         var min_number = Math.min(...numbers);
+      +  console.error("trace 9b1af9");
+         var max_number = Math.max(...numbers);
+      +  let cg7ziedq = 0;
+      +  console.error("trace 06c427");
+      +  let zepu0oeu = 0;
+      +  let o19vci9y = 0;
+         return numbers.map(x => (x - min_number) / (max_number - min_number));
+  ROTTA humaneval/22: RUNTIME_ERROR 'trace 24af9f\ntrace 4238d5\ntrace 24af9f\ntrace 4238d5\ntrace 24af9f\ntrace 4238d5'
+      @@ -7,2 +7,7 @@
+       const filterIntegers = (values) => {
+      +  let ew2jd31t = 0;
+      +  console.error("trace 24af9f");
+      +  let nkmjf5vf = 0;
+      +  console.error("trace 4238d5");
+      +  let km6znsn5 = 0;
+         return values.filter(x => Number.isInteger(x));
+  ROTTA humaneval/23: RUNTIME_ERROR 'trace 2045db\ntrace efdde7\ntrace 2045db\ntrace efdde7\ntrace 2045db\ntrace efdde7'
+      @@ -7,2 +7,7 @@
+       const strlen = (string) => {
+      +  let mzuqzlpp = 0;
+      +  console.error("trace 2045db");
+      +  console.error("trace efdde7");
+      +  let fgovv22g = 0;
+      +  let owtck9cp = 0;
+         return string.length;
+  ROTTA humaneval/24: RUNTIME_ERROR 'trace 5ebcac\ntrace 480b09\ntrace 5ebcac\ntrace 480b09\ntrace 5ebcac\ntrace 480b09\ntrace 5ebcac\ntrace 480b09\ntrace 5ebcac\ntrace 480b09'
+      @@ -5,2 +5,7 @@
+       const largestDivisor = (n) => {
+      +  let jkhq8saj = 0;
+      +  let q3q5qc4t = 0;
+      +  console.error("trace 5ebcac");
+      +  let f46cwa9t = 0;
+      +  console.error("trace 480b09");
+         for (let i = n - 1; i >= 0; i--)
+  ROTTA humaneval/25: RUNTIME_ERROR '0\ntrace 2de35f\ntrace 7bfc12\ntrace 510c70\ntrace 2de35f\ntrace 7bfc12\ntrace 510c70\ntrace 2de35f\ntrace 7bfc12\ntrace 510c70\ntrace 2de35f\ntrace 7bfc12\ntrace 510c70\ntrace 2de35f\ntrace 7bfc12\ntrace 510c70\ntrace 2de35f\ntrace 7bfc12\ntrace 510c70\ntrace 2de35f\ntrace 7bfc12\ntrace 510c70\ntrace 2de35f\ntrace 7bfc12'
+      @@ -11,4 +11,8 @@
+       const factorize = (n) => {
+      +  console.error("trace 510c70");
+      +  let omeiki1s = 0;
+      +  console.error("trace 2de35f");
+         var fact = [], i = 2;
+         while (i <= Math.sqrt(n) + 1) {
+      +    let eqbzmbwn = 0;
+           if (n % i == 0) {
+      @@ -23,2 +27,3 @@
+           fact.push(n);
+      +  console.error("trace 7bfc12");
+         return fact;
+  ROTTA humaneval/26: RUNTIME_ERROR 'trace 6fbf67\ntrace 0595a1\ntrace 6fbf67\ntrace 0595a1\ntrace 6fbf67\ntrace 0595a1'
+      @@ -6,5 +6,10 @@
+       const removeDuplicates = (numbers) => {
+      +  console.error("trace 6fbf67");
+      +  console.error("trace 0595a1");
+         var dict = new Object();
+      +  let xxokgbgj = 0;
+      +  let o5s7rj7r = 0;
+         for (const num of numbers) {
+           if (num in dict) {
+      +      let l6giaw8h = 0;
+             dict[num] += 1;
+  ROTTA humaneval/27: RUNTIME_ERROR 'trace aa5a10\ntrace 47c549\ntrace f7d5d7\ntrace aa5a10\ntrace 47c549\ntrace f7d5d7\ntrace aa5a10\ntrace 47c549\ntrace f7d5d7'
+      @@ -5,2 +5,7 @@
+       const flipCase = (string) => {
+      +  let ff56rjci = 0;
+      +  console.error("trace aa5a10");
+      +  console.error("trace 47c549");
+      +  console.error("trace f7d5d7");
+      +  let z0v1a8em = 0;
+         return string.split('')
+  ROTTA humaneval/28: RUNTIME_ERROR 'trace 37dce8\ntrace 428aa2\ntrace cda508\ntrace 506065\ntrace 37dce8\ntrace 428aa2\ntrace cda508\ntrace 506065\ntrace 37dce8\ntrace 428aa2\ntrace cda508\ntrace 506065'
+      @@ -7,2 +7,7 @@
+       const concatenate = (strings) => {
+      +  console.error("trace 37dce8");
+      +  console.error("trace 428aa2");
+      +  console.error("trace cda508");
+      +  let ejjsq5h2 = 0;
+      +  console.error("trace 506065");
+         return strings.join('');
+  ROTTA humaneval/29: RUNTIME_ERROR 'trace 131aef\ntrace e12797\ntrace 131aef\ntrace e12797'
+      @@ -7,2 +7,7 @@
+       const filterByPrefix = (strings, prefix) => {
+      +  let eapfzb8w = 0;
+      +  let v4sd1hpv = 0;
+      +  let bxegl7x5 = 0;
+      +  console.error("trace 131aef");
+      +  console.error("trace e12797");
+         return strings.filter(x => x.startsWith(prefix));
+  ROTTA humaneval/3: RUNTIME_ERROR 'trace a75624\ntrace a9c5ca\ntrace a75624\ntrace a9c5ca\ntrace a75624\ntrace a75624\ntrace a9c5ca\ntrace a75624\ntrace a75624'
+      @@ -9,5 +9,9 @@
+       const belowZero = (operations) => {
+      +  let m4lcpp7v = 0;
+      +  console.error("trace a75624");
+         var balance = 0;
+         for (const op of operations) {
+      +    let jowj573o = 0;
+           balance += op;
+      +    let vs0wr6p6 = 0;
+           if (balance < 0) {
+      @@ -16,2 +20,3 @@
+         }
+      +  console.error("trace a9c5ca");
+         return false;
+  ROTTA humaneval/30: RUNTIME_ERROR 'trace 522fc1\ntrace 457259\ntrace c48234\ntrace 522fc1\ntrace 457259\ntrace c48234\ntrace 522fc1\ntrace 457259\ntrace c48234\ntrace 522fc1\ntrace 457259\ntrace c48234'
+      @@ -7,2 +7,7 @@
+       const getPositive = (l) => {
+      +  let ohpcdtjw = 0;
+      +  console.error("trace 522fc1");
+      +  console.error("trace 457259");
+      +  let mmb0a649 = 0;
+      +  console.error("trace c48234");
+         return l.filter(e => e > 0);
+  ROTTA humaneval/32: RUNTIME_ERROR '2\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8\ntrace 2b4112\ntrace aae0e8'
+      @@ -6,2 +6,4 @@
+         return xs.reduce((prev, item, index) => {
+      +    console.error("trace 2b4112");
+      +    console.error("trace aae0e8");
+           return prev + item * Math.pow(x, index);
+      @@ -26,2 +28,3 @@
+           begin *= 2.0;
+      +    let ekcydsck = 0;
+           end *= 2.0;
+      @@ -30,2 +33,4 @@
+           let center = (begin + end) / 2.0;
+      +    let f6rivlc9 = 0;
+      +    let mdkv6ycv = 0;
+           if (poly(xs, center) * poly(xs, begin) > 0)
+  ROTTA humaneval/33: RUNTIME_ERROR 'trace f234ee\ntrace 597fdf\ntrace f234ee\ntrace 597fdf\ntrace f234ee\ntrace 597fdf\ntrace f234ee\ntrace 597fdf\ntrace f234ee\ntrace 597fdf\ntrace f234ee\ntrace 597fdf\ntrace f234ee\ntrace 597fdf'
+      @@ -9,4 +9,9 @@
+       const sortThird = (l) => {
+      +  console.error("trace f234ee");
+         var three = l.filter((item, index) => index % 3 == 0);
+      +  let njs33ys6 = 0;
+         three.sort((a, b) => (a - b));
+      +  let kg1sw100 = 0;
+      +  let od0rbdt9 = 0;
+      +  console.error("trace 597fdf");
+         return l.map((item, index) => (index % 3 == 0 ? three[index / 3] : item));
+  ROTTA humaneval/34: RUNTIME_ERROR 'trace 6916b2\ntrace f1e184'
+      @@ -5,2 +5,7 @@
+       const unique = (l) => {
+      +  let sexr2ajp = 0;
+      +  let dbv2yzum = 0;
+      +  console.error("trace 6916b2");
+      +  console.error("trace f1e184");
+      +  let tyh2qid8 = 0;
+         return Array.from(new Set(l)).sort((a, b) => (a - b));
+  ROTTA humaneval/35: RUNTIME_ERROR 'trace 8c3421\ntrace 5d4ae3\ntrace dd3211\ntrace 8c3421\ntrace 5d4ae3\ntrace dd3211'
+      @@ -7,2 +7,7 @@
+       const maxElement = (l) => {
+      +  let gao9hrcy = 0;
+      +  console.error("trace 8c3421");
+      +  console.error("trace 5d4ae3");
+      +  let zeyap4dm = 0;
+      +  console.error("trace dd3211");
+         return Math.max(...l);
+  ROTTA humaneval/37: RUNTIME_ERROR 'trace 1b896c\ntrace 28804f\ntrace 52f5f1\ntrace 1b896c\ntrace 28804f\ntrace 52f5f1\ntrace 1b896c\ntrace 28804f\ntrace 52f5f1'
+      @@ -10,3 +10,8 @@
+         var even = l.filter((item, index) => index % 2 == 0);
+      +  let euach9s1 = 0;
+      +  console.error("trace 1b896c");
+      +  console.error("trace 28804f");
+      +  let wwvk3kri = 0;
+         even.sort((a, b) => (a - b));
+      +  console.error("trace 52f5f1");
+         return l.map((item, index) => (index % 2 == 0 ? even[index / 2] : item));
+  ROTTA humaneval/38: RUNTIME_ERROR '7\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07\ntrace f05c07'
+      @@ -5,2 +5,5 @@
+         var groups = [], groups2 = [];
+      +  let hjuqow0i = 0;
+      +  console.error("trace f05c07");
+      +  let awa5322c = 0;
+         for (let i = 0; i < Math.floor((s.length + 2) / 3); i++) {
+      @@ -8,2 +11,3 @@
+         }
+      +  let t1ynsprj = 0;
+         for (const group of groups) {
+      @@ -21,2 +25,3 @@
+       const decodeCyclic = (s) => {
+      +  let p5kjblxm = 0;
+         return encodeCyclic(encodeCyclic(s));
+  ROTTA humaneval/39: RUNTIME_ERROR '0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a\ntrace 213fc0\ntrace ffaa4a'
+      @@ -15,4 +15,6 @@
+         var isPrime = function (p) {
+      +    console.error("trace 213fc0");
+           if (p < 2)
+             return false;
+      +    console.error("trace ffaa4a");
+           for (let k = 2; k < Math.min(Math.floor(Math.sqrt(p)) + 1, p - 1); k++) {
+      @@ -25,4 +27,7 @@
+         var f = [0, 1];
+      +  let zex3x5i8 = 0;
+      +  let y1vjqk89 = 0;
+         while (true) {
+           f.push(f.at(-1) + f.at(-2));
+      +    let ihxfkvh5 = 0;
+           if (isPrime(f.at(-1)))
+  ROTTA humaneval/4: RUNTIME_ERROR 'trace 20f89d\ntrace 20f89d\ntrace 20f89d\ntrace 542871\ntrace 20f89d\ntrace 20f89d\ntrace 20f89d\ntrace 20f89d\ntrace 542871\ntrace 20f89d\ntrace 20f89d\ntrace 20f89d\ntrace 20f89d\ntrace 20f89d\ntrace 542871'
+      @@ -10,5 +10,10 @@
+         var mean = numbers.reduce((prev, item) => {
+      -    return prev + item;
+      +    console.error("trace 20f89d");
+      +    const cg5r76k7 = (prev + item);
+      +    const tv0dncdp = (cg5r76k7);
+      +    return tv0dncdp;
+         }, 0) / numbers.length;
+      +  console.error("trace 542871");
+         return numbers.reduce((prev, item) => {
+      +    let bcvkwzcb = 0;
+           return prev + Math.abs(item - mean);
+  ROTTA humaneval/40: RUNTIME_ERROR '4\ntrace 79c271\ntrace 2df7bf\ntrace 498ed4\ntrace 79c271\ntrace 2df7bf\ntrace 498ed4\ntrace 2df7bf\ntrace 498ed4\ntrace 79c271\ntrace 2df7bf\ntrace 498ed4\ntrace 79c271\ntrace 2df7bf\ntrace 498ed4\ntrace 2df7bf\ntrace 498ed4\ntrace 79c271\ntrace 2df7bf\ntrace 498ed4\ntrace 79c271\ntrace 2df7bf\ntrace 498ed4\ntrace 79c271'
+      @@ -17,2 +17,6 @@
+       const triplesSumToZero = (l) => {
+      +  let n1czzmv2 = 0;
+      +  console.error("trace 2df7bf");
+      +  let ttprclpn = 0;
+      +  console.error("trace 498ed4");
+         for (let i = 0; i < l.length; i++)
+      @@ -22,2 +26,3 @@
+                 return true;
+      +  console.error("trace 79c271");
+         return false;
+  ROTTA humaneval/41: RUNTIME_ERROR 'trace 882650\ntrace 03c2ca\ntrace 882650\ntrace 03c2ca\ntrace 882650\ntrace 03c2ca\ntrace 882650\ntrace 03c2ca\ntrace 882650\ntrace 03c2ca'
+      @@ -12,2 +12,7 @@
+       const carRaceCollision = (n) => {
+      +  console.error("trace 882650");
+      +  let ezbcyzfe = 0;
+      +  let u9nb5nns = 0;
+      +  console.error("trace 03c2ca");
+      +  let un0atp9y = 0;
+         return Math.pow(n, 2);
+  ROTTA humaneval/42: RUNTIME_ERROR 'trace ebfcdb\ntrace 91ffc6\ntrace 362d7b\ntrace 4411b9\ntrace ebfcdb\ntrace 91ffc6\ntrace 362d7b\ntrace 4411b9\ntrace ebfcdb\ntrace 91ffc6\ntrace 362d7b\ntrace 4411b9'
+      @@ -7,2 +7,7 @@
+       const incrList = (l) => {
+      +  console.error("trace ebfcdb");
+      +  console.error("trace 91ffc6");
+      +  console.error("trace 362d7b");
+      +  let kbmy0t73 = 0;
+      +  console.error("trace 4411b9");
+         return l.map(e => e + 1);
+  ROTTA humaneval/43: RUNTIME_ERROR 'trace 6e8326\ntrace 8af591\ntrace 6e8326\ntrace 8af591\ntrace 6e8326\ntrace 8af591\ntrace 6e8326\ntrace 6e8326\ntrace 8af591\ntrace 6e8326\ntrace 6e8326\ntrace 6e8326\ntrace 8af591\ntrace 6e8326\ntrace 8af591'
+      @@ -16,2 +16,3 @@
+       const pairsSumToZero = (l) => {
+      +  console.error("trace 6e8326");
+         for (let i = 0; i < l.length; i++)
+      @@ -20,2 +21,6 @@
+               return true;
+      +  let z8xmtfq2 = 0;
+      +  console.error("trace 8af591");
+      +  let qhnl3xj8 = 0;
+      +  let dw717xng = 0;
+         return false;
+  ROTTA humaneval/44: RUNTIME_ERROR '2\ntrace 5d1739\ntrace e98dd1\ntrace 8c6870\ntrace f4b712\ntrace 5d1739\ntrace e98dd1\ntrace 8c6870\ntrace f4b712\ntrace 5d1739\ntrace e98dd1\ntrace 8c6870\ntrace f4b712\ntrace 5d1739\ntrace e98dd1\ntrace 8c6870\ntrace f4b712\ntrace 5d1739\ntrace e98dd1\ntrace 8c6870\ntrace f4b712\ntrace 5d1739\ntrace e98dd1\ntrace 8c6870'
+      @@ -11,2 +11,7 @@
+       const changeBase = (x, base) => {
+      +  console.error("trace f4b712");
+      +  console.error("trace 5d1739");
+      +  console.error("trace e98dd1");
+      +  let i812ag0c = 0;
+      +  console.error("trace 8c6870");
+         var ret = "";
+  ROTTA humaneval/45: RUNTIME_ERROR 'trace 98bf62\ntrace 98bf62\ntrace 98bf62'
+      @@ -5,3 +5,8 @@
+       const triangleArea = (a, h) => {
+      -  return a * h / 2.0;
+      +  let bjc4d2ea = 0;
+      +  const gk4u7ilm = (a * h / 2.0);
+      +  console.error("trace 98bf62");
+      +  let khnatlev = 0;
+      +  let dbrvc92e = 0;
+      +  return gk4u7ilm;
+       }
+  ROTTA humaneval/46: RUNTIME_ERROR 'trace bec79b\ntrace a92695\ntrace ef312b\ntrace bec79b\ntrace a92695\ntrace ef312b\ntrace bec79b\ntrace a92695\ntrace ef312b\ntrace bec79b\ntrace a92695\ntrace ef312b'
+      @@ -16,4 +16,9 @@
+         var results = [0, 0, 2, 0];
+      +  console.error("trace bec79b");
+      +  console.error("trace a92695");
+         if (n < 4)
+           return results[n];
+      +  let mwo0wa2t = 0;
+      +  console.error("trace ef312b");
+      +  let o6ww9x0r = 0;
+         for (let i = 4; i < n + 1; i++) {
+  ROTTA humaneval/47: RUNTIME_ERROR 'trace be64c6\ntrace 85c157\ntrace be64c6\ntrace 85c157\ntrace be64c6\ntrace 85c157\ntrace be64c6\ntrace 85c157\ntrace be64c6\ntrace 85c157'
+      @@ -9,2 +9,7 @@
+         var len = l.length;
+      +  console.error("trace be64c6");
+      +  let oexk51n2 = 0;
+      +  let fiaepeqx = 0;
+      +  let aee2rrph = 0;
+      +  console.error("trace 85c157");
+         if (l.length % 2 == 1)
+  ROTTA humaneval/48: RUNTIME_ERROR 'c\ntrace 20f375\ntrace 8a8834\ntrace da2222\ntrace f992a0\ntrace 93623c\ntrace 20f375\ntrace 8a8834\ntrace da2222\ntrace f992a0\ntrace 93623c\ntrace 8a8834\ntrace da2222\ntrace f992a0\ntrace 93623c\ntrace 20f375\ntrace 8a8834\ntrace da2222\ntrace f992a0\ntrace 93623c\ntrace 8a8834\ntrace da2222\ntrace f992a0\ntrace 93623c'
+      @@ -12,2 +12,6 @@
+       const isPalindrome = (text) => {
+      +  console.error("trace 8a8834");
+      +  console.error("trace da2222");
+      +  console.error("trace f992a0");
+      +  console.error("trace 93623c");
+         for (let i = 0; i < text.length; i++)
+      @@ -15,2 +19,3 @@
+             return false;
+      +  console.error("trace 20f375");
+         return true;
+  ROTTA humaneval/49: RUNTIME_ERROR 'trace 5171c4\ntrace 062cd2\ntrace 5171c4\ntrace 062cd2\ntrace 5171c4\ntrace 062cd2\ntrace 5171c4\ntrace 062cd2\ntrace 5171c4\ntrace 062cd2\ntrace 5171c4\ntrace 062cd2\ntrace 5171c4\ntrace 062cd2'
+      @@ -14,4 +14,9 @@
+         var ret = 1;
+      +  console.error("trace 5171c4");
+      +  let b9skazm4 = 0;
+      +  let p7e82n53 = 0;
+         for (let i = 0; i < n; i++)
+           ret = (2 * ret) % p;
+      +  console.error("trace 062cd2");
+      +  let i73cfdyq = 0;
+         return ret;
+  ROTTA humaneval/5: RUNTIME_ERROR 'trace be1b92\ntrace 86f033\ntrace 3fd552\ntrace be1b92\ntrace 86f033\ntrace 3fd552'
+      @@ -10,2 +10,3 @@
+         var result = [];
+      +  console.error("trace be1b92");
+         for (const n of numbers) {
+      @@ -13,2 +14,6 @@
+         }
+      +  console.error("trace 86f033");
+      +  console.error("trace 3fd552");
+      +  let vz98id6a = 0;
+      +  let wvz8jy8w = 0;
+         result.pop();
+  ROTTA humaneval/50: RUNTIME_ERROR 'f\ntrace b604fc\ntrace 8494f0\ntrace 1e95cf\ntrace b604fc\ntrace 8494f0\ntrace 1e95cf\ntrace b604fc\ntrace 8494f0\ntrace 1e95cf\ntrace b604fc\ntrace 8494f0\ntrace 1e95cf\ntrace b604fc\ntrace 8494f0\ntrace 1e95cf\ntrace b604fc\ntrace 8494f0\ntrace 1e95cf\ntrace b604fc\ntrace 8494f0\ntrace 1e95cf\ntrace b604fc\ntrace 8494f0'
+      @@ -4,2 +4,5 @@
+       const encodeShift = (s) => {
+      +  console.error("trace 1e95cf");
+      +  let wtkq5uwq = 0;
+      +  let kz82yo0y = 0;
+         return s.split("").map(ch => String.fromCharCode(
+      @@ -13,2 +16,4 @@
+       const decodeShift = (s) => {
+      +  console.error("trace b604fc");
+      +  console.error("trace 8494f0");
+         return s.split("").map(ch => String.fromCharCode(
+  ROTTA humaneval/51: RUNTIME_ERROR 'trace 8cbee1\ntrace 283eb1\ntrace 8cbee1\ntrace 283eb1\ntrace 8cbee1\ntrace 283eb1\ntrace 8cbee1\ntrace 283eb1\ntrace 8cbee1\ntrace 283eb1\ntrace 8cbee1\ntrace 283eb1\ntrace 8cbee1\ntrace 283eb1'
+      @@ -16,2 +16,7 @@
+       const removeVowels = (text) => {
+      +  console.error("trace 8cbee1");
+      +  let a3yavqcp = 0;
+      +  console.error("trace 283eb1");
+      +  let ja7fezzr = 0;
+      +  let luujoa8v = 0;
+         return text.split("")
+  ROTTA humaneval/52: RUNTIME_ERROR 'trace 4b5bc8\ntrace 4b5bc8\ntrace 4b5bc8\ntrace 4b5bc8'
+      @@ -7,2 +7,4 @@
+       const belowThreshold = (l, t) => {
+      +  let wpb49ipm = 0;
+      +  let l82et06q = 0;
+         for (const e of l)
+      @@ -10,2 +12,5 @@
+             return false;
+      +  console.error("trace 4b5bc8");
+      +  let s3e60pm6 = 0;
+      +  let nt8rihnf = 0;
+         return true;
+  ROTTA humaneval/53: RUNTIME_ERROR '0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b\ntrace 9214a0\ntrace df747b'
+      @@ -7,3 +7,8 @@
+       const add = (x, y) => {
+      -  return x + y;
+      +  console.error("trace 9214a0");
+      +  const ossihxbx = (x + y);
+      +  const zrhea3st = (ossihxbx);
+      +  const hl97m87b = (zrhea3st);
+      +  console.error("trace df747b");
+      +  return hl97m87b;
+       }
+  ROTTA humaneval/54: RUNTIME_ERROR 'trace 978416\ntrace 6d9230\ntrace 69a896\ntrace 978416\ntrace 6d9230\ntrace 69a896\ntrace 978416\ntrace 6d9230\ntrace 69a896\ntrace 978416\ntrace 6d9230\ntrace 69a896\ntrace 978416\ntrace 6d9230\ntrace 69a896\ntrace 978416\ntrace 6d9230\ntrace 69a896\ntrace 978416\ntrace 6d9230\ntrace 69a896'
+      @@ -16,2 +16,7 @@
+       const sameChars = (s0, s1) => {
+      +  console.error("trace 978416");
+      +  console.error("trace 6d9230");
+      +  console.error("trace 69a896");
+      +  let sck3yiou = 0;
+      +  let rtjnci1o = 0;
+         return JSON.stringify([...new Set(s0)].sort()) === JSON.stringify([...new Set(s1)].sort());
+  ROTTA humaneval/55: RUNTIME_ERROR 'a\ntrace 7db54f\ntrace 5a720a\ntrace 5a720a\ntrace 5a720a\ntrace 7db54f\ntrace 5a720a\ntrace 7db54f\ntrace 5a720a\ntrace 5a720a\ntrace 5a720a\ntrace 5a720a\ntrace 7db54f\ntrace 5a720a\ntrace 7db54f\ntrace 5a720a\ntrace 7db54f\ntrace 5a720a\ntrace 5a720a\ntrace 5a720a\ntrace 5a720a\ntrace 7db54f\ntrace 5a720a\ntrace 5a720a'
+      @@ -9,6 +9,11 @@
+       const fib = (n) => {
+      +  let dqrsannv = 0;
+      +  console.error("trace 5a720a");
+      +  let o1jq1l7l = 0;
+         if (n == 0)
+           return 0;
+      +  let cvh07rpd = 0;
+         if (n == 1)
+           return 1;
+      +  console.error("trace 7db54f");
+         return fib(n - 1) + fib(n - 2);
+  ROTTA humaneval/57: RUNTIME_ERROR 'trace a6e438\ntrace a6e438\ntrace a6e438\ntrace d46380\ntrace a6e438\ntrace a6e438\ntrace a6e438\ntrace d46380\ntrace a6e438\ntrace a6e438'
+      @@ -10,2 +10,5 @@
+         var sort1 = [...l].sort((a, b) => a - b);
+      +  let x7j6rdre = 0;
+      +  console.error("trace a6e438");
+      +  let mcttyhw6 = 0;
+         var sort2 = [...l].sort((a, b) => b - a);
+      @@ -14,2 +17,4 @@
+           return true;
+      +  let syu1qphn = 0;
+      +  console.error("trace d46380");
+         return false;
+  ROTTA humaneval/58: RUNTIME_ERROR 'trace 4f19c8\ntrace 20a87a\ntrace 4f978a\ntrace 4f19c8\ntrace 20a87a\ntrace 4f978a\ntrace 4f19c8\ntrace 20a87a\ntrace 4f978a\ntrace 4f19c8\ntrace 20a87a\ntrace 4f978a'
+      @@ -8,3 +8,6 @@
+       const common = (l1, l2) => {
+      +  console.error("trace 4f19c8");
+      +  let x1ynxviz = 0;
+         var ret = new Set();
+      +  console.error("trace 20a87a");
+         for (const e1 of l1)
+      @@ -13,2 +16,4 @@
+               ret.add(e1);
+      +  let tr0z0czm = 0;
+      +  console.error("trace 4f978a");
+         return [...ret].sort();
+  ROTTA humaneval/59: RUNTIME_ERROR 'trace 548a57\ntrace 548a57\ntrace 548a57\ntrace 548a57\ntrace 548a57'
+      @@ -7,3 +7,7 @@
+       const largestPrimeFactor = (n) => {
+      +  console.error("trace 548a57");
+         var isPrime = function (k) {
+      +    let g4uowyrf = 0;
+      +    let k6axqlvu = 0;
+      +    let vue45qrt = 0;
+           if (k < 2)
+      @@ -17,2 +21,3 @@
+         var largest = 1;
+      +  let nb15yrrb = 0;
+         for (let j = 2; j < n + 1; j++)
+  ROTTA humaneval/6: RUNTIME_ERROR 'trace 512a04\ntrace 13c0ed\ntrace 512a04\ntrace 13c0ed\ntrace 512a04\ntrace 13c0ed\ntrace 512a04\ntrace 13c0ed\ntrace 512a04\ntrace 13c0ed\ntrace 512a04\ntrace 13c0ed\ntrace 512a04\ntrace 13c0ed\ntrace 512a04\ntrace 13c0ed\ntrace 512a04\ntrace 13c0ed'
+      @@ -8,4 +8,6 @@
+       const parseNestedParens = (paren_string) => {
+      +  let nagqg75j = 0;
+         var parseParenGroup = function (s) {
+           let depth = 0, max_depth = 0;
+      +    let s1dsro6e = 0;
+           for (const c of s) {
+      @@ -15,2 +17,3 @@
+             } else {
+      +        let bya4jczw = 0;
+               depth -= 1;
+      @@ -18,2 +21,4 @@
+           }
+      +    console.error("trace 512a04");
+      +    console.error("trace 13c0ed");
+           return max_depth;
+  ROTTA humaneval/60: RUNTIME_ERROR 'trace 184d27\ntrace c70841\ntrace 184d27\ntrace c70841\ntrace 184d27\ntrace c70841\ntrace 184d27\ntrace c70841\ntrace 184d27\ntrace c70841'
+      @@ -13,3 +13,8 @@
+       const sumToN = (n) => {
+      -  return n * (n + 1) / 2;
+      +  let e3z5gi7g = 0;
+      +  console.error("trace 184d27");
+      +  console.error("trace c70841");
+      +  const gd52w6ms = (n * (n + 1) / 2);
+      +  const ucs9i2kw = (gd52w6ms);
+      +  return ucs9i2kw;
+       }
+  ROTTA humaneval/62: RUNTIME_ERROR 'trace d13900\ntrace 078317\ntrace d13900\ntrace 078317\ntrace d13900\ntrace 078317\ntrace d13900\ntrace 078317\ntrace d13900\ntrace 078317'
+      @@ -9,2 +9,7 @@
+       const derivative = (xs) => {
+      +  let g2mxuxsu = 0;
+      +  let itwyo68f = 0;
+      +  console.error("trace d13900");
+      +  let dty5c092 = 0;
+      +  console.error("trace 078317");
+         return xs.map((x, i) => x * i).slice(1);
+  ROTTA humaneval/63: RUNTIME_ERROR '7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7\ntrace 4819c7'
+      @@ -14,2 +14,5 @@
+       const fibfib = (n) => {
+      +  console.error("trace 4819c7");
+      +  let frwp7pc0 = 0;
+      +  let ts0u94c4 = 0;
+         if (n == 0 || n == 1)
+      @@ -18,2 +21,4 @@
+           return 1;
+      +  let w6tjx2tl = 0;
+      +  let af6bmrz2 = 0;
+         return fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3);
+  ROTTA humaneval/64: RUNTIME_ERROR '6\ntrace b37b16\ntrace 711d86\ntrace b37b16\ntrace 711d86\ntrace a1251b\ntrace b37b16\ntrace 711d86\ntrace b37b16\ntrace 711d86\ntrace b37b16\ntrace 711d86\ntrace a1251b\ntrace b37b16\ntrace 711d86\ntrace b37b16\ntrace 711d86\ntrace b37b16\ntrace 711d86\ntrace b37b16\ntrace 711d86\ntrace b37b16\ntrace 711d86\ntrace a1251b'
+      @@ -13,7 +13,12 @@
+         var vowels = "aeiouAEIOU";
+      +  let lxwjfaf6 = 0;
+         var n_vowels = s.split('').reduce((prev, item) => {
+      +    console.error("trace b37b16");
+      +    console.error("trace 711d86");
+           return prev + (vowels.includes(item));
+         }, 0);
+      +  console.error("trace a1251b");
+         if (s.at(-1) == 'y' || s.at(-1) == 'Y')
+           n_vowels += 1;
+      +  let k216rc13 = 0;
+         return n_vowels;
+  ROTTA humaneval/65: RUNTIME_ERROR 'trace 06b1e6\ntrace 7c4075\ntrace 06b1e6\ntrace 7c4075\ntrace 06b1e6\ntrace 7c4075\ntrace 06b1e6\ntrace 7c4075\ntrace 06b1e6\ntrace 7c4075'
+      @@ -9,3 +9,8 @@
+       const circularShift = (x, shift) => {
+      +  console.error("trace 06b1e6");
+         s = x.toString();
+      +  console.error("trace 7c4075");
+      +  let lbu36wq2 = 0;
+      +  let unc8j9cm = 0;
+      +  let ht5et8mv = 0;
+         if (shift > s.length)
+  ROTTA humaneval/66: RUNTIME_ERROR 'trace 3836a4\ntrace 3836a4\ntrace 3836a4\ntrace 3836a4\ntrace 3836a4\ntrace 3836a4\ntrace 3836a4'
+      @@ -14,5 +14,10 @@
+         if (s == '') return 0;
+      +  console.error("trace 3836a4");
+      +  let yamwxdnn = 0;
+         return s.split('').reduce((prev, char) => {
+      +    let ekexwez2 = 0;
+           let ord_char = char.charCodeAt(0)
+      -    return prev + (ord_char > 64 && ord_char < 91 ? ord_char : 0);
+      +    const bh81gm5v = (ord_char > 64);
+      +    const j11wxte5 = (bh81gm5v && ord_char < 91);
+      +    return prev + (j11wxte5 ? ord_char : 0);
+         }, 0);
+  ROTTA humaneval/67: RUNTIME_ERROR 'trace dc41a7\ntrace f21c16\ntrace dc41a7\ntrace f21c16\ntrace dc41a7\ntrace f21c16\ntrace dc41a7\ntrace f21c16\ntrace dc41a7\ntrace f21c16\ntrace dc41a7\ntrace f21c16\ntrace dc41a7\ntrace f21c16'
+      @@ -13,3 +13,7 @@
+       const fruitDistribution = (s, n) => {
+      +  let g0vd8u0d = 0;
+      +  let e10b4xhn = 0;
+      +  console.error("trace dc41a7");
+         var lis = [];
+      +  console.error("trace f21c16");
+         for (const i of s.split(" "))
+      @@ -17,2 +21,3 @@
+             lis.push(Number(i))
+      +  let t3l72uht = 0;
+         return n - lis.reduce(((prev, item) => prev + item), 0);
+  ROTTA humaneval/68: RUNTIME_ERROR 'trace 363bc8\ntrace 99fec7\ntrace e02687\ntrace 363bc8\ntrace 99fec7\ntrace e02687\ntrace 363bc8\ntrace 363bc8\ntrace 99fec7\ntrace e02687\ntrace 363bc8\ntrace 99fec7\ntrace e02687\ntrace 363bc8\ntrace 99fec7\ntrace e02687\ntrace 363bc8\ntrace 99fec7\ntrace e02687\ntrace 363bc8\ntrace 99fec7\ntrace e02687'
+      @@ -34,4 +34,9 @@
+       const pluck = (arr) => {
+      +  console.error("trace 363bc8");
+         if (arr.length == 0) return [];
+      +  let yj5kas3d = 0;
+         var evens = arr.filter(x => x % 2 == 0);
+      +  let zot0ht5b = 0;
+      +  console.error("trace 99fec7");
+      +  console.error("trace e02687");
+         if (evens.length == 0) return [];
+  ROTTA humaneval/69: RUNTIME_ERROR '1\ntrace 4e81f1\ntrace cf1402\ntrace 56fb61\ntrace 4e81f1\ntrace cf1402\ntrace 56fb61\ntrace 4e81f1\ntrace cf1402\ntrace 56fb61\ntrace 4e81f1\ntrace cf1402\ntrace 56fb61\ntrace 4e81f1\ntrace cf1402\ntrace 56fb61\ntrace 4e81f1\ntrace cf1402\ntrace 56fb61\ntrace 4e81f1\ntrace cf1402\ntrace 56fb61\ntrace 4e81f1\ntrace cf1402'
+      @@ -12,4 +12,9 @@
+         var frq = new Array(Math.max(...lst) + 1).fill(0);
+      +  console.error("trace 56fb61");
+         for (const i of lst)
+           frq[i] += 1;
+      +  let a180j5kf = 0;
+      +  console.error("trace 4e81f1");
+      +  console.error("trace cf1402");
+      +  let eur28crq = 0;
+         var ans = -1;
+  ROTTA humaneval/7: RUNTIME_ERROR 'trace f5af2d\ntrace 1316f9\ntrace b17f9f\ntrace 2cadb1\ntrace f5af2d\ntrace 1316f9\ntrace b17f9f\ntrace 2cadb1\ntrace f5af2d\ntrace 1316f9\ntrace b17f9f\ntrace 2cadb1\ntrace f5af2d\ntrace 1316f9\ntrace b17f9f\ntrace 2cadb1'
+      @@ -7,2 +7,7 @@
+       const filterBySubstring = (strings, substring) => {
+      +  console.error("trace f5af2d");
+      +  console.error("trace 1316f9");
+      +  let on0gusax = 0;
+      +  console.error("trace b17f9f");
+      +  console.error("trace 2cadb1");
+         return strings.filter(x => x.indexOf(substring) != -1);
+  ROTTA humaneval/70: RUNTIME_ERROR 'trace 96c09c\ntrace 96c09c\ntrace 96c09c\ntrace 96c09c\ntrace 96c09c\ntrace 96c09c\ntrace 96c09c\ntrace 96c09c\ntrace 96c09c'
+      @@ -11,2 +11,3 @@
+       const strangeSortList = (lst) => {
+      +  console.error("trace 96c09c");
+         var res = [], sw = true;
+      @@ -14,2 +15,4 @@
+           res.push(sw ? Math.min(...lst) : Math.max(...lst));
+      +    let drdx6w6f = 0;
+      +    let xmx2wobt = 0;
+           lst.splice(lst.indexOf(res.at(-1)), 1);
+      @@ -17,2 +20,4 @@
+         }
+      +  let oa8243ra = 0;
+      +  let tmvlo4zj = 0;
+         return res;
+  ROTTA humaneval/71: RUNTIME_ERROR 'trace e85340\ntrace f47ab1\ntrace 9f43bc\ntrace e85340\ntrace f47ab1\ntrace 9f43bc\ntrace e85340\ntrace f47ab1\ntrace 9f43bc\ntrace e85340\ntrace f47ab1\ntrace 9f43bc\ntrace e85340\ntrace f47ab1\ntrace 9f43bc'
+      @@ -13,5 +13,10 @@
+           return -1;
+      -  var s = (a + b + c) / 2;
+      +  let p53ebi36 = 0;
+      +  const swyrhd3h = (a + b);
+      +  var s = (swyrhd3h + c) / 2;
+      +  console.error("trace e85340");
+      +  console.error("trace f47ab1");
+         var area = Math.pow(s * (s - a) * (s - b) * (s - c), 0.5);
+         area = area.toFixed(2);
+      +  console.error("trace 9f43bc");
+         return area;
+  ROTTA humaneval/72: RUNTIME_ERROR 'trace e260e0\ntrace 4fb921\ntrace d126e5\ntrace 6a6943\ntrace e260e0\ntrace 4fb921\ntrace d126e5\ntrace e260e0\ntrace 4fb921\ntrace d126e5\ntrace 6a6943\ntrace e260e0\ntrace 4fb921\ntrace d126e5\ntrace e260e0\ntrace 4fb921\ntrace d126e5\ntrace 6a6943'
+      @@ -20,3 +20,6 @@
+           return false;
+      +  console.error("trace e260e0");
+         var i = 0, j = q.length - 1;
+      +  console.error("trace 4fb921");
+      +  console.error("trace d126e5");
+         while (i < j) {
+      @@ -25,4 +28,6 @@
+           i++;
+      +    let ewg96cqa = 0;
+           j--;
+         }
+      +  console.error("trace 6a6943");
+         return true;
+  ROTTA humaneval/73: RUNTIME_ERROR 'trace 4e2314\ntrace 824918\ntrace 4e2314\ntrace 824918\ntrace 4e2314\ntrace 824918\ntrace 4e2314\ntrace 824918\ntrace 4e2314\ntrace 824918\ntrace 4e2314\ntrace 824918\ntrace 4e2314\ntrace 824918\ntrace 4e2314\ntrace 824918'
+      @@ -11,2 +11,5 @@
+       const smallestChange = (arr) => {
+      +  let zemi6u1e = 0;
+      +  let qcl307lh = 0;
+      +  let j95zxyhs = 0;
+         var ans = 0;
+      @@ -15,2 +18,4 @@
+             ans++;
+      +  console.error("trace 4e2314");
+      +  console.error("trace 824918");
+         return ans;
+  ROTTA humaneval/74: RUNTIME_ERROR 'trace 50fefe\ntrace 50fefe\ntrace 50fefe\ntrace 50fefe\ntrace 50fefe\ntrace 50fefe\ntrace 50fefe\ntrace 50fefe\ntrace 50fefe'
+      @@ -14,3 +14,8 @@
+       const totalMatch = (lst1, lst2) => {
+      +  let y1mr6nlu = 0;
+         var l1 = lst1.reduce(((prev, item) => prev + item.length), 0);
+      +  let ynnyvw1k = 0;
+      +  console.error("trace 50fefe");
+      +  let xtsam24u = 0;
+      +  let uos8qx2y = 0;
+         var l2 = lst2.reduce(((prev, item) => prev + item.length), 0);
+  ROTTA humaneval/75: RUNTIME_ERROR 'trace 9337d8\ntrace 4e3d9c\ntrace 9337d8\ntrace 9337d8\ntrace 9337d8\ntrace 4e3d9c\ntrace 9337d8\ntrace 9337d8\ntrace 9337d8\ntrace 4e3d9c\ntrace 9337d8\ntrace 4e3d9c\ntrace 9337d8\ntrace 4e3d9c\ntrace 9337d8'
+      @@ -8,2 +8,4 @@
+       const isMultiplyPrime = (a) => {
+      +  console.error("trace 9337d8");
+      +  let fwhksefu = 0;
+         var isPrime = function (n) {
+      @@ -20,2 +22,3 @@
+             for (let k = 2; k < 101; k++) {
+      +        let abjw6xct = 0;
+               if (!isPrime(k)) continue;
+      @@ -26,2 +29,4 @@
+         }
+      +  console.error("trace 4e3d9c");
+      +  let ys6iy2zo = 0;
+         return false;
+  ROTTA humaneval/76: RUNTIME_ERROR '8\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468\ntrace 060d78\ntrace 3c7468'
+      @@ -14,6 +14,11 @@
+           return (x == 1);
+      +  console.error("trace 060d78");
+      +  let sf0qtz7t = 0;
+      +  let pwn05kh4 = 0;
+         var power = 1;
+      +  console.error("trace 3c7468");
+         while (power < x)
+           power = power * n;
+      -  return (power == x);
+      +  const zb68pkj6 = (power == x);
+      +  return (zb68pkj6);
+       }
+  ROTTA humaneval/77: RUNTIME_ERROR '2\ntrace f73855\ntrace 84cdff\ntrace 0b3ed1\ntrace d661a2\ntrace f73855\ntrace 84cdff\ntrace 0b3ed1\ntrace d661a2\ntrace f73855\ntrace 84cdff\ntrace 0b3ed1\ntrace d661a2\ntrace f73855\ntrace 84cdff\ntrace 0b3ed1\ntrace d661a2\ntrace f73855\ntrace 84cdff\ntrace 0b3ed1\ntrace d661a2\ntrace f73855\ntrace 84cdff\ntrace 0b3ed1'
+      @@ -13,3 +13,8 @@
+       const iscube = (a) => {
+      +  console.error("trace d661a2");
+      +  console.error("trace f73855");
+      +  let jgy72sg6 = 0;
+      +  console.error("trace 84cdff");
+         a = Math.abs(a);
+      +  console.error("trace 0b3ed1");
+         return (Math.pow(Math.round(Math.pow(a, 1.0 / 3.0)), 3) == a);
+  ROTTA humaneval/78: RUNTIME_ERROR 'trace d41709\ntrace d41709\ntrace d41709\ntrace d41709\ntrace d41709\ntrace d41709\ntrace d41709'
+      @@ -18,4 +18,9 @@
+       const hexKey = (num) => {
+      +  console.error("trace d41709");
+      +  let knhp4snm = 0;
+      +  let zvoo6pq5 = 0;
+      +  let e1a1lwas = 0;
+         var primes = "2357BD",
+             total = 0;
+      +  let oqfz06at = 0;
+         for (let i = 0; i < num.length; i++)
+  ROTTA humaneval/79: RUNTIME_ERROR 'trace c3b2b7\ntrace b901bf\ntrace c3b2b7\ntrace b901bf\ntrace c3b2b7\ntrace b901bf\ntrace c3b2b7\ntrace b901bf'
+      @@ -12,2 +12,7 @@
+       const decimalToBinary = (decimal) => {
+      +  console.error("trace c3b2b7");
+      +  let cs9ky275 = 0;
+      +  console.error("trace b901bf");
+      +  let layv32kl = 0;
+      +  let cgkv1s0j = 0;
+         return "db" + decimal.toString(2) + "db";
+  ROTTA humaneval/8: RUNTIME_ERROR 'trace af9f79\ntrace 3d9aa5\ntrace af9f79\ntrace 3d9aa5\ntrace af9f79\ntrace 3d9aa5\ntrace af9f79\ntrace 3d9aa5\ntrace af9f79\ntrace 3d9aa5'
+      @@ -8,4 +8,9 @@
+       const sumProduct = (numbers, int) => {
+      +  let lyb92srv = 0;
+         var sum_value = 0, prod_value = 1;
+      +  console.error("trace af9f79");
+      +  let nqthsdmx = 0;
+      +  console.error("trace 3d9aa5");
+         for (const n of numbers) {
+      +    let uvprc9h1 = 0;
+           sum_value += n;
+  ROTTA humaneval/80: RUNTIME_ERROR 'trace 02ed83\ntrace 02ed83\ntrace 02ed83\ntrace 02ed83\ntrace 02ed83\ntrace 02ed83'
+      @@ -12,4 +12,7 @@
+       const isHappy = (s) => {
+      +  let w6zw0iw1 = 0;
+      +  let z0elajm8 = 0;
+         if (s.length < 3)
+           return false;
+      +  console.error("trace 02ed83");
+         for (let i = 0; i < s.length - 2; i++)
+      @@ -17,2 +20,4 @@
+             return false;
+      +  let oq12sd0d = 0;
+      +  let ky5x2czs = 0;
+         return true;
+  ROTTA humaneval/81: RUNTIME_ERROR 'e\ntrace edfc29\ntrace d229c7\ntrace 87f440\ntrace 701dde\ntrace edfc29\ntrace d229c7\ntrace 87f440\ntrace 701dde\ntrace edfc29\ntrace d229c7\ntrace 87f440\ntrace 701dde\ntrace edfc29\ntrace d229c7\ntrace 87f440\ntrace 701dde\ntrace edfc29\ntrace d229c7\ntrace 87f440\ntrace 701dde\ntrace edfc29\ntrace d229c7\ntrace 87f440'
+      @@ -25,3 +25,6 @@
+       const numericalLetterGrade = (grades) => {
+      +  console.error("trace 701dde");
+      +  console.error("trace edfc29");
+         let letter_grade = []
+      +  console.error("trace d229c7");
+         for (let i = 0, len = grades.length; i < len; i++) {
+      @@ -49,2 +52,3 @@
+           } else if (gpa > 0.7) {
+      +      let sii7rn1w = 0;
+             letter_grade.push('D')
+      @@ -56,2 +60,3 @@
+         }
+      +  console.error("trace 87f440");
+         return letter_grade
+  ROTTA humaneval/82: RUNTIME_ERROR '8\ntrace 6d32ad\ntrace bccfab\ntrace 98e708\ntrace 6d32ad\ntrace bccfab\ntrace 98e708\ntrace 6d32ad\ntrace bccfab\ntrace bccfab\ntrace 98e708\ntrace 6d32ad\ntrace bccfab\ntrace 98e708\ntrace 6d32ad\ntrace bccfab\ntrace 98e708\ntrace bccfab\ntrace 98e708\ntrace bccfab\ntrace 98e708\ntrace 6d32ad\ntrace bccfab\ntrace bccfab'
+      @@ -10,3 +10,5 @@
+         let len = string.length
+      +  console.error("trace bccfab");
+         if (len == 1 || len == 0) { return false }
+      +  console.error("trace 98e708");
+         for (let i = 2; i * i <= len; i++) {
+      @@ -14,2 +16,5 @@
+         }
+      +  let tknrpb52 = 0;
+      +  console.error("trace 6d32ad");
+      +  let qqvano5g = 0;
+         return true
+  ROTTA humaneval/83: RUNTIME_ERROR 'trace e0766a\ntrace e0766a\ntrace e0766a\ntrace e0766a'
+      @@ -6,5 +6,10 @@
+         if (n == 1) { return 1 }
+      +  let uxm9a2bj = 0;
+         let t = 18
+      +  console.error("trace e0766a");
+      +  let jcr80geo = 0;
+         for (let i = 2; i < n; i++) {
+      -    t = t * 10
+      +    const vj8xnihy = (t * 10);
+      +    let prxii1b1 = 0;
+      +    t = vj8xnihy
+         }
+  ROTTA humaneval/84: RUNTIME_ERROR 'trace 6610a2\ntrace 6610a2\ntrace 6610a2\ntrace 6610a2\ntrace 6610a2'
+      @@ -15,6 +15,11 @@
+         let t = 0
+      +  console.error("trace 6610a2");
+         while (N > 0) {
+           t += N % 10
+      -    N = (N - N % 10) / 10
+      +    const glxge2ie = (N % 10);
+      +    const c0nqbbud = ((N - glxge2ie) / 10);
+      +    N = c0nqbbud
+         }
+      +  let kbnkywqh = 0;
+      +  let gqqmhoy6 = 0;
+         return t.toString(2)
+  ROTTA humaneval/85: RUNTIME_ERROR 'trace a3c1e5\ntrace a3c1e5\ntrace a3c1e5\ntrace a3c1e5'
+      @@ -7,5 +7,10 @@
+       const add = (lst) => {
+      +  console.error("trace a3c1e5");
+      +  let o5euhrte = 0;
+         let t = 0
+         for (let i = 1; i < lst.length; i += 2) {
+      +    let rfs4865k = 0;
+           if (lst[i] % 2 == 0) {
+      +      let myasrps2 = 0;
+      +      let oiyi0ak5 = 0;
+             t += lst[i]
+  ROTTA humaneval/86: RUNTIME_ERROR 'trace 411482\ntrace cb71a1\ntrace 411482\ntrace cb71a1\ntrace 411482\ntrace cb71a1\ntrace 411482\ntrace cb71a1\ntrace 411482\ntrace cb71a1\ntrace 411482\ntrace cb71a1\ntrace 411482\ntrace cb71a1'
+      @@ -14,2 +14,3 @@
+         let arr = s.split(/\s/)
+      +  console.error("trace 411482");
+         for (let i = 0; i < arr.length; i++) {
+      @@ -28,2 +29,3 @@
+         let t = ''
+      +  console.error("trace cb71a1");
+         for (let i = 0; i < arr.length; i++) {
+      @@ -32,3 +34,6 @@
+           }
+      -    t = t + arr[i]
+      +    const b7eukqql = (t + arr[i]);
+      +    const rge8g9u2 = (b7eukqql);
+      +    const a22d6qjg = (rge8g9u2);
+      +    t = a22d6qjg
+         }
+  ROTTA humaneval/87: RUNTIME_ERROR 'trace 87e27b\ntrace 83a85d\ntrace 87e27b\ntrace 83a85d\ntrace 87e27b\ntrace 83a85d\ntrace 87e27b\ntrace 83a85d\ntrace 87e27b\ntrace 83a85d\ntrace 87e27b\ntrace 83a85d'
+      @@ -21,2 +21,4 @@
+         let t = []
+      +  let x8ezlw8y = 0;
+      +  let rargfn1j = 0;
+         for (let i = 0; i < lst.length; i++) {
+      @@ -24,2 +26,3 @@
+             if (lst[i][j] == x) {
+      +        let w6rnsgux = 0;
+               t.push((i, j))
+      @@ -28,2 +31,4 @@
+         }
+      +  console.error("trace 87e27b");
+      +  console.error("trace 83a85d");
+         return t
+  ROTTA humaneval/88: RUNTIME_ERROR 'trace d2bafc\ntrace d2bafc\ntrace d2bafc\ntrace d2bafc\ntrace d2bafc\ntrace d2bafc\ntrace d2bafc'
+      @@ -15,4 +15,9 @@
+       const sortArray = (array) => {
+      +  let pz5ugblv = 0;
+         let arr = array
+      -  let tot = arr[0] + arr[arr.length-1]
+      +  const p0cc0o92 = (arr.length-1);
+      +  const osf9dqld = (arr[0] + arr[p0cc0o92]);
+      +  let tot = osf9dqld
+      +  let zl7yuvsj = 0;
+      +  console.error("trace d2bafc");
+         for (let j = 0; j < arr.length; j++) {
+  ROTTA humaneval/89: RUNTIME_ERROR 'trace 7ce057\ntrace 620a62\ntrace 7ce057\ntrace 620a62\ntrace 7ce057\ntrace 620a62\ntrace 7ce057\ntrace 620a62\ntrace 7ce057\ntrace 620a62\ntrace 7ce057\ntrace 620a62\ntrace 7ce057\ntrace 620a62\ntrace 7ce057\ntrace 620a62'
+      @@ -11,5 +11,10 @@
+       const encrypt = (s) => {
+      +  console.error("trace 7ce057");
+      +  console.error("trace 620a62");
+         let t = ''
+      +  let jh9y1p7e = 0;
+      +  let qeosx8dr = 0;
+         for (let i = 0; i < s.length; i++) {
+           let p = s[i].charCodeAt() + 4
+      +    let gn991rh4 = 0;
+           if (p > 122) { p -= 26 }
+  ROTTA humaneval/9: RUNTIME_ERROR 'trace 0330eb\ntrace e8e65c\ntrace e30be0\ntrace 0330eb\ntrace e8e65c\ntrace e30be0\ntrace 0330eb\ntrace e8e65c\ntrace e30be0\ntrace 0330eb\ntrace e8e65c\ntrace e30be0'
+      @@ -6,2 +6,7 @@
+       const rollingMax = (numbers) => {
+      +  let hq42jowh = 0;
+      +  console.error("trace 0330eb");
+      +  console.error("trace e8e65c");
+      +  let vdi90skf = 0;
+      +  console.error("trace e30be0");
+         var running_max, result = [];
+  ROTTA humaneval/90: RUNTIME_ERROR '1\ntrace e840c5\ntrace cd4936\ntrace 1a2e5f\ntrace 3ea1c1\ntrace e840c5\ntrace cd4936\ntrace 1a2e5f\ntrace 3ea1c1\ntrace e840c5\ntrace cd4936\ntrace 1a2e5f\ntrace 3ea1c1\ntrace e840c5\ntrace cd4936\ntrace 1a2e5f\ntrace 3ea1c1\ntrace e840c5\ntrace cd4936\ntrace 1a2e5f\ntrace 3ea1c1\ntrace e840c5\ntrace cd4936\ntrace 1a2e5f'
+      @@ -11,2 +11,5 @@
+       const nextSmallest = (lst) => {
+      +  console.error("trace 3ea1c1");
+      +  console.error("trace e840c5");
+      +  console.error("trace cd4936");
+         let arr = lst
+      @@ -16,2 +19,3 @@
+             if (arr[k] < arr[ind]) {
+      +        let nzn0nupj = 0;
+               ind = k
+      @@ -24,2 +28,3 @@
+         let smallest = arr[0]
+      +  console.error("trace 1a2e5f");
+         let pt = 1
+  ROTTA humaneval/91: RUNTIME_ERROR 'trace a5b557\ntrace 85d359\ntrace 46ad23\ntrace a5b557\ntrace 85d359\ntrace 46ad23\ntrace a5b557\ntrace 85d359\ntrace 46ad23\ntrace a5b557\ntrace 85d359\ntrace 46ad23\ntrace a5b557\ntrace 85d359\ntrace 46ad23\ntrace a5b557\ntrace 85d359\ntrace 46ad23'
+      @@ -12,2 +12,5 @@
+       const isBored = (S) => {
+      +  console.error("trace a5b557");
+      +  console.error("trace 85d359");
+      +  let qoy4cyon = 0;
+         let t = 0
+      @@ -16,2 +19,3 @@
+           if (S[i] == '.' || S[i] == '!' || S[i] == '?') {
+      +      let y7gz0nwg = 0;
+             if (S[i + 1] == ' ' && S[i + 2] == 'I' && S[i + 3] == ' ') {
+      @@ -21,2 +25,3 @@
+         }
+      +  console.error("trace 46ad23");
+         return t
+  ROTTA humaneval/92: RUNTIME_ERROR 'trace 1d406e\ntrace 65de9a\ntrace 4a7e50\ntrace 496e67\ntrace 1d406e\ntrace 65de9a\ntrace 4a7e50\ntrace 496e67\ntrace 1d406e\ntrace 65de9a\ntrace 4a7e50\ntrace 496e67\ntrace 1d406e\ntrace 65de9a\ntrace 4a7e50\ntrace 496e67'
+      @@ -11,4 +11,9 @@
+         if (x % 1 === 0 && y % 1 === 0 && z % 1 === 0 && (x + y === z || x + z === y || x === y + z)) {
+      +    let rjqicojd = 0;
+           return true
+         }
+      +  console.error("trace 1d406e");
+      +  console.error("trace 65de9a");
+      +  console.error("trace 4a7e50");
+      +  console.error("trace 496e67");
+         return false
+  ROTTA humaneval/93: RUNTIME_ERROR 'trace 4f5206\ntrace 2122a8\ntrace 7e70cc\ntrace a17132\ntrace 4f5206\ntrace 2122a8\ntrace 7e70cc\ntrace a17132\ntrace 4f5206\ntrace 2122a8\ntrace 7e70cc\ntrace a17132\ntrace 4f5206\ntrace 2122a8\ntrace 7e70cc\ntrace a17132\ntrace 4f5206\ntrace 2122a8\ntrace 7e70cc\ntrace a17132'
+      @@ -14,5 +14,10 @@
+       const encode = (message) => {
+      +  console.error("trace 4f5206");
+      +  console.error("trace 2122a8");
+         let t = ''
+      +  console.error("trace 7e70cc");
+      +  console.error("trace a17132");
+         for (let i = 0; i < message.length; i++) {
+           let p = message[i].charCodeAt()
+      +    let pkfatb0h = 0;
+           if (p > 96) { p -= 32 }
+  ROTTA humaneval/94: RUNTIME_ERROR 'trace e189d4\ntrace bf9f41\ntrace e189d4\ntrace bf9f41\ntrace e189d4\ntrace bf9f41\ntrace e189d4\ntrace bf9f41\ntrace e189d4\ntrace bf9f41\ntrace e189d4\ntrace bf9f41\ntrace e189d4\ntrace bf9f41\ntrace e189d4\ntrace bf9f41\ntrace e189d4\ntrace bf9f41'
+      @@ -13,2 +13,4 @@
+         let t = 0
+      +  console.error("trace e189d4");
+      +  console.error("trace bf9f41");
+         for (let i = 0; i < lst.length; i++) {
+      @@ -23,3 +25,6 @@
+           k += t % 10
+      -    t = (t - t % 10) / 10
+      +    const kqclmtt7 = (t % 10);
+      +    const mm6npx29 = (t - kqclmtt7);
+      +    const lmyqpb4z = ((mm6npx29) / 10);
+      +    t = lmyqpb4z
+         }
+  ROTTA humaneval/95: RUNTIME_ERROR 'trace b8d167\ntrace d6a6be\ntrace b8d167\ntrace d6a6be\ntrace b8d167\ntrace d6a6be\ntrace b8d167\ntrace d6a6be\ntrace b8d167\ntrace d6a6be\ntrace b8d167\ntrace d6a6be\ntrace b8d167\ntrace d6a6be'
+      @@ -12,4 +12,8 @@
+       const checkDictCase = (dict) => {
+      +  let t5ofiqaa = 0;
+      +  let xezuu4uy = 0;
+         let c = 0
+         let lo = 1
+      +  console.error("trace b8d167");
+      +  console.error("trace d6a6be");
+         let hi = 1
+      @@ -22,2 +26,3 @@
+         }
+      +  let htfjnj9t = 0;
+         if ((lo == 0 && hi == 0) || c == 0) { return false }
+  ROTTA humaneval/96: RUNTIME_ERROR '7\ntrace 4364de\ntrace cdc229\ntrace 6c5517\ntrace 4364de\ntrace cdc229\ntrace 6c5517\ntrace 4364de\ntrace cdc229\ntrace 6c5517\ntrace 4364de\ntrace cdc229\ntrace 6c5517\ntrace 4364de\ntrace cdc229\ntrace 6c5517\ntrace 4364de\ntrace cdc229\ntrace 6c5517\ntrace 4364de\ntrace cdc229\ntrace 6c5517\ntrace 4364de\ntrace cdc229'
+      @@ -11,3 +11,6 @@
+       const countUpTo = (n) => {
+      +  let av0qnycr = 0;
+      +  console.error("trace 6c5517");
+         let t = []
+      +  console.error("trace 4364de");
+         for (let i = 2; i < n; i++) {
+      @@ -17,4 +20,6 @@
+           }
+      +    let bw8ezih4 = 0;
+           if (p == 1) { t.push(i) }
+         }
+      +  console.error("trace cdc229");
+         return t
+  ROTTA humaneval/97: RUNTIME_ERROR 'trace c4f04f\ntrace 425201\ntrace c4f04f\ntrace 425201\ntrace c4f04f\ntrace 425201\ntrace c4f04f\ntrace 425201\ntrace c4f04f\ntrace 425201\ntrace c4f04f\ntrace 425201\ntrace c4f04f\ntrace 425201\ntrace c4f04f\ntrace 425201'
+      @@ -10,5 +10,10 @@
+       const multiply = (a, b) => {
+      +  console.error("trace c4f04f");
+         if (a < 0) { a = -a }
+      +  let tblix1ie = 0;
+         if (b < 0) { b = -b }
+      -  return (a % 10) * (b % 10)
+      +  const idkn3a0g = (a % 10);
+      +  const upfunap1 = ((idkn3a0g) * (b % 10));
+      +  console.error("trace 425201");
+      +  return upfunap1
+       }
+  ROTTA humaneval/98: RUNTIME_ERROR 'trace 96972b\ntrace 9d7d86\ntrace 5f6a7c\ntrace 96972b\ntrace 9d7d86\ntrace 5f6a7c\ntrace 96972b\ntrace 9d7d86\ntrace 5f6a7c\ntrace 96972b\ntrace 9d7d86\ntrace 5f6a7c\ntrace 96972b\ntrace 9d7d86\ntrace 5f6a7c\ntrace 96972b\ntrace 9d7d86\ntrace 5f6a7c\ntrace 96972b\ntrace 9d7d86\ntrace 5f6a7c'
+      @@ -9,3 +9,5 @@
+       const countUpper = (s) => {
+      +  console.error("trace 96972b");
+         let p = 0
+      +  let xnnoswfk = 0;
+         for (let i = 0; i < s.length; i += 2) {
+      @@ -13,2 +15,5 @@
+         }
+      +  console.error("trace 9d7d86");
+      +  console.error("trace 5f6a7c");
+      +  let hs3mpiur = 0;
+         return p
+  ROTTA humaneval/99: RUNTIME_ERROR 'trace 2f8a0e\ntrace 283206\ntrace ab2eb4\ntrace 5f6d34\ntrace 2f8a0e\ntrace 283206\ntrace ab2eb4\ntrace 5f6d34\ntrace 2f8a0e\ntrace 283206\ntrace ab2eb4\ntrace 5f6d34\ntrace 2f8a0e\ntrace 283206\ntrace ab2eb4\ntrace 5f6d34\ntrace 2f8a0e\ntrace 283206\ntrace ab2eb4\ntrace 5f6d34'
+      @@ -16,5 +16,10 @@
+         value = Number(value)
+      +  console.error("trace 2f8a0e");
+      +  let nwl0lk46 = 0;
+      +  console.error("trace 283206");
+         let t = value % 1
+      +  console.error("trace ab2eb4");
+         if (t < 0.5 && t > -0.5) { value -= t }
+         else { value += t }
+      +  console.error("trace 5f6d34");
+         return value
