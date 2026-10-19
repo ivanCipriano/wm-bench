@@ -1,0 +1,24 @@
+
+##### acw deepseek_coder_6p7b python (L1 test, config 86851261a344)
+threshold 1.0  achieved FPR dev 0.0010  n_neg 2000  levels ['L1', 'L2']  
+  tpr_at_fpr                          1.0000  [1.0000, 1.0000]  n=2676  cluster_bootstrap
+  fpr_human                           0.0000  [0.0000, 0.0040]  n=928  clopper_pearson
+  fpr_llm                             0.0000  [0.0000, 0.0014]  n=2676  clopper_pearson
+  auroc                               1.0000  [1.0000, 1.0000]  n=3604  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.6861  [0.6472, 0.7298]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.6999  [0.6584, 0.7436]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                  1.3827  [0.4484, 2.5411]  n=446  cluster_bootstrap
+  conditional_preservation            0.9802  [0.9729, 0.9856]  n=1873  wilson
+  embed_success_rate 1.0000  n_sites {"n": 2676, "mean": 1.729, "median": 1.0, "min": 1.0, "max": 6.0}
+
+##### acw qwen25_coder_7b python (L1 test, config 86851261a344)
+threshold 1.0  achieved FPR dev 0.0010  n_neg 2000  levels ['L1', 'L2']  
+  tpr_at_fpr                          0.9981  [0.9955, 1.0000]  n=2676  cluster_bootstrap
+  fpr_human                           0.0000  [0.0000, 0.0040]  n=928  clopper_pearson
+  fpr_llm                             0.0000  [0.0000, 0.0014]  n=2676  clopper_pearson
+  auroc                               0.9999  [0.9998, 1.0000]  n=3604  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.7511  [0.7130, 0.7852]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.7646  [0.7279, 0.8012]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                  1.3453  [0.4484, 2.4664]  n=446  cluster_bootstrap
+  conditional_preservation            0.9824  [0.9757, 0.9873]  n=2046  wilson
+  embed_success_rate 1.0000  n_sites {"n": 2676, "mean": 1.744, "median": 2.0, "min": 1.0, "max": 6.0}
