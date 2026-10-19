@@ -1,0 +1,24 @@
+##### The Stack C++: ripartizione per repository (disgiunta fra usi)
+bucket          quota     repo     file   funzioni  uso (fabbisogno)
+l3_test          0.40    24630    45794     430364  prompt e negativi del Livello 3 (10500) OK
+l1_test          0.20    12267    23852     221124  integrazione dei negativi di test L1 (788) OK
+dev              0.20    12248    22943     216264  integrazione dei negativi di sviluppo L1 e L1+L2 (1976) OK
+attack_pools     0.20    12295    23375     216434  raccolte di commenti e nomi degli attacchi (-) 
+
+##### raccolte degli attacchi: voci rimaste dopo ogni filtro
+
+--- python: {"seen": 50000, "kept": 49340, "dropped_generated_or_minified": 654, "dropped_parse_error": 6}
+comments  raw 71465 -> multiline 71465 -> length 70335 -> license 70325 -> generated 70325 -> directive 68190 -> code 65030 -> non_english 63142 -> duplicate 59523; disponibili 59523, tenuti 20000
+names     raw 298513 -> pattern 298513 -> length 275009 -> reserved 273384 -> rare 208918 -> duplicate 17406; disponibili 17406, tenuti 17406
+
+--- java: {"seen": 50000, "kept": 49300, "dropped_generated_or_minified": 646, "dropped_parse_error": 54}
+comments  raw 51612 -> multiline 50632 -> length 48550 -> license 48543 -> generated 48543 -> directive 48496 -> code 44358 -> non_english 40949 -> duplicate 37737; disponibili 37737, tenuti 20000
+names     raw 184728 -> pattern 184725 -> length 166087 -> reserved 165839 -> rare 125489 -> duplicate 11844; disponibili 11844, tenuti 11844
+
+--- cpp: {"seen": 50000, "kept": 49467, "dropped_generated_or_minified": 533}
+comments  raw 47744 -> multiline 46992 -> length 44604 -> license 44593 -> generated 44593 -> directive 44427 -> code 36649 -> non_english 34312 -> duplicate 30284; disponibili 30284, tenuti 20000
+names     raw 136630 -> pattern 136626 -> length 117649 -> reserved 117219 -> rare 81093 -> duplicate 10405; disponibili 10405, tenuti 10405
+
+--- javascript: {"seen": 50000, "kept": 49308, "dropped_generated_or_minified": 497, "dropped_parse_error": 195}
+comments  raw 109914 -> multiline 102950 -> length 99719 -> license 99705 -> generated 99705 -> directive 98383 -> code 91389 -> non_english 84953 -> duplicate 75572; disponibili 75572, tenuti 20000
+names     raw 263121 -> pattern 261186 -> length 236928 -> reserved 236027 -> rare 192506 -> duplicate 14773; disponibili 14773, tenuti 14773
