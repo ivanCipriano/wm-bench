@@ -21,6 +21,9 @@ from pathlib import Path
 import pandas as pd
 
 from bench.config.builder import load_experiment
+from bench.pipeline.stage import Cell
+from bench.pipeline.stages.execute import execution_ref
+from bench.store.artifact_store import ArtifactStore
 
 NOISE = re.compile(r"^(exit \d+: )?(\d+ warnings?|Suppressed|Use -header-filter|Error while)")
 # Messaggi veri dei compilatori: clang (``error: ...``) e javac via Maven (``.java:[r,c] ...``).
@@ -80,7 +83,16 @@ def main() -> int:
 def _passed(root: Path, path: Path) -> set[str]:
     """``sample_id`` dei marcati che passano i test senza attacco (esecuzione della fase 0)."""
     method, model, cfg_hash = path.parts[-4], path.parts[-3], path.parts[-2]
-    marked = root / "execution" / "watermarked" / method / model / cfg_hash / path.name
+    level, language, split = path.stem.split("_")
+    cell = Cell(
+        source="llm_watermarked",
+        method=method,
+        model_id=model,
+        level=level,
+        language=language,
+        split=split,
+    )
+    marked = ArtifactStore(root).path_of(execution_ref(cell, cfg_hash))
     if not marked.is_file():
         raise FileNotFoundError(f"marked execution not found: {marked}")
     df = pd.read_parquet(marked, columns=["sample_id", "status"])
