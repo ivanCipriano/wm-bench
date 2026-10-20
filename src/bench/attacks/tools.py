@@ -37,6 +37,18 @@ _JAVA_PUBLIC_TYPE = re.compile(
     r"(?:class|interface|enum|record|@interface)\s+([A-Za-z_]\w*)"
 )
 _OUR_PACKAGE = re.compile(r"\Apackage p\d+;\n")
+# Diagnosi d'errore di clang/clang-tidy (su stdout; su stderr c'è solo il riepilogo).
+_DIAGNOSTIC_ERROR = re.compile(r"^\S+:\d+:\d+: (?:fatal )?error: .*$", re.MULTILINE)
+MAX_ERROR_LINES = 5
+
+
+def _error_text(proc: subprocess.CompletedProcess[str]) -> str:
+    """Messaggio di un'invocazione fallita: fine di stderr (o stdout) più le prime diagnosi
+    ``error:`` di stdout, che altrimenti andrebbero perse (clang-tidy)."""
+    tail = (proc.stderr or proc.stdout or "")[-1500:]
+    errors = _DIAGNOSTIC_ERROR.findall(proc.stdout or "")[:MAX_ERROR_LINES] if proc.stderr else []
+    head = "\n".join(errors)
+    return f"exit {proc.returncode}: {head + chr(10) if head else ''}{tail}"
 
 
 @dataclass(frozen=True)
@@ -349,7 +361,7 @@ class ToolRunner:
                         for f, c in zip(files, codes, strict=True)
                     ]
                 else:
-                    error = f"exit {proc.returncode}: {(proc.stderr or proc.stdout)[-1500:]}"
+                    error = _error_text(proc)
             except subprocess.TimeoutExpired:
                 error = f"timeout after {timeout:.0f}s"
             except OSError as exc:

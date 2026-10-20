@@ -67,6 +67,22 @@ def test_failing_batch_is_split_until_the_bad_file(runner: ToolRunner) -> None:
     assert results[2].error is not None and "exit 3" in results[2].error
 
 
+def test_error_keeps_diagnostics_printed_on_stdout(runner: ToolRunner) -> None:
+    """Come clang-tidy: le diagnosi su stdout, il solo riepilogo su stderr."""
+    script = (
+        "import sys\n"
+        "print('a.cpp:1:1: warning: something [readability-x]')\n"
+        'print("f00000.cpp:3:5: error: variable length array of non-POD element type")\n'
+        "sys.stderr.write('1 warning and 1 error generated.\\n'); sys.exit(1)\n"
+    )
+    spec = _ToolSpec("fake", _flat(".cpp"), lambda root, files: [sys.executable, "-c", script])
+    (result,) = runner._run_chunk(spec, ["int main() {}"])
+    assert result.code is None and result.error is not None
+    assert result.error.startswith("exit 1: f00000.cpp:3:5: error: variable length array")
+    assert "1 warning and 1 error generated." in result.error
+    assert "warning: something" not in result.error
+
+
 def test_tool_timeout_becomes_an_error(tmp_path: Path) -> None:
     runner = ToolRunner(repo_root() / "tools", tmp_path, timeout_s=0.5, per_file_s=0.0)
     spec = _ToolSpec(
