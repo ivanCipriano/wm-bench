@@ -12,6 +12,7 @@ I tool si cercano nell'ambiente di ``bench-core`` (la cartella dell'interprete v
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import re
@@ -144,6 +145,18 @@ class ToolRunner:
     def which(self, name: str) -> str | None:
         """Percorso di un eseguibile (``None`` se manca)."""
         return shutil.which(name, path=self.env()["PATH"])
+
+    def prelude(self, text: str, suffix: str = ".h") -> Path:
+        """File di contesto da includere prima del sorgente (es. ``clang -include``): stesso
+        contenuto, stesso file, scritto una volta in ``tmp_root``."""
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
+        path = self.tmp_root / f"prelude_{digest}{suffix}"
+        if not path.is_file():
+            self.tmp_root.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+            tmp.write_text(text, encoding="utf-8")
+            tmp.replace(path)  # atomico: job paralleli scrivono lo stesso contenuto
+        return path
 
     @property
     def js_bin(self) -> Path:

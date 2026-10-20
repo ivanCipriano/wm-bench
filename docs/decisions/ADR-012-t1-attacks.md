@@ -42,6 +42,15 @@ Note sui singoli tool:
   - `modernize-use-nullptr`.
 
   Con errori di compilazione (es. header assenti nell'ambiente) clang-tidy non applica le correzioni e il campione risulta `TOOL_ERROR`. clang-tidy di conda non ha gli header interni del compilatore (`stddef.h`): si passano quelli del gcc di `bench-core` con `-isystem $(c++ -print-file-name=include)` (prima verifica sulle canoniche: 164/164 `TOOL_ERROR` senza).
+- **clang-tidy, contesto dell'harness (T1.2 versione 2, 20 ottobre 2026).** Il codice dei modelli spesso non ha
+  include né `using namespace std`, che l'harness di HumanEvalPack mette davanti prima di compilare
+  (`IMPORT_HELPER`, `prepare_generation`). Senza, clang-tidy non analizza il file e non corregge nulla: con la
+  versione 1 STONE con Qwen aveva 367 `TOOL_ERROR` su 840 in C++, 276 su codice che passava i test
+  (`scripts/attack_tool_errors.py`). Dalla versione 2, per il C++ di HumanEvalPack clang-tidy riceve quel
+  contesto con `-include` (`cpp_prelude`): il file resta il codice del campione. Rispetto all'harness,
+  `using namespace std;` va dopo gli include e `boost/any.hpp` resta fuori (non c'è nell'ambiente dei tool).
+  CodeNet (L2) ha programmi completi e non riceve nulla. La versione cambia l'hash di T1.2 in tutti i
+  linguaggi: T1.2 si rilancia per tutti i metodi.
 - **google-java-format** con le impostazioni di default ordina gli import e toglie quelli inutilizzati: fa parte del formatter, si tiene.
 - **ESLint** si lancia con `-c tools/js/eslint.config.mjs` dalla cartella dei file: con `-c` la base dei percorsi è la cartella corrente.
 

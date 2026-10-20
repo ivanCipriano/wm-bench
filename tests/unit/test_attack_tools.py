@@ -15,11 +15,12 @@ from pathlib import Path
 import pytest
 
 from bench.attacks.base import AttackContext, make_attack
-from bench.attacks.tools import ToolRunner, _flat, _maven_layout, _ToolSpec
+from bench.attacks.t1.tooling import cpp_prelude
+from bench.attacks.tools import ToolResult, ToolRunner, _flat, _maven_layout, _ToolSpec
 from bench.config.builder import repo_root
 from bench.domain.enums import AttackStatus, Language
 from bench.lang.parsers import default_parsers
-from tests.unit.test_attacks_t1 import SAMPLES
+from tests.unit.test_attacks_t1 import SAMPLES, _problem
 
 
 @pytest.fixture
@@ -128,3 +129,50 @@ def test_external_tools(runner: ToolRunner, attack_id: str, language: str, tool:
         assert not default_parsers().has_error(o.code, Language(language))
     assert out[0].status is AttackStatus.APPLIED  # i campioni non sono nello stile del tool
     assert runner.version(tool)
+
+
+class _RecordingRunner(ToolRunner):
+    """``ToolRunner`` che registra gli argomenti in più e restituisce il codice invariato."""
+
+    calls: list[tuple[int, tuple[str, ...]]]
+
+    def run(self, tool, codes, extra_args=()):  # type: ignore[no-untyped-def]
+        self.calls.append((len(codes), tuple(extra_args)))
+        return [ToolResult(c) for c in codes]
+
+
+def test_clang_tidy_gets_the_harness_prelude_only_for_humanevalpack(tmp_path: Path) -> None:
+    """T1.2 versione 2: il C++ di HumanEvalPack riceve ``-include`` del contesto dell'harness
+    (include prima di ``using namespace std``, niente boost); CodeNet (L2) no."""
+    runner = _RecordingRunner(repo_root() / "tools", tmp_path)
+    runner.calls = []
+    codenet = _problem("cpp").model_copy(update={"dataset": "codenet", "level": "L2"})
+    problems = [_problem("cpp"), codenet, _problem("cpp")]
+    ctxs = [
+        AttackContext(rng=random.Random(i), problem=p, parsers=default_parsers(), tools=runner)
+        for i, p in enumerate(problems)
+    ]
+    out = make_attack("T1.2", {}).apply_many(["int f() { return 1; }\n"] * 3, Language.CPP, ctxs)
+    calls = dict((args, n) for n, args in runner.calls)
+    prelude_args = next(a for a in calls if a)
+    assert calls == {prelude_args: 2, (): 1}
+    assert prelude_args[0] == "-include"
+    text = Path(prelude_args[1]).read_text(encoding="utf-8")
+    assert text.rstrip().endswith("using namespace std;") and "#include<vector>" in text
+    assert "boost" not in text
+    assert [o.detail.get("context") for o in out] == ["prelude", None, "prelude"]
+    assert cpp_prelude() == text  # stesso file a ogni chiamata
+    assert runner.prelude(cpp_prelude()) == Path(prelude_args[1])
+
+
+def test_clang_tidy_with_the_prelude_fixes_code_without_includes(runner: ToolRunner) -> None:
+    """Codice come quello dei modelli, senza include né ``using`` (sul cluster)."""
+    if not runner.available("clang-tidy"):
+        pytest.skip("clang-tidy not installed (scripts/setup_tools.sh)")
+    code = "vector<int> f(vector<int> v) {\n    if (v.size() == 0) return v;\n    return v;\n}\n"
+    ctx = AttackContext(
+        rng=random.Random(0), problem=_problem("cpp"), parsers=default_parsers(), tools=runner
+    )
+    (out,) = make_attack("T1.2", {}).apply_many([code], Language.CPP, [ctx])
+    assert out.status is AttackStatus.APPLIED, out.detail  # graffe aggiunte all'if
+    assert out.code.startswith("vector<int> f(")  # il file resta il codice del campione

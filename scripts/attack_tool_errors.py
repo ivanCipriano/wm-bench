@@ -1,7 +1,7 @@
 """Errori più frequenti dei tool di un attacco su L1 test (diagnostica della Milestone 10).
 
 Uso (con bench-core, nodo di login, nessun job):
-    python scripts/attack_tool_errors.py METHOD ATTACK LANGUAGE [--top 8] [--rerun N]
+    python scripts/attack_tool_errors.py METHOD ATTACK LANGUAGE [--top 8] [--rerun N] [--prelude]
 
 Legge gli artefatti ``attacked/<ATTACK>/*/<METHOD>/*/*/L1_<LANGUAGE>_test.parquet`` e per ogni
 cella (configurazione dell'attacco, modello) conta i ``TOOL_ERROR`` raggruppati per la prima riga
@@ -10,7 +10,9 @@ significativa dell'errore. Per ogni gruppo stampa anche quanti campioni marcati 
 
 Con ``--rerun N`` riapplica il tool (T1.1 e T1.2) a N campioni in ``TOOL_ERROR`` che passavano i
 test e stampa il messaggio completo, diagnosi su stdout comprese (gli artefatti scritti prima di
-questa versione hanno solo la fine di stderr: per clang-tidy il solo riepilogo). Non scrive nulla.
+questa versione hanno solo la fine di stderr: per clang-tidy il solo riepilogo). Con ``--prelude``
+clang-tidy riceve il contesto dell'harness di HumanEvalPack (``-include``, T1.2 versione 2), come
+nella fase ``attack``: serve a verificare la correzione sugli stessi campioni. Non scrive nulla.
 """
 
 from __future__ import annotations
@@ -24,6 +26,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from bench.attacks.t1.tooling import cpp_prelude
 from bench.attacks.tools import ToolRunner
 from bench.config.builder import load_experiment, repo_root
 from bench.pipeline.stage import Cell
@@ -61,6 +64,7 @@ def main() -> int:
     parser.add_argument("language")
     parser.add_argument("--top", type=int, default=8)
     parser.add_argument("--rerun", type=int, default=0)
+    parser.add_argument("--prelude", action="store_true", help="clang-tidy con il contesto")
     args = parser.parse_args()
     cfg = load_experiment(["paths=cluster", "stage=attack"])
     root = cfg.paths.artifacts
@@ -94,15 +98,18 @@ def main() -> int:
         for key, n in groups.most_common(args.top):
             sys.stdout.write(f"  {n:5d}  (marcati PASSED: {passed_in[key]:4d})  {key}\n")
         if args.rerun and tool is not None:
-            _rerun(cfg.paths.tmp, tool, on_passed.head(args.rerun))
+            _rerun(cfg.paths.tmp, tool, on_passed.head(args.rerun), args.prelude)
     return 0
 
 
-def _rerun(tmp: Path, tool: str, rows: pd.DataFrame) -> None:
+def _rerun(tmp: Path, tool: str, rows: pd.DataFrame, prelude: bool) -> None:
     """Riapplica il tool, un campione alla volta, e stampa l'errore completo."""
     runner = ToolRunner(repo_root() / "tools", tmp / "attack_tool_errors")
+    extra: tuple[str, ...] = ()
+    if prelude and tool == "clang-tidy":
+        extra = ("-include", str(runner.prelude(cpp_prelude())))
     for _, row in rows.iterrows():
-        (result,) = runner.run(tool, [str(row["code"])])
+        (result,) = runner.run(tool, [str(row["code"])], extra_args=extra)
         message = result.error if result.code is None else "nessun errore alla riapplicazione"
         sys.stdout.write(
             f"  --- rerun {tool} su {row['parent_id']}:\n"
