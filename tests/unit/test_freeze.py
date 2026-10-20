@@ -10,6 +10,7 @@ soglia in ``metrics``.
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -142,6 +143,46 @@ def test_freeze_refuses_what_is_not_final(
     with pytest.raises(ConfigError, match=message):
         facade.run_stage("freeze")
     assert not facade.store.exists(freeze_ref(METHOD))
+
+
+@pytest.mark.parametrize(("local_model", "ok"), [("other_model", True), (MODEL, False)])
+def test_freeze_expects_the_candidates_of_each_cell(
+    stone: ExperimentConfig,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    local_model: str,
+    ok: bool,
+) -> None:
+    """Con un punto di ``local`` (D31) ogni cella si confronta con i suoi candidati: un punto di
+    un'altra cella non manca nella tabella; uno della cella sì. Il record li elenca tutti."""
+    import bench.hpo.grid as grid_mod
+    import bench.pipeline.stages.freeze as freeze_mod
+    import bench.pipeline.stages.tune as tune_mod
+
+    hashes = _hashes(stone)  # griglia del repository, prima della modifica
+    grids = tmp_path / "grids"
+    grids.mkdir()
+    (grids / "stone.yaml").write_text(
+        grid_mod.grid_path(METHOD).read_text(encoding="utf-8")
+        + "local:\n  - hparams: {gamma: 0.5, delta: 12.0}\n"
+        + f"    cells: [{{model_id: {local_model}, language: {LANG}}}]\n",
+        encoding="utf-8",
+    )
+
+    def fake_grid_path(method: str, root: Path | None = None) -> Path:
+        return (root or grids) / f"{method}.yaml"
+
+    for module in (grid_mod, tune_mod, freeze_mod):
+        monkeypatch.setattr(module, "grid_path", fake_grid_path)
+    facade = BenchmarkFacade(stone)
+    write_final(facade, candidates=hashes)
+    if not ok:
+        with pytest.raises(ConfigError, match="grid changed"):
+            facade.run_stage("freeze")
+        return
+    assert facade.run_stage("freeze").ran == 1
+    record = load_freeze(facade.store, METHOD)
+    assert record is not None and len(record.candidate_hashes) == len(hashes) + 1
 
 
 def test_freeze_lists_everything_that_is_missing(stone: ExperimentConfig) -> None:

@@ -243,18 +243,23 @@ class CellPlanner:
         """Con ``hpo.grid``: una cella per configurazione della griglia, per le celle del metodo.
 
         Le celle senza metodo (es. esecuzione della baseline) restano come sono; quelle di altri
-        metodi si scartano. Le fasi senza ``sweep_roles`` non si espandono.
+        metodi si scartano. Le fasi senza ``sweep_roles`` non si espandono. I punti di ``local``
+        si espandono solo nelle loro celle (modello, linguaggio).
         """
         method = self.config.hpo.grid
         if method is None or not stage.sweep_roles:
             return cells
-        from bench.hpo.grid import sweep_hashes
+        from bench.hpo.grid import sweep_points
 
-        hashes = sweep_hashes(self.config, method, stage.sweep_roles)  # type: ignore[arg-type]
+        points = sweep_points(self.config, method, stage.sweep_roles)  # type: ignore[arg-type]
         out: list[Cell] = []
         for cell in cells:
             if cell.method is None or not stage.sweep_cell(cell):
                 out.append(cell)
             elif cell.method == method:
-                out.extend(replace(cell, config_hash=h) for h in hashes)
+                out.extend(
+                    replace(cell, config_hash=h)
+                    for h, point in points
+                    if point.applies_to(cell.model_id, cell.language)
+                )
         return out

@@ -2,6 +2,7 @@
 
 Uso (con bench-core):
     python scripts/report_hpo.py [--artifacts DIR] [--method M] [--top 5] [--final]
+                                 [--curve PARAM]
 
 Per ogni (metodo, modello, linguaggio) stampa la configurazione scelta dalla fase ``tune``
 (iperparametri, TPR, Pass@1, ΔPass@1, vincolo rispettato o no, provvisorietà) e i migliori
@@ -10,6 +11,11 @@ candidati per TPR; segnala i casi senza configurazione ammissibile (SPEC §14.4)
 Con ``--final`` legge la scelta definitiva su L1+L2 (``hpo/selected_L1L2``, M9) e aggiunge, per la
 configurazione scelta, l'FPR di sviluppo per parte (nativi L1, nativi L2, integrazione) e, per
 PromptMark, se il ciclo di correttezza era attivo su ciascun livello (D27).
+
+Con ``--curve PARAM`` (es. ``delta`` per SWEET, D31) stampa per ogni cella la curva del TPR e di
+ΔPass@1 al variare di ``PARAM``, con gli altri iperparametri fissi a quelli della configurazione
+scelta; ``BORDO`` segnala una scelta sul valore più alto della curva, e la crescita del TPR fra
+gli ultimi due valori è quella della regola di estensione (D31).
 """
 
 from __future__ import annotations
@@ -31,6 +37,7 @@ def main() -> None:
     parser.add_argument("--method", default=None)
     parser.add_argument("--top", type=int, default=5)
     parser.add_argument("--final", action="store_true", help="scelta definitiva su L1+L2")
+    parser.add_argument("--curve", default=None, help="iperparametro della curva (es. delta)")
     args = parser.parse_args()
     artifacts = Path(args.artifacts)
     root = artifacts / "hpo"
@@ -69,6 +76,8 @@ def main() -> None:
             table = pd.read_parquet(table_path).sort_values(
                 ["tpr_dev", "pass1_drop_pp"], ascending=[False, True]
             )
+            if args.curve:
+                _curve(table, sel, args.curve)
             for row in table.head(args.top).itertuples():
                 mark = "*" if row.selected else " "
                 ok = "ok" if row.admissible else "--"
@@ -79,6 +88,39 @@ def main() -> None:
     if flagged:
         sys.stdout.write("\n##### senza configurazione ammissibile (da segnalare)\n")
         sys.stdout.write("".join(f"{k}\n" for k in flagged))
+
+
+def _curve(table: pd.DataFrame, sel: dict[str, Any], param: str) -> None:
+    """TPR e ΔPass@1 al variare di ``param``, gli altri iperparametri come nella scelta."""
+    fixed = {k: v for k, v in sel["hparams"].items() if k != param}
+    rows = []
+    for record in table.to_dict(orient="records"):
+        hp = json.loads(str(record["hparams_json"]))
+        if param in hp and {k: v for k, v in hp.items() if k != param} == fixed:
+            rows.append(
+                (float(hp[param]), float(record["tpr_dev"]), float(record["pass1_drop_pp"]))
+            )
+    rows.sort()
+    if not rows:
+        sys.stdout.write(f"  curva di {param}: nessun punto\n")
+        return
+    chosen = float(sel["hparams"].get(param, float("nan")))
+    border = chosen == rows[-1][0] and len(rows) > 1
+    sys.stdout.write(
+        f"  curva di {param} con {json.dumps(fixed, sort_keys=True)}"
+        f"{'  BORDO' if border else ''}\n"
+    )
+    for value, tpr, drop in rows:
+        mark = "*" if value == chosen else " "
+        sys.stdout.write(f"    {mark} {param} {value:g}  TPR {tpr:.4f}  ΔPass@1 {drop:6.2f} pp\n")
+    # Regola di estensione (D31): crescita del TPR fra il valore scelto e quello precedente.
+    index = next((i for i, r in enumerate(rows) if r[0] == chosen), None)
+    if index:
+        before, at = rows[index - 1], rows[index]
+        sys.stdout.write(
+            f"    crescita del TPR fra {param} {before[0]:g} e {at[0]:g} (scelto): "
+            f"{(at[1] - before[1]) * 100:+.1f} punti\n"
+        )
 
 
 def _manifest_extra(path: Path) -> dict[str, Any]:

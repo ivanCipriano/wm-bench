@@ -43,7 +43,7 @@ force: false
 log_level: INFO
 hpo:
   use_selected: true           # false durante lo sweep
-  max_pass1_drop_pp: 3.0       # provvisorio (protocollo)
+  max_pass1_drop_pp: 3.0       # definitivo (decisione dell'utente del 20 ottobre 2026)
   grid: null                   # sweep: metodo della griglia configs/hpo/<metodo>.yaml
   part: all                    # all | trajectories | candidates (PromptMark, ADR-009)
   allow_frozen_override: false # ricalibrare un metodo congelato: solo come deviazione (ADR-013)

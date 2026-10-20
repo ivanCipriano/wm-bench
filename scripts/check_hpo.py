@@ -53,6 +53,7 @@ def main() -> int:
     adapter: Any = make_adapter(cfg, method)
     grid = load_grid(method)
     candidates = [adapter.config_hash(p.hparams) for p in grid.candidates()]
+    n_local = sum(p.cells is not None for p in grid.candidates())
     trajectories = [adapter.config_hash(p.hparams) for p in grid.trajectories()]
     # Soglie e scelta: provvisorie (solo L1) o definitive (L1+L2, con i passi di L2).
     levels = ["L1", "L2"] if level == "L2" else ["L1"]
@@ -78,7 +79,8 @@ def main() -> int:
             for h in trajectories:
                 ref = watermarked_ref(method, model, h, level, lang, split)
                 steps.setdefault("trajectories", []).append((f"{model} {lang} {h}", ref))
-            for h in candidates:
+            # I punti di ``local`` (D31) contano solo nelle loro celle.
+            for h in [adapter.config_hash(p.hparams) for p in grid.candidates(model, lang)]:
                 name = f"{model} {lang} {h}"
                 steps.setdefault("watermark", []).append(
                     (name, watermarked_ref(method, model, h, level, lang, split))
@@ -96,7 +98,8 @@ def main() -> int:
             )
 
     sys.stdout.write(
-        f"##### HPO {method} ({level} {split}): {len(candidates)} candidates, "
+        f"##### HPO {method} ({level} {split}): {len(candidates)} candidates "
+        f"({n_local} local), "
         f"{len(trajectories)} trajectories; calibrate/tune on {'+'.join(levels)}"
         f"{'' if level == 'L2' else ' (provisional)'}\n"
     )

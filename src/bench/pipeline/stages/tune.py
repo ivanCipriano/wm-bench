@@ -135,11 +135,14 @@ class TuneStage(Stage):
     def levels(self) -> list[str]:
         return sorted(str(level) for level in self._cfg().levels)
 
-    def candidates(self, method: str) -> list[tuple[str, GridPoint]]:
-        """(hash, punto) dei candidati: la griglia del metodo, o il solo default."""
+    def candidates(
+        self, method: str, model_id: str | None = None, language: str | None = None
+    ) -> list[tuple[str, GridPoint]]:
+        """(hash, punto) dei candidati: la griglia del metodo, o il solo default. Con modello e
+        linguaggio, solo i candidati di quella cella (i punti di ``local`` valgono in alcune)."""
         adapter = self.adapter(method)
         if grid_path(method).is_file():
-            points = load_grid(method).candidates()
+            points = load_grid(method).candidates(model_id, language)
         else:
             points = [GridPoint(adapter.default_hparams())]
         out: list[tuple[str, GridPoint]] = []
@@ -177,11 +180,11 @@ class TuneStage(Stage):
         return refs
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
-        method, _, _ = self._require(cell)
+        method, model_id, language = self._require(cell)
         if not self._applicable(cell):
             return []
         refs: list[ArtifactRef] = []
-        for cfg_hash, _ in self.candidates(method):
+        for cfg_hash, _ in self.candidates(method, model_id, language):
             for group in self._refs(cell, cfg_hash).values():
                 refs.extend(r for r in group if r not in refs)
         return refs
@@ -247,7 +250,9 @@ class TuneStage(Stage):
             )
             self._write(ctx, cell, [], [], selected, None)
             return
-        evaluated = [self._evaluate(ctx, cell, h, p) for h, p in self.candidates(method)]
+        evaluated = [
+            self._evaluate(ctx, cell, h, p) for h, p in self.candidates(method, model_id, language)
+        ]
         candidates = [c for c, _ in evaluated]
         provisional = any(t.provisional for _, t in evaluated)
         selection = criterion.select(candidates)

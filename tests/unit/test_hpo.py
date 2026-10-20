@@ -82,6 +82,49 @@ def test_grid_errors(tmp_path: Path) -> None:
         load_grid("missing", tmp_path)
 
 
+LOCAL_GRID = """method: x
+space: {gamma: [0.25], delta: [3.0, 4.0]}
+local:
+  - hparams: {gamma: 0.25, delta: 5.0}
+    cells: [{model_id: m1, language: python}, {model_id: m2, language: java}]
+  - hparams: {gamma: 0.25, delta: 6.0}
+    cells: [{model_id: m1, language: python}]
+"""
+
+
+def test_local_points_apply_only_to_their_cells(tmp_path: Path) -> None:
+    """Estensione locale della griglia (D31): i punti di ``local`` valgono solo nelle celle
+    elencate; senza modello e linguaggio la griglia li comprende tutti."""
+    (tmp_path / "x.yaml").write_text(LOCAL_GRID, encoding="utf-8")
+    grid = load_grid("x", tmp_path)
+    deltas = lambda points: sorted(p.hparams["delta"] for p in points)  # noqa: E731
+    assert deltas(grid.candidates()) == [3.0, 4.0, 5.0, 6.0]
+    assert deltas(grid.candidates("m1", "python")) == [3.0, 4.0, 5.0, 6.0]
+    assert deltas(grid.candidates("m2", "java")) == [3.0, 4.0, 5.0]
+    assert deltas(grid.candidates("m2", "python")) == [3.0, 4.0]
+    assert deltas(grid.candidates("m1", "java")) == [3.0, 4.0]
+    local = [p for p in grid.candidates() if p.cells is not None]
+    assert local[0].cells == (("m1", "python"), ("m2", "java"))
+    assert local[0].applies_to("m1", None) and not local[1].applies_to("m2", None)
+
+
+@pytest.mark.parametrize(
+    ("local", "message"),
+    [
+        ("  - {hparams: {gamma: 0.25, delta: 4.0}, cells: [{model_id: m, language: python}]}\n",
+         "duplicated"),
+        ("  - {hparams: {gamma: 0.25, delta: 5.0}}\n", "exactly 'hparams' and 'cells'"),
+        ("  - {hparams: {gamma: 0.25, delta: 5.0}, cells: []}\n", "non-empty list"),
+        ("  - {hparams: {gamma: 0.25, delta: 5.0}, cells: [{model_id: m}]}\n", "non-empty list"),
+    ],
+)  # fmt: skip
+def test_local_points_errors(tmp_path: Path, local: str, message: str) -> None:
+    text = "method: x\nspace: {gamma: [0.25], delta: [3.0, 4.0]}\nlocal:\n" + local
+    (tmp_path / "x.yaml").write_text(text, encoding="utf-8")
+    with pytest.raises(ConfigError, match=message):
+        load_grid("x", tmp_path)
+
+
 class FakeAdapter:
     """Adapter minimo per ``resolve``: hash = SHA-256 degli iperparametri."""
 
@@ -369,3 +412,31 @@ def test_sweep_cells_and_tune(sweep: BenchmarkFacade) -> None:
     assert expect.candidate.config_hash == selected.config_hash
     assert selected.constraint_satisfied == expect.constraint_satisfied
     assert isinstance(table, pd.DataFrame)
+
+
+def test_local_point_in_sweep_and_tune(sweep: BenchmarkFacade, tmp_path: Path) -> None:
+    """Un punto di ``local`` per la cella dello sweep entra in watermark → tune; uno per
+    un'altra cella non entra né nello sweep né nella selezione (D31)."""
+    (tmp_path / "grids" / "stone.yaml").write_text(
+        GRID
+        + "local:\n"
+        + f"  - hparams: {{gamma: 0.5, delta: 3.0}}\n    cells: [{{model_id: {MODEL}, "
+        + "language: python}]\n"
+        + "  - hparams: {gamma: 0.5, delta: 4.0}\n    cells: [{model_id: other_model, "
+        + "language: python}]\n",
+        encoding="utf-8",
+    )
+    planner = CellPlanner(sweep.cfg)
+    adapter = wm.make_adapter(sweep.cfg, "stone")
+    local = adapter.config_hash({"gamma": 0.5, "delta": 3.0})
+    elsewhere = adapter.config_hash({"gamma": 0.5, "delta": 4.0})
+    for stage_cls in (WatermarkStage, ExecuteStage, DetectStage, CalibrateStage):
+        hashes = {c.config_hash for c in planner.cells_for(stage_cls)}
+        assert len(hashes) == 3 and local in hashes and elsewhere not in hashes, stage_cls
+    for stage in ("watermark", "execute", "detect", "calibrate"):
+        assert sweep.run_stage(stage).ran == 3, stage
+    assert sweep.run_stage("tune").ran == 1
+    table = sweep.store.read_table(candidates_ref("stone", MODEL, "python"))
+    selected = sweep.store.read_model(selected_ref("stone", MODEL, "python"), SelectedConfig)
+    assert len(table) == 3 and local in set(table["config_hash"])
+    assert elsewhere not in set(table["config_hash"]) and selected.n_candidates == 3

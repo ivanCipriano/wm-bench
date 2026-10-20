@@ -37,7 +37,7 @@
      baseline da cui deriva il codice);
    - `pass1_drop_pp`.
 
-   Poi applica `ConstrainedTprCriterion` (`hpo.max_pass1_drop_pp`, 3,0 provvisorio) e scrive:
+   Poi applica `ConstrainedTprCriterion` (`hpo.max_pass1_drop_pp` = 3,0, confermato come definitivo dall'utente il 20 ottobre 2026) e scrive:
    - `hpo/candidates/<metodo>/<modello>/<linguaggio>.parquet`, con tutti i candidati;
    - `hpo/selected/<metodo>/<modello>/<linguaggio>.json` (`SelectedConfig`), con `provisional` se le soglie lo
      sono e `constraint_satisfied = false` per i casi da segnalare.
@@ -51,3 +51,8 @@
   altri modelli dello store (differenza di implementazione registrata in `docs/deviations.md`).
 - Comandi: `scripts/submit_hpo_l1.sh` (trajectories, watermark, execute, detect, calibrate, tune) e
   `scripts/report_hpo.py`.
+- **Estensione locale della griglia** (20 ottobre 2026, D31): `configs/hpo/<metodo>.yaml` può avere punti
+  `local` (`hparams` più `cells`, una lista di `model_id`/`language`). Valgono solo nelle celle elencate: lo
+  sweep li espande solo lì, `tune` li confronta solo lì e `freeze` controlla per ogni cella i suoi candidati
+  (il record elenca tutti gli hash). `scripts/report_hpo.py --curve delta` stampa la curva di un
+  iperparametro con gli altri fissi a quelli della scelta.

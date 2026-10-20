@@ -94,7 +94,8 @@ class FreezeStage(Stage):
         if load_freeze(ctx.store, method) is not None:
             raise ConfigError(f"{method} is already frozen: a new freeze is a deviation (ADR-013)")
         adapter = self.adapter(method)
-        expected = sorted(h for h, _ in TuneStage(cfg).candidates(method))
+        tune = TuneStage(cfg)
+        expected = sorted(h for h, _ in tune.candidates(method))  # tutte le celle
         problems: list[str] = []
         cells: list[FrozenCell] = []
         refs: list[ArtifactRef] = []
@@ -102,7 +103,8 @@ class FreezeStage(Stage):
             if not adapter.supports(language):
                 cells.append(FrozenCell(model_id=model_id, language=language, not_applicable=True))
                 continue
-            frozen = self._cell(ctx, method, model_id, language, expected, problems, refs)
+            local = sorted(h for h, _ in tune.candidates(method, model_id, language))
+            frozen = self._cell(ctx, method, model_id, language, local, problems, refs)
             if frozen is not None:
                 cells.append(frozen)
         if problems:

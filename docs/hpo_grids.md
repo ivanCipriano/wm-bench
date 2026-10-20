@@ -26,3 +26,7 @@ Origine dei costi:
   del primo job (1,6-3,5 s, nodo lento);
 - L2 è stimato con le numerosità di SPEC §10.2 e i costi per campione di L1, quindi è un limite inferiore:
   il codice di CodeNet è più lungo.
+
+Estensione locale (D31, decisione dell'utente del 20 ottobre 2026): per SWEET, dopo la scelta definitiva su
+L1+L2, le celle con il vincitore a δ = 4 e una crescita del TPR di almeno 2 punti fra δ = 3 e δ = 4 ricevono
+δ = 5 e 6 con la sola (γ, soglia di entropia) vincente, come punti `local` della griglia; una sola volta.
