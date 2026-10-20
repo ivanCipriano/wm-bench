@@ -7,7 +7,11 @@ Sourcery (una chiamata ``sourcery review --fix`` per cartella), le 36-45 regole 
 autopep8, tabulazioni).
 
 Sourcery lavora su cartelle e ogni chiamata costa secondi: lo shim elabora gli item **a lotti**
-(``batch_size``), un file per item in una cartella di lavoro.
+(``batch_size``), un file per item in una cartella di lavoro. Le applicazioni di un lotto (una per
+regola selezionata, più quella congiunta) lavorano ciascuna su una propria copia della cartella e
+sono indipendenti: girano **in parallelo** su ``RULE_WORKERS`` thread (ogni chiamata a Sourcery è
+un processo a sé, con un file di configurazione dal nome univoco). Il risultato è lo stesso
+dell'esecuzione in sequenza; il canarino resta in sequenza, dopo il lotto.
 
 - **embed** (un item per campione della baseline): applicazione congiunta delle regole selezionate
   (``apply_specific_rules`` nell'ordine dell'injector); ``OK`` se il codice cambia, ``FAILED``
@@ -27,6 +31,7 @@ lotto**: se il token scade a metà lavoro il lotto non si scrive e il worker si 
 
 from __future__ import annotations
 
+import concurrent.futures
 import contextlib
 import hashlib
 import io
@@ -35,7 +40,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from typing import Any, Dict, List, Sequence
+from typing import Any, List, Sequence
 
 from bench_contracts import WorkerItem, WorkerRequest, WorkerResult
 from bench_contracts.enums import DetectStatus, EmbedStatus
@@ -45,6 +50,9 @@ from bench_shims._common.runner import main
 
 BATCH_SIZE = 50
 THREADS = 5  # thread delle regole proprie (``batch`` del codice, default 5)
+# Applicazioni in parallelo dentro un lotto (job CPU con 16 core, configs/cluster/slurm_cpu.yaml).
+# Costante: il worker riceve un ambiente ripulito (worker_client.PASSTHROUGH).
+RULE_WORKERS = 8
 SOURCERY_RULES = range(1, 36)
 # File canarino per il controllo di partenza: casi tipici di tre regole Sourcery (la 11 ha
 # modificato codice anche nell'oracle); basta che uno cambi. ``remove-unnecessary-else`` (1) non
@@ -146,7 +154,12 @@ class AcwShim(ShimBase):
     def _apply(self, folder: str, rules: Sequence[int]) -> int:
         """Applica le regole con il codice (``apply_specific_rules``); chiamate a Sourcery fatte."""
         with contextlib.redirect_stdout(io.StringIO()):  # libcst stampa i diff
-            self.injector.apply_specific_rules(folder, list(rules))
+            return self._apply_raw(folder, rules)
+
+    def _apply_raw(self, folder: str, rules: Sequence[int]) -> int:
+        """Come ``_apply`` senza deviare stdout: ``redirect_stdout`` cambia ``sys.stdout`` per
+        tutto il processo e non si annida fra thread, quindi lo fa una volta il chiamante."""
+        self.injector.apply_specific_rules(folder, list(rules))
         return 1 if any(r in SOURCERY_RULES for r in rules) else 0
 
     # ------------------------------------------------------------------ cartelle
@@ -167,26 +180,34 @@ class AcwShim(ShimBase):
     def _changed(self, a: str, b: str, names: Sequence[str]) -> List[bool]:
         return [file_hash(os.path.join(a, n)) != file_hash(os.path.join(b, n)) for n in names]
 
-    def _per_rule(self, folder: str, names: Sequence[str]) -> Any:
-        """Per ogni regola: quali file cambiano riapplicandola da sola; chiamate a Sourcery."""
-        changed: Dict[int, List[bool]] = {}
-        calls = 0
-        for rule in self.rules:
-            copy = self._copy(folder, f"rule{rule}")
-            try:
-                calls += self._apply(copy, [rule])
-                changed[rule] = self._changed(folder, copy, names)
-            finally:
+    def _per_rule(self, folder: str, names: Sequence[str], joint_tag: str) -> Any:
+        """Per ogni regola: quali file cambiano riapplicandola da sola; poi l'applicazione
+        congiunta su una copia ``joint_tag`` (tenuta per il chiamante). Tutto in parallelo.
+        Restituisce (cambiati per regola, copia congiunta, chiamate a Sourcery)."""
+        copies = {rule: self._copy(folder, f"rule{rule}") for rule in self.rules}
+        joint = self._copy(folder, joint_tag)
+        jobs = [(copy, [rule]) for rule, copy in copies.items()] + [(joint, list(self.rules))]
+        try:
+            # libcst stampa i diff
+            with (
+                contextlib.redirect_stdout(io.StringIO()),
+                concurrent.futures.ThreadPoolExecutor(max_workers=RULE_WORKERS) as pool,
+            ):
+                calls = sum(pool.map(lambda job: self._apply_raw(*job), jobs))
+            changed = {rule: self._changed(folder, copy, names) for rule, copy in copies.items()}
+        except BaseException:
+            shutil.rmtree(joint, ignore_errors=True)
+            raise
+        finally:
+            for copy in copies.values():
                 shutil.rmtree(copy, ignore_errors=True)
-        return changed, calls
+        return changed, joint, calls
 
     # ------------------------------------------------------------------ inserimento
     def embed_batch(self, items: List[WorkerItem]) -> List[List[WorkerResult]]:
         folder, names = self._batch_dir(items)
         try:
-            changed, calls = self._per_rule(folder, names)
-            work = self._copy(folder, "embed")
-            calls += self._apply(work, self.rules)
+            changed, work, calls = self._per_rule(folder, names, "embed")
             modified = self._changed(folder, work, names)
             calls += self._check_sourcery()  # prima di scrivere il lotto
             outputs: List[List[WorkerResult]] = []
@@ -221,9 +242,7 @@ class AcwShim(ShimBase):
     def detect_batch(self, items: List[WorkerItem]) -> List[WorkerResult]:
         folder, names = self._batch_dir(items)
         try:
-            changed, calls = self._per_rule(folder, names)
-            joint = self._copy(folder, "joint")
-            calls += self._apply(joint, self.rules)
+            changed, joint, calls = self._per_rule(folder, names, "joint")
             joint_changed = self._changed(folder, joint, names)
             shutil.rmtree(joint, ignore_errors=True)
             calls += self._check_sourcery()  # prima di scrivere il lotto

@@ -156,6 +156,13 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
 - Costo: ogni chiamata a Sourcery richiede secondi; il punteggio per regola richiede 35 chiamate Sourcery per
   lotto. Lo shim lavora **a lotti** di 50 file (una cartella per chiamata; supporto ai lotti aggiunto al runner
   degli shim, `ShimBase.batch_size`) invece che file per file.
+- **Applicazioni in parallelo** (M10, 20 ottobre 2026). In sequenza la rilevazione degli attaccati richiedeva
+  circa 5 minuti per lotto di 50 codici (32 chiamate a Sourcery con 30 regole), cioè circa 4,5 ore per cella
+  e 135 ore per le 30 celle di ACW, con 15 core del job fermi. Dentro un lotto le applicazioni (una per regola
+  più quella congiunta) lavorano ognuna su una propria copia della cartella e sono indipendenti: lo shim le
+  esegue su `RULE_WORKERS` = 8 thread, ognuno con il suo processo Sourcery e il suo file di configurazione
+  (nome univoco nel codice). Il canarino resta in sequenza dopo il lotto. Il risultato non cambia:
+  `scripts/check_acw_parallel.sh` riesegue in parallelo item già rilevati in sequenza e li confronta.
 - **Limiti di Sourcery:** la documentazione attuale non descrive più la CLI (l'ultima versione su PyPI è la
   1.46.0, settembre 2026; l'ambiente ha la 1.33.0, gennaio 2025) e non indica limiti di frequenza o di volume.
   L'oracle fa una prova di 30 chiamate consecutive cronometrate, registrando codici di uscita e messaggi.
