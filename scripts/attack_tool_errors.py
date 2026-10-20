@@ -22,11 +22,17 @@ import pandas as pd
 
 from bench.config.builder import load_experiment
 
-NOISE = re.compile(r"^(\d+ warnings?|Suppressed|Use -header-filter|Error while processing)")
+NOISE = re.compile(r"^(exit \d+: )?(\d+ warnings?|Suppressed|Use -header-filter|Error while)")
+# Messaggi veri dei compilatori: clang (``error: ...``) e javac via Maven (``.java:[r,c] ...``).
+MESSAGE = re.compile(r"(?:\berror: |\.java:\[\d+,\d+\] )(.+)")
 
 
 def _key(error: str) -> str:
-    """Prima riga utile dell'errore, senza percorsi temporanei e numeri di riga."""
+    """Primo messaggio d'errore del compilatore se c'è, altrimenti la prima riga utile; senza
+    percorsi temporanei e numeri di riga."""
+    found = MESSAGE.search(error)
+    if found:
+        return found.group(1).strip()[:160]
     for raw in error.splitlines():
         line = raw.strip()
         if not line or NOISE.match(line):
@@ -51,7 +57,8 @@ def main() -> int:
         sys.stdout.write("no attacked artifacts found\n")
         return 1
     for path in files:
-        params_hash, model = path.parts[-6], path.parts[-4]
+        # attacked/<attacco>/<hash>/<metodo>/<modello>/<cfg>/<file>
+        params_hash, model = path.parts[-5], path.parts[-3]
         df = pd.read_parquet(path)
         errors = df[df["attack_status"] == "TOOL_ERROR"]
         sys.stdout.write(
@@ -72,10 +79,10 @@ def main() -> int:
 
 def _passed(root: Path, path: Path) -> set[str]:
     """``sample_id`` dei marcati che passano i test senza attacco (esecuzione della fase 0)."""
-    method, model, cfg_hash = path.parts[-5], path.parts[-4], path.parts[-3]
+    method, model, cfg_hash = path.parts[-4], path.parts[-3], path.parts[-2]
     marked = root / "execution" / "watermarked" / method / model / cfg_hash / path.name
     if not marked.is_file():
-        return set()
+        raise FileNotFoundError(f"marked execution not found: {marked}")
     df = pd.read_parquet(marked, columns=["sample_id", "status"])
     return set(df.loc[df["status"] == "PASSED", "sample_id"])
 
