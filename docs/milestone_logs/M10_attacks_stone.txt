@@ -1,0 +1,545 @@
+##### stone attacks T1.1,T1.2,T1.3,T1.4,T1.5 on L1 test
+attack       90/90   COMPLETE
+execute      90/90   COMPLETE
+detect       90/90   COMPLETE
+metrics      90/90   COMPLETE
+
+##### T1.1 {} qwen25_coder_7b python
+  status {'APPLIED': 1516, 'UNCHANGED': 1158, 'TOOL_ERROR': 2}  changed 0.566517  1-CodeBLEU 0.021239 (changed only 0.03749)
+  detail means {}
+  tools {"black": "24.10.0"}
+  tpr_at_fpr 0.0194  auroc 0.8000  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5665  tool_error_fraction 0.0007  codebleu_distance 0.0212
+
+##### T1.1 {} qwen25_coder_7b java
+  status {'APPLIED': 804, 'TOOL_ERROR': 36}  changed 0.957143  1-CodeBLEU 0.19751 (changed only 0.206353)
+  detail means {}
+  tools {"google-java-format": "google-java-format: Version 1.24.0"}
+  tpr_at_fpr 0.0524  auroc 0.6393  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9571  tool_error_fraction 0.0429  codebleu_distance 0.1975
+
+##### T1.1 {} qwen25_coder_7b cpp
+  status {'APPLIED': 840}  changed 1.0  1-CodeBLEU 0.082599 (changed only 0.082599)
+  detail means {}
+  tools {"clang-format": "clang-format version 18.1.8 (https://github.com/conda-forge/clangdev-feedstock 3c15221e001c9fe87fcc807876aa06d599616b01)"}
+  tpr_at_fpr 0.0131  auroc 0.6636  pass_at_1 0.7679  delta_pass_at_1_pp 2.3810  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.0826
+
+##### T1.1 {} deepseek_coder_6p7b python
+  status {'APPLIED': 1365, 'UNCHANGED': 1309, 'TOOL_ERROR': 2}  changed 0.51009  1-CodeBLEU 0.055312 (changed only 0.108435)
+  detail means {}
+  tools {"black": "24.10.0"}
+  tpr_at_fpr 0.0056  auroc 0.6063  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5101  tool_error_fraction 0.0007  codebleu_distance 0.0553
+
+##### T1.1 {} deepseek_coder_6p7b java
+  status {'APPLIED': 828, 'TOOL_ERROR': 12}  changed 0.985714  1-CodeBLEU 0.200461 (changed only 0.203366)
+  detail means {}
+  tools {"google-java-format": "google-java-format: Version 1.24.0"}
+  tpr_at_fpr 0.0000  auroc 0.5513  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9857  tool_error_fraction 0.0143  codebleu_distance 0.2005
+
+##### T1.1 {} deepseek_coder_6p7b cpp
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.093002 (changed only 0.093113)
+  detail means {}
+  tools {"clang-format": "clang-format version 18.1.8 (https://github.com/conda-forge/clangdev-feedstock 3c15221e001c9fe87fcc807876aa06d599616b01)"}
+  tpr_at_fpr 0.0000  auroc 0.4679  pass_at_1 0.6119  delta_pass_at_1_pp 3.9286  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.0930
+
+##### T1.2 {} qwen25_coder_7b python
+  status {'UNCHANGED': 2618, 'APPLIED': 58}  changed 0.021674  1-CodeBLEU 0.001444 (changed only 0.066632)
+  detail means {}
+  tools {"ruff": "ruff 0.7.4"}
+  tpr_at_fpr 0.0187  auroc 0.8042  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0217  tool_error_fraction 0.0000  codebleu_distance 0.0014
+
+##### T1.2 {} qwen25_coder_7b java
+  status {'UNCHANGED': 703, 'TOOL_ERROR': 81, 'APPLIED': 56}  changed 0.066667  1-CodeBLEU 0.005901 (changed only 0.088512)
+  detail means {}
+  tools {"openrewrite": "Apache Maven 3.9.16 (50e2c7eb1a9cd50ab041c0f7591d943eeb409f68); rewrite-maven-plugin 5.45.0; rewrite-static-analysis 1.20.0"}
+  tpr_at_fpr 0.0833  auroc 0.7370  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0667  tool_error_fraction 0.0964  codebleu_distance 0.0059
+
+##### T1.2 {} qwen25_coder_7b cpp
+  status {'UNCHANGED': 341, 'APPLIED': 132, 'TOOL_ERROR': 367}  changed 0.157143  1-CodeBLEU 0.015475 (changed only 0.098477)
+  detail means {}
+  tools {"clang-tidy": "LLVM (http://llvm.org/):"}
+  tpr_at_fpr 0.0107  auroc 0.6835  pass_at_1 0.7679  delta_pass_at_1_pp 2.3810  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.1571  tool_error_fraction 0.4369  codebleu_distance 0.0155
+
+##### T1.2 {} deepseek_coder_6p7b python
+  status {'UNCHANGED': 2645, 'APPLIED': 31}  changed 0.011584  1-CodeBLEU 0.001061 (changed only 0.091589)
+  detail means {}
+  tools {"ruff": "ruff 0.7.4"}
+  tpr_at_fpr 0.0049  auroc 0.6057  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0116  tool_error_fraction 0.0000  codebleu_distance 0.0011
+
+##### T1.2 {} deepseek_coder_6p7b java
+  status {'UNCHANGED': 748, 'APPLIED': 71, 'TOOL_ERROR': 21}  changed 0.084524  1-CodeBLEU 0.011975 (changed only 0.141681)
+  detail means {}
+  tools {"openrewrite": "Apache Maven 3.9.16 (50e2c7eb1a9cd50ab041c0f7591d943eeb409f68); rewrite-maven-plugin 5.45.0; rewrite-static-analysis 1.20.0"}
+  tpr_at_fpr 0.0000  auroc 0.6329  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0845  tool_error_fraction 0.0250  codebleu_distance 0.0120
+
+##### T1.2 {} deepseek_coder_6p7b cpp
+  status {'UNCHANGED': 484, 'APPLIED': 256, 'TOOL_ERROR': 100}  changed 0.304762  1-CodeBLEU 0.041961 (changed only 0.137685)
+  detail means {}
+  tools {"clang-tidy": "LLVM (http://llvm.org/):"}
+  tpr_at_fpr 0.0024  auroc 0.5826  pass_at_1 0.6119  delta_pass_at_1_pp 3.9286  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.3048  tool_error_fraction 0.1190  codebleu_distance 0.0420
+
+##### T1.3 {"mode": "remove"} qwen25_coder_7b python
+  status {'UNCHANGED': 1085, 'APPLIED': 1591}  changed 0.594544  1-CodeBLEU 0.204086 (changed only 0.343265)
+  detail means {"n_removed": 2.199246}
+  tools {}
+  tpr_at_fpr 0.0056  auroc 0.7536  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5945  tool_error_fraction 0.0000  codebleu_distance 0.2041
+
+##### T1.3 {"mode": "remove"} qwen25_coder_7b java
+  status {'APPLIED': 767, 'UNCHANGED': 73}  changed 0.913095  1-CodeBLEU 0.261713 (changed only 0.286621)
+  detail means {"n_removed": 1.164276}
+  tools {}
+  tpr_at_fpr 0.0167  auroc 0.6698  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9131  tool_error_fraction 0.0000  codebleu_distance 0.2617
+
+##### T1.3 {"mode": "remove"} qwen25_coder_7b cpp
+  status {'APPLIED': 438, 'UNCHANGED': 402}  changed 0.521429  1-CodeBLEU 0.144837 (changed only 0.27777)
+  detail means {"n_removed": 1.196347}
+  tools {}
+  tpr_at_fpr 0.0107  auroc 0.7422  pass_at_1 0.7679  delta_pass_at_1_pp 2.3810  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5214  tool_error_fraction 0.0000  codebleu_distance 0.1448
+
+##### T1.3 {"mode": "remove"} deepseek_coder_6p7b python
+  status {'UNCHANGED': 2576, 'APPLIED': 100}  changed 0.037369  1-CodeBLEU 0.008836 (changed only 0.236449)
+  detail means {"n_removed": 3.15}
+  tools {}
+  tpr_at_fpr 0.0052  auroc 0.6066  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0374  tool_error_fraction 0.0000  codebleu_distance 0.0088
+
+##### T1.3 {"mode": "remove"} deepseek_coder_6p7b java
+  status {'APPLIED': 214, 'UNCHANGED': 626}  changed 0.254762  1-CodeBLEU 0.070336 (changed only 0.276086)
+  detail means {"n_removed": 1.429907}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.6633  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.2548  tool_error_fraction 0.0000  codebleu_distance 0.0703
+
+##### T1.3 {"mode": "remove"} deepseek_coder_6p7b cpp
+  status {'APPLIED': 825, 'UNCHANGED': 15}  changed 0.982143  1-CodeBLEU 0.308735 (changed only 0.314349)
+  detail means {"n_removed": 1.208485}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.7677  pass_at_1 0.6119  delta_pass_at_1_pp 3.9286  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9821  tool_error_fraction 0.0000  codebleu_distance 0.3087
+
+##### T1.3 {"density": 0.333, "mode": "insert"} qwen25_coder_7b python
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.094096 (changed only 0.094096)
+  detail means {"added_token_fraction": 0.253868, "added_tokens": 18.365471, "n_code_lines": 5.567265, "n_comments": 1.922272, "n_sites": 4.141256, "n_wanted": 1.929372}
+  tools {}
+  tpr_at_fpr 0.0168  auroc 0.8305  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.0941
+
+##### T1.3 {"density": 0.333, "mode": "insert"} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.107994 (changed only 0.109427)
+  detail means {"added_token_fraction": 0.290259, "added_tokens": 58.787696, "n_code_lines": 17.008444, "n_comments": 5.430639, "n_sites": 7.866104, "n_wanted": 5.610374}
+  tools {}
+  tpr_at_fpr 0.0286  auroc 0.6413  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.1080
+
+##### T1.3 {"density": 0.333, "mode": "insert"} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.135583 (changed only 0.136395)
+  detail means {"added_token_fraction": 0.350592, "added_tokens": 49.886228, "n_code_lines": 15.462275, "n_comments": 5.05988, "n_sites": 7.887425, "n_wanted": 5.117365}
+  tools {}
+  tpr_at_fpr 0.0107  auroc 0.6627  pass_at_1 0.7679  delta_pass_at_1_pp 2.3810  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.1356
+
+##### T1.3 {"density": 0.333, "mode": "insert"} deepseek_coder_6p7b python
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.183019 (changed only 0.183019)
+  detail means {"added_token_fraction": 0.422947, "added_tokens": 17.875934, "n_code_lines": 5.283632, "n_comments": 1.884155, "n_sites": 3.814275, "n_wanted": 1.891256}
+  tools {}
+  tpr_at_fpr 0.0037  auroc 0.5960  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.1830
+
+##### T1.3 {"density": 0.333, "mode": "insert"} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.15991 (changed only 0.160101)
+  detail means {"added_token_fraction": 0.473241, "added_tokens": 61.859356, "n_code_lines": 17.467223, "n_comments": 5.622169, "n_sites": 7.847437, "n_wanted": 5.808105}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.5511  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.1599
+
+##### T1.3 {"density": 0.333, "mode": "insert"} deepseek_coder_6p7b cpp
+  status {'APPLIED': 837, 'UNCHANGED': 3}  changed 0.996429  1-CodeBLEU 0.102769 (changed only 0.103138)
+  detail means {"added_token_fraction": 0.248347, "added_tokens": 53.409797, "n_code_lines": 16.360812, "n_comments": 5.360812, "n_sites": 7.60693, "n_wanted": 5.469534}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.6001  pass_at_1 0.6119  delta_pass_at_1_pp 3.9286  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9964  tool_error_fraction 0.0000  codebleu_distance 0.1028
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} qwen25_coder_7b python
+  status {'APPLIED': 2665, 'UNCHANGED': 9, 'TOOL_ERROR': 2}  changed 0.995889  1-CodeBLEU 0.094978 (changed only 0.09537)
+  detail means {"n_candidates": 2.610882, "n_occurrences": 3.172233, "n_renamed": 1.058161, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0183  auroc 0.7752  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9959  tool_error_fraction 0.0007  codebleu_distance 0.0950
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.059287 (changed only 0.060074)
+  detail means {"n_candidates": 4.283474, "n_occurrences": 4.617612, "n_renamed": 1.249698, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0476  auroc 0.6746  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.0593
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.095598 (changed only 0.096171)
+  detail means {"n_candidates": 4.233533, "n_occurrences": 5.082635, "n_renamed": 1.223952, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0119  auroc 0.5986  pass_at_1 0.7667  delta_pass_at_1_pp 2.5000  delta_pass_at_1_pp_vs_marked 0.1190  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.0956
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} deepseek_coder_6p7b python
+  status {'APPLIED': 2658, 'UNCHANGED': 16, 'TOOL_ERROR': 2}  changed 0.993274  1-CodeBLEU 0.217094 (changed only 0.218564)
+  detail means {"n_candidates": 2.512792, "n_occurrences": 3.147103, "n_renamed": 1.047404, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0007  auroc 0.4688  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9933  tool_error_fraction 0.0007  codebleu_distance 0.2171
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.093304 (changed only 0.093415)
+  detail means {"n_candidates": 4.127533, "n_occurrences": 4.557807, "n_renamed": 1.200238, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.4891  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.0933
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} deepseek_coder_6p7b cpp
+  status {'APPLIED': 836, 'UNCHANGED': 4}  changed 0.995238  1-CodeBLEU 0.063757 (changed only 0.064062)
+  detail means {"n_candidates": 4.001196, "n_occurrences": 5.272727, "n_renamed": 1.163876, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.4828  pass_at_1 0.6071  delta_pass_at_1_pp 4.4048  delta_pass_at_1_pp_vs_marked 0.4762  changed_fraction 0.9952  tool_error_fraction 0.0000  codebleu_distance 0.0638
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} qwen25_coder_7b python
+  status {'APPLIED': 2665, 'UNCHANGED': 9, 'TOOL_ERROR': 2}  changed 0.995889  1-CodeBLEU 0.095452 (changed only 0.095846)
+  detail means {"n_candidates": 2.610882, "n_occurrences": 3.211257, "n_renamed": 1.058161, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0131  auroc 0.7827  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9959  tool_error_fraction 0.0007  codebleu_distance 0.0955
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.058085 (changed only 0.058856)
+  detail means {"n_candidates": 4.283474, "n_occurrences": 4.498191, "n_renamed": 1.249698, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0690  auroc 0.7125  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.0581
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.094362 (changed only 0.094927)
+  detail means {"n_candidates": 4.233533, "n_occurrences": 4.936527, "n_renamed": 1.223952, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0083  auroc 0.6550  pass_at_1 0.7667  delta_pass_at_1_pp 2.5000  delta_pass_at_1_pp_vs_marked 0.1190  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.0944
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} deepseek_coder_6p7b python
+  status {'APPLIED': 2658, 'UNCHANGED': 16, 'TOOL_ERROR': 2}  changed 0.993274  1-CodeBLEU 0.219319 (changed only 0.220804)
+  detail means {"n_candidates": 2.512792, "n_occurrences": 3.122272, "n_renamed": 1.047404, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0049  auroc 0.5772  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9933  tool_error_fraction 0.0007  codebleu_distance 0.2193
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.094816 (changed only 0.094929)
+  detail means {"n_candidates": 4.127533, "n_occurrences": 4.595948, "n_renamed": 1.200238, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.5977  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.0948
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} deepseek_coder_6p7b cpp
+  status {'APPLIED': 836, 'UNCHANGED': 4}  changed 0.995238  1-CodeBLEU 0.062957 (changed only 0.063258)
+  detail means {"n_candidates": 4.001196, "n_occurrences": 5.238038, "n_renamed": 1.163876, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.5407  pass_at_1 0.6083  delta_pass_at_1_pp 4.2857  delta_pass_at_1_pp_vs_marked 0.3571  changed_fraction 0.9952  tool_error_fraction 0.0000  codebleu_distance 0.0630
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} qwen25_coder_7b python
+  status {'APPLIED': 2665, 'UNCHANGED': 9, 'TOOL_ERROR': 2}  changed 0.995889  1-CodeBLEU 0.121262 (changed only 0.121763)
+  detail means {"n_candidates": 2.610882, "n_occurrences": 4.816886, "n_renamed": 1.52758, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0146  auroc 0.7661  pass_at_1 0.7347  delta_pass_at_1_pp 2.9895  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.9959  tool_error_fraction 0.0007  codebleu_distance 0.1213
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.096315 (changed only 0.097593)
+  detail means {"n_candidates": 4.283474, "n_occurrences": 8.053076, "n_renamed": 2.219542, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0393  auroc 0.6221  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.0963
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.156836 (changed only 0.157775)
+  detail means {"n_candidates": 4.233533, "n_occurrences": 9.135329, "n_renamed": 2.223952, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0083  auroc 0.5380  pass_at_1 0.7655  delta_pass_at_1_pp 2.6190  delta_pass_at_1_pp_vs_marked 0.2381  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.1568
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} deepseek_coder_6p7b python
+  status {'APPLIED': 2658, 'UNCHANGED': 16, 'TOOL_ERROR': 2}  changed 0.993274  1-CodeBLEU 0.261123 (changed only 0.262891)
+  detail means {"n_candidates": 2.512792, "n_occurrences": 4.630926, "n_renamed": 1.475922, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0015  auroc 0.4245  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9933  tool_error_fraction 0.0007  codebleu_distance 0.2611
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.154499 (changed only 0.154683)
+  detail means {"n_candidates": 4.127533, "n_occurrences": 8.250298, "n_renamed": 2.184744, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.3814  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.1545
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} deepseek_coder_6p7b cpp
+  status {'APPLIED': 836, 'UNCHANGED': 4}  changed 0.995238  1-CodeBLEU 0.097374 (changed only 0.09784)
+  detail means {"n_candidates": 4.001196, "n_occurrences": 9.344498, "n_renamed": 2.089713, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.4131  pass_at_1 0.6036  delta_pass_at_1_pp 4.7619  delta_pass_at_1_pp_vs_marked 0.8333  changed_fraction 0.9952  tool_error_fraction 0.0000  codebleu_distance 0.0974
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} qwen25_coder_7b python
+  status {'APPLIED': 2665, 'UNCHANGED': 9, 'TOOL_ERROR': 2}  changed 0.995889  1-CodeBLEU 0.121369 (changed only 0.12187)
+  detail means {"n_candidates": 2.610882, "n_occurrences": 4.804128, "n_renamed": 1.52758, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0116  auroc 0.7762  pass_at_1 0.7347  delta_pass_at_1_pp 2.9895  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.9959  tool_error_fraction 0.0007  codebleu_distance 0.1214
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.09738 (changed only 0.098673)
+  detail means {"n_candidates": 4.283474, "n_occurrences": 8.178528, "n_renamed": 2.219542, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0476  auroc 0.6883  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.0974
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.156035 (changed only 0.156969)
+  detail means {"n_candidates": 4.233533, "n_occurrences": 9.034731, "n_renamed": 2.223952, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0071  auroc 0.6247  pass_at_1 0.7667  delta_pass_at_1_pp 2.5000  delta_pass_at_1_pp_vs_marked 0.1190  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.1560
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} deepseek_coder_6p7b python
+  status {'APPLIED': 2658, 'UNCHANGED': 16, 'TOOL_ERROR': 2}  changed 0.993274  1-CodeBLEU 0.26201 (changed only 0.263784)
+  detail means {"n_candidates": 2.512792, "n_occurrences": 4.635064, "n_renamed": 1.475922, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0052  auroc 0.5539  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9933  tool_error_fraction 0.0007  codebleu_distance 0.2620
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.1563 (changed only 0.156487)
+  detail means {"n_candidates": 4.127533, "n_occurrences": 8.418355, "n_renamed": 2.184744, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.5730  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.1563
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} deepseek_coder_6p7b cpp
+  status {'APPLIED': 836, 'UNCHANGED': 4}  changed 0.995238  1-CodeBLEU 0.098276 (changed only 0.098746)
+  detail means {"n_candidates": 4.001196, "n_occurrences": 9.340909, "n_renamed": 2.089713, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.5129  pass_at_1 0.6024  delta_pass_at_1_pp 4.8810  delta_pass_at_1_pp_vs_marked 0.9524  changed_fraction 0.9952  tool_error_fraction 0.0000  codebleu_distance 0.0983
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} qwen25_coder_7b python
+  status {'APPLIED': 2665, 'UNCHANGED': 9, 'TOOL_ERROR': 2}  changed 0.995889  1-CodeBLEU 0.148887 (changed only 0.149501)
+  detail means {"n_candidates": 2.610882, "n_occurrences": 6.643152, "n_renamed": 2.117448, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0168  auroc 0.7520  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9959  tool_error_fraction 0.0007  codebleu_distance 0.1489
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.127282 (changed only 0.128971)
+  detail means {"n_candidates": 4.283474, "n_occurrences": 11.53076, "n_renamed": 3.214717, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0262  auroc 0.6055  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.1273
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.206309 (changed only 0.207544)
+  detail means {"n_candidates": 4.233533, "n_occurrences": 12.74491, "n_renamed": 3.162874, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0048  auroc 0.4761  pass_at_1 0.7667  delta_pass_at_1_pp 2.5000  delta_pass_at_1_pp_vs_marked 0.1190  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2063
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} deepseek_coder_6p7b python
+  status {'APPLIED': 2658, 'UNCHANGED': 16, 'TOOL_ERROR': 2}  changed 0.993274  1-CodeBLEU 0.308932 (changed only 0.311025)
+  detail means {"n_candidates": 2.512792, "n_occurrences": 6.507148, "n_renamed": 2.056433, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0004  auroc 0.3748  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9933  tool_error_fraction 0.0007  codebleu_distance 0.3089
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.20347 (changed only 0.203712)
+  detail means {"n_candidates": 4.127533, "n_occurrences": 11.736591, "n_renamed": 3.073897, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.3277  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.2035
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} deepseek_coder_6p7b cpp
+  status {'APPLIED': 836, 'UNCHANGED': 4}  changed 0.995238  1-CodeBLEU 0.123805 (changed only 0.124398)
+  detail means {"n_candidates": 4.001196, "n_occurrences": 13.742823, "n_renamed": 3.020335, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0024  auroc 0.3537  pass_at_1 0.6000  delta_pass_at_1_pp 5.1190  delta_pass_at_1_pp_vs_marked 1.1905  changed_fraction 0.9952  tool_error_fraction 0.0000  codebleu_distance 0.1238
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} qwen25_coder_7b python
+  status {'APPLIED': 2665, 'UNCHANGED': 9, 'TOOL_ERROR': 2}  changed 0.995889  1-CodeBLEU 0.149219 (changed only 0.149835)
+  detail means {"n_candidates": 2.610882, "n_occurrences": 6.668668, "n_renamed": 2.117448, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0093  auroc 0.7650  pass_at_1 0.7347  delta_pass_at_1_pp 2.9895  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.9959  tool_error_fraction 0.0007  codebleu_distance 0.1492
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.127402 (changed only 0.129093)
+  detail means {"n_candidates": 4.283474, "n_occurrences": 11.55971, "n_renamed": 3.214717, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0440  auroc 0.6723  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.1274
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.206934 (changed only 0.208173)
+  detail means {"n_candidates": 4.233533, "n_occurrences": 12.807186, "n_renamed": 3.162874, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0083  auroc 0.5895  pass_at_1 0.7655  delta_pass_at_1_pp 2.6190  delta_pass_at_1_pp_vs_marked 0.2381  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2069
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} deepseek_coder_6p7b python
+  status {'APPLIED': 2658, 'UNCHANGED': 16, 'TOOL_ERROR': 2}  changed 0.993274  1-CodeBLEU 0.308984 (changed only 0.311076)
+  detail means {"n_candidates": 2.512792, "n_occurrences": 6.495109, "n_renamed": 2.056433, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0037  auroc 0.5401  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9933  tool_error_fraction 0.0007  codebleu_distance 0.3090
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.202902 (changed only 0.203144)
+  detail means {"n_candidates": 4.127533, "n_occurrences": 11.717521, "n_renamed": 3.073897, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0024  auroc 0.5357  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.2029
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} deepseek_coder_6p7b cpp
+  status {'APPLIED': 836, 'UNCHANGED': 4}  changed 0.995238  1-CodeBLEU 0.123481 (changed only 0.124071)
+  detail means {"n_candidates": 4.001196, "n_occurrences": 13.694976, "n_renamed": 3.020335, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.4825  pass_at_1 0.6000  delta_pass_at_1_pp 5.1190  delta_pass_at_1_pp_vs_marked 1.1905  changed_fraction 0.9952  tool_error_fraction 0.0000  codebleu_distance 0.1235
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} qwen25_coder_7b python
+  status {'APPLIED': 2665, 'UNCHANGED': 9, 'TOOL_ERROR': 2}  changed 0.995889  1-CodeBLEU 0.167901 (changed only 0.168594)
+  detail means {"n_candidates": 2.610882, "n_occurrences": 8.359099, "n_renamed": 2.610882, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0149  auroc 0.7494  pass_at_1 0.7347  delta_pass_at_1_pp 2.9895  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.9959  tool_error_fraction 0.0007  codebleu_distance 0.1679
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.1567 (changed only 0.15878)
+  detail means {"n_candidates": 4.283474, "n_occurrences": 15.54041, "n_renamed": 4.283474, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0214  auroc 0.5647  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.1567
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.25118 (changed only 0.252684)
+  detail means {"n_candidates": 4.233533, "n_occurrences": 17.113772, "n_renamed": 4.233533, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0060  auroc 0.4531  pass_at_1 0.7655  delta_pass_at_1_pp 2.6190  delta_pass_at_1_pp_vs_marked 0.2381  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2512
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} deepseek_coder_6p7b python
+  status {'APPLIED': 2658, 'UNCHANGED': 16, 'TOOL_ERROR': 2}  changed 0.993274  1-CodeBLEU 0.336138 (changed only 0.338414)
+  detail means {"n_candidates": 2.512792, "n_occurrences": 8.076749, "n_renamed": 2.512792, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0022  auroc 0.3447  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9933  tool_error_fraction 0.0007  codebleu_distance 0.3361
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.252204 (changed only 0.252504)
+  detail means {"n_candidates": 4.127533, "n_occurrences": 15.746126, "n_renamed": 4.127533, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.2513  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.2522
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} deepseek_coder_6p7b cpp
+  status {'APPLIED': 836, 'UNCHANGED': 4}  changed 0.995238  1-CodeBLEU 0.14552 (changed only 0.146217)
+  detail means {"n_candidates": 4.001196, "n_occurrences": 17.924641, "n_renamed": 4.001196, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.2944  pass_at_1 0.5952  delta_pass_at_1_pp 5.5952  delta_pass_at_1_pp_vs_marked 1.6667  changed_fraction 0.9952  tool_error_fraction 0.0000  codebleu_distance 0.1455
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} qwen25_coder_7b python
+  status {'APPLIED': 2665, 'UNCHANGED': 9, 'TOOL_ERROR': 2}  changed 0.995889  1-CodeBLEU 0.168019 (changed only 0.168713)
+  detail means {"n_candidates": 2.610882, "n_occurrences": 8.359099, "n_renamed": 2.610882, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0112  auroc 0.7626  pass_at_1 0.7347  delta_pass_at_1_pp 2.9895  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.9959  tool_error_fraction 0.0007  codebleu_distance 0.1680
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.157124 (changed only 0.159209)
+  detail means {"n_candidates": 4.283474, "n_occurrences": 15.54041, "n_renamed": 4.283474, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0429  auroc 0.6520  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.1571
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.251065 (changed only 0.252568)
+  detail means {"n_candidates": 4.233533, "n_occurrences": 17.113772, "n_renamed": 4.233533, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0060  auroc 0.5757  pass_at_1 0.7655  delta_pass_at_1_pp 2.6190  delta_pass_at_1_pp_vs_marked 0.2381  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2511
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} deepseek_coder_6p7b python
+  status {'APPLIED': 2658, 'UNCHANGED': 16, 'TOOL_ERROR': 2}  changed 0.993274  1-CodeBLEU 0.336338 (changed only 0.338616)
+  detail means {"n_candidates": 2.512792, "n_occurrences": 8.076749, "n_renamed": 2.512792, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0022  auroc 0.5085  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9933  tool_error_fraction 0.0007  codebleu_distance 0.3363
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.252672 (changed only 0.252974)
+  detail means {"n_candidates": 4.127533, "n_occurrences": 15.746126, "n_renamed": 4.127533, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0024  auroc 0.5184  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.2527
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} deepseek_coder_6p7b cpp
+  status {'APPLIED': 836, 'UNCHANGED': 4}  changed 0.995238  1-CodeBLEU 0.145426 (changed only 0.146122)
+  detail means {"n_candidates": 4.001196, "n_occurrences": 17.924641, "n_renamed": 4.001196, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.4655  pass_at_1 0.5952  delta_pass_at_1_pp 5.5952  delta_pass_at_1_pp_vs_marked 1.6667  changed_fraction 0.9952  tool_error_fraction 0.0000  codebleu_distance 0.1454
+
+##### T1.5 {"k": 1} qwen25_coder_7b python
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.126923 (changed only 0.126923)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.071375, "n_stderr_log": 0.44843, "n_unused_var": 0.480194}
+  tools {}
+  tpr_at_fpr 0.0198  auroc 0.8412  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.1269
+
+##### T1.5 {"k": 1} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.069312 (changed only 0.070231)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.092883, "n_stderr_log": 0.44029, "n_unused_var": 0.466828}
+  tools {}
+  tpr_at_fpr 0.0607  auroc 0.6925  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.0693
+
+##### T1.5 {"k": 1} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.099875 (changed only 0.100473)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.124551, "n_stderr_log": 0.433533, "n_unused_var": 0.441916}
+  tools {}
+  tpr_at_fpr 0.0107  auroc 0.6545  pass_at_1 0.7667  delta_pass_at_1_pp 2.5000  delta_pass_at_1_pp_vs_marked 0.1190  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.0999
+
+##### T1.5 {"k": 1} deepseek_coder_6p7b python
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.200638 (changed only 0.200638)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.070254, "n_stderr_log": 0.469357, "n_unused_var": 0.460389}
+  tools {}
+  tpr_at_fpr 0.0045  auroc 0.6117  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2006
+
+##### T1.5 {"k": 1} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.080288 (changed only 0.080384)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.091776, "n_stderr_log": 0.439809, "n_unused_var": 0.468415}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.5829  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.0803
+
+##### T1.5 {"k": 1} deepseek_coder_6p7b cpp
+  status {'APPLIED': 837, 'UNCHANGED': 3}  changed 0.996429  1-CodeBLEU 0.085057 (changed only 0.085361)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.130227, "n_stderr_log": 0.425329, "n_unused_var": 0.444444}
+  tools {}
+  tpr_at_fpr 0.0012  auroc 0.5382  pass_at_1 0.6083  delta_pass_at_1_pp 4.2857  delta_pass_at_1_pp_vs_marked 0.3571  changed_fraction 0.9964  tool_error_fraction 0.0000  codebleu_distance 0.0851
+
+##### T1.5 {"k": 3} qwen25_coder_7b python
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.203474 (changed only 0.203474)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.237668, "n_stderr_log": 1.345291, "n_unused_var": 1.41704}
+  tools {}
+  tpr_at_fpr 0.0288  auroc 0.8916  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2035
+
+##### T1.5 {"k": 3} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.141136 (changed only 0.143009)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.305187, "n_stderr_log": 1.40772, "n_unused_var": 1.287093}
+  tools {}
+  tpr_at_fpr 0.0345  auroc 0.6018  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.1411
+
+##### T1.5 {"k": 3} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.185004 (changed only 0.186112)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.346108, "n_stderr_log": 1.307784, "n_unused_var": 1.346108}
+  tools {}
+  tpr_at_fpr 0.0107  auroc 0.6038  pass_at_1 0.7667  delta_pass_at_1_pp 2.5000  delta_pass_at_1_pp_vs_marked 0.1190  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.1850
+
+##### T1.5 {"k": 3} deepseek_coder_6p7b python
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.297364 (changed only 0.297364)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.215247, "n_stderr_log": 1.366966, "n_unused_var": 1.417788}
+  tools {}
+  tpr_at_fpr 0.0022  auroc 0.6230  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2974
+
+##### T1.5 {"k": 3} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.166519 (changed only 0.166718)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.250298, "n_stderr_log": 1.357569, "n_unused_var": 1.392133}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.4964  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.1665
+
+##### T1.5 {"k": 3} deepseek_coder_6p7b cpp
+  status {'APPLIED': 837, 'UNCHANGED': 3}  changed 0.996429  1-CodeBLEU 0.157552 (changed only 0.158116)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.351254, "n_stderr_log": 1.345281, "n_unused_var": 1.303465}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.4621  pass_at_1 0.6071  delta_pass_at_1_pp 4.4048  delta_pass_at_1_pp_vs_marked 0.4762  changed_fraction 0.9964  tool_error_fraction 0.0000  codebleu_distance 0.1576
+
+##### T1.5 {"k": 5} qwen25_coder_7b python
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.236645 (changed only 0.236645)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.399103, "n_stderr_log": 2.227205, "n_unused_var": 2.373692}
+  tools {}
+  tpr_at_fpr 0.0568  auroc 0.9222  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2366
+
+##### T1.5 {"k": 5} qwen25_coder_7b java
+  status {'APPLIED': 829, 'UNCHANGED': 11}  changed 0.986905  1-CodeBLEU 0.1736 (changed only 0.175903)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.493366, "n_stderr_log": 2.258142, "n_unused_var": 2.248492}
+  tools {}
+  tpr_at_fpr 0.0179  auroc 0.5165  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9869  tool_error_fraction 0.0000  codebleu_distance 0.1736
+
+##### T1.5 {"k": 5} qwen25_coder_7b cpp
+  status {'APPLIED': 835, 'UNCHANGED': 5}  changed 0.994048  1-CodeBLEU 0.217261 (changed only 0.218562)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.598802, "n_stderr_log": 2.210778, "n_unused_var": 2.190419}
+  tools {}
+  tpr_at_fpr 0.0107  auroc 0.5650  pass_at_1 0.7679  delta_pass_at_1_pp 2.3810  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2173
+
+##### T1.5 {"k": 5} deepseek_coder_6p7b python
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.333776 (changed only 0.333776)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.374813, "n_stderr_log": 2.220478, "n_unused_var": 2.404709}
+  tools {}
+  tpr_at_fpr 0.0019  auroc 0.6384  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.3338
+
+##### T1.5 {"k": 5} deepseek_coder_6p7b java
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.207835 (changed only 0.208083)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.404052, "n_stderr_log": 2.288439, "n_unused_var": 2.307509}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.4251  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.2078
+
+##### T1.5 {"k": 5} deepseek_coder_6p7b cpp
+  status {'APPLIED': 837, 'UNCHANGED': 3}  changed 0.996429  1-CodeBLEU 0.181358 (changed only 0.182008)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.635603, "n_stderr_log": 2.099164, "n_unused_var": 2.265233}
+  tools {}
+  tpr_at_fpr 0.0000  auroc 0.4010  pass_at_1 0.6071  delta_pass_at_1_pp 4.4048  delta_pass_at_1_pp_vs_marked 0.4762  changed_fraction 0.9964  tool_error_fraction 0.0000  codebleu_distance 0.1814

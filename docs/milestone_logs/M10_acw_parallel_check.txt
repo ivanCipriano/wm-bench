@@ -1,0 +1,4 @@
+##### nodo tnode08, commit 9b90b76
+##### 100 item da /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/detect/acw/qwen25_coder_7b/86851261a344/attacked/T1.1/64c5926a3776/L1_python_test
+tempo per lotto: sequenza 285 s, parallelo 74 s (compresi avvio, login e canarino)
+risultati: IDENTICI su 100
