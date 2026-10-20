@@ -163,6 +163,8 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
   esegue su `RULE_WORKERS` = 8 thread, ognuno con il suo processo Sourcery e il suo file di configurazione
   (nome univoco nel codice). Il canarino resta in sequenza dopo il lotto. Il risultato non cambia:
   `scripts/check_acw_parallel.sh` riesegue in parallelo item già rilevati in sequenza e li confronta.
+  Verifica (job 800906, `tnode08`, commit 9b90b76, 100 item di T1.1 su Qwen): risultati **identici** su
+  100; 74 s per lotto contro 285 s in sequenza (log `docs/milestone_logs/M10_acw_parallel_check.txt`).
 - **Limiti di Sourcery:** la documentazione attuale non descrive più la CLI (l'ultima versione su PyPI è la
   1.46.0, settembre 2026; l'ambiente ha la 1.33.0, gennaio 2025) e non indica limiti di frequenza o di volume.
   L'oracle fa una prova di 30 chiamate consecutive cronometrate, registrando codici di uscita e messaggi.
