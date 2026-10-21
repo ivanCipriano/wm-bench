@@ -49,10 +49,19 @@ class McgmarkAdapter(PromptEmbedder, Detector):
     twin_baseline: ClassVar[bool] = True  # baseline gemella con lo stesso prefill (D20)
 
     def to_native_hparams(self, hp: dict[str, Any]) -> dict[str, Any]:
-        """Nessun iperparametro regolabile nel codice né nel paper (audit §3)."""
-        if hp:
-            raise ConfigError(f"mcgmark has no tunable hyperparameters, got {sorted(hp)}")
-        return dict(FIXED_NATIVE)
+        """Unico iperparametro: ``outlier_scale``, S della soglia degli outlier (paper §4.3, Eq. 1;
+        patch 0004, D32). Senza la chiave gli outlier sono spenti (codice ufficiale, misura
+        secondaria) e i parametri nativi sono quelli di prima della 0004: stesso ``config_hash``."""
+        unknown = sorted(set(hp) - {"outlier_scale"})
+        if unknown:
+            raise ConfigError(f"mcgmark: unknown hyperparameters {unknown} (only outlier_scale)")
+        native = dict(FIXED_NATIVE)
+        if "outlier_scale" in hp:
+            scale = hp["outlier_scale"]
+            if isinstance(scale, bool) or not isinstance(scale, int | float) or scale <= 0:
+                raise ConfigError(f"mcgmark: outlier_scale must be a positive number: {scale!r}")
+            native["outlier_scale"] = float(scale)
+        return native
 
     def embed_metrics(self, result: WorkerResult | None) -> dict[str, Any]:
         """Siti idonei = posizioni marcate (unità: token generato, audit §2)."""

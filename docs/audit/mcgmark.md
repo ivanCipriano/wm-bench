@@ -170,7 +170,19 @@ ridistribuzione dei token molto probabili, mentre §3.1 dice che non ci sono ipe
     se il token più probabile è verde riceve −(max − min), che è il meccanismo del calo di Pass@1 (§2.1).
 - **Lettura:** il meccanismo del paper non esiste nel codice in forma attivabile: c'è come codice commentato,
   incompleto e non coerente con il paper per il bit 0. Attivarlo richiede una patch nuova, non configurazione.
-  Esito, decisione e misura su 20 prompt di L1: da completare.
+- **Decisione dell'utente (21 ottobre 2026), presa per principio e non sui risultati:** il protocollo elenca la
+  soglia di ridistribuzione degli outlier fra gli iperparametri di MCGMark, quindi il metodo valutato include il
+  meccanismo. Terza regola delle discrepanze (`CLAUDE.md`): patch **0004** dall'Algoritmo 1 del paper, dietro
+  l'opzione `outlier_scale` (spenta di default), con i valori del codice (Q1 = 25° e Q3 = 75° percentile,
+  S = 1,5). Dettagli e scelte dove il paper non è esplicito in `patches/mcgmark/README.md`.
+  - Se la prova conferma che la patch funziona, la versione con la 0004 diventa la **principale** e il codice
+    ufficiale senza outlier una **misura secondaria**; la selezione di MCGMark si rifà (D32).
+  - **Il paper non specifica S.** La griglia è **fissata prima della prova**: S ∈ {1,0; 1,5; 3,0} (il valore del
+    codice e di Tukey, uno più protettivo e uno meno). La versione senza outlier non entra nella griglia. Prima
+    di lanciarla si presenta la stima dei costi.
+- **Prova su 20 prompt di L1 dev Python (solo S = 1,5)**, per verificare che la patch funzioni (inserimento
+  riuscito, messaggi recuperati, decodifica corretta; Pass@1 solo informativo):
+  `scripts/check_mcgmark_outliers.sh`. Esito: da riportare qui.
 
 ## 4. Linguaggi
 

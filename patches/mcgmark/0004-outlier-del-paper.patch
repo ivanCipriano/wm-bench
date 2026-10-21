@@ -1,0 +1,116 @@
+diff --git a/Watermark/watermark_processor.py b/Watermark/watermark_processor.py
+index ff2a0a9..670a80e 100644
+--- a/Watermark/watermark_processor.py
++++ b/Watermark/watermark_processor.py
+@@ -167,6 +167,7 @@ class WatermarkBase:
+         seeding_scheme: str = "simple_1",  # mostly unused/always default
+         hash_key: int = 666,  # just a large prime number to create a rng seed with sufficient bit width
+         select_green_tokens: bool = True,
++        outlier_scale: float = None,  # [wm-bench 0004] S of Eq. (1); None = outliers off (original code)
+     ):
+ 
+         # watermarking parameters
+@@ -198,6 +199,10 @@ class WatermarkBase:
+         self.robust_list = []
+         self.using_roublist = False
+         self.watermark_info = ""
++        # [wm-bench 0004] outlier inclusion of the paper (Sec. 4.3, Algorithm 1), off when outlier_scale is None
++        self.outlier_scale = outlier_scale
++        self.outlier_pending = None  # (information position, tokens moved across partitions)
++        self.outlier_log = []
+         # self.case_3_stack = []
+ 
+ 
+@@ -267,7 +272,8 @@ class WatermarkBase:
+             self.is_pure = False
+         else:
+             self.is_pure = True
+-            if green_reset:
++            # [wm-bench 0004] with the outliers on, Algorithm 1 replaces this special case (top token, bit 1)
++            if green_reset and self.outlier_scale is None:
+                 if self.tele_count % 24 < 12:
+                     self._cal_watermark_info()
+                     # print("Test",self.watermark_info)
+@@ -295,6 +301,49 @@ class WatermarkBase:
+             # self.using_roublist = False
+             self.watermark_info = get_old_water_info()
+ 
++    # [wm-bench 0004] outlier inclusion of the paper (Sec. 4.3, Algorithm 1, Eq. (1))
++    def _select_outliers(self, row):
++        """Upper outliers of the row (IQR, Q1/Q3 = 25/75th percentile, fence Q3 + S * IQR) as in the
++        commented-out code of the repository: one outlier is included, of several half are chosen with
++        the key (np.random.choice seeded with hash_key, floor of half)."""
++        data = row.float().cpu().numpy()
++        q1 = np.percentile(data, 25)
++        q3 = np.percentile(data, 75)
++        upper_bound = q3 + self.outlier_scale * (q3 - q1)
++        outlier_indices = [int(i) for i in np.nonzero(data > upper_bound)[0]]
++        if len(outlier_indices) <= 1:
++            return outlier_indices, len(outlier_indices)
++        chosen = np.random.RandomState(self.hash_key).choice(outlier_indices, len(outlier_indices) // 2, replace=False)
++        return [int(i) for i in chosen], len(outlier_indices)
++
++    def _include_outliers(self, greenlist_mask, bit):
++        """Puts the selected outliers in the favoured part (green for bit 1, red for bit 0) at the
++        information positions only (Sec. 4.3: the error-correction bits are embedded without outliers).
++        The error-correction bit is set at the next step, from the sampled token (_finish_outlier_bit)."""
++        if self.outlier_scale is None or self.tele_count % 24 >= 12:
++            return greenlist_mask
++        moved = []
++        if self.selected_indices:
++            sel = torch.tensor(self.selected_indices, device=greenlist_mask.device, dtype=torch.long)
++            in_green = greenlist_mask[0, sel]
++            moved = (sel[~in_green] if bit == 1 else sel[in_green]).tolist()
++            greenlist_mask[0, sel] = bit == 1
++        self.outlier_pending = (self.tele_count, set(moved))
++        self.outlier_log.append({"position": self.tele_count, "bit": bit, "n_outliers": self.n_outliers,
++                                 "n_included": len(self.selected_indices), "n_moved": len(moved)})
++        return greenlist_mask
++
++    def _finish_outlier_bit(self, input_ids):
++        """Error-correction bit of the last information position: 1 if the sampled token is an included
++        outlier that the detector reads in the other part (Sec. 4.3), otherwise 0."""
++        if self.outlier_pending is None:
++            return
++        position, moved = self.outlier_pending
++        self.outlier_pending = None
++        hit = int(input_ids[-1][-1].item()) in moved
++        self.robust_list[position] = "1" if hit else "0"
++        self.outlier_log[-1]["sampled_moved"] = hit
++
+ 
+ 
+ # TODO by kaiwen: 23个token添加后剩下内容的标识位如何处理
+@@ -814,6 +863,7 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+                             if self.tele_count % 12 == 0 and self.tele_count % 24 != 0:
+                                 self.get_waterinfo_12(input_ids.device)
+                             greenlist_mask = reset_green_list_ids_and_greenlist_mask()
++                            greenlist_mask = self._include_outliers(greenlist_mask, bit=1)  # [wm-bench 0004] unchanged when off
+                             scores[greenlist_mask] = scores[greenlist_mask] + greenlist_bias
+                             # if self.tele_count == watermark_info_len - 1:
+                             #     set_ready_new_round()
+@@ -845,6 +895,7 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+                             if self.tele_count % 12 == 0 and self.tele_count % 24 != 0:
+                                 self.get_waterinfo_12(input_ids.device)
+                             greenlist_mask = reset_green_list_ids_and_greenlist_mask()
++                            greenlist_mask = self._include_outliers(greenlist_mask, bit=0)  # [wm-bench 0004] unchanged when off
+                             scores[greenlist_mask] = scores[greenlist_mask] - greenlist_bias
+                             # if self.tele_count == watermark_info_len - 1:
+                             #     set_ready_new_round()
+@@ -989,6 +1040,7 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+              self.rng = torch.Generator(device=input_ids.device)
+ 
+         device=input_ids.device
++        self._finish_outlier_bit(input_ids)  # [wm-bench 0004] no-op with the outliers off
+ 
+ 
+         def is_evenly_distributed(collection):
+@@ -1124,6 +1176,8 @@ class WatermarkLogitsProcessor(WatermarkBase, LogitsProcessor):
+         # in _get_greenlist_ids); this also drops np.random.seed/np.random.choice at every step
+ 
+         self.max_index = int(torch.argmax(first_row_2).item())  # first maximal value, like list.index
++        if self.outlier_scale is not None:  # [wm-bench 0004]
++            self.selected_indices, self.n_outliers = self._select_outliers(first_row_2)
+ 
+         
+         batched_greenlist_ids = [None for _ in range(input_ids.shape[0])]

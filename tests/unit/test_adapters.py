@@ -120,8 +120,13 @@ def test_mcgmark_hparams_and_message(cfg: ExperimentConfig) -> None:
     a = McgmarkAdapter(cfg.methods_catalog["mcgmark"], cfg, echo_client())
     assert a.default_hparams() == {}
     assert a.to_native_hparams({}) == FIXED_NATIVE and FIXED_NATIVE["gamma"] == 0.5
-    with pytest.raises(ConfigError, match="no tunable"):
+    with pytest.raises(ConfigError, match="only outlier_scale"):
         a.to_native_hparams({"delta": 2.0})
+    # Outlier del paper (patch 0004, D32): S entra nei parametri nativi solo se indicato.
+    assert a.to_native_hparams({"outlier_scale": 1.5}) == {**FIXED_NATIVE, "outlier_scale": 1.5}
+    for bad in (0, -1.0, True, "1.5"):
+        with pytest.raises(ConfigError, match="positive number"):
+            a.to_native_hparams({"outlier_scale": bad})
     assert a.supports("python") and not any(a.supports(x) for x in ("java", "cpp", "javascript"))
     assert a.gpu_for_detect and a.seed_scheme() == "per_sample"
     assert a.source().pythonpath == a.source().root / "Watermark"

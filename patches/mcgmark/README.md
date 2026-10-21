@@ -67,3 +67,34 @@ identico all'originale dove γ = 0,25 non compare. Lo speed-up misurato è ripor
 
 - `scripts/apply_patches.sh mcgmark` applica la patch a `build/patched/mcgmark/` sul commit fissato: verificato in M0.
 - La fedeltà del comportamento è verificata dal test oracle di MCGMark (SPEC §21.4, M6): `scripts/oracle_method.sh mcgmark`.
+
+## 0004-outlier-del-paper.patch
+
+Componente del paper assente nel codice in forma attivabile (terza regola delle discrepanze di
+`CLAUDE.md`, decisione dell'utente del 21 ottobre 2026; D32, audit di MCGMark §3.3). Il paper
+(§4.3, Eq. (1), Algoritmo 1) include gli outlier superiori della distribuzione nella parte
+favorita del vocabolario; il repository li calcola ma li usa solo in codice commentato, che non
+funzionerebbe (con un solo outlier itera su un intero) e per il bit 0 li metterebbe nella parte
+penalizzata.
+
+In `Watermark/watermark_processor.py`, **dietro l'opzione `outlier_scale`** (S di Eq. (1);
+`None` = spenta, default):
+
+| Punto | Modifica (solo con l'opzione attiva) |
+|---|---|
+| `WatermarkBase.__init__` | argomento `outlier_scale` (default `None`) e stato `outlier_pending`, `outlier_log` |
+| `__call__`, inizio | `_finish_outlier_bit`: bit di correzione della posizione d'informazione precedente = 1 se il token scelto è un outlier incluso che il rilevatore legge nell'altra parte (§4.3: "When outliers impact the watermark information, MCGMark sets the error-correction bit to 1") |
+| `__call__`, dopo `max_index` | `_select_outliers`: outlier superiori dei logit con l'IQR (25° e 75° percentile, soglia Q3 + S·IQR) come `detect_outlier` del repository; uno → incluso, più di uno → metà (parte intera inferiore) con `np.random.choice` e seme `hash_key`, come il codice commentato, ma su un `RandomState` locale invece del generatore globale |
+| `_bias_greenlist_logits`, rami del bit 1 e del bit 0 | `_include_outliers`: alle sole posizioni d'informazione (§4.3: i bit di correzione si inseriscono senza outlier) gli outlier scelti entrano nella green list per il bit 1 e ne escono per il bit 0, cioè vanno nella parte che riceve il bias in entrambi i casi |
+| `_get_greenlist_ids` | il caso particolare del codice (token più probabile nella green list col bit 1, `is_pure`) resta solo a opzione spenta: con l'opzione attiva lo sostituisce l'Algoritmo 1 |
+
+- **Scelte dal codice dove il paper non è esplicito:** outlier sui logit (il paper dice "token
+  probability distributions"); metà per difetto (l'Algoritmo 1 scrive ⌈|F|/2⌉); scelta con
+  `hash_key`. Il paper non dà un valore di S: la griglia S ∈ {1,0; 1,5; 3,0} è fissata
+  dall'utente prima della prova (audit §3.3).
+- **Rilevazione invariata:** il rilevatore legge l'appartenenza alla green list senza outlier e
+  decodifica `informazione XOR correzione`, come prima.
+- **Verifica:** a opzione spenta il testo deve essere identico carattere per carattere a quello
+  dei campioni marcati di L1 dev congelati (0000-0003, stesso seme); a opzione attiva
+  inserimento, messaggi recuperati e bit corretti dal bit di correzione
+  (`scripts/check_mcgmark_outliers.sh`, 20 prompt di L1 dev Python).

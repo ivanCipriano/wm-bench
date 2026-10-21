@@ -2,7 +2,7 @@
 
 Gira nell'ambiente ``mcgmark`` con ``PYTHONPATH`` = ``shims/`` + ``build/patched/mcgmark/Watermark``
 (patch 0000 degli import e dei simboli mancanti, 0001 γ fisso, 0002 senza decodifica inutile
-del vocabolario).
+del vocabolario, 0003 senza calcoli inutili, 0004 outlier del paper dietro un'opzione).
 
 Il processor non supporta più sequenze per volta e tiene stato in variabili globali di modulo
 (``First_watermark_token``, ``Bich_kaiwen_First_watermark_token``, ``_global_dict``): ogni item
@@ -18,6 +18,10 @@ stato globale si azzera prima di ogni campione e di ogni rilevazione.
   repository), ``PARTIAL`` altrimenti (anche con 0 posizioni).
   Con ``hparams.watermark = False`` (baseline gemella) la generazione è identica ma senza
   processor: stato ``OK``.
+  Con ``hparams.outlier_scale`` = S (patch 0004, D32) il processor include gli outlier del
+  paper (§4.3, Algoritmo 1) nelle posizioni d'informazione; senza la chiave il processor è
+  costruito come prima e il testo è identico. Per posizione d'informazione ``extra["outliers"]``
+  registra outlier trovati, inclusi, spostati di parte e se il token scelto era uno spostato.
 - **detect**: estrazione dal solo codice composta da due parti del repository:
   ``WatermarkDetector._pseudo_generate_mask`` (la macchina a stati rigiocata sui token, che
   ricostruisce le posizioni marcate) e ``WatermarkLogitsProcessor.detect`` (i bit dalle green
@@ -120,7 +124,7 @@ class McgmarkShim(ShimBase):
         self.wg.set_waterinfo_12_global(None)
 
     def _common(self) -> Dict[str, Any]:
-        return {
+        common: Dict[str, Any] = {
             "vocab": self.vocab,
             "gamma": float(self.hp["gamma"]),
             "delta": float(self.hp["delta"]),  # ignorato dal repository (bias = scarto dei logit)
@@ -128,6 +132,10 @@ class McgmarkShim(ShimBase):
             "hash_key": int(self.request.key),
             "select_green_tokens": bool(self.hp["select_green_tokens"]),
         }
+        if self.hp.get("outlier_scale") is not None:
+            # Solo con la chiave: senza, il costruttore riceve gli argomenti di prima della 0004.
+            common["outlier_scale"] = float(self.hp["outlier_scale"])
+        return common
 
     @staticmethod
     def _message(item: WorkerItem) -> str:
@@ -163,6 +171,7 @@ class McgmarkShim(ShimBase):
             processors.append(
                 self.wp.WatermarkLogitsProcessor(tokenizer=self.tokenizer, **self._common())
             )
+        outliers_on = watermark and self.hp.get("outlier_scale") is not None
         input_ids = self.prompt_ids(item, prefill)
         set_seed(item.seed)
         log = io.StringIO()
@@ -190,6 +199,8 @@ class McgmarkShim(ShimBase):
             "n_generated_tokens": int(output.shape[1] - input_ids.shape[1]),
             "seed_scheme": "per_sample",
         }
+        if outliers_on:
+            extra["outliers"] = list(processors[0].outlier_log)
         if not self._logged_config:
             extra["generation_config"] = effective_config(self.generation_config)
             self._logged_config = True
