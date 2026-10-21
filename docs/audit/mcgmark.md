@@ -182,7 +182,32 @@ ridistribuzione dei token molto probabili, mentre §3.1 dice che non ci sono ipe
     di lanciarla si presenta la stima dei costi.
 - **Prova su 20 prompt di L1 dev Python (solo S = 1,5)**, per verificare che la patch funzioni (inserimento
   riuscito, messaggi recuperati, decodifica corretta; Pass@1 solo informativo):
-  `scripts/check_mcgmark_outliers.sh`. Esito: da riportare qui.
+  `scripts/check_mcgmark_outliers.sh`. Esito (21 ottobre 2026, Qwen2.5-Coder 7B, 20 problemi × 6 campioni;
+  `M10_mcgmark_outliers_check.txt`, `_detail.txt`, `_tokens.txt`):
+
+  | | spenta (`{}`) | accesa (S = 1,5) |
+  |---|---|---|
+  | testo identico ai campioni congelati (0000-0003) | **120/120** | — |
+  | inserimento riuscito | 10/120 | 12/120 |
+  | messaggio recuperato dal codice, sugli OK | 10/10 | 8/12 |
+  | Pass@1 (informativo) | 27/120 (= congelati) | 31/120 |
+
+  - **Opzione spenta:** nessun effetto, il codice ufficiale resta identico (misura secondaria).
+  - **Opzione accesa, il meccanismo funziona:** in media 1.730 outlier per posizione d'informazione, 865 inclusi,
+    433 spostati di parte; il token scelto è uno spostato nel 32% delle posizioni (864 su 2.736). Negli 8 campioni
+    recuperati i bit d'informazione letti diversamente (fino a 12 su 12) stanno su outlier spostati e scelti e il
+    bit di correzione li rimette a posto.
+  - **I 4 casi non recuperati non sono errori della patch** (confronto dei token marcati in generazione con quelli
+    che la rilevazione ricostruisce dal codice): in 2 la sequenza generata non è quella che si ottiene
+    ritokenizzando il testo (`'whether','a'` contro `'wh','eth','era'`; `';amp',';','amp'` contro
+    `';amp',';amp'`), quindi la rilevazione vede posizioni diverse; in 1 la fence di chiusura è generata come
+    `'``','`
+'` e la macchina a stati non la riconosce, così le posizioni continuano nella spiegazione dopo il
+    codice (45 inserite, 5 nel codice estratto); in 1 la macchina a stati diverge su `has`/`_positive` e sbaglia un
+    bit (11/12). Con l'opzione spenta il token scelto è quasi sempre il più probabile e questi casi non compaiono:
+    scegliere spesso un outlier diverso dal più probabile rende più frequenti le sequenze non canoniche. È un
+    limite del meccanismo del paper con una rilevazione che vede solo il codice, da dichiarare.
+  - **Esito: la patch funziona** (criterio dell'utente: inserimento, messaggi recuperati, decodifica corretta).
 
 ## 4. Linguaggi
 
