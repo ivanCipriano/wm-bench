@@ -246,9 +246,47 @@ def detail(cfg: Any, store: ArtifactStore, out: Path, model_id: str) -> None:
                 w(f"    registro degli outlier del primo ciclo: {log}\n")
 
 
+def _results(path: Path) -> dict[str, dict[str, Any]]:
+    """Risultati del worker (``results.jsonl``) per ``item_id``."""
+    found: dict[str, dict[str, Any]] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            record = json.loads(line)
+            found[str(record["item_id"])] = record
+    return found
+
+
+def tokens(cfg: Any, store: ArtifactStore, out: Path, model_id: str) -> None:
+    """Campioni OK con il messaggio non recuperato: token marcati in generazione contro quelli che
+    la rilevazione ricostruisce dal codice estratto, prima divergenza e fine del codice."""
+    w = sys.stdout.write
+    for variant in VARIANTS:
+        rows = json.loads((out / f"{variant}.json").read_text(encoding="utf-8"))["rows"]
+        embedded = _results(out / f"run_{variant}" / "results.jsonl")
+        detected = _results(out / f"detect_{variant}" / "results.jsonl")
+        w(f"\n=== {variant}\n")
+        for r in rows:
+            if r["embed_status"] != "OK" or (r["rounds"] and r["rounds"][0] == r["message"]):
+                continue
+            gen = embedded[f"{r['problem_key']}#{r['sample_index']}"]["extra"]["embedded_tokens"]
+            det = (detected[r["sample_id"]].get("extra") or {}).get("tokens", [])
+            split = next(
+                (i for i, (a, b) in enumerate(zip(gen, det, strict=False)) if a != b),
+                min(len(gen), len(det)),
+            )
+            w(
+                f"  {r['sample_id']}: token marcati in generazione {len(gen)}, dal codice "
+                f"{len(det)}; uguali fino alla posizione {split}\n"
+                f"    generazione {gen[max(0, split - 3) : split + 5]}\n"
+                f"    codice      {det[max(0, split - 3) : split + 5]}\n"
+                f"    raw_output {len(r['raw_output'] or '')} caratteri, codice estratto "
+                f"{len(r['code'])}; fine del codice {r['code'][-120:]!r}\n"
+            )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["generate", "execute", "report", "detail"])
+    parser.add_argument("mode", choices=["generate", "execute", "report", "detail", "tokens"])
     parser.add_argument("--model", default="qwen25_coder_7b")
     args = parser.parse_args()
     stage = {
@@ -256,14 +294,20 @@ def main() -> int:
         "execute": "execute",
         "report": "metrics",
         "detail": "metrics",
+        "tokens": "metrics",
     }[args.mode]
     cfg = load_experiment(["paths=cluster", f"stage={stage}"])
     store = ArtifactStore(cfg.paths.artifacts)
     out = cfg.paths.tmp / "mcgmark_outliers" / args.model
     out.mkdir(parents=True, exist_ok=True)
-    {"generate": generate, "execute": execute, "report": report, "detail": detail}[args.mode](
-        cfg, store, out, args.model
-    )
+    modes = {
+        "generate": generate,
+        "execute": execute,
+        "report": report,
+        "detail": detail,
+        "tokens": tokens,
+    }
+    modes[args.mode](cfg, store, out, args.model)
     return 0
 
 
