@@ -216,17 +216,52 @@ def report(cfg: Any, store: ArtifactStore, out: Path, model_id: str) -> None:
             w(f"  Pass@1 (informativo): {_passed(status, ids)}\n")
 
 
+def detail(cfg: Any, store: ArtifactStore, out: Path, model_id: str) -> None:
+    """Campioni OK: posizioni inserite e rilevate, messaggio, bit diversi per metà del ciclo."""
+    w = sys.stdout.write
+    for variant in VARIANTS:
+        rows = json.loads((out / f"{variant}.json").read_text(encoding="utf-8"))["rows"]
+        w(f"\n=== {variant}: campioni con inserimento OK\n")
+        for r in (r for r in rows if r["embed_status"] == "OK"):
+            emb, read = r["embedded_bits"], r["detect_bits"]
+            n = min(len(emb), len(read))
+            diff = [i for i in range(n) if emb[i] != read[i]]
+            hits = {o["position"] for o in r["outliers"] if o.get("sampled_moved")}
+            info = [i for i in diff if i % ROUND < INFO]
+            corr = [i for i in diff if i % ROUND >= INFO]
+            first = r["rounds"][0] if r["rounds"] else None
+            matches = (
+                sum(a == b for a, b in zip(first, r["message"], strict=True)) if first else None
+            )
+            w(
+                f"  {r['sample_id']}: posizioni inserite {len(emb)}, rilevate {len(read)}, "
+                f"primo ciclo {first} contro {r['message']} ({matches}/12); bit diversi: "
+                f"informazione {len(info)} (su outlier spostati e scelti "
+                f"{sum(i in hits for i in info)}), correzione {len(corr)}; prima differenza "
+                f"{diff[0] if diff else None}\n"
+            )
+            if first != r["message"]:
+                w(f"    inseriti {emb[: 2 * ROUND]}\n    letti    {read[: 2 * ROUND]}\n")
+                log = [o for o in r["outliers"] if o["position"] < ROUND]
+                w(f"    registro degli outlier del primo ciclo: {log}\n")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("mode", choices=["generate", "execute", "report"])
+    parser.add_argument("mode", choices=["generate", "execute", "report", "detail"])
     parser.add_argument("--model", default="qwen25_coder_7b")
     args = parser.parse_args()
-    stage = {"generate": "watermark", "execute": "execute", "report": "metrics"}[args.mode]
+    stage = {
+        "generate": "watermark",
+        "execute": "execute",
+        "report": "metrics",
+        "detail": "metrics",
+    }[args.mode]
     cfg = load_experiment(["paths=cluster", f"stage={stage}"])
     store = ArtifactStore(cfg.paths.artifacts)
     out = cfg.paths.tmp / "mcgmark_outliers" / args.model
     out.mkdir(parents=True, exist_ok=True)
-    {"generate": generate, "execute": execute, "report": report}[args.mode](
+    {"generate": generate, "execute": execute, "report": report, "detail": detail}[args.mode](
         cfg, store, out, args.model
     )
     return 0
