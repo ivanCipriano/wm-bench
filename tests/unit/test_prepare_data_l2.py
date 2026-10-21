@@ -95,7 +95,8 @@ def test_l2_artifacts_counts_and_split(run_l2: tuple[BenchmarkFacade, Experiment
     store = facade.store
     split = store.read_table(split_ref("L2"))
     assert len(split) == N_PROBLEMS and (split["split"] == "dev").sum() == N_DEV
-    assert store.read_manifest(split_ref("L2")).extra  # type: ignore[union-attr]["selection"][-1]["remaining"] == 4
+    manifest = store.read_manifest(split_ref("L2"))
+    assert manifest is not None and manifest.extra["selection"][-1]["remaining"] == 4
     dev_keys = set(split.loc[split["split"] == "dev", "problem_key"])
     for lang in Language:
         problems = store.read_table(problems_ref(lang, "L2"))
