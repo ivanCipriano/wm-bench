@@ -1,0 +1,20 @@
+
+=== off
+
+=== on
+  47739858f4c9ee042768934461487d30: token marcati in generazione 26, dal codice 26; uguali fino alla posizione 14
+    generazione [' arr', ':\n', ' has', ' has', ',', ' all', '_zeros', ',']
+    codice      [' arr', ':\n', ' has', '_positive', '_positive', ' all', '_zeros', ',']
+    raw_output 1967 caratteri, codice estratto 1957; fine del codice 'e, False, False\n        has_positive, all_zeros, all_neg, all_even_neg = False, False, False, False\n        has_positive'
+  2f069c82e2181b3bb536eda6696380d7: token marcati in generazione 24, dal codice 20; uguali fino alla posizione 11
+    generazione [' &', 'amp', ';amp', ';', 'amp', ';', 'lt', ';&']
+    codice      [' &', 'amp', ';amp', ';amp', ';', 'lt', ';&', 'gt']
+    raw_output 154 caratteri, codice estratto 138; fine del codice 'arr, n):\n    odd_count = 0\n    even_count = 0\n    for i, num in enumerate(arr):\n        if num &amp;amp;amp;lt;&gt;  7:\n'
+  edeeecdfc87da2cf2abdf6714dd6a6e5: token marcati in generazione 28, dal codice 29; uguali fino alla posizione 6
+    generazione [' function', ' to', ' check', 'whether', 'a', ' given', ' string', ' is']
+    codice      [' function', ' to', ' check', 'wh', 'eth', 'era', ' given', ' string']
+    raw_output 291 caratteri, codice estratto 278; fine del codice 'n : boolean \n    """\n    decimal = re.compile(r"""^[0-9]+(\\.[0-9]{1,2})?$""")\n    return decimal.match(num) is not None\n'
+  1533aa96dab7ce8ddfc1197401801150: token marcati in generazione 45, dal codice 5; uguali fino alla posizione 4
+    generazione [' return', ' int', ' result', '``', '`\n', 'Note', ':', ' The']
+    codice      [' return', ' int', ' result', '\n']
+    raw_output 525 caratteri, codice estratto 303; fine del codice ' sum\n    # Convert the sum to an integer before returning\n    result = int(sum)\n    print(result)\n    return int result\n'
