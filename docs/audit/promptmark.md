@@ -3,7 +3,8 @@
 - **Stato:** decisioni dell'utente del 7 ottobre 2026 applicate (test del ciclo dagli esempi del prompt,
   esecuzione con limiti, griglia HPO su tutti e tre i parametri). Oracle verde l'8 ottobre 2026 (4 test,
   10 prompt) e verifiche prima di L1 completate (§10): integrazione corretta, watermark non inserito dal
-  modello; si procede con il protocollo comune (decisione dell'utente).
+  modello; si procede con il protocollo comune (decisione dell'utente). **Audit approvato dall'utente il
+  21 ottobre 2026**, rischio residuo della rete nel ciclo (§9) compreso.
 - **Repository:** `ahmedfahad04/promptmark`, paper "PromptMark: A Prompt-Guided Iterative-Feedback Framework
   for Source Code Watermarking" (`PromptMark_ENASE_Final_18_March.pdf` nel repository).
 
@@ -137,7 +138,7 @@
   perché `doctest.DocTestParser` fallisce sull'intero testo quando la recinzione del prompt del framework
   segue la docstring. L'estrazione ora legge gli esempi riga per riga (stessa regola dell'uscita attesa di
   doctest, chiusa anche da docstring e recinzioni); nel primo oracle i 5 campioni HumanEval hanno quindi
-  eseguito 0 esempi. Le iterazioni e la sovrapposizione su HumanEval+ vanno rimisurate.
+  eseguito 0 esempi. Rimisurate nel secondo oracle (sotto).
 - **Seconda correzione:** un esempio con commento in coda (HumanEval/32, `find_zero([1, 2]), 2)  # f(x) = 1 + 2x`)
   dava un'asserzione non valida, che nel ciclo sarebbe diventata un falso errore di correttezza: il commento
   ora si toglie (tokenizzazione Python); gli esempi senza commento restano identici.
@@ -145,9 +146,8 @@
   percorso diretto (senza limiti) danno le stesse iterazioni ed esiti. Sovrapposizione su HumanEval+ dev:
   10 problemi su 24 con esempi, 30 esempi, 23 con input fra i test di base e 10 fra i plus, 9 problemi con
   sovrapposizione (tabella sopra, completa).
-- **Questione aperta per la M9:** su CodeNet gli esempi di input/output del testo coincidono in gran parte
-  con i test di valutazione; quando si arriva a L2 vanno proposte alternative (ciclo di correttezza
-  disattivato su L2, oppure Pass@1 di PromptMark su L2 con avvertenza).
+- **CodeNet (L2), chiusa in M9:** gli esempi di input/output del testo coincidono con il test di Pass@1,
+  quindi su L2 il ciclo di correttezza è spento (D27).
 
 ## 9. Esecuzione degli esempi (decisione dell'utente)
 

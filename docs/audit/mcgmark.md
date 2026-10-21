@@ -3,6 +3,9 @@
 - **Stato:** decisioni dell'utente del 6 e 7 ottobre 2026 (messaggio di 12 bit, γ fisso, seme per campione,
   solo Python, prefill, baseline gemella, L1 senza cicli completi, verifica su codice lungo, patch 0003)
   applicate. Oracle verde il 7 ottobre 2026 (10 test, codice lungo compreso); §5.3 chiuso.
+- **Approvazione (21 ottobre 2026):** correzioni di testo confermate dall'utente; **non confermati** il
+  vincolo su ΔPass@1 violato (`M10_freeze_mcgmark.txt`, `constraint False`) e la lettura degli outlier
+  di §3.1, in verifica (§3.3).
 - **Repository:** `KevinHeiwa/MCGMT`, paper "MCGMark: An Encodable and Robust Online Watermark for Tracing
   LLM-Generated Malicious Code" (arXiv 2408.01354v2).
 
@@ -139,6 +142,36 @@
 - Messaggio atteso: 12 bit uniformi da `derive_seed(global_seed, "mcgmark-msg", problem_key, language, model_id,
   sample_index) % 4096`, anche per i negativi (dai loro identificativi).
 
+### 3.3 Bias e outlier: paper e codice (verifica del 21 ottobre 2026, in corso)
+
+Richiesta dell'utente: SPEC §9.5 elenca come iperparametri l'intensità del bias e la soglia per la
+ridistribuzione dei token molto probabili, mentre §3.1 dice che non ci sono iperparametri.
+
+- **Paper (arXiv 2408.01354v2):**
+  - §4.2: il bit 1 sceglie un token dalla parte 𝔸 del vocabolario, il bit 0 dalla parte 𝔹; alla parte scelta
+    si aggiunge P_gap = max − min delle probabilità, "to ensure this vocabulary contains the highest
+    probability token". **Nessuna intensità del bias regolabile**: δ compare solo per il baseline WLLM (§5.1).
+  - §4.3, Eq. (1) e Algoritmo 1: outlier superiori con l'IQR, F_upper = Q3 + S·IQR, S "scaling factor";
+    un outlier si include nella parte scelta, con più outlier se ne include metà scelta con l'hash H, a ogni
+    posizione marcata e per **entrambi** i valori del bit; se un outlier altera il bit, il bit di correzione
+    vale 1. Scopo dichiarato: evitare token di bassa qualità che compromettano "readability or functionality".
+  - §5.1: Q1 = 0,25, Q3 = 0,75 (i quartili); **S non ha un valore** nel paper; §4.5: S piccolo produce troppi
+    outlier. Nessuna ablazione sugli outlier e nessuna misura di correttezza funzionale (solo CodeBLEU).
+- **Codice (`watermark_processor.py` del submodule):**
+  - bias = `ceil(max − min)` dei logit, `delta` del costruttore ignorato (come il paper: nessun parametro);
+  - outlier calcolati a ogni passo in `__call__` (`detect_outlier`: IQR con S = **1,5 cablato**; un outlier →
+    `selected_indices` = un intero; più outlier → metà con `np.random.choice` e seme `hash_key`);
+  - il loro uso è **codice commentato** in `_get_greenlist_ids` (aggiunta alla green list, solo per
+    `tele_count <= 12`); nessun parametro o opzione lo attiva. Così com'è non funzionerebbe: con un solo
+    outlier itera su un intero (`TypeError`) e aggiunge gli outlier alla green list anche quando il bit è 0,
+    cioè alla parte **penalizzata**, al contrario del paper;
+  - attivo c'è solo un caso particolare: con il bit 1 il token più probabile (`max_index`) entra nella green
+    list se ne era fuori, e il bit di correzione vale 1 (`is_pure`, §5.3). Con il bit 0 nessuna protezione:
+    se il token più probabile è verde riceve −(max − min), che è il meccanismo del calo di Pass@1 (§2.1).
+- **Lettura:** il meccanismo del paper non esiste nel codice in forma attivabile: c'è come codice commentato,
+  incompleto e non coerente con il paper per il bit 0. Attivarlo richiede una patch nuova, non configurazione.
+  Esito, decisione e misura su 20 prompt di L1: da completare.
+
 ## 4. Linguaggi
 
 - Paper: "MCGMark focuses solely on Python language" (§4.4). Codice: la macchina a stati riconosce solo costrutti
@@ -163,6 +196,10 @@
   P(X ≥ 10) = 79/4096 ≈ 1,93%.
 - La soglia all'1% di FPR cade quindi su **11 bit**, con un FPR effettivo intorno allo **0,3%**: il punteggio è
   discreto e non si può centrare l'1%.
+- **Soglia calibrata (L1+L2, congelata in `M10_freeze_mcgmark.txt`): τ = 10**, non 11. Il calcolo sopra vale
+  per i negativi con un ciclo completo; molti negativi non lo hanno, la rilevazione è `FAILED` e vale il
+  punteggio minimo (I2), quindi la frazione di negativi con punteggio ≥ 10 resta sotto l'1% e la
+  calibrazione empirica scende di un bit.
 
 ### 5.3 Bit di correzione (chiuso il 7 ottobre 2026)
 
@@ -235,7 +272,8 @@ Effetto della patch 0001:
 - Allineamento della rilevazione: nel secondo oracle la rilevazione sul codice estratto trovava una posizione in
   meno della generazione e nessun token iniziale in comune (spostamento di un passo: in generazione la macchina
   a stati parte dall'ultimo token del prompt). Lo shim ora fa precedere il codice dall'ultimo token del prefill,
-  lo stesso che vede il processor al primo passo (`context_ids`); da confermare con il prossimo oracle.
+  lo stesso che vede il processor al primo passo (`context_ids`). **Confermato** dall'oracle sul codice
+  lungo del 7 ottobre 2026: posizioni e bit del codice estratto coincidono con la generazione (§2.1).
 
 ## 10. Definizioni operative degli stati
 

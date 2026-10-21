@@ -1,6 +1,8 @@
 # Audit di ACW (SPEC §9.0)
 
 - **Stato:** decisioni dell'utente del 9 ottobre 2026 applicate (§3 punteggio, §4 iperparametri).
+  Decisioni tecniche e testo **approvati dall'utente il 21 ottobre 2026**; la licenza di Sourcery (§6) è
+  in verifica dell'utente e non è ancora confermata.
   Oracle verde il 9 ottobre 2026 (3 test, `tnode01`). Licenza di Sourcery: prova "Code Quality - Team";
   alla scadenza si usa il token di un altro account (decisione dell'utente del 10 ottobre 2026, §6).
 
@@ -88,7 +90,7 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
 - **Input** (SPEC §9.2): i 6 campioni della baseline per prompt (codice estratto D4); output = codice
   trasformato, `parent_id` = campione della baseline. `FAILED` se il codice resta invariato o il tool fallisce.
 
-## 3. Rilevazione e punteggio (decisione aperta)
+## 3. Rilevazione e punteggio (decisa il 9 ottobre 2026)
 
 - Codice (`run_single_folder`): si riapplica lo **stesso insieme** di regole a una copia e si confrontano gli
   hash: invariato = marcato. Decisione **binaria per file**.
@@ -109,7 +111,7 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
 - Codice vuoto: `FAILED`. Il codice con errori di sintassi si valuta come fa il metodo (Sourcery e libcst non
   lo modificano; autopep8 e la regola 45 sì).
 
-## 4. Iperparametri (decisione aperta)
+## 4. Iperparametri (decisi il 9 ottobre 2026)
 
 | Protocollo | Codice | Paper |
 |---|---|---|
@@ -130,7 +132,9 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
   nella tesi.
 - **T3.1 (seconda chiave):** se l'HPO sceglie 43 regole per la configurazione finale, T3.1 per ACW è
   `NOT_APPLICABLE` ("senza sottoinsieme scelto dalla chiave la seconda chiave non produce un watermark
-  diverso"); promemoria per la M11.
+  diverso"). **Non è il caso:** la scelta definitiva su L1+L2 è **30 regole** (`M9_hpo_final_acw.txt`,
+  congelata in `M10_freeze_acw.txt`), quindi la chiave sceglie il sottoinsieme e T3.1 si applica
+  (cluster_info §11, punto 21).
 
 ## 5. Linguaggi
 

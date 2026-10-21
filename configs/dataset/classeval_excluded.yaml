@@ -1,0 +1,25 @@
+# Classi ClassEval escluse dal Livello 3 per tutti i metodi (D21, decisione dell'utente del
+# 21 ottobre 2026). Sono le 6 classi dell'oracle di MCGMark su codice lungo
+# (tests/oracle/make_mcgmark_long_inputs.py, oracle del 7 ottobre 2026, audit di MCGMark §2.1),
+# nell'ordine derive_seed(global_seed, "classeval-oracle-mcgmark", task_id): L3 ha solo la parte di
+# test e queste classi sono state viste durante lo sviluppo. Il loader di ClassEval (M13) le deve
+# escludere con un controllo come check_not_excluded di CodeNet. Non va modificato a mano.
+excluded:
+- problem_key: classeval/ClassEval_73
+  use: oracle_mcgmark
+  reason: usata per l'oracle di MCGMark (verifica su codice lungo)
+- problem_key: classeval/ClassEval_14
+  use: oracle_mcgmark
+  reason: usata per l'oracle di MCGMark (verifica su codice lungo)
+- problem_key: classeval/ClassEval_82
+  use: oracle_mcgmark
+  reason: usata per l'oracle di MCGMark (verifica su codice lungo)
+- problem_key: classeval/ClassEval_90
+  use: oracle_mcgmark
+  reason: usata per l'oracle di MCGMark (verifica su codice lungo)
+- problem_key: classeval/ClassEval_18
+  use: oracle_mcgmark
+  reason: usata per l'oracle di MCGMark (verifica su codice lungo)
+- problem_key: classeval/ClassEval_64
+  use: oracle_mcgmark
+  reason: usata per l'oracle di MCGMark (verifica su codice lungo)
