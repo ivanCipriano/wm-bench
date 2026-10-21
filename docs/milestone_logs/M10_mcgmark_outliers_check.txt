@@ -1,0 +1,20 @@
+##### MCGMark, patch 0004: 20 prompt di L1 dev Python, qwen25_coder_7b
+
+=== off {} (config 9df49d3f4f38), 120 campioni
+  inserimento: {'PARTIAL': 110, 'OK': 10}
+  inserimento riuscito: 10/120; posizioni marcate, media 10.6
+  rilevazione sul codice: {'FAILED': 110, 'OK': 10}
+  messaggio recuperato (primo ciclo = atteso), sugli OK: 10/10
+  bit d'informazione letti diversi dagli inseriti (OK): 43, su outlier spostati e scelti: 0
+  testo identico ai campioni congelati (0000-0003): 120/120
+  Pass@1 dei campioni congelati (stessi id): 27/120
+  Pass@1 (informativo): 27/120
+
+=== on {'outlier_scale': 1.5} (config 697c5eb78b23), 120 campioni
+  inserimento: {'PARTIAL': 108, 'OK': 12}
+  inserimento riuscito: 12/120; posizioni marcate, media 11.0
+  rilevazione sul codice: {'FAILED': 110, 'OK': 10}
+  messaggio recuperato (primo ciclo = atteso), sugli OK: 8/12
+  bit d'informazione letti diversi dagli inseriti (OK): 77, su outlier spostati e scelti: 69
+  posizioni d'informazione 2736; per posizione, media: outlier 1729.6, inclusi 864.5, spostati 432.9; token scelto fra gli spostati: 864
+  Pass@1 (informativo): 31/120
