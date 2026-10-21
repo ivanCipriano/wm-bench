@@ -53,10 +53,10 @@ metrics      90/90   COMPLETE
   tpr_at_fpr 0.0833  auroc 0.7370  pass_at_1 0.7286  delta_pass_at_1_pp 7.8571  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0667  tool_error_fraction 0.0964  codebleu_distance 0.0059
 
 ##### T1.2 {} qwen25_coder_7b cpp
-  status {'UNCHANGED': 341, 'APPLIED': 132, 'TOOL_ERROR': 367}  changed 0.157143  1-CodeBLEU 0.015475 (changed only 0.098477)
+  status {'UNCHANGED': 564, 'APPLIED': 231, 'TOOL_ERROR': 45}  changed 0.275  1-CodeBLEU 0.03112 (changed only 0.113162)
   detail means {}
   tools {"clang-tidy": "LLVM (http://llvm.org/):"}
-  tpr_at_fpr 0.0107  auroc 0.6835  pass_at_1 0.7679  delta_pass_at_1_pp 2.3810  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.1571  tool_error_fraction 0.4369  codebleu_distance 0.0155
+  tpr_at_fpr 0.0107  auroc 0.6839  pass_at_1 0.7679  delta_pass_at_1_pp 2.3810  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.2750  tool_error_fraction 0.0536  codebleu_distance 0.0311
 
 ##### T1.2 {} deepseek_coder_6p7b python
   status {'UNCHANGED': 2645, 'APPLIED': 31}  changed 0.011584  1-CodeBLEU 0.001061 (changed only 0.091589)
@@ -71,10 +71,10 @@ metrics      90/90   COMPLETE
   tpr_at_fpr 0.0000  auroc 0.6329  pass_at_1 0.7238  delta_pass_at_1_pp -2.2619  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0845  tool_error_fraction 0.0250  codebleu_distance 0.0120
 
 ##### T1.2 {} deepseek_coder_6p7b cpp
-  status {'UNCHANGED': 484, 'APPLIED': 256, 'TOOL_ERROR': 100}  changed 0.304762  1-CodeBLEU 0.041961 (changed only 0.137685)
+  status {'UNCHANGED': 515, 'APPLIED': 275, 'TOOL_ERROR': 50}  changed 0.327381  1-CodeBLEU 0.044943 (changed only 0.137281)
   detail means {}
   tools {"clang-tidy": "LLVM (http://llvm.org/):"}
-  tpr_at_fpr 0.0024  auroc 0.5826  pass_at_1 0.6119  delta_pass_at_1_pp 3.9286  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.3048  tool_error_fraction 0.1190  codebleu_distance 0.0420
+  tpr_at_fpr 0.0024  auroc 0.5828  pass_at_1 0.6119  delta_pass_at_1_pp 3.9286  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.3274  tool_error_fraction 0.0595  codebleu_distance 0.0449
 
 ##### T1.3 {"mode": "remove"} qwen25_coder_7b python
   status {'UNCHANGED': 1085, 'APPLIED': 1591}  changed 0.594544  1-CodeBLEU 0.204086 (changed only 0.343265)
