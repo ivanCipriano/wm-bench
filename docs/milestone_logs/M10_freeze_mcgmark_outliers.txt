@@ -1,0 +1,4 @@
+##### mcgmark: NOT FROZEN
+mcgmark cannot be frozen:
+  - qwen25_coder_7b python: the HPO grid changed after tune (1 candidates in the selection, 3 in configs/hpo)
+  - deepseek_coder_6p7b python: the HPO grid changed after tune (1 candidates in the selection, 3 in configs/hpo)
