@@ -1,4 +1,18 @@
-##### mcgmark: NOT FROZEN
-mcgmark cannot be frozen:
-  - qwen25_coder_7b python: the HPO grid changed after tune (1 candidates in the selection, 3 in configs/hpo)
-  - deepseek_coder_6p7b python: the HPO grid changed after tune (1 candidates in the selection, 3 in configs/hpo)
+##### mcgmark: frozen now
+frozen_at   2026-10-22T13:58:42.181530+00:00
+commit      e4a6d39ff2dd4d54ba25fa3d6297bcb0b8bc95c0 (dirty: False)
+levels      ['L1', 'L2']
+grid_sha256 3d0b8a981392d836d51f1f592dedf0a8f85c869d63e123da31beec3d5c861fe6 (3 candidates)
+record      freeze/mcgmark.json (sha256 ffefc022baeeb69a85b28a78e73c27c8131b22ab9cdc8cd71b624ed1b59b543d)
+  qwen25_coder_7b      python      697c5eb78b23 {'outlier_scale': 1.5}  τ 10.0  constraint False
+      selection sha256 6b4c6f4ecbaf5cd7405ccaf2d7737a762d46cdaae72aa31881515b75c020da36
+      threshold sha256 da68fe09aad82fc55d9cd1b218d7964282c0c7f762210030c144490e8755fb0e
+  qwen25_coder_7b      java        NOT_APPLICABLE
+  qwen25_coder_7b      cpp         NOT_APPLICABLE
+  qwen25_coder_7b      javascript  NOT_APPLICABLE
+  deepseek_coder_6p7b  python      6c30ca18a68e {'outlier_scale': 3.0}  τ 10.0  constraint False
+      selection sha256 d518e86eb9fccd7e43610ad396e9216d6a914272c21f8cdc2dae7843c758b2c7
+      threshold sha256 3b535fb8dd7fe564041711c45323b1df135cdb2ac2e4b0c95bd274eafda550aa
+  deepseek_coder_6p7b  java        NOT_APPLICABLE
+  deepseek_coder_6p7b  cpp         NOT_APPLICABLE
+  deepseek_coder_6p7b  javascript  NOT_APPLICABLE
