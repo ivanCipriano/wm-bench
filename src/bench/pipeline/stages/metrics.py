@@ -62,7 +62,7 @@ from bench.pipeline.stages.calibrate import (
 )
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
-from bench.pipeline.stages.watermark import make_adapter, watermarked_ref
+from bench.pipeline.stages.watermark import make_adapter, twin_config_hash, watermarked_ref
 from bench.registry import STAGES
 from bench.store.refs import ArtifactRef
 
@@ -195,7 +195,13 @@ class MetricsStage(Stage):
                 language=language,
                 split=split,
             )
-            return execution_ref(c, cfg_hash if with_method else None)
+            if not with_method:
+                return execution_ref(c, None)
+            if source == "baseline_twin":  # gemella comune alle configurazioni (D32)
+                return execution_ref(
+                    c, twin_config_hash(self._cfg(), self.adapter(method), cfg_hash)
+                )
+            return execution_ref(c, cfg_hash)
 
         if cell.attack_id:
             from bench.pipeline.stages.attack import attacked_ref, attacked_subject

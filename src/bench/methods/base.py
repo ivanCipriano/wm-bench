@@ -133,6 +133,12 @@ class MethodAdapter(ABC):
         """Hash della configurazione effettiva (iperparametri nativi + contratto + commit)."""
         return config_hash(self.to_native_hparams(hp), self.source_commit())
 
+    def twin_hparams(self, hp: dict[str, Any]) -> dict[str, Any]:
+        """Iperparametri che contano per la baseline gemella (default: tutti). I metodi con
+        iperparametri che agiscono solo sul watermark li tolgono, così ogni configurazione usa la
+        stessa gemella (MCGMark: ``outlier_scale``, D32)."""
+        return dict(hp)
+
     def key(self, key_id: str) -> int:
         """Chiave segreta (SPEC §9.6): ``derive_seed(global_seed, "wm-key", metodo, key_id)``
         modulo ``2**31``."""

@@ -152,6 +152,13 @@ ridistribuzione dei token molto probabili, mentre §3.1 dice che non ci sono ipe
     si aggiunge P_gap = max − min delle probabilità, "to ensure this vocabulary contains the highest
     probability token". **Nessuna intensità del bias regolabile**: δ compare solo per il baseline WLLM (§5.1).
   - §4.3, Eq. (1) e Algoritmo 1: outlier superiori con l'IQR, F_upper = Q3 + S·IQR, S "scaling factor";
+    testo del paper (§4.3 "Ensuring Watermarked Code Quality"): "MCGMark develops a watermark quality
+    enhancement algorithm based on the probability outlier of the vocabulary, as shown in Algorithm 1";
+    "Before generating token v_i, MCGMark analyzes the probabilities P to identify upper outliers—tokens with
+    significantly higher probabilities"; "MCGMark uses the Inter-Quartile Range (IQR) method, based on boxplot
+    statistics (Bondarenko et al., 2024), to detect outliers in token probability distributions"; Eq. (1)
+    "F_upper = Q3 + S·IQR = (S+1)·Q3 − S·Q1"; §5.1: "Q3 is set to 0.75, and Q1 is set to 0.25". Il paper non
+    dice se P sono le probabilità dopo la softmax o i logit, ma parla esplicitamente di probabilità;
     un outlier si include nella parte scelta, con più outlier se ne include metà scelta con l'hash H, a ogni
     posizione marcata e per **entrambi** i valori del bit; se un outlier altera il bit, il bit di correzione
     vale 1. Scopo dichiarato: evitare token di bassa qualità che compromettano "readability or functionality".
@@ -175,6 +182,11 @@ ridistribuzione dei token molto probabili, mentre §3.1 dice che non ci sono ipe
   meccanismo. Terza regola delle discrepanze (`CLAUDE.md`): patch **0004** dall'Algoritmo 1 del paper, dietro
   l'opzione `outlier_scale` (spenta di default), con i valori del codice (Q1 = 25° e Q3 = 75° percentile,
   S = 1,5). Dettagli e scelte dove il paper non è esplicito in `patches/mcgmark/README.md`.
+  - **Outlier sui logit, differenza dichiarata dal testo del paper** (decisione dell'utente del 22 ottobre
+    2026): il paper parla di outlier della distribuzione di **probabilità** (citazioni sopra); la patch li
+    calcola sui **logit**, come `detect_outlier` del repository (applicato a `scores`, i logit del passo). Sulle
+    probabilità, con il vocabolario intero, la soglia Q3 + S·IQR corrisponde a circa Q3 + log(1 + S) sui logit,
+    più bassa: gli outlier sarebbero ancora di più.
   - Se la prova conferma che la patch funziona, la versione con la 0004 diventa la **principale** e il codice
     ufficiale senza outlier una **misura secondaria**; la selezione di MCGMark si rifà (D32).
   - **Il paper non specifica S.** La griglia è **fissata prima della prova**: S ∈ {1,0; 1,5; 3,0} (il valore del
@@ -198,15 +210,17 @@ ridistribuzione dei token molto probabili, mentre §3.1 dice che non ci sono ipe
     recuperati i bit d'informazione letti diversamente (fino a 12 su 12) stanno su outlier spostati e scelti e il
     bit di correzione li rimette a posto.
   - **I 4 casi non recuperati non sono errori della patch** (confronto dei token marcati in generazione con quelli
-    che la rilevazione ricostruisce dal codice): in 2 la sequenza generata non è quella che si ottiene
-    ritokenizzando il testo (`'whether','a'` contro `'wh','eth','era'`; `';amp',';','amp'` contro
-    `';amp',';amp'`), quindi la rilevazione vede posizioni diverse; in 1 la fence di chiusura è generata come
-    `'``','`
-'` e la macchina a stati non la riconosce, così le posizioni continuano nella spiegazione dopo il
-    codice (45 inserite, 5 nel codice estratto); in 1 la macchina a stati diverge su `has`/`_positive` e sbaglia un
-    bit (11/12). Con l'opzione spenta il token scelto è quasi sempre il più probabile e questi casi non compaiono:
-    scegliere spesso un outlier diverso dal più probabile rende più frequenti le sequenze non canoniche. È un
-    limite del meccanismo del paper con una rilevazione che vede solo il codice, da dichiarare.
+    che la rilevazione ricostruisce dal codice). Classificazione (decisione dell'utente del 22 ottobre 2026):
+    - **limiti del metodo, dovuti al fatto che il rilevatore vede solo il codice (3 casi):** in 2 la sequenza
+      generata non è quella che si ottiene ritokenizzando il testo (`'whether','a'` contro `'wh','eth','era'`;
+      `';amp',';','amp'` contro `';amp',';amp'`), quindi la rilevazione vede posizioni diverse; in 1 la macchina
+      a stati diverge su `has`/`_positive` e sbaglia un bit (11/12). Con l'opzione spenta il token scelto è quasi
+      sempre il più probabile e questi casi non compaiono: scegliere spesso un outlier diverso dal più
+      probabile rende più frequenti le sequenze non canoniche. Da dichiarare nella tesi;
+    - **effetto della nostra integrazione (1 caso):** la fence di chiusura è generata come due token
+      (`` '``' `` + `` '`\n' ``), la macchina a stati non la riconosce e le posizioni continuano nella
+      spiegazione dopo il codice (45 inserite, 5 nel codice estratto con D4). Dipende dal formato chat con il
+      prefill della fence (D20) e dal testo che il modello scrive dopo il codice, non dal meccanismo del paper.
   - **Esito: la patch funziona** (criterio dell'utente: inserimento, messaggi recuperati, decodifica corretta).
 
 ## 4. Linguaggi

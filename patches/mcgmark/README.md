@@ -88,8 +88,9 @@ In `Watermark/watermark_processor.py`, **dietro l'opzione `outlier_scale`** (S d
 | `_bias_greenlist_logits`, rami del bit 1 e del bit 0 | `_include_outliers`: alle sole posizioni d'informazione (§4.3: i bit di correzione si inseriscono senza outlier) gli outlier scelti entrano nella green list per il bit 1 e ne escono per il bit 0, cioè vanno nella parte che riceve il bias in entrambi i casi |
 | `_get_greenlist_ids` | il caso particolare del codice (token più probabile nella green list col bit 1, `is_pure`) resta solo a opzione spenta: con l'opzione attiva lo sostituisce l'Algoritmo 1 |
 
-- **Scelte dal codice dove il paper non è esplicito:** outlier sui logit (il paper dice "token
-  probability distributions"); metà per difetto (l'Algoritmo 1 scrive ⌈|F|/2⌉); scelta con
+- **Scelte dal codice dove il paper non è esplicito:** outlier sui logit, **differenza dichiarata** dal
+  testo del paper, che parla di "token probability distributions" (decisione dell'utente del 22 ottobre
+  2026, audit §3.3); metà per difetto (l'Algoritmo 1 scrive ⌈|F|/2⌉); scelta con
   `hash_key`. Il paper non dà un valore di S: la griglia S ∈ {1,0; 1,5; 3,0} è fissata
   dall'utente prima della prova (audit §3.3).
 - **Rilevazione invariata:** il rilevatore legge l'appartenenza alla green list senza outlier e

@@ -56,6 +56,7 @@ from bench.pipeline.stages.watermark import (
     KEY_ID,
     baseline_twin_ref,
     make_adapter,
+    twin_config_hash,
     watermarked_ref,
 )
 from bench.registry import STAGES
@@ -180,8 +181,9 @@ class DetectStage(Stage):
         }
         subjects = self.subjects(method, level, split)
         if "neg_llm_twin" in subjects:
+            twin_hash = twin_config_hash(self._cfg(), self.adapter(method), cfg_hash)
             refs["neg_llm_twin"] = [
-                baseline_twin_ref(method, model_id, cfg_hash, level, language, split)
+                baseline_twin_ref(method, model_id, twin_hash, level, language, split)
             ]
         if "neg_integration" in subjects:
             refs["neg_integration"] = [pooled_integration_ref(Language(language))]

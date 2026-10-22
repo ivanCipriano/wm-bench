@@ -82,6 +82,13 @@ def make_adapter(cfg: ExperimentConfig, method: str) -> MethodAdapter:
     return METHODS.get(method)(method_cfg, cfg, WORKER_FACTORY(cfg, method_cfg.worker_timeout_s))
 
 
+def twin_config_hash(cfg: ExperimentConfig, adapter: MethodAdapter, cfg_hash: str | None) -> str:
+    """Hash della baseline gemella usata dalla configurazione ``cfg_hash``: quello dei soli
+    iperparametri che contano per la gemella (:meth:`MethodAdapter.twin_hparams`, D32)."""
+    hp = resolve(cfg, adapter, cfg_hash)[0]
+    return adapter.config_hash(adapter.twin_hparams(hp))
+
+
 def watermarked_ref(
     method: str, model_id: str, cfg_hash: str, level: str, language: str, split: str
 ) -> ArtifactRef:

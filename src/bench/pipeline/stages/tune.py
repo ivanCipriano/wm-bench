@@ -55,7 +55,7 @@ from bench.pipeline.stages.calibrate import (
 )
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
-from bench.pipeline.stages.watermark import make_adapter
+from bench.pipeline.stages.watermark import make_adapter, twin_config_hash
 from bench.registry import STAGES
 from bench.store.refs import ArtifactRef
 
@@ -174,7 +174,8 @@ class TuneStage(Stage):
             refs["marked"].append(execution_ref(marked, cfg_hash))
             if twin:
                 twin_cell = replace(base, source="baseline_twin", method=method)
-                refs["reference"].append(execution_ref(twin_cell, cfg_hash))
+                twin_hash = twin_config_hash(self._cfg(), self.adapter(method), cfg_hash)
+                refs["reference"].append(execution_ref(twin_cell, twin_hash))
             else:
                 refs["reference"].append(execution_ref(replace(base, source="llm_baseline"), None))
         return refs

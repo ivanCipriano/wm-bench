@@ -124,6 +124,7 @@ def test_mcgmark_hparams_and_message(cfg: ExperimentConfig) -> None:
         a.to_native_hparams({"delta": 2.0})
     # Outlier del paper (patch 0004, D32): S entra nei parametri nativi solo se indicato.
     assert a.to_native_hparams({"outlier_scale": 1.5}) == {**FIXED_NATIVE, "outlier_scale": 1.5}
+    assert a.twin_hparams({"outlier_scale": 1.5}) == {}  # gemella comune (D32)
     for bad in (0, -1.0, True, "1.5"):
         with pytest.raises(ConfigError, match="positive number"):
             a.to_native_hparams({"outlier_scale": bad})

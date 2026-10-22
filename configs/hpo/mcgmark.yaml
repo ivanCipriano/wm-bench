@@ -1,4 +1,11 @@
-# MCGMark non ha iperparametri regolabili (D1, D18): la griglia è il solo default, nessuno sweep.
+# Griglia HPO di MCGMark (D32; audit di MCGMark §3.3, decisione dell'utente del 21 ottobre 2026).
+# Unico iperparametro: S della soglia degli outlier (paper §4.3, Eq. (1); patch 0004), che il paper
+# non specifica. Griglia fissata prima della prova sui 20 prompt: il valore del codice e di Tukey
+# (1,5), uno più protettivo (1,0) e uno meno (3,0). La versione senza outlier (codice ufficiale,
+# config 9df49d3f4f38) non entra nella griglia: resta misura secondaria. Tutte le configurazioni
+# usano la stessa baseline gemella, quella del default (MethodAdapter.twin_hparams).
 method: mcgmark
 include:
-  - {}
+  - {outlier_scale: 1.0}
+  - {outlier_scale: 1.5}
+  - {outlier_scale: 3.0}

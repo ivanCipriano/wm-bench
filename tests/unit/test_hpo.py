@@ -48,7 +48,7 @@ from tests.unit.test_watermark import MODEL, echo_client
 # ---------------------------------------------------------------------- griglie
 def test_repository_grids() -> None:
     sizes = {m: len(load_grid(m).candidates()) for m in ("sweet", "stone", "acw", "mcgmark")}
-    assert sizes == {"sweet": 61, "stone": 18, "acw": 4, "mcgmark": 1}
+    assert sizes == {"sweet": 61, "stone": 18, "acw": 4, "mcgmark": 3}
     pm = load_grid("promptmark")
     assert len(pm.candidates()) == 28 and len(pm.trajectories()) == 3
     trajectories = [p.hparams for p in pm.trajectories()]

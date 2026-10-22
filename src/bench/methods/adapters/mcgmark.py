@@ -63,6 +63,11 @@ class McgmarkAdapter(PromptEmbedder, Detector):
             native["outlier_scale"] = float(scale)
         return native
 
+    def twin_hparams(self, hp: dict[str, Any]) -> dict[str, Any]:
+        """La gemella non usa il processor: ``outlier_scale`` non cambia il testo, quindi tutte le
+        configurazioni usano la gemella del default (D32)."""
+        return {k: v for k, v in hp.items() if k != "outlier_scale"}
+
     def embed_metrics(self, result: WorkerResult | None) -> dict[str, Any]:
         """Siti idonei = posizioni marcate (unità: token generato, audit §2)."""
         metrics = super().embed_metrics(result)

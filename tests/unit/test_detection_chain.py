@@ -229,3 +229,45 @@ def test_neg_human_uses_integration_only_where_the_part_has_one(cfg: ExperimentC
     ):
         cell = Cell(method="sweet", model_id=model, level="L1", language=lang, split=split)
         assert stage._sample_refs(cell)["neg_human"] == expected
+
+
+def test_outlier_configurations_share_the_default_twin(cfg: ExperimentConfig) -> None:
+    """D32: la gemella non usa il processor, quindi ogni ``outlier_scale`` usa la gemella del
+    default (rilevazione dei negativi LLM gemelli, riferimento di ΔPass@1 in tune e metrics)."""
+    from bench.hpo.grid import load_grid
+    from bench.pipeline.stages.tune import TuneStage
+    from bench.pipeline.stages.watermark import baseline_twin_ref, make_adapter, twin_config_hash
+
+    adapter = make_adapter(cfg, METHOD)
+    default_hash = adapter.config_hash({})
+    model = cfg.models[0]
+    points = load_grid(METHOD).candidates()
+    assert sorted(p.hparams["outlier_scale"] for p in points) == [1.0, 1.5, 3.0]
+    for point in points:
+        h = adapter.config_hash(point.hparams)
+        assert h != default_hash
+        assert twin_config_hash(cfg, adapter, h) == default_hash
+        cell = Cell(
+            method=METHOD, model_id=model, level="L1", language="python", split="dev", config_hash=h
+        )
+        refs = DetectStage(cfg)._sample_refs(cell)
+        assert refs["neg_llm_twin"] == [
+            baseline_twin_ref(METHOD, model, default_hash, "L1", "python", "dev")
+        ]
+        assert refs["positives"][0].path.as_posix().count(h) == 1  # i marcati restano per config
+        twin_exec = execution_ref(
+            Cell(
+                source="baseline_twin",
+                method=METHOD,
+                model_id=model,
+                level="L1",
+                language="python",
+                split="dev",
+            ),
+            default_hash,
+        )
+        tune_cell = Cell(method=METHOD, model_id=model, language="python")
+        assert twin_exec in TuneStage(cfg)._refs(tune_cell, h)["reference"]
+        assert MetricsStage(cfg)._refs(cell)["exec_twin"] == twin_exec
+    # Senza outlier (codice ufficiale) l'hash della gemella è quello della configurazione.
+    assert twin_config_hash(cfg, adapter, default_hash) == default_hash
