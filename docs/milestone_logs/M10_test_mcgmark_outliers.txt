@@ -4,3 +4,67 @@ watermark     2/2    COMPLETE
 execute       4/4    COMPLETE
 detect        8/8    COMPLETE
 metrics       2/2    COMPLETE
+
+##### mcgmark deepseek_coder_6p7b python (L1 test, config 6c30ca18a68e)
+threshold 10.0  achieved FPR dev 0.0090  n_neg 2000  levels ['L1', 'L2']  
+  tpr_at_fpr                          0.0340  [0.0254, 0.0426]  n=2676  cluster_bootstrap
+  fpr_human                           0.0011  [0.0000, 0.0060]  n=928  clopper_pearson
+  fpr_llm                             0.0011  [0.0002, 0.0033]  n=2676  clopper_pearson
+  fpr_llm_baseline                    0.0011  [0.0002, 0.0033]  n=2676  clopper_pearson
+  auroc                               0.4956  [0.4873, 0.5035]  n=3604  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.3378  [0.3064, 0.3696]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.7029  [0.6610, 0.7418]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                 36.5097  [33.0344, 40.0607]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp_baseline        36.2108  [32.8102, 39.5021]  n=446  cluster_bootstrap
+  message_accuracy                    0.0321  [0.0261, 0.0395]  n=2676  wilson
+  bit_accuracy                        0.0349  [0.0271, 0.0444]  n=2676  cluster_bootstrap
+  embedding_success_rate              0.0377  [0.0312, 0.0457]  n=2676  wilson
+  embed_success_rate 0.0377  n_sites {"n": 2676, "mean": 9.521, "median": 7.0, "min": 1.0, "max": 235.0}
+
+##### mcgmark deepseek_coder_6p7b python (L1 test, config 9df49d3f4f38)
+threshold 10.0  achieved FPR dev 0.0090  n_neg 2000  levels ['L1', 'L2']  
+  tpr_at_fpr                          0.0179  [0.0127, 0.0239]  n=2676  cluster_bootstrap
+  fpr_human                           0.0011  [0.0000, 0.0060]  n=928  clopper_pearson
+  fpr_llm                             0.0011  [0.0002, 0.0033]  n=2676  clopper_pearson
+  fpr_llm_baseline                    0.0011  [0.0002, 0.0033]  n=2676  clopper_pearson
+  auroc                               0.4872  [0.4797, 0.4942]  n=3604  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.3483  [0.3143, 0.3801]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.7029  [0.6614, 0.7433]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                 35.4634  [31.9488, 38.8640]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp_baseline        35.1644  [31.5387, 38.6407]  n=446  cluster_bootstrap
+  message_accuracy                    0.0157  [0.0116, 0.0211]  n=2676  wilson
+  bit_accuracy                        0.0189  [0.0132, 0.0249]  n=2676  cluster_bootstrap
+  embedding_success_rate              0.0217  [0.0168, 0.0279]  n=2676  wilson
+  embed_success_rate 0.0217  n_sites {"n": 2676, "mean": 7.238, "median": 5.0, "min": 0.0, "max": 450.0}
+
+##### mcgmark qwen25_coder_7b python (L1 test, config 697c5eb78b23)
+threshold 10.0  achieved FPR dev 0.0095  n_neg 2000  levels ['L1', 'L2']  
+  tpr_at_fpr                          0.0811  [0.0658, 0.0957]  n=2676  cluster_bootstrap
+  fpr_human                           0.0011  [0.0000, 0.0060]  n=928  clopper_pearson
+  fpr_llm                             0.0026  [0.0011, 0.0054]  n=2676  clopper_pearson
+  fpr_llm_baseline                    0.0034  [0.0015, 0.0064]  n=2676  clopper_pearson
+  auroc                               0.5177  [0.5068, 0.5291]  n=3604  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.3737  [0.3412, 0.4051]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.7676  [0.7279, 0.8065]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                 39.3871  [36.1734, 42.6018]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp_baseline        39.0882  [35.8716, 42.4514]  n=446  cluster_bootstrap
+  message_accuracy                    0.0736  [0.0643, 0.0841]  n=2676  wilson
+  bit_accuracy                        0.0860  [0.0703, 0.1038]  n=2676  cluster_bootstrap
+  embedding_success_rate              0.0998  [0.0890, 0.1117]  n=2676  wilson
+  embed_success_rate 0.0998  n_sites {"n": 2676, "mean": 11.333, "median": 7.0, "min": 0.0, "max": 146.0}
+
+##### mcgmark qwen25_coder_7b python (L1 test, config 9df49d3f4f38)
+threshold 10.0  achieved FPR dev 0.0095  n_neg 2000  levels ['L1', 'L2']  
+  tpr_at_fpr                          0.1054  [0.0859, 0.1271]  n=2676  cluster_bootstrap
+  fpr_human                           0.0011  [0.0000, 0.0060]  n=928  clopper_pearson
+  fpr_llm                             0.0026  [0.0011, 0.0054]  n=2676  clopper_pearson
+  fpr_llm_baseline                    0.0034  [0.0015, 0.0064]  n=2676  clopper_pearson
+  auroc                               0.5299  [0.5172, 0.5435]  n=3604  cluster_bootstrap+negative_resampling
+  pass_at_1                           0.2881  [0.2619, 0.3158]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.7676  [0.7291, 0.8038]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                 47.9447  [44.5058, 51.4602]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp_baseline        47.6457  [44.1695, 50.8969]  n=446  cluster_bootstrap
+  message_accuracy                    0.0964  [0.0858, 0.1082]  n=2676  wilson
+  bit_accuracy                        0.1097  [0.0905, 0.1295]  n=2676  cluster_bootstrap
+  embedding_success_rate              0.1136  [0.1021, 0.1262]  n=2676  wilson
+  embed_success_rate 0.1136  n_sites {"n": 2675, "mean": 11.657, "median": 7.0, "min": 0.0, "max": 149.0}
