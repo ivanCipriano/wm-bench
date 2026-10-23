@@ -1,0 +1,6 @@
+Refactor the following {{ language }} code to improve its readability and style, with minimal changes.
+Keep the algorithm, the structure of the code and the names of all functions, parameters and variables unchanged.
+
+```{{ tag }}
+{{ code }}
+```
