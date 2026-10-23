@@ -1,0 +1,6 @@
+##### mcgmark on L1 test (frozen 2026-10-22 13:58 UTC)
+twin          2/2    COMPLETE
+watermark     2/2    COMPLETE
+execute       4/4    COMPLETE
+detect        8/8    COMPLETE
+metrics       2/2    COMPLETE
