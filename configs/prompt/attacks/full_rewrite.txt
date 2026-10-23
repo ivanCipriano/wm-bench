@@ -1,5 +1,5 @@
-Rewrite the following {{ language }} code from scratch.
-You are free to change the algorithm, the structure of the code and the names of local variables.
+Rewrite the following {{ language }} code from scratch, as a new implementation that does not reuse the lines of the original code.
+Change the structure of the code and the names of local variables, and use a different algorithm where possible.
 Keep only the behavior and the names and signatures of the functions, methods and classes.
 
 ```{{ tag }}

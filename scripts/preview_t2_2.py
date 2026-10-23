@@ -112,6 +112,7 @@ def main() -> int:
         "##### T2.2 preview (draft prompts)",
         f"attacker {spec.hf_repo} @ {spec.snapshot}",
         f"generation {json.dumps(gen_cfg.to_diff_dict(), sort_keys=True)}",
+        "decode skip_special_tokens=True clean_up_tokenization_spaces=False",
         *(f"sha256 {name}.txt {_sha256(path)}" for name, path in files.items()),
         "",
         "##### system prompt",
@@ -132,7 +133,12 @@ def main() -> int:
                     generation_config=gen_cfg,
                 )
             new = output[0, input_ids.shape[1] :]
-            raw = tokenizer.decode(new, skip_special_tokens=True)
+            # Llama 3.1 ha clean_up_tokenization_spaces=True: toglierebbe lo spazio prima di
+            # ``!``, ``.``, ``,``, ``?`` anche nel codice e nelle
+            # stringhe (``a != b`` -> ``a!= b``).
+            raw = tokenizer.decode(
+                new, skip_special_tokens=True, clean_up_tokenization_spaces=False
+            )
             code, ok = extractor.extract(raw, problem)
             truncated = len(new) >= MAX_NEW_TOKENS
             rows.append(
