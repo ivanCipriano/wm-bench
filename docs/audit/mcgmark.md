@@ -142,7 +142,7 @@
 - Messaggio atteso: 12 bit uniformi da `derive_seed(global_seed, "mcgmark-msg", problem_key, language, model_id,
   sample_index) % 4096`, anche per i negativi (dai loro identificativi).
 
-### 3.3 Bias e outlier: paper e codice (verifica del 21 ottobre 2026, in corso)
+### 3.3 Bias e outlier: paper e codice (verifica del 21 ottobre 2026, chiusa il 23 ottobre)
 
 Richiesta dell'utente: SPEC §9.5 elenca come iperparametri l'intensità del bias e la soglia per la
 ridistribuzione dei token molto probabili, mentre §3.1 dice che non ci sono iperparametri.
@@ -222,6 +222,25 @@ ridistribuzione dei token molto probabili, mentre §3.1 dice che non ci sono ipe
       spiegazione dopo il codice (45 inserite, 5 nel codice estratto con D4). Dipende dal formato chat con il
       prefill della fence (D20) e dal testo che il modello scrive dopo il codice, non dal meccanismo del paper.
   - **Esito: la patch funziona** (criterio dell'utente: inserimento, messaggi recuperati, decodifica corretta).
+- **Selezione e test con la 0004 (22-23 ottobre 2026).** Griglia S ∈ {1,0; 1,5; 3,0} su L1+L2 dev, nessuna
+  configurazione ammissibile (0/3 per modello), scelta con la regola di ripiego: S = 1,5 per qwen25_coder_7b,
+  S = 3,0 per deepseek_coder_6p7b (`M10_hpo_final_mcgmark_outliers.txt`, `M10_freeze_mcgmark_outliers.txt`).
+  Le differenze fra i valori di S (1-3 pp di ΔPass@1, meno di 1 punto di TPR sul dev) sono nel rumore: la scelta
+  di S non è un risultato sul parametro. Su L1 test (`M10_test_mcgmark_outliers.txt`), rispetto al codice
+  ufficiale (misura secondaria, `9df49d3f4f38`):
+
+  | | deepseek, S = 3,0 | qwen, S = 1,5 |
+  |---|---|---|
+  | TPR @ FPR 1% | 0,018 → 0,034 | 0,105 → 0,081 |
+  | ΔPass@1 (pp, contro la gemella) | 35,5 → 36,5 | 47,9 → 39,4 |
+  | accuratezza del messaggio | 0,016 → 0,032 | 0,096 → 0,074 |
+  | AUROC | 0,487 → 0,496 | 0,530 → 0,518 |
+
+  Gli outlier riducono il calo di Pass@1 su qwen (circa 8,5 pp, IC disgiunti) ma non su deepseek; in entrambi i
+  casi MCGMark resta di fatto non rilevabile e con un costo di correttezza molto alto. Gli attacchi T1
+  (`M10_attacks_mcgmark_outliers.txt`, 30/30 celle) non cambiano Pass@1 rispetto al marcato (|Δ| ≤ 0,04 pp) e
+  abbassano ancora la TPR, al massimo con T1.5 k = 5 (0,034 → 0,011 e 0,081 → 0,056). La quota di `TOOL_ERROR`
+  di T1.1 e T1.4 (19-23%) è codice marcato non analizzabile, come con il codice ufficiale.
 
 ## 4. Linguaggi
 
