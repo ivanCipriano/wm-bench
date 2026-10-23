@@ -2,7 +2,7 @@
 
 - **Stato:** decisioni dell'utente del 9 ottobre 2026 applicate (§3 punteggio, §4 iperparametri).
   Decisioni tecniche e testo **approvati dall'utente il 21 ottobre 2026**; la licenza di Sourcery (§6) è
-  in verifica dell'utente e non è ancora confermata.
+  **confermata dall'utente il 23 ottobre 2026** (prove successive, token aggiornato a ogni scadenza).
   Oracle verde il 9 ottobre 2026 (3 test, `tnode01`). Licenza di Sourcery: prova "Code Quality - Team";
   alla scadenza si usa il token di un altro account (decisione dell'utente del 10 ottobre 2026, §6).
 
@@ -147,6 +147,8 @@ Confronto fra la tabella delle regole del README (`assets/rules.png`, 35 di refa
   using Sourcery Code Quality - Team". Dopo la scadenza la CLI potrebbe non applicare più le regole.
   **Decisione dell'utente (10 ottobre 2026):** quando la prova scade si crea un token con un altro account e
   lo si mette al posto del vecchio (`~/.config/wmb/sourcery_token`), senza cambiare nulla nel repository.
+  **Confermata dall'utente il 23 ottobre 2026:** a ogni scadenza l'utente crea una nuova prova e aggiorna il
+  token salvato con i comandi di `scripts/update_sourcery_token.sh` (il token non passa mai da file del repo).
   Perché una scadenza a metà lavoro non produca in silenzio campioni senza le regole 1-35, lo shim ripete
   il canarino **dopo ogni lotto**, prima di scriverlo (una chiamata in più ogni 50 file, circa +3%): se
   Sourcery non modifica più i canarini il lotto non si scrive e il worker si ferma (`FatalShimError`,
