@@ -234,9 +234,17 @@ def test_neg_human_uses_integration_only_where_the_part_has_one(cfg: ExperimentC
 def test_outlier_configurations_share_the_default_twin(cfg: ExperimentConfig) -> None:
     """D32: la gemella non usa il processor, quindi ogni ``outlier_scale`` usa la gemella del
     default (rilevazione dei negativi LLM gemelli, riferimento di ΔPass@1 in tune e metrics)."""
+    import dataclasses
+
     from bench.hpo.grid import load_grid
+    from bench.pipeline.stages.execute import ExecuteStage
     from bench.pipeline.stages.tune import TuneStage
-    from bench.pipeline.stages.watermark import baseline_twin_ref, make_adapter, twin_config_hash
+    from bench.pipeline.stages.watermark import (
+        BaselineTwinStage,
+        baseline_twin_ref,
+        make_adapter,
+        twin_config_hash,
+    )
 
     adapter = make_adapter(cfg, METHOD)
     default_hash = adapter.config_hash({})
@@ -269,5 +277,11 @@ def test_outlier_configurations_share_the_default_twin(cfg: ExperimentConfig) ->
         tune_cell = Cell(method=METHOD, model_id=model, language="python")
         assert twin_exec in TuneStage(cfg)._refs(tune_cell, h)["reference"]
         assert MetricsStage(cfg)._refs(cell)["exec_twin"] == twin_exec
+        # Generazione ed esecuzione della gemella con la configurazione (congelata) h.
+        twin_cell = dataclasses.replace(cell, source="baseline_twin")
+        assert BaselineTwinStage(cfg).outputs(cell) == refs["neg_llm_twin"]
+        assert "outlier_scale" not in BaselineTwinStage(cfg).cell_config(cell)[0]
+        assert ExecuteStage(cfg).config_hash(twin_cell) == default_hash
+        assert ExecuteStage(cfg).samples_ref(twin_cell) == refs["neg_llm_twin"][0]
     # Senza outlier (codice ufficiale) l'hash della gemella è quello della configurazione.
     assert twin_config_hash(cfg, adapter, default_hash) == default_hash

@@ -197,9 +197,11 @@ class ExecuteStage(Stage):
         if cell.source not in METHOD_SOURCES:
             return None
         from bench.hpo.grid import resolve
-        from bench.pipeline.stages.watermark import make_adapter
+        from bench.pipeline.stages.watermark import make_adapter, twin_config_hash
 
         adapter = make_adapter(self._cfg(), str(cell.method))
+        if cell.source == "baseline_twin":  # gemella comune alle configurazioni (D32)
+            return twin_config_hash(self._cfg(), adapter, cell.config_hash)
         return resolve(self._cfg(), adapter, cell.config_hash)[1]
 
     def samples_ref(self, cell: Cell) -> ArtifactRef | None:

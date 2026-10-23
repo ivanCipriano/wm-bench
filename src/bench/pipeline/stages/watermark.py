@@ -415,6 +415,14 @@ class BaselineTwinStage(WatermarkStage):
     sweep_roles: ClassVar[tuple[str, ...]] = ()
     watermark: ClassVar[bool] = False
 
+    def cell_config(self, cell: Cell) -> tuple[dict[str, Any], str, GridPoint]:
+        """Iperparametri e hash della gemella della configurazione (D32): comune a tutte le
+        configurazioni che differiscono solo per iperparametri senza effetto sulla gemella."""
+        hp, _, point = super().cell_config(cell)
+        adapter = self.adapter(str(cell.method))
+        twin_hp = adapter.twin_hparams(hp)
+        return twin_hp, adapter.config_hash(twin_hp), point
+
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split = self._require(cell)
         return [baseline_twin_ref(method, model_id, self.config_hash(cell), level, language, split)]

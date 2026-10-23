@@ -23,7 +23,12 @@ from bench.pipeline.stage import Cell
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
 from bench.pipeline.stages.metrics import metrics_ref
-from bench.pipeline.stages.watermark import baseline_twin_ref, make_adapter, watermarked_ref
+from bench.pipeline.stages.watermark import (
+    baseline_twin_ref,
+    make_adapter,
+    twin_config_hash,
+    watermarked_ref,
+)
 from bench.store.artifact_store import ArtifactStore
 
 LEVEL, SPLIT = "L1", "test"
@@ -56,10 +61,11 @@ def main() -> int:
         model, lang, h = cell.model_id, cell.language, cell.config_hash
         name = f"{model} {lang} {h}"
         base = Cell(method=method, model_id=model, level=LEVEL, language=lang, split=SPLIT)
-        if twin:
-            steps["twin"].append((name, baseline_twin_ref(method, model, h, LEVEL, lang, SPLIT)))
+        if twin:  # gemella comune alle configurazioni (D32): hash dei soli iperparametri utili
+            th = twin_config_hash(cfg, adapter, h)
+            steps["twin"].append((name, baseline_twin_ref(method, model, th, LEVEL, lang, SPLIT)))
             twin_cell = replace(base, source="baseline_twin")
-            steps["execute"].append((f"{name} twin", execution_ref(twin_cell, h)))
+            steps["execute"].append((f"{name} twin", execution_ref(twin_cell, th)))
         steps["watermark"].append((name, watermarked_ref(method, model, h, LEVEL, lang, SPLIT)))
         marked = replace(base, source="llm_watermarked")
         steps["execute"].append((name, execution_ref(marked, h)))
