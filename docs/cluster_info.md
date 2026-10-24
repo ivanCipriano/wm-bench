@@ -293,7 +293,7 @@ I submodule in `third_party/` vanno fissati **esattamente** ai commit qui sotto.
 | D7 | **Decisa (vedi §10.1)** |
 | D8 | **Confermata:** liste di frequenza di PromptMark da split di training disgiunti |
 | D9 | Accoppiamento baseline/marcato approssimato: da dichiarare nella tesi |
-| Prompt di attacco T2.2 | Lasciati vuoti per ora (`configs/prompt/attacks/*.txt` con segnaposto) |
+| Prompt di attacco T2.2 | Approvati il 24 ottobre 2026 (testo v2, `configs/prompt/attacks/{system,conservative,full_rewrite}.txt`, SHA-256 in `configs/attack/t2_2_llm_rewrite.yaml`; D33). T2.3: bozza, spento |
 
 ### 10.1 Regola per D7 (soluzioni MBPP senza corrispettivo in MBPP+)
 

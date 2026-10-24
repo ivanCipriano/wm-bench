@@ -1,0 +1,5 @@
+Translate the following {{ language }} code into {{ target_language }}.
+
+```{{ tag }}
+{{ code }}
+```

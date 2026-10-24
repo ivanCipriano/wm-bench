@@ -9,7 +9,9 @@ congelata del metodo. Il primo passo ``INCOMPLETE`` è il prossimo da lanciare.
 
 Con ``--report`` stampa, per cella, l'intensità dell'attacco (dal manifest della fase attack:
 stati, frazione modificata, 1 − CodeBLEU, medie dei conteggi) e le metriche (TPR, AUROC, Pass@1,
-ΔPass@1 rispetto alla baseline e al marcato non attaccato).
+ΔPass@1 rispetto alla baseline e al marcato non attaccato), con la frazione di campioni
+``UNCHANGED`` accanto al TPR; per gli attacchi con LLM anche attaccante, decoding e SHA-256
+dei prompt.
 """
 
 from __future__ import annotations
@@ -96,27 +98,47 @@ def main() -> int:
         if args.missing:
             sys.stdout.write("".join(f"    missing: {m}\n" for m in missing))
     if args.report:
-        for name, attacked, ref in report:
-            sys.stdout.write(f"\n##### {name}\n")
-            manifest = store.read_manifest(attacked) if store.exists(attacked) else None
-            extra = manifest.extra if manifest else {}
-            if extra:
-                sys.stdout.write(
-                    f"  status {extra.get('status_counts')}"
-                    f"  changed {extra.get('changed_fraction')}"
-                    f"  1-CodeBLEU {extra.get('codebleu_distance_mean')}"
-                    f" (changed only {extra.get('codebleu_distance_mean_changed')})\n"
-                    f"  detail means {json.dumps(extra.get('detail_means_changed'))}\n"
-                    f"  tools {json.dumps(extra.get('tool_versions'))}\n"
-                )
-            values = _metrics(store, ref)
-            if values:
-                sys.stdout.write(
-                    "  " + "  ".join(
-                        f"{k} {values[k]:.4f}" for k in REPORT_METRICS if k in values
-                    ) + "\n"
-                )  # fmt: skip
+        _write_report(store, report)
     return 0
+
+
+def _write_report(store: ArtifactStore, report: list[tuple[str, Any, Any]]) -> None:
+    """Intensità e metriche per cella (``--report``)."""
+    for name, attacked, ref in report:
+        sys.stdout.write(f"\n##### {name}\n")
+        manifest = store.read_manifest(attacked) if store.exists(attacked) else None
+        extra = manifest.extra if manifest else {}
+        if extra:
+            sys.stdout.write(
+                f"  status {extra.get('status_counts')}"
+                f"  changed {extra.get('changed_fraction')}"
+                f"  1-CodeBLEU {extra.get('codebleu_distance_mean')}"
+                f" (changed only {extra.get('codebleu_distance_mean_changed')})\n"
+                f"  detail means {json.dumps(extra.get('detail_means_changed'))}\n"
+                f"  tools {json.dumps(extra.get('tool_versions'))}\n"
+            )
+            if "attacker" in extra:  # attacchi con LLM (T2.2, T2.3)
+                attacker = extra["attacker"]
+                sys.stdout.write(
+                    f"  attacker {attacker.get('hf_repo')} @ {attacker.get('snapshot')}"
+                    f"  decoding {json.dumps(attacker.get('decoding'), sort_keys=True)}\n"
+                    f"  prompts_sha256 {json.dumps(extra.get('prompts_sha256'))}\n"
+                )
+        values = _metrics(store, ref)
+        unchanged = _unchanged_fraction(extra)
+        if values:
+            parts = [f"{k} {values[k]:.4f}" for k in REPORT_METRICS if k in values]
+            if unchanged is not None:  # accanto al TPR (richiesta dell'utente, T2.2)
+                parts.insert(1, f"unchanged_fraction {unchanged:.4f}")
+            sys.stdout.write("  " + "  ".join(parts) + "\n")
+
+
+def _unchanged_fraction(extra: dict[str, Any]) -> float | None:
+    """Campioni ``UNCHANGED`` sui campioni a cui l'attacco si applica (esclusi
+    ``NOT_APPLICABLE``); restano nelle metriche (I1)."""
+    counts = extra.get("status_counts") or {}
+    applicable = sum(n for s, n in counts.items() if s != "NOT_APPLICABLE")
+    return counts.get("UNCHANGED", 0) / applicable if applicable else None
 
 
 if __name__ == "__main__":

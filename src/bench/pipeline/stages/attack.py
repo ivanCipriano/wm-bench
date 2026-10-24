@@ -15,7 +15,10 @@ inserimento ``FAILED`` resta non rilevato, I2) più:
 
 Il manifest riassume l'**intensità** dell'attacco: frazione di campioni modificati, distanza media,
 conteggi per stato, medie dei conteggi dell'attacco e versioni dei tool. Gli attacchi T1 girano
-su CPU; i tool esterni lavorano a lotti (``ToolRunner``).
+su CPU; i tool esterni lavorano a lotti (``ToolRunner``). Gli attacchi T2 con LLM (T2.2, T2.3)
+girano su GPU (``gpu_attack_groups``) con l'attaccante caricato una volta per fase
+(:class:`~bench.attacks.llm.LocalLLM`); il manifest riporta anche modello, decoding e SHA-256 dei
+prompt.
 """
 
 from __future__ import annotations
@@ -29,6 +32,7 @@ from typing import Any, ClassVar
 import pandas as pd
 
 from bench.attacks.base import Attack, AttackContext, AttackPools, resolve_attack, sample_rng
+from bench.attacks.llm import LocalLLM
 from bench.attacks.tools import ToolRunner
 from bench.config.builder import repo_root
 from bench.config.resources import ResourceClass
@@ -104,10 +108,22 @@ class AttackStage(Stage):
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
         self._adapters: dict[str, Any] = {}
+        self._llms: dict[tuple[str, int, int], LocalLLM] = {}
 
     @classmethod
     def create(cls, config: ExperimentConfig) -> Stage:
         return cls(config)
+
+    def llm(self, attack: Attack) -> LocalLLM:
+        """Attaccante di un attacco T2 (uno per modello e decoding, caricato una volta)."""
+        p = attack.params
+        key = (str(p["attacker"]), int(p["max_new_tokens"]), int(p["batch_size"]))
+        if key not in self._llms:
+            catalog = self._cfg().models_catalog
+            if key[0] not in catalog:
+                raise ConfigError(f"{attack.attack_id}: no configs/model/{key[0]}.yaml")
+            self._llms[key] = LocalLLM(catalog[key[0]], max_new_tokens=key[1], batch_size=key[2])
+        return self._llms[key]
 
     @classmethod
     def normalize_cell(cls, cell: Cell) -> Cell | None:
@@ -189,6 +205,7 @@ class AttackStage(Stage):
             else None
         )
         parsers = default_parsers()
+        llm = self.llm(attack) if attack.needs_llm else None
         contexts = [
             AttackContext(
                 rng=sample_rng(cfg.global_seed, attack_id, params_hash, p.sample_id),
@@ -197,6 +214,7 @@ class AttackStage(Stage):
                 tools=tools,
                 pools=pools,
                 sample_id=p.sample_id,
+                llm=llm,
             )
             for p in parents
         ]
@@ -245,6 +263,8 @@ class AttackStage(Stage):
         df = pd.DataFrame(rows, columns=[*CodeSample.model_fields, *EXTRA_COLUMNS])
         df["sample_index"] = df["sample_index"].astype("Int64")
         extra = self._summary(attack, outcomes, df, tools)
+        if llm is not None:
+            extra["attacker"] = llm.info()
         ref = self.outputs(cell)[0]
         manifest = ctx.make_manifest(
             ref,
@@ -302,6 +322,7 @@ class AttackStage(Stage):
             }
             | ({"black": _black_version()} if "black" in tool_names else {}),
             "parent_embed_status_counts": dict(Counter(df["embed_status"].fillna("None"))),
+            **attack.manifest_extra(),
         }
 
 

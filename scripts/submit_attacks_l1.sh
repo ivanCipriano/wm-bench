@@ -9,8 +9,10 @@
 #   aggiungere --dry-run in fondo per vedere solo il piano; K/M divide le celle fra le due persone.
 #
 # ATTACCO: un ID (T1.4) o più ID separati da virgole (T1.1,T1.2,T1.3,T1.4,T1.5); ogni attacco si
-# espande sulla sua griglia (configs/attack/*.yaml): T1.1 1, T1.2 1, T1.3 2, T1.4 8, T1.5 3 celle
-# per (modello, linguaggio).
+# espande sulla sua griglia (configs/attack/*.yaml): T1.1 1, T1.2 1, T1.3 2, T1.4 8, T1.5 3, T2.2 2
+# celle per (modello, linguaggio). T1 su CPU (defq); T2.2 su GPU (gpuq, Llama-3.1-8B-Instruct, D33):
+# prima del lancio completo di T2.2 serve il pilota C++ (bash scripts/pilot_t2_2_cpp.sh). T2.3 è
+# spento (configs/attack/t2_3_roundtrip.yaml, enabled: false).
 # Prima: il metodo congelato con la fase 0 completa (python scripts/check_test.py METODO), i tool
 # installati (bash scripts/setup_tools.sh) e le raccolte (stage attack_pools).
 # Ordine: 1) → 2) e 3) insieme → 4) dopo 2) e 3). Stato: python scripts/check_attacks.py METODO ATTACCO.

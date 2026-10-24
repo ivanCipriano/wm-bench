@@ -1,11 +1,18 @@
 # Prompt dell'attacco T2.2 (riscrittura con LLM, SPEC §15)
 
-**Stato: BOZZA v2 (23 ottobre 2026, dopo la prima anteprima), non approvata dall'utente.** Nessun job T2.2 va lanciato finché il testo non è approvato
-(requisiti dell'utente del 21 ottobre 2026).
+**T2.2: testo v2 approvato dall'utente il 24 ottobre 2026** (anteprima
+`docs/milestone_logs/M11_t2_2_preview_draft_v2.txt`). SHA-256 registrati in
+`configs/attack/t2_2_llm_rewrite.yaml` e nel manifest di ogni cella: un testo diverso ferma l'attacco.
+Prima del lancio completo: pilota C++ di T2.2(b) (`scripts/pilot_t2_2_cpp.sh`, regola del 10%).
+
+**T2.3: BOZZA non approvata** (`system_translate.txt`, `translate.txt`); l'attacco è spento
+(`enabled: false` in `configs/attack/t2_3_roundtrip.yaml`).
 
 - `system.txt`: system prompt comune alle due varianti;
 - `conservative.txt`: variante (a), refactoring conservativo;
-- `full_rewrite.txt`: variante (b), riscrittura completa.
+- `full_rewrite.txt`: variante (b), riscrittura completa;
+- `system_translate.txt`, `translate.txt`: T2.3, traduzione verso il linguaggio intermedio e ritorno
+  (segnaposto in più: `{{ target_language }}`).
 
 Segnaposto: `{{ language }}` (Python, Java, C++, JavaScript), `{{ tag }}` (tag della fence: python, java,
 cpp, javascript), `{{ code }}` (codice estratto del campione da attaccare). Testo identico per tutti i metodi

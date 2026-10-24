@@ -8,7 +8,9 @@ suo ID (``"T1.4"``). I parametri vengono da ``configs/attack/<file>.yaml``::
       ratio: [0.25, 0.5, 0.75, 1.0]
       name_kind: [random, natural]
 
-oppure un elenco esplicito ``points`` (combinazioni con parametri diversi, come T1.3).
+oppure un elenco esplicito ``points`` (combinazioni con parametri diversi, come T1.3). ``fixed``
+aggiunge gli stessi parametri a ogni combinazione; ``enabled: false`` spegne un attacco
+condizionale (T2.3): chiederlo ferma la pianificazione.
 
 Ogni combinazione ha un ``attack_params_hash`` (12 caratteri) del JSON canonico di ID, parametri
 e versione dell'implementazione: correggere un attacco (``version``) cambia l'hash e quindi le
@@ -41,6 +43,7 @@ from bench.lang.parsers import ParserService
 from bench.store.hashing import sha256_json
 
 if TYPE_CHECKING:
+    from bench.attacks.llm import LocalLLM
     from bench.attacks.tools import ToolRunner
 
 logger = logging.getLogger(__name__)
@@ -68,6 +71,7 @@ class AttackContext:
         tools: esecutore dei tool esterni (formatter e linter).
         pools: raccolte di commenti e nomi del linguaggio.
         sample_id: identificativo del campione attaccato (diagnostica).
+        llm: LLM attaccante (T2.2, T2.3).
     """
 
     rng: random.Random
@@ -76,6 +80,7 @@ class AttackContext:
     tools: ToolRunner | None = None
     pools: AttackPools = field(default_factory=AttackPools)
     sample_id: str = ""
+    llm: LocalLLM | None = None
 
 
 @dataclass(frozen=True)
@@ -121,6 +126,7 @@ class Attack(ABC):
     requires_gpu: ClassVar[bool] = False
     needs_pools: ClassVar[bool] = False
     needs_tools: ClassVar[bool] = False
+    needs_llm: ClassVar[bool] = False
     version: ClassVar[int] = 1
 
     def __init__(self, params: Mapping[str, Any]) -> None:
@@ -129,6 +135,10 @@ class Attack(ABC):
     def params_hash(self) -> str:
         """``attack_params_hash`` della cella."""
         return attack_params_hash(self.attack_id, self.params, self.version)
+
+    def manifest_extra(self) -> dict[str, Any]:
+        """Informazioni dell'attacco per il manifest della cella (es. SHA-256 dei prompt)."""
+        return {}
 
     def supports(self, language: Language | str) -> bool:
         """Se l'attacco si applica al linguaggio (altrimenti ``NOT_APPLICABLE``)."""
@@ -176,6 +186,7 @@ class AttackGrid:
     attack_id: str
     path: Path
     points: tuple[dict[str, Any], ...]
+    enabled: bool = True
 
 
 def _product(space: Mapping[str, Sequence[Any]]) -> list[dict[str, Any]]:
@@ -203,7 +214,8 @@ def _grids(root: Path) -> dict[str, AttackGrid]:
         if explicit and space:
             raise ConfigError(f"{path}: use either space or points, not both")
         points = tuple({**fixed, **p} for p in (explicit or _product(space)))
-        grids[attack_id] = AttackGrid(attack_id, path, points)
+        enabled = bool(data.get("enabled", True))
+        grids[attack_id] = AttackGrid(attack_id, path, points, enabled)
     return grids
 
 
@@ -216,12 +228,16 @@ def attack_grid(attack_id: str, root: Path | None = None) -> AttackGrid:
     grids = _grids(root or config_dir() / "attack")
     if attack_id not in grids:
         raise ConfigError(f"no configs/attack/*.yaml for attack {attack_id} ({sorted(grids)})")
-    return grids[attack_id]
+    grid = grids[attack_id]
+    if not grid.enabled:  # attacco condizionale spento (T2.3, SPEC attack.t2_3.enabled)
+        raise ConfigError(f"attack {attack_id} is disabled ({grid.path}: enabled: false)")
+    return grid
 
 
 def make_attack(attack_id: str, params: Mapping[str, Any]) -> Attack:
     """Istanza registrata di un attacco con i parametri dati."""
-    import bench.attacks.t1  # noqa: F401  (popola ATTACKS)
+    import bench.attacks.t1
+    import bench.attacks.t2  # noqa: F401  (popola ATTACKS)
     from bench.registry import ATTACKS
 
     return ATTACKS.get(attack_id)(params)

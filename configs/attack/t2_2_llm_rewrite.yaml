@@ -1,0 +1,13 @@
+# T2.2 riscrittura con LLM (SPEC §12): due varianti, testi approvati dall'utente il 24 ottobre 2026
+# (bozza v2, docs/milestone_logs/M11_t2_2_preview_draft_v2.txt). Gli SHA-256 sono quelli dei file
+# approvati in configs/prompt/attacks/: un testo diverso ferma l'attacco (ConfigError), e un nuovo
+# valore cambia attack_params_hash (celle nuove). Decoding: greedy (bench.attacks.llm).
+attack_id: T2.2
+fixed:
+  attacker: llama31_8b_attacker
+  max_new_tokens: 2048
+  batch_size: 8
+  system_sha256: 1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe
+points:
+  - {variant: conservative, prompt_sha256: 84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7}
+  - {variant: full_rewrite, prompt_sha256: d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e}

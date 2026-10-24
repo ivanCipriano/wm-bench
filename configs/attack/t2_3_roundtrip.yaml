@@ -1,0 +1,14 @@
+# T2.3 traduzione andata e ritorno (SPEC §12), condizionale: py→java→py, java→py→java,
+# cpp→java→cpp, js→py→js; stesso LLM e decoding di T2.2. Spento (SPEC attack.t2_3.enabled = false):
+# i prompt configs/prompt/attacks/{system_translate,translate}.txt sono una BOZZA non approvata.
+# Per accenderlo serve l'approvazione dei testi e poi enabled: true.
+attack_id: T2.3
+enabled: false
+fixed:
+  attacker: llama31_8b_attacker
+  max_new_tokens: 2048
+  batch_size: 8
+  system_sha256: ae75394a279ef124e4eb9366dd8fea843a8cdc88b00d236cdb2c335277c7f961
+  prompt_sha256: d34ec15ebeb389f92cb2dd701b98a6878269952144aab5d4f92a3eee70659a50
+points:
+  - {}
