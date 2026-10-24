@@ -34,3 +34,675 @@ timing (gpuq) {"deepseek_coder_6p7b": {"samples": 24, "seconds": 24.1}, "qwen25_
   attack_tool_error           0  (0.0%; di cui 0 con l'originale già fallito)
 
 REGOLA: boilerplate_only 0.0% <= 10% -> procedere con la v2
+
+----- qwen25_coder_7b humaneval/84 (other_compile) status {'original': 'PASSED', 'attacked': 'COMPILE_ERROR', 'repaired': 'COMPILE_ERROR'}
+--- originale
+using namespace std;
+string solve(int N){
+    int sum = 0;
+    while (N > 0) {
+        sum += N % 10;
+        N /= 10;
+    }
+    string binary = "";
+    if (sum == 0) return "0";
+    while (sum > 0) {
+        binary = to_string(sum % 2) + binary;
+        sum /= 2;
+    }
+    return binary;
+}
+
+--- attaccato
+#include <string>
+#include <stdexcept>
+
+std::string solve(int N) {
+    int digitSum = 0;
+    while (N > 0) {
+        digitSum += N % 10;
+        N /= 10;
+    }
+    std::string binary;
+    if (digitSum == 0) return "0";
+    while (digitSum > 0) {
+        binary = (digitSum % 2 + '0') + binary;
+        digitSum /= 2;
+    }
+    return binary;
+}
+
+--- riparato
+#include <string>
+#include <stdexcept>
+using namespace std;
+
+string solve(int N){
+    int digitSum = 0;
+    while (N > 0) {
+        digitSum += N % 10;
+        N /= 10;
+    }
+    std::string binary;
+    if (digitSum == 0) return "0";
+    while (digitSum > 0) {
+        binary = (digitSum % 2 + '0') + binary;
+        digitSum /= 2;
+    }
+    return binary;
+}
+
+--- stderr attacked
+ 2 + '0') + binary;
+      |                                         ^~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:34:41: note:   deduced conflicting types for parameter ‘_CharT’ (‘int’ and ‘char’)
+   34 |         binary = (digitSum % 2 + '0') + binary;
+      |                                         ^~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:34:41: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   34 |         binary = (digitSum % 2 + '0') + binary;
+      |                                         ^~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:34:41: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   34 |         binary = (digitSum % 2 + '0') + binary;
+      |                                         ^~~~~~
+--- stderr repaired
+ 2 + '0') + binary;
+      |                                         ^~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:35:41: note:   deduced conflicting types for parameter ‘_CharT’ (‘int’ and ‘char’)
+   35 |         binary = (digitSum % 2 + '0') + binary;
+      |                                         ^~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:35:41: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   35 |         binary = (digitSum % 2 + '0') + binary;
+      |                                         ^~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:35:41: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   35 |         binary = (digitSum % 2 + '0') + binary;
+      |                                         ^~~~~~
+
+----- qwen25_coder_7b humaneval/136 (other_compile) status {'original': 'PASSED', 'attacked': 'COMPILE_ERROR', 'repaired': 'COMPILE_ERROR'}
+--- originale
+using namespace std;
+vector<int> largest_smallest_integers(vector<int> lst){
+    int max_neg = INT_MIN;
+    int min_pos = INT_MAX;
+    bool has_neg = false;
+    bool has_pos = false;
+
+    for(int num : lst){
+        if(num < 0){
+            has_neg = true;
+            if(num > max_neg){
+                max_neg = num;
+            }
+        } else if(num > 0){
+            has_pos = true;
+            if(num < min_pos){
+                min_pos = num;
+            }
+        }
+    }
+
+    if(!has_neg){
+        max_neg = 0;
+    }
+    if(!has_pos){
+        min_pos = 0;
+    }
+
+    return {max_neg, min_pos};
+}
+
+--- attaccato
+#include <vector>
+#include <climits>
+
+std::vector<int> largest_smallest_integers(const std::vector<int>& lst) {
+    int maxNegative = std::numeric_limits<int>::min();
+    int minPositive = std::numeric_limits<int>::max();
+    bool hasNegative = false;
+    bool hasPositive = false;
+
+    for (const auto& num : lst) {
+        if (num < 0) {
+            hasNegative = true;
+            maxNegative = std::max(maxNegative, num);
+        } else if (num > 0) {
+            hasPositive = true;
+            minPositive = std::min(minPositive, num);
+        }
+    }
+
+    if (!hasNegative) {
+        maxNegative = 0;
+    }
+    if (!hasPositive) {
+        minPositive = 0;
+    }
+
+    return {maxNegative, minPositive};
+}
+
+--- riparato
+#include <vector>
+#include <climits>
+using namespace std;
+
+vector<int> largest_smallest_integers(vector<int> lst){
+    int maxNegative = std::numeric_limits<int>::min();
+    int minPositive = std::numeric_limits<int>::max();
+    bool hasNegative = false;
+    bool hasPositive = false;
+
+    for (const auto& num : lst) {
+        if (num < 0) {
+            hasNegative = true;
+            maxNegative = std::max(maxNegative, num);
+        } else if (num > 0) {
+            hasPositive = true;
+            minPositive = std::min(minPositive, num);
+        }
+    }
+
+    if (!hasNegative) {
+        maxNegative = 0;
+    }
+    if (!hasPositive) {
+        minPositive = 0;
+    }
+
+    return {maxNegative, minPositive};
+}
+
+--- stderr attacked
+test.cpp: In function ‘std::vector<int> largest_smallest_integers(const std::vector<int>&)’:
+test.cpp:26:28: error: ‘numeric_limits’ is not a member of ‘std’
+   26 |     int maxNegative = std::numeric_limits<int>::min();
+      |                            ^~~~~~~~~~~~~~
+test.cpp:26:43: error: expected primary-expression before ‘int’
+   26 |     int maxNegative = std::numeric_limits<int>::min();
+      |                                           ^~~
+test.cpp:27:28: error: ‘numeric_limits’ is not a member of ‘std’
+   27 |     int minPositive = std::numeric_limits<int>::max();
+      |                            ^~~~~~~~~~~~~~
+test.cpp:27:43: error: expected primary-expression before ‘int’
+   27 |     int minPositive = std::numeric_limits<int>::max();
+      |                                           ^~~
+--- stderr repaired
+test.cpp: In function ‘std::vector<int> largest_smallest_integers(std::vector<int>)’:
+test.cpp:27:28: error: ‘numeric_limits’ is not a member of ‘std’
+   27 |     int maxNegative = std::numeric_limits<int>::min();
+      |                            ^~~~~~~~~~~~~~
+test.cpp:27:43: error: expected primary-expression before ‘int’
+   27 |     int maxNegative = std::numeric_limits<int>::min();
+      |                                           ^~~
+test.cpp:28:28: error: ‘numeric_limits’ is not a member of ‘std’
+   28 |     int minPositive = std::numeric_limits<int>::max();
+      |                            ^~~~~~~~~~~~~~
+test.cpp:28:43: error: expected primary-expression before ‘int’
+   28 |     int minPositive = std::numeric_limits<int>::max();
+      |                                           ^~~
+
+----- deepseek_coder_6p7b humaneval/84 (other_compile) status {'original': 'FAILED', 'attacked': 'COMPILE_ERROR', 'repaired': 'COMPILE_ERROR'}
+--- originale
+/*
+Given a positive integer N, return the total sum of its digits in binary.
+
+Example
+    For N = 1000, the sum of digits will be 1 the output should be "1".
+    For N = 150, the sum of digits will be 6 the output should be "110".
+    For N = 147, the sum of digits will be 12 the output should be "1100".
+
+Variables:
+    @N integer
+         Constraints: 0 ≤ N ≤ 10000.
+Output:
+     a string of binary number
+*/
+#include<stdio.h>
+#include<string>
+using namespace std;
+string solve(int N){
+    string binary = "";
+    while(N > 0){
+        binary = to_string(N % 2) + binary;
+        N /= 2;
+    }
+    return binary;
+}
+
+--- attaccato
+/*
+Given a positive integer N, return the total sum of its digits in binary.
+
+Example
+    For N = 1000, the sum of digits will be 1 the output should be "1".
+    For N = 150, the sum of digits will be 6 the output should be "110".
+    For N = 147, the sum of digits will be 12 the output should be "1100".
+
+Variables:
+    @N integer
+         Constraints: 0 ≤ N ≤ 10000.
+Output:
+     a string of binary number
+*/
+#include<stdio.h>
+#include<string>
+using namespace std;
+string solve(int N){
+#include <iostream>
+#include <string>
+#include <stdexcept>
+
+std::string sumOfBinaryDigits(int N) {
+    if (N < 0 || N > 10000) {
+        throw std::invalid_argument("N must be between 0 and 10000");
+    }
+
+    int binarySum = 0;
+    int remainder = 0;
+    int quotient = N;
+
+    while (quotient > 0) {
+        remainder = quotient % 2;
+        binarySum += remainder;
+        quotient /= 2;
+    }
+
+    std::string binaryString = "";
+    for (int i = 0; i < binarySum; ++i) {
+        binaryString += '1';
+    }
+
+    return binaryString;
+}
+
+int main() {
+    int N;
+    std::cin >> N;
+    std::cout << sumOfBinaryDigits(N) << std::endl;
+    return 0;
+}
+
+--- stderr attacked
+test.cpp: In function ‘std::string solve(int)’:
+test.cpp:44:38: error: a function-definition is not allowed here before ‘{’ token
+   44 | std::string sumOfBinaryDigits(int N) {
+      |                                      ^
+In file included from /usr/include/features.h:523,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/os_defines.h:39,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:683,
+                 from /usr/include/c++/14/cstdlib:41,
+                 from /usr/include/c++/14/stdlib.h:36,
+                 from test.cpp:2:
+/usr/include/assert.h:66:1: error: expected unqualified-id before string constant
+   66 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+test.cpp:68:9: warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]
+   68 | int main(){
+      |         ^~
+test.cpp:68:9: note: remove parentheses to default-initialize a variable
+   68 | int main(){
+      |         ^~
+      |         --
+test.cpp:68:9: note: or replace parentheses with braces to value-initialize a variable
+test.cpp:68:11: error: a function-definition is not allowed here before ‘{’ token
+   68 | int main(){
+      |           ^
+test.cpp:74:2: error: expected ‘}’ at end of input
+   74 | }
+      |  ^
+test.cpp:39:20: note: to match this ‘{’
+   39 | string solve(int N){
+      |                    ^
+test.cpp:74:2: warning: no return statement in function returning non-void [-Wreturn-type]
+   74 | }
+      |  ^
+--- stderr repaired
+test.cpp: In function ‘std::string solve(int)’:
+test.cpp:44:38: error: a function-definition is not allowed here before ‘{’ token
+   44 | std::string sumOfBinaryDigits(int N) {
+      |                                      ^
+In file included from /usr/include/features.h:523,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/os_defines.h:39,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:683,
+                 from /usr/include/c++/14/cstdlib:41,
+                 from /usr/include/c++/14/stdlib.h:36,
+                 from test.cpp:2:
+/usr/include/assert.h:66:1: error: expected unqualified-id before string constant
+   66 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+test.cpp:68:9: warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]
+   68 | int main(){
+      |         ^~
+test.cpp:68:9: note: remove parentheses to default-initialize a variable
+   68 | int main(){
+      |         ^~
+      |         --
+test.cpp:68:9: note: or replace parentheses with braces to value-initialize a variable
+test.cpp:68:11: error: a function-definition is not allowed here before ‘{’ token
+   68 | int main(){
+      |           ^
+test.cpp:74:2: error: expected ‘}’ at end of input
+   74 | }
+      |  ^
+test.cpp:39:20: note: to match this ‘{’
+   39 | string solve(int N){
+      |                    ^
+test.cpp:74:2: warning: no return statement in function returning non-void [-Wreturn-type]
+   74 | }
+      |  ^
+
+----- deepseek_coder_6p7b humaneval/143 (other_compile) status {'original': 'COMPILE_ERROR', 'attacked': 'COMPILE_ERROR', 'repaired': 'COMPILE_ERROR'}
+--- originale
+/*
+You are given a string representing a sentence,
+the sentence contains some words separated by a space,
+and you have to return a string that contains the words from the original sentence,
+whose lengths are prime numbers,
+the order of the words in the new string should be the same as the original one.
+
+Example 1:
+    Input: sentence = "This is a test"
+    Output: "is"
+
+Example 2:
+    Input: sentence = "lets go for swimming"
+    Output: "go for"
+
+Constraints:
+    * 1 <= len(sentence) <= 100
+    * sentence contains only letters
+*/
+#include<stdio.h>
+#include<string>
+using namespace std;
+string words_in_sentence(string sentence){
+    string result = "";
+    string word = "";
+    for (int i = 0; i < sentence.length(); i++){
+        if (sentence[i] == ' '){
+            if (isPrime(word.length())){
+                result += word + " ";
+            }
+            word = "";
+        } else {
+            word += sentence[i];
+        }
+    }
+    if (isPrime(word.length())){
+        result += word;
+    }
+    return result;
+}
+
+bool isPrime(int num){
+    if (num <= 1){
+        return false;
+    }
+    for (int i = 2; i * i <= num; i++){
+        if (num % i == 0){
+            return false;
+        }
+    }
+    return true;
+}
+
+--- attaccato
+/*
+You are given a string representing a sentence,
+the sentence contains some words separated by a space,
+and you have to return a string that contains the words from the original sentence,
+whose lengths are prime numbers,
+the order of the words in the new string should be the same as the original one.
+
+Example 1:
+    Input: sentence = "This is a test"
+    Output: "is"
+
+Example 2:
+    Input: sentence = "lets go for swimming"
+    Output: "go for"
+
+Constraints:
+    * 1 <= len(sentence) <= 100
+    * sentence contains only letters
+*/
+#include<stdio.h>
+#include<string>
+using namespace std;
+string words_in_sentence(string sentence){
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+bool isPrime(int num) {
+    if (num <= 1) return false;
+    for (int i = 2; i * i <= num; i++) {
+        if (num % i == 0) return false;
+    }
+    return true;
+}
+
+string wordsInSentence(string sentence) {
+    vector<string> words;
+    string currentWord;
+    for (char c : sentence) {
+        if (c == ' ') {
+            if (isPrime(currentWord.length())) words.push_back(currentWord);
+            currentWord.clear();
+        } else {
+            currentWord += c;
+        }
+    }
+    if (isPrime(currentWord.length())) words.push_back(currentWord);
+    string result;
+    for (const string& word : words) result += word + " ";
+    return result.substr(0, result.size() - 1);
+}
+
+int main() {
+    string sentence;
+    // Read input from standard input
+    // cin >> sentence;
+    // For testing purposes, use a hardcoded sentence
+    sentence = "This is a test";
+    cout << wordsInSentence(sentence) << endl;
+    return 0;
+}
+
+--- stderr original
+test.cpp: In function ‘std::string words_in_sentence(std::string)’:
+test.cpp:49:17: error: ‘isPrime’ was not declared in this scope
+   49 |             if (isPrime(word.length())){
+      |                 ^~~~~~~
+test.cpp:57:9: error: ‘isPrime’ was not declared in this scope
+   57 |     if (isPrime(word.length())){
+      |         ^~~~~~~
+--- stderr attacked
+test.cpp: In function ‘std::string words_in_sentence(std::string)’:
+test.cpp:51:23: error: a function-definition is not allowed here before ‘{’ token
+   51 | bool isPrime(int num) {
+      |                       ^
+test.cpp:59:41: error: a function-definition is not allowed here before ‘{’ token
+   59 | string wordsInSentence(string sentence) {
+      |                                         ^
+In file included from /usr/include/features.h:523,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/os_defines.h:39,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:683,
+                 from /usr/include/c++/14/cstdlib:41,
+                 from /usr/include/c++/14/stdlib.h:36,
+                 from test.cpp:2:
+/usr/include/assert.h:66:1: error: expected unqualified-id before string constant
+   66 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+test.cpp:77:9: warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]
+   77 | int main(){
+      |         ^~
+test.cpp:77:9: note: remove parentheses to default-initialize a variable
+   77 | int main(){
+      |         ^~
+      |         --
+test.cpp:77:9: note: or replace parentheses with braces to value-initialize a variable
+test.cpp:77:11: error: a function-definition is not allowed here before ‘{’ token
+   77 | int main(){
+      |           ^
+test.cpp:85:2: error: expected ‘}’ at end of input
+   85 | }
+      |  ^
+test.cpp:44:42: note: to match this ‘{’
+   44 | string words_in_sentence(string sentence){
+      |                                          ^
+test.cpp:85:2: warning: no return statement in function returning non-void [-Wreturn-type]
+   85 | }
+      |  ^
+--- stderr repaired
+test.cpp: In function ‘std::string words_in_sentence(std::string)’:
+test.cpp:51:23: error: a function-definition is not allowed here before ‘{’ token
+   51 | bool isPrime(int num) {
+      |                       ^
+test.cpp:59:41: error: a function-definition is not allowed here before ‘{’ token
+   59 | string wordsInSentence(string sentence) {
+      |                                         ^
+In file included from /usr/include/features.h:523,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/os_defines.h:39,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:683,
+                 from /usr/include/c++/14/cstdlib:41,
+                 from /usr/include/c++/14/stdlib.h:36,
+                 from test.cpp:2:
+/usr/include/assert.h:66:1: error: expected unqualified-id before string constant
+   66 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+test.cpp:77:9: warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]
+   77 | int main(){
+      |         ^~
+test.cpp:77:9: note: remove parentheses to default-initialize a variable
+   77 | int main(){
+      |         ^~
+      |         --
+test.cpp:77:9: note: or replace parentheses with braces to value-initialize a variable
+test.cpp:77:11: error: a function-definition is not allowed here before ‘{’ token
+   77 | int main(){
+      |           ^
+test.cpp:85:2: error: expected ‘}’ at end of input
+   85 | }
+      |  ^
+test.cpp:44:42: note: to match this ‘{’
+   44 | string words_in_sentence(string sentence){
+      |                                          ^
+test.cpp:85:2: warning: no return statement in function returning non-void [-Wreturn-type]
+   85 | }
+      |  ^
+
+----- deepseek_coder_6p7b humaneval/136 (other_compile) status {'original': 'PASSED', 'attacked': 'COMPILE_ERROR', 'repaired': 'COMPILE_ERROR'}
+--- originale
+/*
+Create a function that returns a vector (a, b), where "a" is
+the largest of negative integers, and "b" is the smallest
+of positive integers in a vector.
+If there is no negative or positive integers, return them as 0.
+
+Examples:
+largest_smallest_integers({2, 4, 1, 3, 5, 7}) == {0, 1}
+largest_smallest_integers({}) == {0,0}
+largest_smallest_integers({0}) == {0,0}
+*/
+#include<stdio.h>
+#include<vector>
+using namespace std;
+vector<int> largest_smallest_integers(vector<int> lst){
+    int largestNegative = INT_MIN;
+    int smallestPositive = INT_MAX;
+    for(int i=0; i<lst.size(); i++){
+        if(lst[i] < 0 && lst[i] > largestNegative){
+            largestNegative = lst[i];
+        }
+        if(lst[i] > 0 && lst[i] < smallestPositive){
+            smallestPositive = lst[i];
+        }
+    }
+    if(largestNegative == INT_MIN){
+        largestNegative = 0;
+    }
+    if(smallestPositive == INT_MAX){
+        smallestPositive = 0;
+    }
+    return {largestNegative, smallestPositive};
+}
+
+--- attaccato
+#include <vector>
+#include <climits>
+using namespace std;
+
+vector<int> largest_smallest_integers(vector<int> lst) {
+    int maxNegative = -CLL_MAX;
+    int minPositive = CLL_MAX;
+    for (int num : lst) {
+        if (num < 0 && num > maxNegative) {
+            maxNegative = num;
+        }
+        if (num > 0 && num < minPositive) {
+            minPositive = num;
+        }
+    }
+    maxNegative = (maxNegative == -CLL_MAX) ? 0 : maxNegative;
+    minPositive = (minPositive == CLL_MAX) ? 0 : minPositive;
+    return {maxNegative, minPositive};
+}
+
+--- riparato
+#include<stdio.h>
+#include <vector>
+#include <climits>
+using namespace std;
+
+vector<int> largest_smallest_integers(vector<int> lst){
+    int maxNegative = -CLL_MAX;
+    int minPositive = CLL_MAX;
+    for (int num : lst) {
+        if (num < 0 && num > maxNegative) {
+            maxNegative = num;
+        }
+        if (num > 0 && num < minPositive) {
+            minPositive = num;
+        }
+    }
+    maxNegative = (maxNegative == -CLL_MAX) ? 0 : maxNegative;
+    minPositive = (minPositive == CLL_MAX) ? 0 : minPositive;
+    return {maxNegative, minPositive};
+}
+
+--- stderr attacked
+test.cpp: In function ‘std::vector<int> largest_smallest_integers(std::vector<int>)’:
+test.cpp:27:24: error: ‘CLL_MAX’ was not declared in this scope
+   27 |     int maxNegative = -CLL_MAX;
+      |                        ^~~~~~~
+--- stderr repaired
+test.cpp: In function ‘std::vector<int> largest_smallest_integers(std::vector<int>)’:
+test.cpp:28:24: error: ‘CLL_MAX’ was not declared in this scope
+   28 |     int maxNegative = -CLL_MAX;
+      |                        ^~~~~~~
