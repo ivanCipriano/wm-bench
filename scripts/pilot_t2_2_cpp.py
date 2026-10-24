@@ -181,6 +181,7 @@ def execute(cfg: Any, store: ArtifactStore, out: Path) -> None:
             row["original"], row["attacked"], str(problem.entry_point), parsers
         )
     statuses: dict[str, dict[str, str]] = {}
+    stderr: dict[str, dict[str, str | None]] = {}
     for key, problem in problems.items():
         executor = _executor(cfg, sandbox, root, problem.dataset)
         rows = [r for r in data["rows"] if r["problem_key"] == key]
@@ -192,8 +193,10 @@ def execute(cfg: Any, store: ArtifactStore, out: Path) -> None:
         for record in executor.run_problem(problem, samples) if samples else []:
             sid, _, version = record.sample_id.partition("#")
             statuses.setdefault(sid, {})[version] = str(record.status)
+            stderr.setdefault(sid, {})[version] = record.stderr_tail
     for row in data["rows"]:
         row["status"] = statuses.get(row["sample_id"], {})
+        row["stderr"] = stderr.get(row["sample_id"], {})
     (out / "execute.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
     sys.stdout.write(f"wrote {out / 'execute.json'}\n")
 
@@ -247,10 +250,20 @@ def report(cfg: Any, store: ArtifactStore, out: Path) -> None:
                 f"\nREGOLA: boilerplate_only {share:.1%} "
                 f"{'>' if share > THRESHOLD else '<='} {THRESHOLD:.0%} -> {verdict}\n"
             )
-    examples = [r for r in rows if classify(r) in ("boilerplate_only", "boilerplate_then_fails")]
-    for r in examples[:3]:
-        w(f"\n----- esempio {r['model_id']} {r['problem_key']} ({classify(r)})\n")
+    # tutti gli errori di compilazione, per verificare a mano la classificazione della riparazione
+    compile_errors = [
+        r for r in rows
+        if classify(r) in ("boilerplate_only", "boilerplate_then_fails", "other_compile")
+    ]  # fmt: skip
+    for r in compile_errors:
+        w(f"\n----- {r['model_id']} {r['problem_key']} ({classify(r)}) status {r['status']}\n")
         w(f"--- originale\n{r['original']}\n--- attaccato\n{r['attacked']}\n")
+        if r["repaired"] != r["attacked"]:
+            w(f"--- riparato\n{r['repaired']}\n")
+        for version in ("original", "attacked", "repaired"):
+            tail = (r.get("stderr") or {}).get(version)
+            if tail and r["status"].get(version) == "COMPILE_ERROR":
+                w(f"--- stderr {version}\n{tail}\n")
 
 
 def main() -> int:

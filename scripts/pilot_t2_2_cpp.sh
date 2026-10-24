@@ -7,6 +7,7 @@
 # Due job: riscrittura su gpuq (Llama-3.1-8B-Instruct, fino a 200 campioni), poi test su defq
 # (originale, attaccato, riparato; parte solo se il primo è riuscito). A job finiti:
 #   python scripts/pilot_t2_2_cpp.py report > docs/milestone_logs/M11_t2_2_cpp_pilot.txt
+# Con "bash scripts/pilot_t2_2_cpp.sh execute" rilancia solo i test (riscrittura già fatta).
 # Scrive solo in $WMB/tmp/t2_2_cpp_pilot/; log in $WMB/logs/pilot_t2_2_cpp_<job>.log.
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -32,12 +33,20 @@ python scripts/pilot_t2_2_cpp.py $1
 SBATCH
     echo "$path"
 }
+submit_execute() {  # $@ = opzioni sbatch in più (dipendenza)
+    sbatch --parsable -p defq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_defq_qos \
+        -c 16 --mem 32G -t 120 ${EXCLUDE[@]+"${EXCLUDE[@]}"} "$@" \
+        --job-name wmb-pilot-t2_2-cpp-exec -o "$WMB/logs/pilot_t2_2_cpp_%j.log" \
+        "$(job_script execute "module load apptainer/apptainer.module")"
+}
+if [ "${1:-}" = "execute" ]; then  # solo i test, su generate.json già scritto
+    EXE=$(submit_execute)
+    echo "job: execute $EXE (defq); log: $WMB/logs/pilot_t2_2_cpp_$EXE.log"
+    exit 0
+fi
 GEN=$(sbatch --parsable -p gpuq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_gpuq_qos --gres=gpu:1 \
     -c 8 --mem 64G -t 120 ${EXCLUDE[@]+"${EXCLUDE[@]}"} --job-name wmb-pilot-t2_2-cpp \
     -o "$WMB/logs/pilot_t2_2_cpp_%j.log" "$(job_script generate "")")
-EXE=$(sbatch --parsable -p defq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_defq_qos \
-    -c 16 --mem 32G -t 120 ${EXCLUDE[@]+"${EXCLUDE[@]}"} --dependency "afterok:$GEN" \
-    --job-name wmb-pilot-t2_2-cpp-exec -o "$WMB/logs/pilot_t2_2_cpp_%j.log" \
-    "$(job_script execute "module load apptainer/apptainer.module")")
+EXE=$(submit_execute --dependency "afterok:$GEN")
 echo "jobs: generate $GEN (gpuq), execute $EXE (defq, after $GEN)"
 echo "logs: $WMB/logs/pilot_t2_2_cpp_$GEN.log, $WMB/logs/pilot_t2_2_cpp_$EXE.log"
