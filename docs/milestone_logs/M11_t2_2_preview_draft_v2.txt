@@ -1,0 +1,717 @@
+##### T2.2 preview (draft prompts)
+attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659
+generation {"eos_token_id": [128001, 128008, 128009], "max_new_tokens": 2048, "pad_token_id": 128009, "transformers_version": "4.46.3"}
+decode skip_special_tokens=True clean_up_tokenization_spaces=False
+sha256 system.txt 1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe
+sha256 conservative.txt 84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7
+sha256 full_rewrite.txt d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e
+
+##### system prompt
+You are an expert software engineer who rewrites code on request.
+The rewritten code must behave exactly like the original code: for every input it must return the same results, produce the same output and raise the same errors. Do not add input validation, error handling or any other new behavior.
+Keep the name and the exact signature (parameter names and types, return type) of every function, method and class defined in the code, and keep all the imports, includes and using declarations of the code.
+If the code is a complete program that reads from standard input, the rewritten program must read the same input and write the same output, in exactly the same format.
+Reply with the complete rewritten code in a single fenced code block, without explanations.
+
+##### mbpp/145 (mbppplus, python) conservative
+extraction_ok True  new_tokens 139  truncated False
+----- user prompt
+Refactor the following Python code to improve its readability and style, with minimal changes.
+Keep the algorithm, the structure of the code and the names of all functions, parameters and variables unchanged: do not add, remove or move functions or statements.
+
+```python
+def max_Abs_Diff(arr):
+    # Initialize the minimum and maximum elements as the first element of the array
+    min_element = arr[0]
+    max_element = arr[0]
+    
+    # Iterate through the array starting from the second element
+    for i in range(1, len(arr)):
+        # Update the minimum element if the current element is smaller
+        min_element = min(min_element, arr[i])
+        # Update the maximum element if the current element is larger
+        max_element = max(max_element, arr[i])
+    
+    # Return the absolute difference between the maximum and minimum elements
+    return max_element - min_element
+```
+
+----- raw output
+```python
+def max_Abs_Diff(arr):
+    # Initialize the minimum and maximum elements as the first element of the array
+    min_element = arr[0]
+    max_element = arr[0]
+    
+    # Iterate through the array starting from the second element
+    for i in range(1, len(arr)):
+        # Update the minimum element if the current element is smaller
+        min_element = min(min_element, arr[i])
+        # Update the maximum element if the current element is larger
+        max_element = max(max_element, arr[i])
+    
+    # Return the absolute difference between the maximum and minimum elements
+    return max_element - min_element
+```
+----- extracted code
+def max_Abs_Diff(arr):
+    # Initialize the minimum and maximum elements as the first element of the array
+    min_element = arr[0]
+    max_element = arr[0]
+    
+    # Iterate through the array starting from the second element
+    for i in range(1, len(arr)):
+        # Update the minimum element if the current element is smaller
+        min_element = min(min_element, arr[i])
+        # Update the maximum element if the current element is larger
+        max_element = max(max_element, arr[i])
+    
+    # Return the absolute difference between the maximum and minimum elements
+    return max_element - min_element
+
+
+##### mbpp/145 (mbppplus, python) full_rewrite
+extraction_ok True  new_tokens 68  truncated False
+----- user prompt
+Rewrite the following Python code from scratch, as a new implementation that does not reuse the lines of the original code.
+Change the structure of the code and the names of local variables, and use a different algorithm where possible.
+Keep only the behavior and the names and signatures of the functions, methods and classes.
+
+```python
+def max_Abs_Diff(arr):
+    # Initialize the minimum and maximum elements as the first element of the array
+    min_element = arr[0]
+    max_element = arr[0]
+    
+    # Iterate through the array starting from the second element
+    for i in range(1, len(arr)):
+        # Update the minimum element if the current element is smaller
+        min_element = min(min_element, arr[i])
+        # Update the maximum element if the current element is larger
+        max_element = max(max_element, arr[i])
+    
+    # Return the absolute difference between the maximum and minimum elements
+    return max_element - min_element
+```
+
+----- raw output
+```python
+def max_Abs_Diff(arr):
+    min_val = max_val = arr[0]
+    for num in arr[1:]:
+        min_val = num if num < min_val else min_val
+        max_val = num if num > max_val else max_val
+    return max_val - min_val
+```
+----- extracted code
+def max_Abs_Diff(arr):
+    min_val = max_val = arr[0]
+    for num in arr[1:]:
+        min_val = num if num < min_val else min_val
+        max_val = num if num > max_val else max_val
+    return max_val - min_val
+
+
+##### humaneval/48 (humanevalpack, java) conservative
+extraction_ok True  new_tokens 138  truncated False
+----- user prompt
+Refactor the following Java code to improve its readability and style, with minimal changes.
+Keep the algorithm, the structure of the code and the names of all functions, parameters and variables unchanged: do not add, remove or move functions or statements.
+
+```java
+import java.util.*;
+import java.lang.*;
+
+class Solution {
+    /**
+    Checks if given string is a palindrome
+    >>> isPalindrome("")
+    true
+    >>> isPalindrome("aba")
+    true
+    >>> isPalindrome("aaaaa")
+    true
+    >>> isPalindrome("zbcd")
+    false
+     */
+    public boolean isPalindrome(String text) {
+        int left = 0;
+        int right = text.length() - 1;
+        while (left < right) {
+            if (text.charAt(left) != text.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+}
+```
+
+----- raw output
+```java
+import java.util.*;
+import java.lang.*;
+
+class Solution {
+    /**
+    Checks if given string is a palindrome
+    >>> isPalindrome("")
+    true
+    >>> isPalindrome("aba")
+    true
+    >>> isPalindrome("aaaaa")
+    true
+    >>> isPalindrome("zbcd")
+    false
+     */
+    public boolean isPalindrome(String text) {
+        int left = 0;
+        int right = text.length() - 1;
+        while (left < right) {
+            if (text.charAt(left) != text.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+}
+```
+----- extracted code
+import java.util.*;
+import java.lang.*;
+
+class Solution {
+    /**
+    Checks if given string is a palindrome
+    >>> isPalindrome("")
+    true
+    >>> isPalindrome("aba")
+    true
+    >>> isPalindrome("aaaaa")
+    true
+    >>> isPalindrome("zbcd")
+    false
+     */
+    public boolean isPalindrome(String text) {
+        int left = 0;
+        int right = text.length() - 1;
+        while (left < right) {
+            if (text.charAt(left) != text.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+}
+
+
+##### humaneval/48 (humanevalpack, java) full_rewrite
+extraction_ok True  new_tokens 149  truncated False
+----- user prompt
+Rewrite the following Java code from scratch, as a new implementation that does not reuse the lines of the original code.
+Change the structure of the code and the names of local variables, and use a different algorithm where possible.
+Keep only the behavior and the names and signatures of the functions, methods and classes.
+
+```java
+import java.util.*;
+import java.lang.*;
+
+class Solution {
+    /**
+    Checks if given string is a palindrome
+    >>> isPalindrome("")
+    true
+    >>> isPalindrome("aba")
+    true
+    >>> isPalindrome("aaaaa")
+    true
+    >>> isPalindrome("zbcd")
+    false
+     */
+    public boolean isPalindrome(String text) {
+        int left = 0;
+        int right = text.length() - 1;
+        while (left < right) {
+            if (text.charAt(left) != text.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+}
+```
+
+----- raw output
+```java
+import java.util.*;
+
+class Solution {
+    /**
+     * Checks if given string is a palindrome
+     * >>> isPalindrome("")
+     * true
+     * >>> isPalindrome("aba")
+     * true
+     * >>> isPalindrome("aaaaa")
+     * true
+     * >>> isPalindrome("zbcd")
+     * false
+     */
+    public boolean isPalindrome(String text) {
+        int start = 0;
+        int end = text.length() - 1;
+        char[] chars = text.toCharArray();
+        while (start < end) {
+            if (chars[start] != chars[end]) {
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
+    }
+}
+```
+----- extracted code
+import java.util.*;
+
+class Solution {
+    /**
+     * Checks if given string is a palindrome
+     * >>> isPalindrome("")
+     * true
+     * >>> isPalindrome("aba")
+     * true
+     * >>> isPalindrome("aaaaa")
+     * true
+     * >>> isPalindrome("zbcd")
+     * false
+     */
+    public boolean isPalindrome(String text) {
+        int start = 0;
+        int end = text.length() - 1;
+        char[] chars = text.toCharArray();
+        while (start < end) {
+            if (chars[start] != chars[end]) {
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
+    }
+}
+
+
+##### humaneval/48 (humanevalpack, cpp) conservative
+extraction_ok True  new_tokens 81  truncated False
+----- user prompt
+Refactor the following C++ code to improve its readability and style, with minimal changes.
+Keep the algorithm, the structure of the code and the names of all functions, parameters and variables unchanged: do not add, remove or move functions or statements.
+
+```cpp
+#include<stdio.h>
+#include<string>
+using namespace std;
+bool is_palindrome(string text){
+    int left = 0;
+    int right = text.length() - 1;
+    while (left < right) {
+        if (text[left] != text[right]) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+```
+
+----- raw output
+```cpp
+#include <stdio.h>
+#include <string>
+using namespace std;
+
+bool is_palindrome(string text){
+    int left = 0;
+    int right = text.length() - 1;
+    while (left < right) {
+        if (text[left] != text[right]) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+```
+----- extracted code
+#include <stdio.h>
+#include <string>
+using namespace std;
+
+bool is_palindrome(string text){
+    int left = 0;
+    int right = text.length() - 1;
+    while (left < right) {
+        if (text[left] != text[right]) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+
+
+##### humaneval/48 (humanevalpack, cpp) full_rewrite
+extraction_ok True  new_tokens 83  truncated False
+----- user prompt
+Rewrite the following C++ code from scratch, as a new implementation that does not reuse the lines of the original code.
+Change the structure of the code and the names of local variables, and use a different algorithm where possible.
+Keep only the behavior and the names and signatures of the functions, methods and classes.
+
+```cpp
+#include<stdio.h>
+#include<string>
+using namespace std;
+bool is_palindrome(string text){
+    int left = 0;
+    int right = text.length() - 1;
+    while (left < right) {
+        if (text[left] != text[right]) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+```
+
+----- raw output
+```cpp
+#include <iostream>
+#include <string>
+
+bool is_palindrome(const std::string& text) {
+    size_t start = 0;
+    size_t end = text.size() - 1;
+    while (start < end) {
+        if (text[start] != text[end]) {
+            return false;
+        }
+        start++;
+        end--;
+    }
+    return true;
+}
+```
+----- extracted code
+#include <iostream>
+#include <string>
+
+bool is_palindrome(const std::string& text) {
+    size_t start = 0;
+    size_t end = text.size() - 1;
+    while (start < end) {
+        if (text[start] != text[end]) {
+            return false;
+        }
+        start++;
+        end--;
+    }
+    return true;
+}
+
+
+##### humaneval/48 (humanevalpack, javascript) conservative
+extraction_ok True  new_tokens 26  truncated False
+----- user prompt
+Refactor the following JavaScript code to improve its readability and style, with minimal changes.
+Keep the algorithm, the structure of the code and the names of all functions, parameters and variables unchanged: do not add, remove or move functions or statements.
+
+```javascript
+const isPalindrome = (text) => {
+  return text === text.split('').reverse().join('');
+};
+```
+
+----- raw output
+```javascript
+const isPalindrome = (text) => {
+  return text === text.split('').reverse().join('');
+};
+```
+----- extracted code
+const isPalindrome = (text) => {
+  return text === text.split('').reverse().join('');
+};
+
+
+##### humaneval/48 (humanevalpack, javascript) full_rewrite
+extraction_ok True  new_tokens 81  truncated False
+----- user prompt
+Rewrite the following JavaScript code from scratch, as a new implementation that does not reuse the lines of the original code.
+Change the structure of the code and the names of local variables, and use a different algorithm where possible.
+Keep only the behavior and the names and signatures of the functions, methods and classes.
+
+```javascript
+const isPalindrome = (text) => {
+  return text === text.split('').reverse().join('');
+};
+```
+
+----- raw output
+```javascript
+const isPalindrome = (text) => {
+  let charArray = Array.from(text);
+  let left = 0;
+  let right = charArray.length - 1;
+
+  while (left < right) {
+    if (charArray[left] !== charArray[right]) {
+      return false;
+    }
+    left++;
+    right--;
+  }
+
+  return true;
+};
+```
+----- extracted code
+const isPalindrome = (text) => {
+  let charArray = Array.from(text);
+  let left = 0;
+  let right = charArray.length - 1;
+
+  while (left < right) {
+    if (charArray[left] !== charArray[right]) {
+      return false;
+    }
+    left++;
+    right--;
+  }
+
+  return true;
+};
+
+
+##### codenet/p03081 (codenet, python) conservative
+extraction_ok True  new_tokens 189  truncated False
+----- user prompt
+Refactor the following Python code to improve its readability and style, with minimal changes.
+Keep the algorithm, the structure of the code and the names of all functions, parameters and variables unchanged: do not add, remove or move functions or statements.
+
+```python
+import sys
+
+input = sys.stdin.read
+data = input().split()
+
+N = int(data[0])
+Q = int(data[1])
+s = data[2]
+spells = [(data[2 * i + 3], data[2 * i + 4]) for i in range(Q)]
+
+golems = [1] * N
+
+for t, d in spells:
+    for i in range(N):
+        if s[i] == t:
+            if d == 'L':
+                if i > 0:
+                    golems[i] -= 1
+                    golems[i - 1] += 1
+            elif d == 'R':
+                if i < N - 1:
+                    golems[i] -= 1
+                    golems[i + 1] += 1
+
+remaining_golems = sum(golems)
+print(remaining_golems)
+```
+
+----- raw output
+```python
+import sys
+
+input = sys.stdin.read
+data = input().split()
+
+N = int(data[0])
+Q = int(data[1])
+s = data[2]
+spells = [(data[2 * i + 3], data[2 * i + 4]) for i in range(Q)]
+
+golems = [1] * N
+
+for t, d in spells:
+    for i in range(N):
+        if s[i] == t:
+            if d == 'L':
+                if i > 0:
+                    golems[i] -= 1
+                    golems[i - 1] += 1
+            elif d == 'R':
+                if i < N - 1:
+                    golems[i] -= 1
+                    golems[i + 1] += 1
+
+remaining_golems = sum(golems)
+print(remaining_golems)
+```
+----- extracted code
+import sys
+
+input = sys.stdin.read
+data = input().split()
+
+N = int(data[0])
+Q = int(data[1])
+s = data[2]
+spells = [(data[2 * i + 3], data[2 * i + 4]) for i in range(Q)]
+
+golems = [1] * N
+
+for t, d in spells:
+    for i in range(N):
+        if s[i] == t:
+            if d == 'L':
+                if i > 0:
+                    golems[i] -= 1
+                    golems[i - 1] += 1
+            elif d == 'R':
+                if i < N - 1:
+                    golems[i] -= 1
+                    golems[i + 1] += 1
+
+remaining_golems = sum(golems)
+print(remaining_golems)
+
+
+##### codenet/p03081 (codenet, python) full_rewrite
+extraction_ok True  new_tokens 286  truncated False
+----- user prompt
+Rewrite the following Python code from scratch, as a new implementation that does not reuse the lines of the original code.
+Change the structure of the code and the names of local variables, and use a different algorithm where possible.
+Keep only the behavior and the names and signatures of the functions, methods and classes.
+
+```python
+import sys
+
+input = sys.stdin.read
+data = input().split()
+
+N = int(data[0])
+Q = int(data[1])
+s = data[2]
+spells = [(data[2 * i + 3], data[2 * i + 4]) for i in range(Q)]
+
+golems = [1] * N
+
+for t, d in spells:
+    for i in range(N):
+        if s[i] == t:
+            if d == 'L':
+                if i > 0:
+                    golems[i] -= 1
+                    golems[i - 1] += 1
+            elif d == 'R':
+                if i < N - 1:
+                    golems[i] -= 1
+                    golems[i + 1] += 1
+
+remaining_golems = sum(golems)
+print(remaining_golems)
+```
+
+----- raw output
+```python
+import sys
+
+def read_input():
+    return sys.stdin.read().split()
+
+def parse_input(data):
+    N, Q, s = map(int, data[:3])
+    spells = [(data[3 + 2 * i], data[4 + 2 * i]) for i in range(Q // 2)]
+    return N, Q, s, spells
+
+def apply_spells(N, s, spells):
+    golems = [1] * N
+    for t, d in spells:
+        for i in range(N):
+            if s[i] == t:
+                if d == 'L':
+                    if i > 0:
+                        golems[i] -= 1
+                        golems[i - 1] += 1
+                elif d == 'R':
+                    if i < N - 1:
+                        golems[i] -= 1
+                        golems[i + 1] += 1
+    return golems
+
+def calculate_remaining_golems(golems):
+    return sum(golems)
+
+def main():
+    data = read_input()
+    N, Q, s, spells = parse_input(data)
+    golems = apply_spells(N, s, spells)
+    remaining_golems = calculate_remaining_golems(golems)
+    print(remaining_golems)
+
+if __name__ == "__main__":
+    main()
+```
+----- extracted code
+import sys
+
+def read_input():
+    return sys.stdin.read().split()
+
+def parse_input(data):
+    N, Q, s = map(int, data[:3])
+    spells = [(data[3 + 2 * i], data[4 + 2 * i]) for i in range(Q // 2)]
+    return N, Q, s, spells
+
+def apply_spells(N, s, spells):
+    golems = [1] * N
+    for t, d in spells:
+        for i in range(N):
+            if s[i] == t:
+                if d == 'L':
+                    if i > 0:
+                        golems[i] -= 1
+                        golems[i - 1] += 1
+                elif d == 'R':
+                    if i < N - 1:
+                        golems[i] -= 1
+                        golems[i + 1] += 1
+    return golems
+
+def calculate_remaining_golems(golems):
+    return sum(golems)
+
+def main():
+    data = read_input()
+    N, Q, s, spells = parse_input(data)
+    golems = apply_spells(N, s, spells)
+    remaining_golems = calculate_remaining_golems(golems)
+    print(remaining_golems)
+
+if __name__ == "__main__":
+    main()
+
