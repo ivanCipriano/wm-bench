@@ -29,6 +29,7 @@ import argparse
 import json
 import random
 import sys
+import time
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -76,6 +77,7 @@ def generate(cfg: Any, store: ArtifactStore, out: Path) -> None:
     )
     problems = _problems(store, cfg.global_seed)
     rows: list[dict[str, Any]] = []
+    timing: dict[str, dict[str, float]] = {}
     for model_id in MODELS:
         base = store.read_table(baseline_ref(model_id, LEVEL, str(LANG), SPLIT))
         samples = [CodeSample.model_validate(r) for r in base.to_dict(orient="records")]
@@ -97,7 +99,10 @@ def generate(cfg: Any, store: ArtifactStore, out: Path) -> None:
             )
             for problem, sample in chosen
         ]
+        start = time.monotonic()
         outcomes = attack.apply_many([s.code for _, s in chosen], LANG, ctxs)
+        elapsed = time.monotonic() - start
+        timing[model_id] = {"samples": len(chosen), "seconds": round(elapsed, 1)}
         for (problem, sample), result in zip(chosen, outcomes, strict=True):
             rows.append(
                 {
@@ -110,8 +115,8 @@ def generate(cfg: Any, store: ArtifactStore, out: Path) -> None:
                     "detail": result.detail,
                 }
             )
-        sys.stdout.write(f"{model_id}: {len(chosen)} samples\n")
-    data = {"attack_params": p, "attacker": llm.info(), "rows": rows}
+        sys.stdout.write(f"{model_id}: {len(chosen)} samples in {elapsed:.0f} s\n")
+    data = {"attack_params": p, "attacker": llm.info(), "timing": timing, "rows": rows}
     (out / "generate.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
     sys.stdout.write(f"wrote {out / 'generate.json'}\n")
 
@@ -214,6 +219,7 @@ def report(cfg: Any, store: ArtifactStore, out: Path) -> None:
     w("##### Pilota T2.2(b) full_rewrite su L1 dev C++ (HumanEvalPack)\n")
     w(f"attack_params {json.dumps(data['attack_params'], sort_keys=True)}\n")
     w(f"attacker {json.dumps(data['attacker'], sort_keys=True)}\n")
+    w(f"timing (gpuq) {json.dumps(data.get('timing'), sort_keys=True)}\n")
     for model_id in (*MODELS, "all"):
         sel = [r for r in rows if model_id in ("all", r["model_id"])]
         n = len(sel)
