@@ -1,0 +1,36 @@
+##### Pilota T2.2(b) full_rewrite su L1 dev C++ (HumanEvalPack)
+attack_params {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"}
+attacker {"decoding": {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}, "dtype": "bfloat16", "gpu": "NVIDIA A100-SXM4-80GB", "hf_repo": "meta-llama/Llama-3.1-8B-Instruct", "model_id": "llama31_8b_attacker", "python": "3.11.16", "snapshot": "0e9e39f249a16976918f6564b8830bc894c89659", "transformers": "4.46.3"}
+timing (gpuq) {"deepseek_coder_6p7b": {"samples": 24, "seconds": 24.1}, "qwen25_coder_7b": {"samples": 24, "seconds": 80.2}}
+
+=== qwen25_coder_7b: 24 campioni
+  attack_status {'APPLIED': 24}
+  Pass@1 originale 20/24, attaccato 10/24
+  stati dell'attaccato {'COMPILE_ERROR': 2, 'PASSED': 10, 'FAILED': 11, 'RUNTIME_ERROR': 1}
+  boilerplate_only            0  (0.0%; di cui 0 con l'originale già fallito)
+  boilerplate_then_fails      0  (0.0%; di cui 0 con l'originale già fallito)
+  other_compile               2  (8.3%; di cui 0 con l'originale già fallito)
+  runtime_or_logic           12  (50.0%; di cui 4 con l'originale già fallito)
+  attack_tool_error           0  (0.0%; di cui 0 con l'originale già fallito)
+
+=== deepseek_coder_6p7b: 24 campioni
+  attack_status {'APPLIED': 24}
+  Pass@1 originale 17/24, attaccato 13/24
+  stati dell'attaccato {'COMPILE_ERROR': 3, 'FAILED': 8, 'PASSED': 13}
+  boilerplate_only            0  (0.0%; di cui 0 con l'originale già fallito)
+  boilerplate_then_fails      0  (0.0%; di cui 0 con l'originale già fallito)
+  other_compile               3  (12.5%; di cui 2 con l'originale già fallito)
+  runtime_or_logic            8  (33.3%; di cui 5 con l'originale già fallito)
+  attack_tool_error           0  (0.0%; di cui 0 con l'originale già fallito)
+
+=== all: 48 campioni
+  attack_status {'APPLIED': 48}
+  Pass@1 originale 37/48, attaccato 23/48
+  stati dell'attaccato {'COMPILE_ERROR': 5, 'PASSED': 23, 'FAILED': 19, 'RUNTIME_ERROR': 1}
+  boilerplate_only            0  (0.0%; di cui 0 con l'originale già fallito)
+  boilerplate_then_fails      0  (0.0%; di cui 0 con l'originale già fallito)
+  other_compile               5  (10.4%; di cui 2 con l'originale già fallito)
+  runtime_or_logic           20  (41.7%; di cui 9 con l'originale già fallito)
+  attack_tool_error           0  (0.0%; di cui 0 con l'originale già fallito)
+
+REGOLA: boilerplate_only 0.0% <= 10% -> procedere con la v2
