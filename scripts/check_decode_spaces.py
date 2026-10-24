@@ -7,7 +7,8 @@ Richiesta dell'utente del 24 ottobre 2026. Con ``clean_up_tokenization_spaces`` 
 sostituisce `` !`` con ``!`` (e lo stesso per ``?``, ``,``, ``.`` e `` 's``) in tutto il testo:
 in un gruppo di campioni generati così quelle sequenze **non compaiono mai**, mentre nella baseline
 (`` !=``, ``a ? b : c``) sono frequenti. Per ogni gruppo (fonte, metodo, modello, linguaggio) stampa
-le occorrenze per campione nell'output grezzo (``raw_output``) e segna ``SUSPECT`` i gruppi con
+le occorrenze per campione nel testo (``raw_output``, o ``code`` se manca; i campioni vuoti, come
+quelli ``NOT_APPLICABLE``, sono contati a parte) e segna ``SUSPECT`` i gruppi con
 zero occorrenze di una sequenza che nella baseline dello stesso modello e linguaggio compare almeno
 una volta ogni 20 campioni. Legge solo gli artefatti: baseline, baseline gemella e marcati.
 """
@@ -41,16 +42,29 @@ def _groups(root: Path) -> dict[tuple[str, str, str, str], list[Path]]:
     return groups
 
 
-def _rates(paths: list[Path]) -> tuple[int, dict[str, float]]:
+def _rates(paths: list[Path]) -> tuple[dict[str, int], dict[str, float]]:
+    """Occorrenze per campione sui testi non vuoti: ``raw_output`` se c'è, altrimenti ``code``
+    (ACW non genera: il suo campione marcato ha solo ``code``)."""
     texts: list[str] = []
+    counts = {"total": 0, "raw": 0, "code_only": 0, "empty": 0}
     for path in paths:
-        try:
-            column = pd.read_parquet(path, columns=["raw_output"])["raw_output"]
-        except (KeyError, ValueError):
-            column = pd.read_parquet(path, columns=["code"])["code"]
-        texts += [str(t) for t in column.fillna("")]
+        table = pd.read_parquet(path)
+        if "raw_output" in table.columns:
+            raw = table["raw_output"]
+        else:
+            raw = pd.Series([None] * len(table))
+        for r, c in zip(raw.fillna(""), table["code"].fillna(""), strict=True):
+            counts["total"] += 1
+            if str(r):
+                counts["raw"] += 1
+                texts.append(str(r))
+            elif str(c):
+                counts["code_only"] += 1
+                texts.append(str(c))
+            else:
+                counts["empty"] += 1
     n = len(texts)
-    return n, {p: (sum(t.count(p) for t in texts) / n if n else 0.0) for p in PATTERNS}
+    return counts, {p: (sum(t.count(p) for t in texts) / n if n else 0.0) for p in PATTERNS}
 
 
 def main() -> int:
@@ -59,13 +73,15 @@ def main() -> int:
     args = parser.parse_args()
     groups = _groups(Path(args.artifacts))
     rates = {key: _rates(paths) for key, paths in groups.items()}
-    header = f"{'source':<8} {'method':<11} {'model':<20} {'lang':<10} {'n':>7}  "
+    header = f"{'source':<8} {'method':<11} {'model':<20} {'lang':<10} {'n':>6} {'raw':>6} "
+    header += f"{'code':>6} {'empty':>6}  "
     sys.stdout.write(header + "  ".join(f"{p!r:>6}" for p in PATTERNS) + "  flag\n")
     suspects = 0
     for key in sorted(rates):
         source, method, model, lang = key
-        n, rate = rates[key]
-        base = rates.get(("baseline", "-", model, lang), (0, {}))[1]
+        counts, rate = rates[key]
+        n = counts["raw"] + counts["code_only"]
+        base = rates.get(("baseline", "-", model, lang), ({}, {}))[1]
         missing = [
             p
             for p in PATTERNS
@@ -75,11 +91,13 @@ def main() -> int:
             and base.get(p, 0.0) >= MIN_BASELINE_RATE
         ]
         flag = f"SUSPECT (absent: {', '.join(repr(p) for p in missing)})" if missing else ""
+        if n == 0:
+            flag = "no text (all samples empty)"
         suspects += bool(missing)
         cells = "  ".join(f"{rate[p]:>6.3f}" for p in PATTERNS)
-        sys.stdout.write(
-            f"{source:<8} {method:<11} {model:<20} {lang:<10} {n:>7}  {cells}  {flag}\n"
-        )
+        sizes = " ".join(f"{counts[k]:>6}" for k in ("total", "raw", "code_only", "empty"))
+        row = f"{source:<8} {method:<11} {model:<20} {lang:<10} {sizes}  {cells}  {flag}"
+        sys.stdout.write(row + "\n")
     sys.stdout.write(f"##### groups {len(rates)}, suspect {suspects}\n")
     return 0
 
