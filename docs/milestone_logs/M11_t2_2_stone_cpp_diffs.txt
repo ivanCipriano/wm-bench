@@ -1,0 +1,131 @@
+##### stone T2.2 {'attacker': 'llama31_8b_attacker', 'max_new_tokens': 2048, 'batch_size': 8, 'system_sha256': '1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe', 'variant': 'conservative', 'prompt_sha256': '84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7'} cpp L1 test
+
+=== qwen25_coder_7b: 840 campioni, APPLIED 824
+  preamble_only          321  (39.0% degli APPLIED)
+  preamble_signature     276  (33.5% degli APPLIED)
+  cosmetic_body          132  (16.0% degli APPLIED)
+  body                    95  (11.5% degli APPLIED)
+
+=== deepseek_coder_6p7b: 840 campioni, APPLIED 838
+  preamble_only          141  (16.8% degli APPLIED)
+  preamble_signature     181  (21.6% degli APPLIED)
+  cosmetic_body          304  (36.3% degli APPLIED)
+  body                   212  (25.3% degli APPLIED)
+
+----- deepseek_coder_6p7b humaneval/73 #0 (cosmetic_body)
+--- marcato
++++ attaccato
+@@ -8,14 +8,15 @@
+ smallest_change({1, 2, 3, 4, 3, 2, 2}) == 1
+ smallest_change({1, 2, 3, 2, 1}) == 0
+ */
+-#include<stdio.h>
+-#include<vector>
++#include <stdio.h>
++#include <vector>
+ using namespace std;
+-int smallest_change(vector<int> arr){
++
++int smallest_change(vector<int> arr) {
+     int count = 0;
+     int i = 0, j = arr.size() - 1;
+-    while(i < j) {
+-        if(arr[i] != arr[j]) {
++    while (i < j) {
++        if (arr[i] != arr[j]) {
+             count++;
+         }
+         i++;
+
+----- deepseek_coder_6p7b humaneval/147 #1 (cosmetic_body)
+--- marcato
++++ attaccato
+@@ -11,19 +11,20 @@
+     a = {1, 3, 7, 13, 21}
+     The only valid triple is (1, 7, 13).
+ */
+-#include<stdio.h>
+-#include<vector>
++#include <stdio.h>
++#include <vector>
+ using namespace std;
+-int get_matrix_triples(int n){
++
++int get_matrix_triples(int n) {
+     vector<int> a(n);
+     int count = 0;
+-    for(int i = 1; i <= n; i++){
+-        a[i-1] = i*i - i + 1;
++    for (int i = 1; i <= n; i++) {
++        a[i - 1] = i * i - i + 1;
+     }
+-    for(int i = 0; i < n; i++){
+-        for(int j = i+1; j < n; j++){
+-            for(int k = j+1; k < n; k++){
+-                if((a[i] + a[j] + a[k]) % 3 == 0){
++    for (int i = 0; i < n; i++) {
++        for (int j = i + 1; j < n; j++) {
++            for (int k = j + 1; k < n; k++) {
++                if ((a[i] + a[j] + a[k]) % 3 == 0) {
+                     count++;
+                 }
+             }
+
+----- qwen25_coder_7b humaneval/12 #5 (preamble_only)
+--- marcato
++++ attaccato
+@@ -1,6 +1,6 @@
+-#include<stdio.h>
+-#include<vector>
+-#include<string>
++#include <stdio.h>
++#include <vector>
++#include <string>
+ using namespace std;
+ 
+ string longest(vector<string> strings){
+
+----- deepseek_coder_6p7b humaneval/29 #4 (cosmetic_body)
+--- marcato
++++ attaccato
+@@ -5,14 +5,15 @@
+ >>> filter_by_prefix({"abc", "bcd", "cde", "vector"}, "a")
+ {"abc", "vector"}
+ */
+-#include<stdio.h>
+-#include<vector>
+-#include<string>
++#include <stdio.h>
++#include <vector>
++#include <string>
+ using namespace std;
+-vector<string> filter_by_prefix(vector<string> strings, string prefix){
++
++vector<string> filter_by_prefix(vector<string> strings, string prefix) {
+     vector<string> result;
+-    for(const auto& str : strings){
+-        if(str.substr(0, prefix.size()) == prefix){
++    for (const auto& str : strings) {
++        if (str.substr(0, prefix.size()) == prefix) {
+             result.push_back(str);
+         }
+     }
+
+----- qwen25_coder_7b humaneval/109 #2 (preamble_signature)
+--- marcato
++++ attaccato
+@@ -25,10 +25,11 @@
+             vector by performing any number of right shift operations.
+             
+ */
+-#include<stdio.h>
+-#include<vector>
++#include <stdio.h>
++#include <vector>
+ using namespace std;
+-bool move_one_ball(vector<int> arr){
++
++bool move_one_ball(vector<int> arr) {
+     if (arr.empty()) {
+         return true;
+     }
