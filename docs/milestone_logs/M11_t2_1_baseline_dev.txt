@@ -1,0 +1,99 @@
+##### nodo tnode03, commit 222fdfd
+##### attacchi T2.1 {'b': 'all'} sulle baseline di L1 dev (repo /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench)
+
+########## python: baseline di L1 dev
+T2.1 "all" qwen25_coder_7b: campioni 576, passavano 446, passano ancora 446 (100.00%), stati {'UNCHANGED': 201, 'APPLIED': 375}
+T2.1 "all" deepseek_coder_6p7b: campioni 576, passavano 379, passano ancora 375 (98.94%), stati {'UNCHANGED': 266, 'APPLIED': 310}
+  ROTTO humaneval/96 #0: TIMEOUT 'plus tests: fail (time limit of test 100)' tipi ['comparison_flip', 'ruff:list-comprehension', 'ruff:use-any']
+      @@ -2,13 +2,7 @@
+           def is_prime(num):
+      -        if num < 2:
+      +        if 2 > num:
+                   return False
+      -        for i in range(2, num):
+      -            if num % i == 0:
+      -                return False
+      -        return True
+      +        return all(num % i != 0 for i in range(2, num))
+       
+      -    primes = []
+      -    for i in range(n):
+      -        if is_prime(i):
+      -            primes.append(i)
+      +    primes = [i for i in range(n) if is_prime(i)]
+           return primes
+  ROTTO humaneval/96 #3: TIMEOUT 'plus tests: fail (time limit of test 100)' tipi ['comparison_flip', 'ruff:list-comprehension', 'ruff:use-any']
+      @@ -2,13 +2,7 @@
+           def is_prime(num):
+      -        if num < 2:
+      +        if 2 > num:
+                   return False
+      -        for i in range(2, num):
+      -            if num % i == 0:
+      -                return False
+      -        return True
+      +        return all(num % i != 0 for i in range(2, num))
+       
+      -    primes = []
+      -    for i in range(n):
+      -        if is_prime(i):
+      -            primes.append(i)
+      +    primes = [i for i in range(n) if is_prime(i)]
+           return primes
+  ROTTO humaneval/96 #4: TIMEOUT 'plus tests: fail (time limit of test 100)' tipi ['comparison_flip', 'ruff:list-comprehension', 'ruff:use-any']
+      @@ -2,13 +2,7 @@
+           def is_prime(num):
+      -        if num < 2:
+      +        if 2 > num:
+                   return False
+      -        for i in range(2, num):
+      -            if num % i == 0:
+      -                return False
+      -        return True
+      +        return all(num % i != 0 for i in range(2, num))
+       
+      -    primes = []
+      -    for i in range(n):
+      -        if is_prime(i):
+      -            primes.append(i)
+      +    primes = [i for i in range(n) if is_prime(i)]
+           return primes
+  ROTTO humaneval/96 #5: TIMEOUT 'plus tests: fail (time limit of test 100)' tipi ['comparison_flip', 'ruff:list-comprehension', 'ruff:use-any']
+      @@ -2,13 +2,7 @@
+           def is_prime(num):
+      -        if num < 2:
+      +        if 2 > num:
+                   return False
+      -        for i in range(2, num):
+      -            if num % i == 0:
+      -                return False
+      -        return True
+      +        return all(num % i != 0 for i in range(2, num))
+       
+      -    primes = []
+      -    for i in range(n):
+      -        if is_prime(i):
+      -            primes.append(i)
+      +    primes = [i for i in range(n) if is_prime(i)]
+           return primes
+  --- T2.1: un tipo di regola alla volta sui campioni rotti
+  humaneval/96 33b5ad90d2c8: comparison_flip, ruff:list-comprehension, ruff:use-any
+  humaneval/96 593b2b61c646: nessuno da solo (effetto combinato)
+  humaneval/96 558f6200f7c7: nessuno da solo (effetto combinato)
+  humaneval/96 4cc3755dfd8e: nessuno da solo (effetto combinato)
+TOTALE python T2.1 "all": 821/825 (99.52%) OK
+
+########## java: baseline di L1 dev
+T2.1 "all" qwen25_coder_7b: campioni 144, passavano 124, passano ancora 124 (100.00%), stati {'UNCHANGED': 23, 'APPLIED': 121}
+T2.1 "all" deepseek_coder_6p7b: campioni 144, passavano 93, passano ancora 93 (100.00%), stati {'APPLIED': 122, 'UNCHANGED': 22}
+TOTALE java T2.1 "all": 217/217 (100.00%) OK
+
+########## cpp: baseline di L1 dev
+T2.1 "all" qwen25_coder_7b: campioni 144, passavano 120, passano ancora 120 (100.00%), stati {'APPLIED': 138, 'UNCHANGED': 6}
+T2.1 "all" deepseek_coder_6p7b: campioni 144, passavano 97, passano ancora 97 (100.00%), stati {'APPLIED': 138, 'UNCHANGED': 6}
+TOTALE cpp T2.1 "all": 217/217 (100.00%) OK
+
+########## javascript: baseline di L1 dev
+T2.1 "all" qwen25_coder_7b: campioni 144, passavano 120, passano ancora 120 (100.00%), stati {'APPLIED': 112, 'UNCHANGED': 32}
+T2.1 "all" deepseek_coder_6p7b: campioni 144, passavano 106, passano ancora 106 (100.00%), stati {'APPLIED': 110, 'UNCHANGED': 34}
+TOTALE javascript T2.1 "all": 226/226 (100.00%) OK
