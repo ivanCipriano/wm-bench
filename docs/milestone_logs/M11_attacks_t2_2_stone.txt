@@ -1,0 +1,101 @@
+##### stone attacks T2.2 on L1 test
+attack       12/12   COMPLETE
+execute      12/12   COMPLETE
+detect       12/12   COMPLETE
+metrics      12/12   COMPLETE
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} qwen25_coder_7b python
+  status {'UNCHANGED': 2331, 'APPLIED': 345}  changed 0.128924  1-CodeBLEU 0.015533 (changed only 0.120484)
+  detail means {"new_tokens": 146.834783}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.0168  unchanged_fraction 0.8711  auroc 0.8031  pass_at_1 0.7309  delta_pass_at_1_pp 3.3632  delta_pass_at_1_pp_vs_marked 0.4111  changed_fraction 0.1289  tool_error_fraction 0.0000  codebleu_distance 0.0155
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} qwen25_coder_7b java
+  status {'APPLIED': 536, 'UNCHANGED': 304}  changed 0.638095  1-CodeBLEU 0.109223 (changed only 0.17117)
+  detail means {"new_tokens": 248.432836}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.0679  unchanged_fraction 0.3619  auroc 0.7015  pass_at_1 0.7417  delta_pass_at_1_pp 6.5476  delta_pass_at_1_pp_vs_marked -1.3095  changed_fraction 0.6381  tool_error_fraction 0.0000  codebleu_distance 0.1092
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} qwen25_coder_7b cpp
+  status {'APPLIED': 824, 'UNCHANGED': 16}  changed 0.980952  1-CodeBLEU 0.081844 (changed only 0.083433)
+  detail means {"new_tokens": 172.112864}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.0131  unchanged_fraction 0.0190  auroc 0.6965  pass_at_1 0.7798  delta_pass_at_1_pp 1.1905  delta_pass_at_1_pp_vs_marked -1.1905  changed_fraction 0.9810  tool_error_fraction 0.0000  codebleu_distance 0.0818
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} deepseek_coder_6p7b python
+  status {'APPLIED': 369, 'UNCHANGED': 2307}  changed 0.137892  1-CodeBLEU 0.022058 (changed only 0.159963)
+  detail means {"new_tokens": 79.466125}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.0026  unchanged_fraction 0.8621  auroc 0.6073  pass_at_1 0.7044  delta_pass_at_1_pp -0.4484  delta_pass_at_1_pp_vs_marked 0.2990  changed_fraction 0.1379  tool_error_fraction 0.0000  codebleu_distance 0.0221
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} deepseek_coder_6p7b java
+  status {'APPLIED': 426, 'UNCHANGED': 414}  changed 0.507143  1-CodeBLEU 0.08403 (changed only 0.165694)
+  detail means {"new_tokens": 181.549296}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.0000  unchanged_fraction 0.4929  auroc 0.6373  pass_at_1 0.7048  delta_pass_at_1_pp -0.3571  delta_pass_at_1_pp_vs_marked 1.9048  changed_fraction 0.5071  tool_error_fraction 0.0000  codebleu_distance 0.0840
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} deepseek_coder_6p7b cpp
+  status {'APPLIED': 838, 'UNCHANGED': 2}  changed 0.997619  1-CodeBLEU 0.11814 (changed only 0.118422)
+  detail means {"new_tokens": 220.362768}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.0012  unchanged_fraction 0.0024  auroc 0.6121  pass_at_1 0.5905  delta_pass_at_1_pp 6.0714  delta_pass_at_1_pp_vs_marked 2.1429  changed_fraction 0.9976  tool_error_fraction 0.0000  codebleu_distance 0.1181
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} qwen25_coder_7b python
+  status {'APPLIED': 2656, 'UNCHANGED': 20}  changed 0.992526  1-CodeBLEU 0.562088 (changed only 0.56632)
+  detail means {"new_tokens": 89.42997}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0041  unchanged_fraction 0.0075  auroc 0.6696  pass_at_1 0.5471  delta_pass_at_1_pp 21.7489  delta_pass_at_1_pp_vs_marked 18.7967  changed_fraction 0.9925  tool_error_fraction 0.0000  codebleu_distance 0.5621
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} qwen25_coder_7b java
+  status {'APPLIED': 840}  changed 1.0  1-CodeBLEU 0.520027 (changed only 0.520027)
+  detail means {"new_tokens": 173.634524}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0071  unchanged_fraction 0.0000  auroc 0.4960  pass_at_1 0.5726  delta_pass_at_1_pp 23.4524  delta_pass_at_1_pp_vs_marked 15.5952  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.5200
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} qwen25_coder_7b cpp
+  status {'APPLIED': 840}  changed 1.0  1-CodeBLEU 0.553677 (changed only 0.553677)
+  detail means {"new_tokens": 137.170238}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0036  unchanged_fraction 0.0000  auroc 0.6247  pass_at_1 0.5310  delta_pass_at_1_pp 26.0714  delta_pass_at_1_pp_vs_marked 23.6905  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.5537
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} deepseek_coder_6p7b python
+  status {'APPLIED': 2550, 'UNCHANGED': 126}  changed 0.952915  1-CodeBLEU 0.516802 (changed only 0.542338)
+  detail means {"new_tokens": 63.612549}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0011  unchanged_fraction 0.0471  auroc 0.5817  pass_at_1 0.5067  delta_pass_at_1_pp 19.3199  delta_pass_at_1_pp_vs_marked 20.0673  changed_fraction 0.9529  tool_error_fraction 0.0000  codebleu_distance 0.5168
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} deepseek_coder_6p7b java
+  status {'APPLIED': 840}  changed 1.0  1-CodeBLEU 0.519832 (changed only 0.519832)
+  detail means {"new_tokens": 139.902381}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0000  unchanged_fraction 0.0000  auroc 0.6142  pass_at_1 0.4929  delta_pass_at_1_pp 20.8333  delta_pass_at_1_pp_vs_marked 23.0952  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.5198
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} deepseek_coder_6p7b cpp
+  status {'APPLIED': 839, 'UNCHANGED': 1}  changed 0.99881  1-CodeBLEU 0.635259 (changed only 0.636017)
+  detail means {"new_tokens": 139.753278}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0000  unchanged_fraction 0.0012  auroc 0.6914  pass_at_1 0.4440  delta_pass_at_1_pp 20.7143  delta_pass_at_1_pp_vs_marked 16.7857  changed_fraction 0.9988  tool_error_fraction 0.0000  codebleu_distance 0.6353
