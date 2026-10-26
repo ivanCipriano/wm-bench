@@ -383,8 +383,12 @@ def submit(
     allow_concurrent: bool = False,
     share: tuple[int, int] = (1, 1),
     sub: tuple[int, int] = (1, 1),
+    after: Sequence[str] = (),
 ) -> list[SubmittedJob]:
     """Invia ``n_jobs`` job sequenziali per profilo, con celle disgiunte.
+
+    Con ``after`` (ID di job SLURM) i job partono solo quando quelli sono finiti
+    (``--dependency=afterany``, anche se falliti: la fase dopo si ferma da sola se manca un input).
 
     Ogni cella appartiene a un solo job, quindi due job non lavorano mai sulla stessa cella.
     Con ``share=(K, M)`` le celle si dividono prima in M quote bilanciate e deterministiche
@@ -417,7 +421,7 @@ def submit(
             )
     jobs: list[SubmittedJob] = []
     cfg_data = cfg.model_dump(mode="json")
-    previous: list[str] = []
+    previous: list[str] = list(after)
     for group in groups:
         all_weights = [cell_weight(cfg, c) for c in group.cells]
         mine = split_into_lanes(group.cells, all_weights, m, keep_empty=True)[k - 1]
@@ -425,10 +429,10 @@ def submit(
             sub_weights = [all_weights[group.cells.index(c)] for c in mine]
             mine = split_into_lanes(mine, sub_weights, sub[1], keep_empty=True)[sub[0] - 1]
         weights = [all_weights[group.cells.index(c)] for c in mine]
-        after = ":".join(previous) or None
+        wait_for = ":".join(previous) or None
         current: list[str] = []
         for lane in split_into_lanes(mine, weights, n_jobs):
-            params = executor_parameters(cfg, group.profile, stage, after=after, name=name)
+            params = executor_parameters(cfg, group.profile, stage, after=wait_for, name=name)
             cells = [c.key() for c in lane]
             if dry_run:
                 jobs.append(SubmittedJob("dry-run", group.profile.name, cells, params))

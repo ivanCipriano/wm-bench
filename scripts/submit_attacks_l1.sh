@@ -23,6 +23,11 @@
 #                                                   # riscritta con il metodo congelato
 #   bash scripts/submit_attacks_l1.sh control_metrics stone T2.2      # c) FPR e AUROC (dopo b e 4)
 #   Stato e report: python scripts/check_attacks.py METODO T2.2 --control --report
+# Catena senza aspettare a mano (AFTER = passi da attendere, stesso metodo e attacchi):
+#   bash scripts/submit_attacks_l1.sh attack stone T2.1 1/1
+#   AFTER=attack bash scripts/submit_attacks_l1.sh execute stone T2.1 1/1
+#   AFTER=attack bash scripts/submit_attacks_l1.sh detect  stone T2.1 1/1
+#   AFTER=execute,detect bash scripts/submit_attacks_l1.sh metrics stone T2.1
 # Variabile opzionale: JOBS (default: tutti i posti liberi, cioè 10 meno i job già in coda o in
 # esecuzione dell'utente; cluster_info §4). Nodi guasti: export WMB_EXCLUDE_NODES=gnode13,gnode14.
 set -euo pipefail
@@ -87,6 +92,29 @@ case "$STEP" in
     *) echo "unknown step: $STEP" >&2; exit 2 ;;
 esac
 
+# AFTER (opzionale): passi da attendere, es. AFTER=attack o AFTER=execute,detect. I job partono
+# quando sono finiti i job ancora in coda o in esecuzione di quei passi (stesso metodo e attacchi,
+# ID salvati a ogni invio). I job in attesa contano nei 10 posti di MaxSubmit.
+IDS_DIR="$WMB/logs/submit_ids"
+mkdir -p "$IDS_DIR"
+ids_file() { echo "${1}_${METHOD}_${ATTACKS//,/-}.txt"; }
+AFTER_ARGS=()
+if [ -n "${AFTER:-}" ]; then
+    QUEUED=" $(squeue -u "$USER" -h -o %i | tr '\n' ' ') "
+    WAIT=()
+    for step in ${AFTER//,/ }; do
+        [ -f "$IDS_DIR/$(ids_file "$step")" ] || { echo "AFTER: no saved jobs for $step" >&2; exit 2; }
+        for id in $(cat "$IDS_DIR/$(ids_file "$step")"); do
+            case "$QUEUED" in *" $id "*) WAIT+=("$id") ;; esac
+        done
+    done
+    if [ "${#WAIT[@]}" -gt 0 ]; then
+        AFTER_ARGS=(--after "$(IFS=:; echo "${WAIT[*]}")")
+        echo "##### parte dopo i job ${WAIT[*]} ($AFTER)"
+    else
+        echo "##### AFTER=$AFTER: nessun job ancora in coda, parte subito"
+    fi
+fi
 echo "##### job attivi: $ACTIVE, posti liberi: $FREE su $MAX_JOBS"
 if [ "$MODE" != "--dry-run" ]; then
     NEED=1
@@ -102,5 +130,8 @@ if [ "$MODE" = "--dry-run" ]; then
     exit 0
 fi
 echo "##### invio: L1 test $STEP $METHOD $ATTACKS, quota $SHARE"
-bench submit "${ARGS[@]}" | grep -v "parameters:"
+OUT=$(bench submit "${AFTER_ARGS[@]}" "${ARGS[@]}")
+echo "$OUT" | grep -v "parameters:"
+# ID dei job di questo passo, per AFTER di un passo successivo
+echo "$OUT" | sed -n 's/^SLURM job \([0-9][0-9]*\) .*/\1/p' > "$IDS_DIR/$(ids_file "$STEP")"
 squeue -A did_tesi_nlp_330 -o "%.18i %.12u %.9P %.50j %.8T %.10M"

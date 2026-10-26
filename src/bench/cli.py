@@ -70,6 +70,11 @@ def _submit(args: Sequence[str]) -> int:
         action="store_true",
         help="submit even if jobs of the same stage are already queued (may duplicate cells)",
     )
+    parser.add_argument(
+        "--after",
+        default="",
+        help="SLURM job IDs (separated by ':') to wait for before starting (afterany)",
+    )
     parser.add_argument("overrides", nargs="*", help="Hydra overrides; stage=<name> is required")
     ns = parser.parse_args(list(args))
 
@@ -90,6 +95,7 @@ def _submit(args: Sequence[str]) -> int:
             allow_concurrent=ns.allow_concurrent,
             share=share,
             sub=sub,
+            after=[j for j in ns.after.split(":") if j],
         )
     except BenchError as exc:
         sys.stderr.write(f"bench submit: {exc}\n")

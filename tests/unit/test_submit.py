@@ -67,6 +67,14 @@ def test_dry_run_submits_nothing(cfg: ExperimentConfig) -> None:
     assert not (c.paths.artifacts / "_slurm").exists()
 
 
+def test_after_waits_for_other_jobs(cfg: ExperimentConfig) -> None:
+    c = rebuild(cfg, levels=["L1"], splits=["dev"], languages=["python"])
+    (job,) = submit(c, "generate_baseline", PROFILES, dry_run=True, after=["11", "22"])
+    assert job.params["slurm_dependency"] == "afterany:11:22"
+    (plain,) = submit(c, "generate_baseline", PROFILES, dry_run=True)
+    assert "slurm_dependency" not in plain.params
+
+
 def test_job_body_runs_one_cell(cfg: ExperimentConfig) -> None:
     summary = run_cell(cfg.model_dump(mode="json"), "selftest", {})
     assert "RAN      selftest [all]" in summary
