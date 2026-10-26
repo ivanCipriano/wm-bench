@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import Counter
 from dataclasses import replace
 from typing import Any
 
@@ -166,6 +167,8 @@ def _write_report(store: ArtifactStore, report: list[tuple[str, Any, Any]]) -> N
                     f"  decoding {json.dumps(attacker.get('decoding'), sort_keys=True)}\n"
                     f"  prompts_sha256 {json.dumps(extra.get('prompts_sha256'))}\n"
                 )
+            if extra.get("attack_id") == "T2.1":
+                _write_refactor(store, attacked)
         values = _metrics(store, ref)
         unchanged = _unchanged_fraction(extra)
         if values:
@@ -173,6 +176,54 @@ def _write_report(store: ArtifactStore, report: list[tuple[str, Any, Any]]) -> N
             if unchanged is not None:  # accanto al TPR (richiesta dell'utente, T2.2)
                 parts.insert(1, f"unchanged_fraction {unchanged:.4f}")
             sys.stdout.write("  " + "  ".join(parts) + "\n")
+
+
+def _write_refactor(store: ArtifactStore, attacked: Any) -> None:
+    """T2.1 (decisioni dell'utente del 26 ottobre 2026): tipi di regola effettivamente applicati
+    (media su tutti i campioni a cui l'attacco si applica, UNCHANGED compresi) e, per ACW, la quota
+    dei tipi applicati equivalenti a una regola di inserimento della configurazione congelata
+    (attacco in parte mirato, da dichiarare nella tesi)."""
+    table = store.read_table(attacked)
+    table = table[table["attack_status"] != "NOT_APPLICABLE"]
+    details = [json.loads(d) if isinstance(d, str) and d else {} for d in table["attack_detail"]]
+    if not details:
+        return
+    n_types = [int(d.get("n_types", 0)) for d in details]
+    applicable = [int(d.get("n_types_applicable", 0)) for d in details]
+    rejected = Counter(t for d in details for t in d.get("rejected", []))
+    applied = Counter(t for d in details for t in d.get("applied", []))
+    sys.stdout.write(
+        f"  T2.1 n_types mean {sum(n_types) / len(n_types):.3f}"
+        f"  n_types_applicable mean {sum(applicable) / len(applicable):.3f}"
+        f"  rejected {dict(rejected)}\n  T2.1 applied types {dict(sorted(applied.items()))}\n"
+    )
+    first = table.iloc[0]
+    if first["method"] != "acw":
+        return
+    det = detection_ref(
+        "acw", str(first["model_id"]), str(first["config_hash"]), "positives", LEVEL,
+        str(first["language"]), SPLIT,
+    )  # fmt: skip
+    if not store.exists(det):
+        sys.stdout.write("  ACW overlap: no detection of the positives\n")
+        return
+    extra: dict[str, Any] = next(
+        (json.loads(e) for e in store.read_table(det)["extra_json"] if "rule_unchanged" in e), {}
+    )
+    selected = {int(r) for r in extra.get("rule_unchanged", {})}
+    overlap = total = 0
+    shares = []
+    for d in details:
+        hits = sum(1 for rules in d.get("acw_equivalent", {}).values() if selected & set(rules))
+        if d.get("n_types"):
+            shares.append(hits / int(d["n_types"]))
+            overlap += hits
+            total += int(d["n_types"])
+    sys.stdout.write(
+        f"  ACW overlap (regole di inserimento congelate: {sorted(selected)}): tipi applicati "
+        f"equivalenti {overlap}/{total} ({overlap / total if total else 0:.1%}), media per "
+        f"campione {sum(shares) / len(shares) if shares else 0:.1%}; attacco in parte mirato\n"
+    )
 
 
 def _write_control(

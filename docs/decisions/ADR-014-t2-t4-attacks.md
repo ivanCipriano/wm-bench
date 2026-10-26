@@ -1,0 +1,100 @@
+# ADR-014 — Attacchi T2–T4: definizioni operative
+
+- **Stato:** in corso (Milestone 11). Sezione 1 (T2.1) accettata il 26 ottobre 2026; le sezioni
+  degli altri attacchi si aggiungono man mano.
+- **Contesto:**
+  - SPEC §12 (attacchi), §18 (semi), §21.3 (proprietà: semantica conservata sulle canoniche);
+  - ADR-012 (infrastruttura degli attacchi T1: griglie, `ToolRunner`, `TOOL_ERROR`);
+  - D33 (T2.2), D34 (controllo negativo di T2.2(b)), D35 (regole Ruff di T2.1).
+
+## 1. T2.1 refactoring a regole
+
+Decisioni dell'utente del 26 ottobre 2026. Codice in `src/bench/attacks/t2/refactor.py`, griglia
+in `configs/attack/t2_1_refactor.yaml`. È la definizione di T2.1 da riportare nella tesi.
+
+### 1.1 Il parametro b
+
+Lo SPEC dà la griglia `b ∈ {1, 2, 3, all}` senza precisarla. Definizione:
+
+- **b = numero di tipi di regola** estratti con l'RNG dell'attacco (seme di SPEC §18) fra i tipi
+  **applicabili al campione**; ogni tipo estratto si applica in **tutti** i punti in cui vale, come
+  fanno ACW e i tool a regole. `all` = tutti i tipi applicabili;
+- se i tipi applicabili sono meno di b, si applicano tutti quelli disponibili;
+- se nessun tipo è applicabile, il campione è `UNCHANGED` e resta nelle metriche (I1);
+- il dettaglio di ogni campione registra tipi applicabili (`n_types_applicable`), tipi estratti
+  (`chosen`), tipi e punti effettivamente trasformati (`applied`, `n_types`, `points`,
+  `n_points`) e tipi scartati (`rejected`);
+- il report (`check_attacks.py --report`) dà per ogni valore di b, metodo, modello e linguaggio il
+  numero medio di tipi effettivamente applicati e la frazione di campioni `UNCHANGED`.
+
+### 1.2 Catalogo e restrizioni
+
+Ogni restrizione evita un cambio di semantica; la colonna "motivo" va riportata nella tesi.
+
+| Tipo | Linguaggi | Trasformazione | Restrizione | Motivo |
+|---|---|---|---|---|
+| `while_to_for` | Java, C++, JS | `while (c) b` → `for (; c; ) b` | niente condizioni-dichiarazione (C++) | `for (; int x = f(); )` non è sempre equivalente |
+| `for_to_while` | Java, C++, JS | `for (i; c; u) b` → `{ i while (c) { b u; } }` | niente `continue` che riguarda il ciclo | salterebbe l'aggiornamento `u` |
+| | | | niente cicli con etichetta | `continue etichetta` salterebbe l'aggiornamento |
+| | | | niente `for (; c; )` senza inizializzazione né aggiornamento | è già un `while`: trasformarlo annullerebbe `while_to_for` |
+| | | | Java: niente corpi che finiscono con `return`, `break` o `throw` (se c'è un aggiornamento) | l'aggiornamento in coda sarebbe irraggiungibile: `javac` rifiuta le istruzioni irraggiungibili |
+| | | | niente condizioni-dichiarazione (C++) | non esprimibili nel `while` |
+| | | | JS: niente `let`/`const` nell'inizializzazione con funzioni nel corpo | il `for` crea un legame per iterazione che le chiusure vedono; il `while` uno solo |
+| | | | l'inizializzazione va in un blocco `{ }` | le variabili restano visibili solo nel ciclo |
+| `for_to_while` | Python | `for v in range(a, b, s)` → `v = a` / `while v < b:` / `v += s` | solo `range` con passo letterale non nullo (`>` se negativo) | il confronto dipende dal segno del passo |
+| | | | niente `else` del ciclo | la trasformazione non lo riporta (andrebbe spostato sul `while` con la stessa semantica di `break`); escluso per semplicità |
+| | | | niente `continue` che riguarda il ciclo | salterebbe `v += s` |
+| | | | `v` mai riassegnata nel corpo | il `for` la reimposta a ogni giro, il `while` no |
+| | | | `v` non nominata altrove nella funzione (nemmeno negli argomenti di `range`) | dopo il ciclo `v` avrebbe un altro valore (`b` invece dell'ultimo); prima del ciclo il `for` su un intervallo vuoto non la tocca |
+| | | | `b` in una temporanea se non è un letterale o un nome mai riassegnato nel corpo | `range` valuta `b` una sola volta |
+| | | | corpo su righe proprie | serve l'indentazione del corpo per aggiungere `v += s` |
+| `if_else_inversion` | tutti | `if c A else B` → `if !(c) B else A` (Python `not (c)`) | niente catene `else if`/`elif` | l'inversione della catena cambierebbe l'ordine dei test |
+| | | | C++: niente `if constexpr` né `if (init; c)` / `if (T x = …)` | la condizione non è un'espressione da negare |
+| | | | rami senza graffe racchiusi fra graffe | `else` pendente: `if (!c) if (x) y; else A` legherebbe l'`else` all'`if` interno |
+| | | | Python: blocchi con la stessa indentazione, su righe proprie | lo scambio dei testi richiede la stessa colonna |
+| `compound_assignment` | tutti | `x op= e` → `x = x op (e)` | `x` identificatore semplice | `a[f()] += 1` valuterebbe `f()` due volte |
+| | | | solo come istruzione o aggiornamento di un `for` (non dentro un'espressione) | il valore dell'espressione non cambia, ma si limita la trasformazione ai casi ovvi |
+| | | | Python: `+=`, `-=` solo con `e` letterale numerico; mai `*=`, `\|=`, `&=`, `^=`, `@=` | su liste, insiemi e array la forma composta modifica l'oggetto (visibile da altri riferimenti), quella espansa ne crea uno nuovo; `l *= 2` vale anche per le liste |
+| | | | Java: solo locali o parametri `double` (`+ - * / %`), `String` (`+=`), `int`/`long` con `e` letterale intero, `boolean` (`& \| ^`) | la forma composta ha un cast implicito: `short s; s += 1` → `s = s + (1)` non compila, `int k; k += 1.5` nemmeno |
+| | | | JS: mai `&&=`, `\|\|=`, `??=` | assegnano solo a volte |
+| `commutative_swap` | tutti | `a * b`, `a == b`, `a != b`, `===`, `!==` → operandi scambiati | operandi identificatori o letterali numerici, almeno un identificatore | nessun effetto collaterale né ordine di valutazione da conservare |
+| `comparison_flip` | tutti | `a < b` → `b > a`, `a <= b` → `b >= a` | come sopra | come sopra |
+
+Regole comuni:
+
+- **ordine fisso** dei tipi AST (`while_to_for` prima di `for_to_while`; i `for (; c; )` creati da
+  `while_to_for` non si ritrasformano); in Python le correzioni di Ruff vengono prima dei tipi AST;
+- **annidamento:** in un tipo, le occorrenze annidate si trasformano insieme (riscrittura
+  ricorsiva dell'albero);
+- **controllo sintattico:** un tipo si scarta (`rejected`) se il risultato non si analizza più
+  (tree-sitter; in Python anche `ast.parse`) mentre l'originale sì;
+- **nomi nuovi** (temporanea di `stop` in Python): `NameFactory` di T1, senza collisioni.
+
+### 1.3 Python: regole Ruff equivalenti a quelle di ACW
+
+D35: lo SPEC parla di "regole Ruff estese usate da ACW", ma ACW usa Sourcery. Si usano le regole
+di Ruff 0.7.4 equivalenti alle regole Sourcery che ACW usa: 15 tipi, che coprono 16 delle 33
+regole (tabella in `docs/attacks/t2_1_ruff_sourcery.md`). Versione e lista sono fissate nella
+configurazione (l'attacco si ferma se la versione installata è diversa). Un tipo Ruff è
+applicabile se `ruff check` trova violazioni correggibili; si applica con `ruff check --fix
+--unsafe-fixes --preview` sui soli codici dei tipi estratti.
+
+### 1.4 Sovrapposizione con ACW
+
+Su ACW l'attacco è **in parte mirato**: i tipi Ruff sono per costruzione equivalenti a regole
+Sourcery di ACW, e due tipi AST ai suoi riordini (37 `a * b`; 38 `<`/`>`; 39 `<=`/`>=`). Ogni
+campione registra le regole ACW equivalenti a ogni tipo applicato (`acw_equivalent`); il report
+dà per ACW la quota dei tipi applicati equivalenti a una delle 30 regole della configurazione
+congelata (lette dalla rilevazione dei positivi). Va dichiarata nella tesi accanto ai risultati
+di ACW.
+
+### 1.5 Verifiche prima del lancio
+
+- canoniche di L1 Python con `b = all`: i test devono continuare a passare; ogni canonica rotta si
+  attribuisce al tipo che la rompe (un tipo alla volta). Le regole Ruff che rompono codice si
+  riportano all'utente prima di toglierle;
+- baseline di L1 dev, entrambi i modelli, tutti i linguaggi, `b = all`: frazione dei campioni che
+  passavano e passano ancora, per linguaggio, attesa **≥ 99%**. Per ogni campione rotto, il tipo
+  responsabile: un caso non previsto diventa una nuova restrizione e il controllo si ripete.
+
+Comando: `scripts/check_attacks_canonical.sh --attacks T2.1 --params b=all [--baseline-dev]`.

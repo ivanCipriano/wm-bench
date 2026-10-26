@@ -1,0 +1,27 @@
+# T2.1 refactoring a regole (SPEC §12; ADR-014, D35; decisioni dell'utente del 26 ottobre 2026).
+# b = numero di tipi di regola estratti con l'RNG dell'attacco fra quelli applicabili al campione,
+# ognuno applicato in tutti i suoi punti; all = tutti i tipi applicabili. Catalogo AST in
+# src/bench/attacks/t2/refactor.py. Python: anche le regole Ruff equivalenti alle regole Sourcery
+# che ACW usa (tabella in docs/attacks/t2_1_ruff_sourcery.md), con la versione di Ruff fissata;
+# acw = regole di inserimento di ACW (refact_list.py) equivalenti, per la sovrapposizione.
+attack_id: T2.1
+fixed:
+  ruff_version: 0.7.4
+  ruff_rules:
+    - {type: remove-unnecessary-else, codes: [RET505, RET506, RET507, RET508], acw: [1]}
+    - {type: boolean-if-exp-identity, codes: [SIM210, SIM211], acw: [3]}
+    - {type: list-comprehension, codes: [PERF401], acw: [4, 29]}
+    - {type: merge-comparisons, codes: [PLR1714], acw: [6]}
+    - {type: merge-nested-ifs, codes: [SIM102], acw: [9]}
+    - {type: inline-immediately-returned-variable, codes: [RET504], acw: [11]}
+    - {type: for-index-underscore, codes: [B007], acw: [12]}
+    - {type: comprehension-to-generator, codes: [C419], acw: [15]}
+    - {type: use-any, codes: [SIM110], acw: [16]}
+    - {type: min-max-identity, codes: [FURB136], acw: [18]}
+    - {type: merge-duplicate-blocks, codes: [SIM114], acw: [19]}
+    - {type: merge-else-if-into-elif, codes: [PLR5501], acw: [22]}
+    - {type: identity-comprehension, codes: [C416], acw: [31]}
+    - {type: merge-list-appends-into-extend, codes: [FURB113], acw: [32]}
+    - {type: assign-if-exp, codes: [SIM108], acw: [35]}
+space:
+  b: [1, 2, 3, all]

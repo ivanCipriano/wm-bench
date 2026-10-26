@@ -69,8 +69,9 @@ class ResourcePolicy:
                 raise ConfigError(f"no resource rule for stage '{stage}' and method '{method}'")
             return ResourceClass.GPU_NVIDIA if by_method[method] else ResourceClass.CPU
         if stage == "attack" and attack is not None:
+            # Voci di gpu_attack_groups: un gruppo (T3) o un attacco (T2.2).
             group = attack.split(".", 1)[0]
-            if group in self.rules.gpu_attack_groups:
+            if attack in self.rules.gpu_attack_groups or group in self.rules.gpu_attack_groups:
                 return ResourceClass.GPU_NVIDIA
         return ResourceClass.CPU
 

@@ -6,7 +6,9 @@ gpu_methods_by_stage:
   # torch.Generator sul dispositivo dell'inserimento (CUDA): su CPU la permutazione è diversa
   # (audit di STONE §2). MCGMark: stessa ragione (audit di MCGMark §7).
   detect: {sweet: true, acw: false, stone: true, promptmark: false, mcgmark: true}
-gpu_attack_groups: [T2, T3]    # T1 e T4 su CPU (defq), T2 e T3 su GPU (gpuq)
+# Gruppi (T3) o singoli attacchi (T2.2): T2.2 e T2.3 usano l'LLM attaccante su GPU (gpuq); T1, T2.1,
+# T2.4 e T4 su CPU (defq).
+gpu_attack_groups: [T2.2, T2.3, T3]
 profiles:
   CPU: slurm_cpu
   GPU_NVIDIA: slurm_gpu

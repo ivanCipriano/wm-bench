@@ -15,6 +15,13 @@ CommonStaticAnalysis (docs/attacks/t1_2_java_recipes.txt) per trovare quella che
 ricette non si tolgono senza la decisione dell'utente.
 
 Il seme di ogni canonica è quello di SPEC §18 con il ``sample_id`` della canonica.
+
+T2.1 (decisioni dell'utente del 26 ottobre 2026): ``--attacks T2.1 --params b=all`` sulle
+canoniche; con ``--baseline-dev`` l'attacco si applica invece ai campioni della **baseline di L1
+dev** di entrambi i modelli e si riporta, per linguaggio e modello, la frazione dei campioni che
+passavano prima e passano ancora (attesa: almeno il 99%). Per ogni campione (o canonica) rotto da
+T2.1 si riapplica **un tipo di regola alla volta** fra quelli applicati, per trovare quello che lo
+rompe: le regole non si tolgono senza la decisione dell'utente.
 """
 
 from __future__ import annotations
@@ -45,11 +52,12 @@ from bench.pipeline.stage import Cell
 from bench.pipeline.stages.attack import codebleu_distance
 from bench.pipeline.stages.attack_pools import attack_pool_ref
 from bench.pipeline.stages.execute import ExecuteStage, execution_ref, max_workers
-from bench.pipeline.stages.generate_baseline import problems_ref
+from bench.pipeline.stages.generate_baseline import baseline_ref, problems_ref
 from bench.store.artifact_store import ArtifactStore
 
 LEVEL = "L1"
 RECIPES_FILE = repo_root() / "docs" / "attacks" / "t1_2_java_recipes.txt"
+MIN_PRESERVED = 0.99  # baseline di L1 dev: soglia attesa dall'utente per T2.1
 
 
 def _recipes() -> list[str]:
@@ -107,6 +115,23 @@ class Checker:
         with ThreadPoolExecutor(max_workers=max_workers(self.cfg, self.language)) as pool:
             return dict(pool.map(one, todo))
 
+    def run_samples(self, samples: list[SampleToRun]) -> dict[str, Any]:
+        """Esegue campioni qualsiasi (più per problema); ``sample_id`` → ``ExecutionRecord``."""
+        by_problem: dict[str, list[SampleToRun]] = {}
+        for sample in samples:
+            by_problem.setdefault(sample.problem_key, []).append(sample)
+        problems = {p.problem_key: p for p in self.problems}
+
+        def one(key: str) -> list[Any]:
+            problem = problems[key]
+            return list(self.executors[problem.dataset].run_problem(problem, by_problem[key]))
+
+        out: dict[str, Any] = {}
+        with ThreadPoolExecutor(max_workers=max_workers(self.cfg, self.language)) as pool:
+            for records in pool.map(one, sorted(by_problem)):
+                out.update({r.sample_id: r for r in records})
+        return out
+
 
 class _Ctx:
     """Contesto minimo per ``ExecuteStage._executors`` (serve solo lo store)."""
@@ -115,7 +140,45 @@ class _Ctx:
         self.store = store
 
 
-def check_language(cfg: Any, store: ArtifactStore, language: str, attack_ids: list[str]) -> None:
+def grid_points(attack_id: str, wanted: dict[str, str]) -> dict[str, Any]:
+    """Punti della griglia con i parametri ``wanted`` (tutti se vuoto; ``b=all`` per T2.1)."""
+    return {
+        h: a
+        for h, a in grid_attacks(attack_id).items()
+        if all(str(a.params.get(k)) == v for k, v in wanted.items())
+    }
+
+
+def isolate_types(
+    checker: Checker,
+    attack: Any,
+    lang: Language,
+    items: list[tuple[SampleToRun, Any, AttackContext]],
+) -> None:
+    """T2.1: per ogni campione rotto, quali tipi di regola lo rompono da soli."""
+    sys.stdout.write("  --- T2.1: un tipo di regola alla volta sui campioni rotti\n")
+    for sample, out, ctx in items:
+        culprits = []
+        for type_name in out.detail.get("applied", []):
+            single = attack.apply_types([sample.code], lang, [ctx], forced=[[type_name]])[0]
+            if single.code == sample.code:
+                continue
+            probe = SampleToRun(sample.sample_id, sample.problem_key, sample.sample_index,
+                                single.code)  # fmt: skip
+            record = checker.run_samples([probe])[sample.sample_id]
+            if str(record.status) != "PASSED":
+                culprits.append(type_name)
+        found = ", ".join(culprits) or "nessuno da solo (effetto combinato)"
+        sys.stdout.write(f"  {sample.problem_key} {sample.sample_id[:12]}: {found}\n")
+
+
+def check_language(
+    cfg: Any,
+    store: ArtifactStore,
+    language: str,
+    attack_ids: list[str],
+    wanted: dict[str, str] | None = None,
+) -> None:
     lang = Language(language)
     checker = Checker(cfg, store, language)
     tools = ToolRunner(repo_root() / "tools", cfg.paths.tmp / "attack_canonical")
@@ -133,7 +196,7 @@ def check_language(cfg: Any, store: ArtifactStore, language: str, attack_ids: li
     if "T1.5" in attack_ids:
         report_log_sites(checker, language)
     for attack_id in attack_ids:
-        for params_hash, attack in grid_attacks(attack_id).items():
+        for params_hash, attack in grid_points(attack_id, wanted or {}).items():
             if attack.needs_pools and not (pools.comments and pools.names):
                 sys.stdout.write(f"{attack_id} {attack.params}: SKIPPED (run stage attack_pools)\n")
                 continue
@@ -178,6 +241,97 @@ def check_language(cfg: Any, store: ArtifactStore, language: str, attack_ids: li
                 )
             if attack_id == "T1.2" and lang is Language.JAVA and broken:
                 isolate_recipes(checker, tools, broken)
+            if attack_id == "T2.1" and broken:
+                by_key = dict(zip(keys, zip(outcomes, ctxs, strict=True), strict=True))
+                items = [
+                    (SampleToRun(checker.ids[k], k, 0, checker.codes[k]), *by_key[k])
+                    for k in broken
+                ]
+                isolate_types(checker, attack, lang, items)
+
+
+def check_baseline_dev(
+    cfg: Any, store: ArtifactStore, language: str, attack_ids: list[str], wanted: dict[str, str]
+) -> None:
+    """Attacco sulla baseline di L1 dev (entrambi i modelli): campioni che passavano prima e
+    passano ancora dopo l'attacco, per modello e in totale (decisione dell'utente del 26 ottobre
+    2026, T2.1 con ``b = all``)."""
+    lang = Language(language)
+    checker = Checker(cfg, store, language)
+    tools = ToolRunner(repo_root() / "tools", cfg.paths.tmp / "attack_baseline_dev")
+    parsers = default_parsers()
+    sys.stdout.write(f"\n########## {language}: baseline di L1 dev\n")
+    for attack_id in attack_ids:
+        for params_hash, attack in grid_points(attack_id, wanted).items():
+            total_before = total_still = 0
+            for model_id in cfg.models:
+                table = store.read_table(baseline_ref(model_id, LEVEL, language, "dev"))
+                cell = Cell(source="llm_baseline", model_id=model_id, level=LEVEL,
+                            language=language, split="dev")  # fmt: skip
+                executed = store.read_table(execution_ref(cell, None))
+                passed_before = set(executed.loc[executed["status"] == "PASSED", "sample_id"])
+                problems = {p.problem_key: p for p in checker.problems}
+                rows = [
+                    r for r in table.sort_values(["problem_key", "sample_index"]).to_dict("records")
+                    if r["problem_key"] in problems
+                ]  # fmt: skip
+                samples = [
+                    SampleToRun(
+                        r["sample_id"],
+                        r["problem_key"],
+                        int(r["sample_index"] or 0),
+                        str(r["code"] or ""),
+                    )  # fmt: skip
+                    for r in rows
+                ]
+                ctxs = [
+                    AttackContext(
+                        rng=sample_rng(cfg.global_seed, attack_id, params_hash, s.sample_id),
+                        problem=problems[s.problem_key],
+                        parsers=parsers,
+                        tools=tools,
+                        sample_id=s.sample_id,
+                    )  # fmt: skip
+                    for s in samples
+                ]
+                outcomes = attack.apply_many([s.code for s in samples], lang, ctxs)
+                changed = [
+                    (s, o, c) for s, o, c in zip(samples, outcomes, ctxs, strict=True)
+                    if o.status is AttackStatus.APPLIED and s.sample_id in passed_before
+                ]  # fmt: skip
+                probes = [
+                    SampleToRun(s.sample_id, s.problem_key, s.sample_index, o.code)
+                    for s, o, _ in changed
+                ]
+                records = checker.run_samples(probes) if probes else {}
+                broken = [
+                    (s, o, c) for s, o, c in changed if str(records[s.sample_id].status) != "PASSED"
+                ]  # fmt: skip
+                statuses = Counter(str(o.status) for o in outcomes)
+                n_before = len(passed_before & {s.sample_id for s in samples})
+                still = n_before - len(broken)
+                total_before += n_before
+                total_still += still
+                sys.stdout.write(
+                    f"{attack_id} {json.dumps(attack.params.get('b'))} {model_id}: campioni "
+                    f"{len(samples)}, passavano {n_before}, passano ancora {still} "
+                    f"({still / n_before if n_before else 1:.2%}), stati {dict(statuses)}\n"
+                )
+                for s, o, _ in broken:
+                    record = records[s.sample_id]
+                    sys.stdout.write(
+                        f"  ROTTO {s.problem_key} #{s.sample_index}: {record.status} "
+                        f"{str(record.stderr_tail or '')[-300:]!r} tipi {o.detail.get('applied')}\n"
+                        f"{_diff(s.code, o.code)}\n"
+                    )
+                if broken and attack_id == "T2.1":
+                    isolate_types(checker, attack, lang, broken)
+            share = total_still / total_before if total_before else 1.0
+            sys.stdout.write(
+                f"TOTALE {language} {attack_id} {json.dumps(attack.params.get('b'))}: "
+                f"{total_still}/{total_before} ({share:.2%}) "
+                f"{'OK' if share >= MIN_PRESERVED else 'SOTTO IL 99%'}\n"
+            )
 
 
 def report_log_sites(checker: Checker, language: str) -> None:
@@ -228,12 +382,21 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--languages", default="python,java,cpp,javascript")
     parser.add_argument("--attacks", default="T1.1,T1.2,T1.3,T1.4,T1.5")
+    parser.add_argument("--params", default="", help="filtro sui parametri: chiave=valore[,...]")
+    parser.add_argument("--baseline-dev", action="store_true", help="baseline di L1 dev")
     args = parser.parse_args()
+    wanted = dict(kv.split("=", 1) for kv in args.params.split(",") if kv)
     cfg = load_experiment(["paths=cluster", "stage=execute"])
     store = ArtifactStore(cfg.paths.artifacts)
-    sys.stdout.write(f"##### attacchi T1 sulle canoniche di L1 (repo {Path(repo_root())})\n")
+    target = "baseline di L1 dev" if args.baseline_dev else "canoniche di L1"
+    sys.stdout.write(
+        f"##### attacchi {args.attacks} {wanted or ''} sulle {target} (repo {Path(repo_root())})\n"
+    )
     for language in args.languages.split(","):
-        check_language(cfg, store, language, args.attacks.split(","))
+        if args.baseline_dev:
+            check_baseline_dev(cfg, store, language, args.attacks.split(","), wanted)
+        else:
+            check_language(cfg, store, language, args.attacks.split(","), wanted)
     return 0
 
 

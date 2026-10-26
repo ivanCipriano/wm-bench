@@ -227,6 +227,57 @@ class ToolRunner:
             out.extend(self._run_chunk(spec, list(codes[start : start + size])))
         return out
 
+    def ruff_fixable(
+        self, codes: Sequence[str], select: Sequence[str], extra_args: Sequence[str] = ()
+    ) -> list[dict[str, int] | None]:
+        """Violazioni con correzione disponibile per regola, per ogni sorgente (T2.1).
+
+        ``ruff check --output-format json --exit-zero`` con le sole regole ``select`` (più
+        ``extra_args``, es. ``--unsafe-fixes --preview``); ``None`` per i file di un lotto su cui
+        ruff fallisce. Le correzioni ``display-only`` non contano: ``--fix`` non le applica.
+        """
+        out: list[dict[str, int] | None] = []
+        for start in range(0, len(codes), self.chunk_size):
+            chunk = list(codes[start : start + self.chunk_size])
+            out.extend(self._ruff_fixable_chunk(chunk, select, extra_args))
+        return out
+
+    def _ruff_fixable_chunk(
+        self, codes: list[str], select: Sequence[str], extra_args: Sequence[str]
+    ) -> list[dict[str, int] | None]:
+        import json
+
+        self.tmp_root.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="ruff_json_", dir=self.tmp_root) as tmp:
+            root = Path(tmp)
+            files = [_flat(".py").write(root, i, code) for i, code in enumerate(codes)]
+            cmd = [
+                sys.executable, "-m", "ruff", "check", "--isolated", "--no-cache", "--exit-zero",
+                "--output-format", "json", "--select", ",".join(select), *extra_args,
+                *(f.name for f in files),
+            ]  # fmt: skip
+            try:
+                proc = subprocess.run(
+                    cmd, cwd=root, capture_output=True, text=True, env=self.env(), check=False,
+                    timeout=self.timeout_s + self.per_file_s * len(codes),
+                )  # fmt: skip
+                diagnostics = json.loads(proc.stdout) if proc.returncode == 0 else None
+            except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+                logger.warning("ruff json failed on %d files: %s", len(codes), exc)
+                diagnostics = None
+        if diagnostics is None:
+            return [None] * len(codes)
+        counts: list[dict[str, int]] = [{} for _ in codes]
+        index = {f.name: i for i, f in enumerate(files)}
+        for diag in diagnostics:
+            fix = diag.get("fix") or {}
+            if not fix or fix.get("applicability") == "display-only":
+                continue
+            i = index.get(Path(str(diag.get("filename", ""))).name)
+            if i is not None and diag.get("code"):
+                counts[i][diag["code"]] = counts[i].get(diag["code"], 0) + 1
+        return list(counts)
+
     def _spec(self, tool: str) -> _ToolSpec:
         builders: dict[str, Callable[[], _ToolSpec]] = {
             "ruff": self._ruff,
