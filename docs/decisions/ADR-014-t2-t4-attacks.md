@@ -100,3 +100,75 @@ di ACW.
 Comando: `scripts/check_attacks_canonical.sh --attacks T2.1 --params b=all [--baseline-dev]`.
 
 **Esito (26 ottobre 2026):** canoniche 541/542 (Python) e 164/164 negli altri linguaggi; baseline di L1 dev 99,52% (Python), 100% (Java, C++, JavaScript). I 5 fallimenti sono `TIMEOUT` di programmi al limite di tempo, non errori di semantica (si ripetono anche con il solo `comparison_flip`, che non cambia il costo): nessuna restrizione aggiunta. Log: `M11_t2_1_canonical.txt`, `M11_t2_1_baseline_dev.txt`.
+
+## 2. T2.4 troncamento
+
+Decisioni dell'utente del 26 ottobre 2026. Codice in `src/bench/attacks/t2/truncate.py`, griglia
+in `configs/attack/t2_4_truncate.yaml` (`p ∈ {0.75, 0.5}`).
+
+### 2.1 Istruzione, conteggio, arrotondamento
+
+- **Corpo bersaglio:** con la funzione d'ingresso del problema (`entry_point`, L1) il corpo di quella
+  funzione (la prima con quel nome; in JavaScript anche `const f = (…) => {…}`). Senza funzione
+  d'ingresso (programmi completi di CodeNet, L2): il corpo di `main` se esiste una funzione con
+  quel nome; altrimenti, per Python e JavaScript, le istruzioni di **primo livello del file**,
+  escluse le definizioni di funzioni (anche `const f = () => …` e le funzioni decorate) e le
+  importazioni (`import`, `from … import`, `require(…)`). In Java e C++ senza `main` l'attacco
+  non si applica.
+- **Istruzione:** figlio diretto con nome del corpo, esclusi i commenti e la docstring di Python
+  (che resta). Più istruzioni sulla stessa riga contano separatamente (`int n; cin >> n;` = 2).
+- **Quante se ne tengono:** le prime `max(1, ⌊p·n⌋)`. Il corpo non resta mai vuoto (in Python sarebbe
+  un errore di sintassi). Con `p = 0.5`: n = 1, 2, 3, 4, 5 → 1, 1, 1, 2, 2; con `p = 0.75`: 1, 1, 2, 3, 3.
+- **Taglio:** prefisso puro, senza aggiungere nulla. Nel corpo di una funzione si toglie il tratto
+  dalla fine dell'ultima istruzione tenuta alla fine dell'ultima istruzione (commenti compresi;
+  la graffa di chiusura resta). A livello di file si tolgono le singole istruzioni contate oltre
+  la soglia; importazioni e definizioni restano dove sono. Il codice può non compilare (Java senza
+  `return`) o fallire i test: lo SPEC lo prevede.
+
+Esempi (`p = 0.5`, n = 4 → si tengono 2 istruzioni):
+
+| Linguaggio | Prima | Dopo |
+|---|---|---|
+| Python (L1) | `def f(a):` / `"""doc"""` / `s = 0` / `s += a` / `s *= 2` / `return s` | `def f(a):` / `"""doc"""` / `s = 0` / `s += a` |
+| Java (L1) | `int f(int a) { int s = 0; s += a; s *= 2; return s; }` | `int f(int a) { int s = 0; s += a; }` (non compila: manca `return`) |
+| C++ (L1) | `int f(int a) { int s = 0; s += a; s *= 2; return s; }` | `int f(int a) { int s = 0; s += a; }` |
+| JavaScript (L1) | `const f = (a) => { let s = 0; s += a; s *= 2; return s; };` | `const f = (a) => { let s = 0; s += a; };` |
+| C++ (CodeNet) | `int main() { int n; cin >> n; n *= 2; cout << n; return 0; }` (n = 5) | `int main() { int n; cin >> n; }` |
+| Java (CodeNet) | corpo di `public static void main(String[] args)` | prime ⌊p·n⌋ istruzioni di `main` |
+| Python (CodeNet) | `import sys` / `def g(x): …` / `n = int(input())` / `m = g(n)` / `print(m)` / `print(m + 1)` (n = 4) | `import sys` / `def g(x): …` / `n = int(input())` / `m = g(n)` |
+| JavaScript (CodeNet) | `const fs = require("fs")` / `const lines = …` / `function g(x) {…}` / `const n = …` / `console.log(…)` / `console.log(…)` (n = 4) | `const fs = require("fs")` / `const lines = …` / `function g(x) {…}` / `const n = …` |
+
+### 2.2 Stati e report
+
+- `UNCHANGED`: si tengono tutte le istruzioni (corpo di una sola istruzione, o freccia con
+  un'espressione); il campione resta nelle metriche.
+- `NOT_APPLICABLE` **per campione** quando l'attacco non si può applicare: codice vuoto (estrazione
+  fallita, `reason: extraction_failed`), funzione d'ingresso non trovata (`entry_not_found`),
+  `main` assente in Java e C++ (`main_not_found`). È diverso da "applicato ma codice invariato". Il
+  campione resta nelle metriche con il codice originale (I1): esecuzione e rilevazione lo trattano
+  come ogni altro campione, quindi lo stato per campione non cambia il modello dei dati e nessun
+  altro attacco ne ha bisogno (negli altri l'assenza di punti è `UNCHANGED`).
+- Report (`check_attacks.py --report`, per ogni metodo, modello, livello e linguaggio):
+  - frazioni di `UNCHANGED`, `NOT_APPLICABLE` e `TOOL_ERROR` su tutti i campioni, con i motivi dei
+    `NOT_APPLICABLE`;
+  - distribuzione di n (minimo, quartili, massimo, quota con n = 1) e istruzioni tolte in media;
+  - esecuzione dei campioni modificati: non compilano / compilano ma falliscono / passano;
+  - rilevazioni `FAILED` (rilevatore in errore sul codice troncato), per metodo;
+  - TPR secondario sui soli campioni modificati (`APPLIED`; esclusi `UNCHANGED`, `NOT_APPLICABLE`,
+    `TOOL_ERROR`) accanto al TPR principale, che li comprende tutti. Le ultime tre righe valgono
+    per tutti gli attacchi.
+
+### 2.3 Variante in k funzioni (rinviata alla Milestone 13)
+
+Fissata ora, prima di vedere i dati (TODO 32 in `docs/cluster_info.md`):
+
+- si applica solo a codice a livello di file: ClassEval (L3) e programmi CodeNet di L2 test con
+  **almeno 2 funzioni**, per tutti i metodi applicabili;
+- le k funzioni da **tenere** si estraggono con l'RNG dell'attacco (`derive_seed`, SPEC §18) fra le
+  funzioni del file; k va da 1 al numero totale di funzioni (curva in k);
+- ClassEval: resta la classe con i soli k metodi scelti;
+- prima del lancio, stima dei costi della curva.
+
+Due punti da confermare con l'utente prima dell'implementazione (lettura letterale provvisoria:
+contano come le altre funzioni): se `main` dei programmi CodeNet e `__init__` delle classi di
+ClassEval rientrano fra le funzioni estraibili.

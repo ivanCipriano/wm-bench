@@ -1,0 +1,7 @@
+# T2.4 troncamento (SPEC §12; ADR-014 §2; decisioni dell'utente del 26 ottobre 2026): prefisso delle
+# prime max(1, floor(p*n)) istruzioni del corpo della funzione d'ingresso (L1), di main o del file
+# (CodeNet, L2). La variante in k funzioni (ClassEval, CodeNet multi-funzione) è rinviata alla M13
+# (TODO 32 in cluster_info.md).
+attack_id: T2.4
+space:
+  p: [0.75, 0.5]

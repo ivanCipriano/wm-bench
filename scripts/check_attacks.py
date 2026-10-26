@@ -39,9 +39,11 @@ from bench.pipeline.stages.attack_control import (
     control_detection_ref,
     control_metrics_ref,
 )
+from bench.pipeline.stages.calibrate import primary_view
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
-from bench.pipeline.stages.metrics import metrics_ref
+from bench.pipeline.stages.metrics import _detected, metrics_ref
+from bench.pipeline.stages.watermark import make_adapter
 from bench.store.artifact_store import ArtifactStore
 
 LEVEL, SPLIT = "L1", "test"
@@ -77,7 +79,7 @@ def main() -> int:
     if args.control:
         names += ("control_attack", "control_detect", "control_metrics")
     steps: dict[str, list[tuple[str, Any]]] = {s: [] for s in names}
-    report: list[tuple[str, Any, Any]] = []
+    report: list[tuple[str, Any, Any, Any, Any]] = []
     control: list[tuple[str, Any, Any]] = []
     for attack_id in args.attacks.split(","):
         controlled = set(negative_control_attacks(attack_id)) if args.control else set()
@@ -95,16 +97,16 @@ def main() -> int:
                     attack_id, params_hash, method, model, h, LEVEL, lang, SPLIT
                 )
                 steps["attack"].append((name, attacked))
-                steps["execute"].append((name, execution_ref(replace(base, source="attacked"), h)))
+                exe = execution_ref(replace(base, source="attacked"), h)
+                steps["execute"].append((name, exe))
                 subject = attacked_subject(attack_id, params_hash)
-                steps["detect"].append(
-                    (name, detection_ref(method, model, h, subject, LEVEL, lang, SPLIT))
-                )
+                det = detection_ref(method, model, h, subject, LEVEL, lang, SPLIT)
+                steps["detect"].append((name, det))
                 ref = metrics_ref(
                     method, model, h, LEVEL, lang, SPLIT, FINAL_LEVELS, (attack_id, params_hash)
                 )
                 steps["metrics"].append((name, ref))
-                report.append((name, attacked, ref))
+                report.append((name, attacked, ref, exe, det))
                 if params_hash in controlled:
                     key = (attack_id, params_hash)
                     control.append(_add_control(steps, method, model, lang, h, key, name, ref))
@@ -117,7 +119,7 @@ def main() -> int:
         if args.missing:
             sys.stdout.write("".join(f"    missing: {m}\n" for m in missing))
     if args.report:
-        _write_report(store, report)
+        _write_report(store, report, make_adapter(cfg, method))
         if args.control:
             _write_control(store, control, cfg.detection.target_fpr)
     return 0
@@ -145,9 +147,11 @@ def _add_control(
     return name, ref, cref
 
 
-def _write_report(store: ArtifactStore, report: list[tuple[str, Any, Any]]) -> None:
+def _write_report(
+    store: ArtifactStore, report: list[tuple[str, Any, Any, Any, Any]], adapter: Any
+) -> None:
     """Intensità e metriche per cella (``--report``)."""
-    for name, attacked, ref in report:
+    for name, attacked, ref, exe, det in report:
         sys.stdout.write(f"\n##### {name}\n")
         manifest = store.read_manifest(attacked) if store.exists(attacked) else None
         extra = manifest.extra if manifest else {}
@@ -169,6 +173,8 @@ def _write_report(store: ArtifactStore, report: list[tuple[str, Any, Any]]) -> N
                 )
             if extra.get("attack_id") == "T2.1":
                 _write_refactor(store, attacked)
+            if extra.get("attack_id") == "T2.4":
+                _write_truncate(store, attacked)
         values = _metrics(store, ref)
         unchanged = _unchanged_fraction(extra)
         if values:
@@ -176,6 +182,74 @@ def _write_report(store: ArtifactStore, report: list[tuple[str, Any, Any]]) -> N
             if unchanged is not None:  # accanto al TPR (richiesta dell'utente, T2.2)
                 parts.insert(1, f"unchanged_fraction {unchanged:.4f}")
             sys.stdout.write("  " + "  ".join(parts) + "\n")
+        if store.exists(attacked):
+            _write_outcomes(store, attacked, ref, exe, det, adapter)
+
+
+def _write_outcomes(
+    store: ArtifactStore, attacked: Any, ref: Any, exe: Any, det: Any, adapter: Any
+) -> None:
+    """Per ogni cella (decisioni dell'utente del 26 ottobre 2026, T2.4):
+
+    - frazioni di ``UNCHANGED``, ``NOT_APPLICABLE`` e ``TOOL_ERROR`` su tutti i campioni;
+    - esito dell'esecuzione dei campioni modificati: non compila (``COMPILE_ERROR``,
+      ``SYNTAX_ERROR``) oppure compila ma fallisce (test falliti, errore, timeout);
+    - rilevazioni ``FAILED`` (il rilevatore va in errore sul codice attaccato);
+    - TPR secondario sui soli campioni modificati (``APPLIED``), con la soglia congelata della
+      cella: ``UNCHANGED``, ``NOT_APPLICABLE`` e ``TOOL_ERROR`` esclusi (il TPR principale li
+      comprende, I1).
+    """
+    samples = store.read_table(attacked)
+    n = len(samples)
+    status = samples.set_index("sample_id")["attack_status"]
+    shares = {
+        s: float((status == s).sum()) / n for s in ("UNCHANGED", "NOT_APPLICABLE", "TOOL_ERROR")
+    }
+    sys.stdout.write("  fractions " + "  ".join(f"{k} {v:.4f}" for k, v in shares.items()) + "\n")
+    applied = set(status.index[status == "APPLIED"])
+    if store.exists(exe):
+        runs = store.read_table(exe)
+        runs = runs[runs["sample_id"].isin(applied)]
+        counts = Counter(str(s) for s in runs["status"])
+        compile_errors = counts["COMPILE_ERROR"] + counts["SYNTAX_ERROR"]
+        failing = sum(v for k, v in counts.items() if k not in ("PASSED", "COMPILE_ERROR",
+                                                               "SYNTAX_ERROR"))  # fmt: skip
+        sys.stdout.write(
+            f"  exec (APPLIED {len(runs)}): passed {counts['PASSED']}  not compiling "
+            f"{compile_errors}  compiling but failing {failing}  {dict(counts)}\n"
+        )
+    if store.exists(det):
+        scores = store.read_table(det)
+        detect = Counter(str(s) for s in scores["status"])
+        failed = detect["FAILED"] / len(scores) if len(scores) else 0.0
+        sys.stdout.write(f"  detection status {dict(detect)}  FAILED fraction {failed:.4f}\n")
+        manifest = store.read_manifest(ref) if store.exists(ref) else None
+        tau = (manifest.extra or {}).get("threshold") if manifest else None
+        if tau is not None:
+            view = primary_view(scores[scores["sample_id"].isin(applied)], adapter)
+            view = view[view["status"] != "NOT_APPLICABLE"]
+            hits = _detected(view, float(tau))
+            tpr = float(hits.mean()) if len(hits) else float("nan")
+            sys.stdout.write(f"  tpr_at_fpr_changed_only {tpr:.4f} (n={len(hits)})\n")
+
+
+def _write_truncate(store: ArtifactStore, attacked: Any) -> None:
+    """T2.4: distribuzione di n (istruzioni del corpo bersaglio) e quante se ne sono tolte, per
+    capire quanto l'attacco ha tagliato davvero; motivi dei ``NOT_APPLICABLE``."""
+    table = store.read_table(attacked)
+    details = [json.loads(d) if isinstance(d, str) and d else {} for d in table["attack_detail"]]
+    ns = sorted(int(d["n"]) for d in details if "n" in d)
+    reasons = Counter(str(d["reason"]) for d in details if "reason" in d)
+    targets = Counter(str(d["target"]) for d in details if "target" in d)
+    if ns:
+        q = [ns[min(len(ns) - 1, int(f * len(ns)))] for f in (0.0, 0.25, 0.5, 0.75)] + [ns[-1]]
+        removed = [int(d.get("removed", 0)) for d in details if "n" in d]
+        sys.stdout.write(
+            f"  T2.4 n min/p25/median/p75/max {q}  n=1 {sum(x == 1 for x in ns) / len(ns):.4f}"
+            f"  removed mean {sum(removed) / len(removed):.3f}  targets {dict(targets)}\n"
+        )
+    if reasons:
+        sys.stdout.write(f"  T2.4 NOT_APPLICABLE reasons {dict(reasons)}\n")
 
 
 def _write_refactor(store: ArtifactStore, attacked: Any) -> None:
