@@ -127,6 +127,9 @@ class Stage(ABC):
     # Sweep dell'HPO (``hpo.grid``): ruoli dei punti della griglia per cui la fase ha una cella
     # per configurazione (``Cell.config_hash``); vuoto = la fase non partecipa allo sweep.
     sweep_roles: ClassVar[tuple[str, ...]] = ()
+    # Punti della griglia degli attacchi: tutti (``grid``) o solo quelli con il controllo negativo
+    # sulla baseline (``negative_control``, D34).
+    attack_points: ClassVar[str] = "grid"
 
     @classmethod
     def create(cls, config: ExperimentConfig) -> Stage:
@@ -203,16 +206,16 @@ class CellPlanner:
         ``Cell.attack_params_hash``, come lo sweep dell'HPO per i metodi (ADR-012)."""
         if "attack_id" not in stage.cell_axes:
             return cells
-        from bench.attacks.base import grid_attacks
+        from bench.attacks.base import grid_attacks, negative_control_attacks
 
+        control = stage.attack_points == "negative_control"
+        points = negative_control_attacks if control else grid_attacks
         out: list[Cell] = []
         for cell in cells:
             if cell.attack_id is None or cell.attack_params_hash is not None:
                 out.append(cell)
             else:
-                out.extend(
-                    replace(cell, attack_params_hash=h) for h in grid_attacks(cell.attack_id)
-                )
+                out.extend(replace(cell, attack_params_hash=h) for h in points(cell.attack_id))
         return out
 
     def _selected(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:

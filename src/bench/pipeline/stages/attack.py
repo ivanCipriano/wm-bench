@@ -178,17 +178,30 @@ class AttackStage(Stage):
 
     # ------------------------------------------------------------------ esecuzione
     def run(self, cell: Cell, ctx: StageContext) -> None:
-        cfg = self._cfg()
-        method, model_id, level, language, split, attack_id, params_hash = self._require(cell)
-        attack = self.attack(cell)
+        method, model_id, level, language, split, _, _ = self._require(cell)
         cfg_hash = self.config_hash(cell)
+        marked_ref = watermarked_ref(method, model_id, cfg_hash, level, language, split)
+        self.attack_and_write(ctx, cell, marked_ref, self.outputs(cell)[0], cfg_hash)
+
+    def attack_and_write(
+        self,
+        ctx: StageContext,
+        cell: Cell,
+        parents_ref: ArtifactRef,
+        ref: ArtifactRef,
+        cfg_hash: str | None,
+    ) -> None:
+        """Attacca i campioni di ``parents_ref`` (una riga per campione, I1) e scrive ``ref``."""
+        cfg = self._cfg()
+        level, language = str(cell.level), str(cell.language)
+        attack_id, params_hash = str(cell.attack_id), str(cell.attack_params_hash)
+        attack = self.attack(cell)
         lang = Language(language)
         problems = {
             r["problem_key"]: Problem.model_validate(r)
             for r in ctx.store.read_table(problems_ref(level, language)).to_dict(orient="records")
         }
-        marked_ref = watermarked_ref(method, model_id, cfg_hash, level, language, split)
-        table = ctx.store.read_table(marked_ref).sort_values(["problem_key", "sample_index"])
+        table = ctx.store.read_table(parents_ref).sort_values(["problem_key", "sample_index"])
         parents = [
             CodeSample.model_validate(_clean(r))
             for r in table[list(CodeSample.model_fields)].to_dict(orient="records")
@@ -265,7 +278,6 @@ class AttackStage(Stage):
         extra = self._summary(attack, outcomes, df, tools)
         if llm is not None:
             extra["attacker"] = llm.info()
-        ref = self.outputs(cell)[0]
         manifest = ctx.make_manifest(
             ref,
             inputs=self.inputs(cell),

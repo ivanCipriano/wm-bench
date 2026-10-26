@@ -7,6 +7,10 @@ Per ogni passo di ``submit_attacks_l1.sh`` (attack, execute, detect, metrics) co
 completi delle celle (modello, linguaggio, configurazione dell'attacco) con la configurazione
 congelata del metodo. Il primo passo ``INCOMPLETE`` è il prossimo da lanciare.
 
+Con ``--control`` aggiunge i passi del controllo negativo (D34: attacco sulla baseline,
+rilevazione, metriche) per i punti con ``negative_control`` e, con ``--report``, per ogni cella
+l'FPR sulla baseline riscritta accanto a TPR e AUROC e l'esito della regola dell'utente.
+
 Con ``--report`` stampa, per cella, l'intensità dell'attacco (dal manifest della fase attack:
 stati, frazione modificata, 1 − CodeBLEU, medie dei conteggi) e le metriche (TPR, AUROC, Pass@1,
 ΔPass@1 rispetto alla baseline e al marcato non attaccato), con la frazione di campioni
@@ -22,11 +26,18 @@ import sys
 from dataclasses import replace
 from typing import Any
 
-from bench.attacks.base import grid_attacks
+import pandas as pd
+
+from bench.attacks.base import grid_attacks, negative_control_attacks
 from bench.config.builder import load_experiment
 from bench.hpo.freeze import FINAL_LEVELS, load_freeze
 from bench.pipeline.stage import Cell
 from bench.pipeline.stages.attack import attacked_ref, attacked_subject
+from bench.pipeline.stages.attack_control import (
+    attacked_baseline_ref,
+    control_detection_ref,
+    control_metrics_ref,
+)
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
 from bench.pipeline.stages.metrics import metrics_ref
@@ -52,6 +63,7 @@ def main() -> int:
     parser.add_argument("attacks")
     parser.add_argument("--missing", action="store_true")
     parser.add_argument("--report", action="store_true")
+    parser.add_argument("--control", action="store_true", help="controllo negativo (D34)")
     args = parser.parse_args()
     method = args.method
     cfg = load_experiment(["paths=cluster", "stage=attack"])
@@ -60,11 +72,14 @@ def main() -> int:
     if record is None:
         sys.stdout.write(f"##### {method}: NOT FROZEN\n")
         return 1
-    steps: dict[str, list[tuple[str, Any]]] = {
-        s: [] for s in ("attack", "execute", "detect", "metrics")
-    }
+    names: tuple[str, ...] = ("attack", "execute", "detect", "metrics")
+    if args.control:
+        names += ("control_attack", "control_detect", "control_metrics")
+    steps: dict[str, list[tuple[str, Any]]] = {s: [] for s in names}
     report: list[tuple[str, Any, Any]] = []
+    control: list[tuple[str, Any, Any]] = []
     for attack_id in args.attacks.split(","):
+        controlled = set(negative_control_attacks(attack_id)) if args.control else set()
         for params_hash, attack in grid_attacks(attack_id).items():
             for cell in record.cells:
                 if cell.not_applicable or cell.config_hash is None:
@@ -89,17 +104,44 @@ def main() -> int:
                 )
                 steps["metrics"].append((name, ref))
                 report.append((name, attacked, ref))
+                if params_hash in controlled:
+                    key = (attack_id, params_hash)
+                    control.append(_add_control(steps, method, model, lang, h, key, name, ref))
 
     sys.stdout.write(f"##### {method} attacks {args.attacks} on {LEVEL} {SPLIT}\n")
     for step, refs in steps.items():
         missing = [n for n, r in refs if not store.exists(r)]
         state = "COMPLETE" if not missing else "INCOMPLETE"
-        sys.stdout.write(f"{step:<10} {len(refs) - len(missing):>4}/{len(refs):<4} {state}\n")
+        sys.stdout.write(f"{step:<16} {len(refs) - len(missing):>4}/{len(refs):<4} {state}\n")
         if args.missing:
             sys.stdout.write("".join(f"    missing: {m}\n" for m in missing))
     if args.report:
         _write_report(store, report)
+        if args.control:
+            _write_control(store, control, cfg.detection.target_fpr)
     return 0
+
+
+def _add_control(
+    steps: dict[str, list[tuple[str, Any]]],
+    method: str,
+    model: str,
+    lang: str,
+    h: str,
+    key: tuple[str, str],
+    name: str,
+    ref: Any,
+) -> tuple[str, Any, Any]:
+    """Passi del controllo negativo (D34) di una cella; la baseline riscritta è per modello e
+    linguaggio, comune a tutti i metodi."""
+    base_ref = (f"{model} {lang}", attacked_baseline_ref(*key, model, LEVEL, lang, SPLIT))
+    if base_ref not in steps["control_attack"]:
+        steps["control_attack"].append(base_ref)
+    det = control_detection_ref(method, model, h, *key, LEVEL, lang, SPLIT)
+    steps["control_detect"].append((name, det))
+    cref = control_metrics_ref(method, model, h, LEVEL, lang, SPLIT, list(FINAL_LEVELS), key)
+    steps["control_metrics"].append((name, cref))
+    return name, ref, cref
 
 
 def _write_report(store: ArtifactStore, report: list[tuple[str, Any, Any]]) -> None:
@@ -131,6 +173,62 @@ def _write_report(store: ArtifactStore, report: list[tuple[str, Any, Any]]) -> N
             if unchanged is not None:  # accanto al TPR (richiesta dell'utente, T2.2)
                 parts.insert(1, f"unchanged_fraction {unchanged:.4f}")
             sys.stdout.write("  " + "  ".join(parts) + "\n")
+
+
+def _write_control(
+    store: ArtifactStore, control: list[tuple[str, Any, Any]], target_fpr: float
+) -> None:
+    """Controllo negativo (D34): falsi positivi sulla baseline riscritta e AUROC fra riscritti.
+
+    Regola dell'utente (26 ottobre 2026): se l'FPR sulla baseline riscritta resta vicino all'FPR
+    nominale, il TPR dopo l'attacco è robustezza vera; se si avvicina al TPR, è un artefatto dello
+    stile dell'attaccante. "Vicino" = più vicino all'uno che all'altro; la regola non si applica se
+    il TPR dopo l'attacco non supera l'FPR nominale (limite inferiore dell'IC).
+    """
+    sys.stdout.write(f"\n##### controllo negativo (D34), FPR nominale {target_fpr}\n")
+    for name, ref, cref in control:
+        attacked, values = _metric_rows(store, ref), _metric_rows(store, cref)
+        sys.stdout.write(f"\n##### {name}\n")
+        if not values:
+            sys.stdout.write("  (metriche del controllo mancanti)\n")
+            continue
+        parts = [
+            _fmt(k, values[k]) for k in
+            ("tpr_at_fpr", "fpr_llm_rewritten", "fpr_llm_original", "auroc_rewritten")
+            if k in values
+        ]  # fmt: skip
+        if "auroc" in attacked:
+            parts.insert(3, _fmt("auroc_vs_human", attacked["auroc"]))
+        sys.stdout.write("  " + "  ".join(parts) + "\n")
+        tpr, fpr = values["tpr_at_fpr"], values["fpr_llm_rewritten"]
+        if tpr[1] is None or tpr[1] <= target_fpr:
+            verdict = "non applicabile: il TPR dopo l'attacco non supera l'FPR nominale"
+        elif abs(fpr[0] - target_fpr) <= abs(fpr[0] - tpr[0]):
+            verdict = "robustezza vera (FPR sulla baseline riscritta vicino al nominale)"
+        else:
+            verdict = "artefatto dello stile dell'attaccante (FPR vicino al TPR)"
+        sys.stdout.write(f"  REGOLA: {verdict}\n")
+
+
+def _metric_rows(store: ArtifactStore, ref: Any) -> dict[str, tuple[float, Any, Any]]:
+    """Valore e IC di ogni metrica di un artefatto (vuoto se manca)."""
+    if not store.exists(ref):
+        return {}
+    t = store.read_table(ref)
+
+    def ci(x: Any) -> float | None:
+        return None if x is None or pd.isna(x) else float(x)
+
+    return {
+        n: (float(v), ci(lo), ci(hi))
+        for n, v, lo, hi in zip(t["name"], t["value"], t["ci_low"], t["ci_high"], strict=True)
+    }
+
+
+def _fmt(name: str, value: tuple[float, Any, Any]) -> str:
+    v, lo, hi = value
+    ci = f" [{lo:.4f}, {hi:.4f}]" if lo is not None and hi is not None else ""
+    return f"{name} {v:.4f}{ci}"
 
 
 def _unchanged_fraction(extra: dict[str, Any]) -> float | None:

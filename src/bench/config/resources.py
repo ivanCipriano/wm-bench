@@ -30,6 +30,14 @@ class ProfileIssue:
     message: str
 
 
+# Fasi del controllo negativo degli attacchi (D34): stesse regole della fase corrispondente.
+SAME_RESOURCES_AS = {
+    "attack_baseline": "attack",
+    "detect_attack_control": "detect",
+    "metrics_attack_control": "metrics",
+}
+
+
 class ResourcePolicy:
     """Politica delle risorse.
 
@@ -50,6 +58,7 @@ class ResourcePolicy:
         self, stage: str, method: str | None = None, attack: str | None = None
     ) -> ResourceClass:
         """Classe di risorse per una fase (eventualmente per metodo o attacco)."""
+        stage = SAME_RESOURCES_AS.get(stage, stage)
         if stage in self.rules.gpu_stages:
             return ResourceClass.GPU_NVIDIA
         by_method = self.rules.gpu_methods_by_stage.get(stage)

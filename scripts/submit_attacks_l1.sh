@@ -16,11 +16,18 @@
 # Prima: il metodo congelato con la fase 0 completa (python scripts/check_test.py METODO), i tool
 # installati (bash scripts/setup_tools.sh) e le raccolte (stage attack_pools).
 # Ordine: 1) → 2) e 3) insieme → 4) dopo 2) e 3). Stato: python scripts/check_attacks.py METODO ATTACCO.
+# Controllo negativo (D34, misura aggiuntiva; punti con negative_control, oggi T2.2 full_rewrite):
+#   bash scripts/submit_attacks_l1.sh control_attack  all   T2.2 1/1  # a) baseline riscritta (gpuq),
+#                                                   # una volta per modello e linguaggio (tutti e 4)
+#   bash scripts/submit_attacks_l1.sh control_detect  stone T2.2 1/1  # b) rilevazione della baseline
+#                                                   # riscritta con il metodo congelato
+#   bash scripts/submit_attacks_l1.sh control_metrics stone T2.2      # c) FPR e AUROC (dopo b e 4)
+#   Stato e report: python scripts/check_attacks.py METODO T2.2 --control --report
 # Variabile opzionale: JOBS (default: tutti i posti liberi, cioè 10 meno i job già in coda o in
 # esecuzione dell'utente; cluster_info §4). Nodi guasti: export WMB_EXCLUDE_NODES=gnode13,gnode14.
 set -euo pipefail
 
-USAGE="usage: submit_attacks_l1.sh attack|execute|detect|metrics METHOD ATTACK[,ATTACK] [K/M] [--dry-run]"
+USAGE="usage: submit_attacks_l1.sh attack|execute|detect|metrics|control_attack|control_detect|control_metrics METHOD ATTACK[,ATTACK] [K/M] [--dry-run]"
 STEP="${1:?$USAGE}"
 METHOD="${2:?$USAGE}"
 ATTACKS="${3:?$USAGE}"
@@ -40,9 +47,14 @@ case "$METHOD" in
     sweet) LANGS="[python,java,cpp,javascript]" ;;
     stone) LANGS="[python,java,cpp]" ;;
     mcgmark|promptmark|acw) LANGS="[python]" ;;
+    all) LANGS="[python,java,cpp,javascript]" ;;  # solo control_attack: la baseline non ha metodo
     *) echo "unknown method: $METHOD" >&2; exit 2 ;;
 esac
-TEST=("methods=[$METHOD]" "levels=[L1]" "splits=[test]" "languages=$LANGS" "attacks=[$ATTACKS]")
+if [ "$METHOD" = all ] && [ "$STEP" != control_attack ]; then
+    echo "METHOD all is only for control_attack" >&2; exit 2
+fi
+TEST=("levels=[L1]" "splits=[test]" "languages=$LANGS" "attacks=[$ATTACKS]")
+[ "$METHOD" = all ] || TEST=("methods=[$METHOD]" "${TEST[@]}")
 
 case "$STEP" in
     attack|detect)
@@ -58,13 +70,27 @@ case "$STEP" in
         SHARE="1/1"; MODE="${4:-}"
         ARGS=(--jobs 1 "stage=metrics" "detection.threshold_levels=[L1,L2]" "${TEST[@]}")
         ;;
+    control_attack)
+        SHARE="${4:?$USAGE}"; MODE="${5:-}"
+        ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=attack_baseline" "${TEST[@]}")
+        ;;
+    control_detect)
+        SHARE="${4:?$USAGE}"; MODE="${5:-}"
+        ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=detect_attack_control"
+              "${TEST[@]}")
+        ;;
+    control_metrics)
+        SHARE="1/1"; MODE="${4:-}"
+        ARGS=(--jobs 1 "stage=metrics_attack_control" "detection.threshold_levels=[L1,L2]"
+              "${TEST[@]}")
+        ;;
     *) echo "unknown step: $STEP" >&2; exit 2 ;;
 esac
 
 echo "##### job attivi: $ACTIVE, posti liberi: $FREE su $MAX_JOBS"
 if [ "$MODE" != "--dry-run" ]; then
     NEED=1
-    [ "$STEP" = metrics ] || NEED="${JOBS:-1}"
+    case "$STEP" in metrics|control_metrics) ;; *) NEED="${JOBS:-1}" ;; esac
     if [ "$FREE" -lt 1 ] || [ "$NEED" -gt "$FREE" ]; then
         echo "not enough free slots: need $NEED, free $FREE (wait for a job to end or lower JOBS)" >&2
         exit 2

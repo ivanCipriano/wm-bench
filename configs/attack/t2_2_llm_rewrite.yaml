@@ -11,3 +11,9 @@ fixed:
 points:
   - {variant: conservative, prompt_sha256: 84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7}
   - {variant: full_rewrite, prompt_sha256: d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e}
+# Controllo negativo (misura aggiuntiva rispetto al protocollo, D34; decisione dell'utente del 26
+# ottobre 2026): la riscrittura completa si applica anche alla baseline senza watermark di ogni
+# modello (fase attack_baseline) e si rileva con ogni metodo (detect_attack_control). Non entra nei
+# parametri: attack_params_hash non cambia.
+negative_control:
+  - {variant: full_rewrite}

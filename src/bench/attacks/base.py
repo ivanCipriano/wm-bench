@@ -187,6 +187,9 @@ class AttackGrid:
     path: Path
     points: tuple[dict[str, Any], ...]
     enabled: bool = True
+    # Punti con il controllo negativo (misura aggiuntiva, D34): lo stesso attacco applicato alla
+    # baseline senza watermark; ogni voce è un sottoinsieme dei parametri che il punto deve avere.
+    negative_control: tuple[dict[str, Any], ...] = ()
 
 
 def _product(space: Mapping[str, Sequence[Any]]) -> list[dict[str, Any]]:
@@ -215,7 +218,11 @@ def _grids(root: Path) -> dict[str, AttackGrid]:
             raise ConfigError(f"{path}: use either space or points, not both")
         points = tuple({**fixed, **p} for p in (explicit or _product(space)))
         enabled = bool(data.get("enabled", True))
-        grids[attack_id] = AttackGrid(attack_id, path, points, enabled)
+        control = tuple(dict(c) for c in (data.get("negative_control") or []))
+        for match in control:
+            if not any(match.items() <= p.items() for p in points):
+                raise ConfigError(f"{path}: negative_control {match} matches no point")
+        grids[attack_id] = AttackGrid(attack_id, path, points, enabled, control)
     return grids
 
 
@@ -250,6 +257,16 @@ def grid_attacks(attack_id: str, root: Path | None = None) -> dict[str, Attack]:
         attack = make_attack(attack_id, params)
         out[attack.params_hash()] = attack
     return out
+
+
+def negative_control_attacks(attack_id: str, root: Path | None = None) -> dict[str, Attack]:
+    """Punti della griglia con il controllo negativo sulla baseline (``negative_control``, D34)."""
+    grid = attack_grid(attack_id, root)
+    return {
+        h: a
+        for h, a in grid_attacks(attack_id, root).items()
+        if any(match.items() <= a.params.items() for match in grid.negative_control)
+    }
 
 
 def resolve_attack(attack_id: str, params_hash: str | None) -> Attack:
