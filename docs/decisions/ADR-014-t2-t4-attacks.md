@@ -140,6 +140,8 @@ celle con l'hash corrente.
 **Verifica ripetuta.** Canoniche e baseline di L1 dev in C++ con `b = all`: nessun campione che
 passava deve fallire per T2.1. **Esito (27 ottobre 2026, commit 52ef9b1):** canoniche 164/164 (151 modificate, 0 rotte); baseline di L1 dev 217/217 (Qwen 120/120, DeepSeek 97/97). Log: `M11_t2_1_cpp_v2_canonical.txt`, `M11_t2_1_cpp_v2_baseline_dev.txt`. Rilancio delle 8 celle C++ di STONE autorizzato.
 
+**Rilancio (27 ottobre 2026).** Le 8 celle C++ della versione 2 sono complete: 0 campioni con esito cambiato rispetto al marcato per ogni `b` e modello (`M11_t2_1_stone_cpp_regressions_v2.txt`), ΔPass@1 rispetto al marcato 0,00 pp (prima 0,24–0,60). `compound_assignment` scende da 294 a 219 punti (Qwen, `b = all`) e da 240 a 190 (DeepSeek); campioni `UNCHANGED` da 20,1% a 21,6% (Qwen) e da 12,5% a 12,9% (DeepSeek); TPR invariato (0,0107 e 0,0024). Le celle Python e Java del report sono identiche a prima (`M11_attacks_t2_1_stone.txt`).
+
 ## 2. T2.4 troncamento
 
 Decisioni dell'utente del 26 ottobre 2026. Codice in `src/bench/attacks/t2/truncate.py`, griglia
