@@ -239,8 +239,9 @@ costruzione. Così T3.1 è anche coerente con ACW, dove k2 si applica al codice 
   - PromptMark: il ciclo di feedback usa la green list di k2 (la chiave della richiesta).
 - **ACW** (post-hoc): ACW riapplicato con k2 al codice marcato con k1, stesse 30 regole
   congelate; cambia solo la chiave (k2 sceglie un altro sottoinsieme). Con 30 regole su 43 la
-  sovrapposizione attesa fra i due sottoinsiemi è 30 · 30 / 43 ≈ 21 regole. **Il lancio di ACW
-  aspetta la conferma dell'utente sulla licenza di Sourcery.**
+  sovrapposizione attesa fra i due sottoinsiemi è 30 · 30 / 43 ≈ 21 regole. Il lancio di ACW,
+  sospeso in attesa della conferma sulla licenza di Sourcery, è stato sbloccato dall'utente il
+  27 ottobre 2026.
 - **Stati per campione:** `APPLIED` se il codice cambia, `UNCHANGED` se resta uguale (o, per
   ACW, se nessuna regola di k2 lo modifica), `TOOL_ERROR` con il codice marcato se la generazione o
   l'estrazione falliscono (I1, I5), `NOT_APPLICABLE` per i linguaggi non supportati.
@@ -296,7 +297,8 @@ Prima del lancio: stima del costo per metodo e modello (SWEET compreso, quando s
 - ACW, sovrapposizione: oltre alle regole in comune fra i due sottoinsiemi (un numero per metodo:
   il sottoinsieme dipende solo dalla chiave), per ogni campione il numero di regole **applicate da
   k2** (`applicable_rules` del worker) che stanno anche nel sottoinsieme di k1; le quattro
-  categorie si riportano per 0, 1, 2 e 3+ di queste regole.
+  categorie si riportano per 0, 1, 2 e 3+ di queste regole (definizione approvata dall'utente il
+  27 ottobre 2026).
 - Ordine (`scripts/submit_attacks_l1.sh`): `k2_detect_dev` → `k2_calibrate` → `k2_freeze` →
   `k2_detect_test`; poi `attack` T3.1 → `execute`, `detect` e `k2_detect` → `metrics` →
   `k2_metrics`. Report: `python scripts/check_attacks.py METODO T3.1 --report`.
