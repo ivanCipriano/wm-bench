@@ -137,7 +137,8 @@ esac
 # ID salvati a ogni invio). I job in attesa contano nei 10 posti di MaxSubmit.
 IDS_DIR="$WMB/logs/submit_ids"
 mkdir -p "$IDS_DIR"
-ids_file() { echo "${1}_${METHOD}_${ATTACKS//,/-}.txt"; }
+# Un file per utente: la cartella è condivisa e ognuno aspetta solo i propri job (squeue -u).
+ids_file() { echo "${1}_${METHOD}_${ATTACKS//,/-}_${USER}.txt"; }
 AFTER_ARGS=()
 if [ -n "${AFTER:-}" ]; then
     QUEUED=" $(squeue -u "$USER" -h -o %i | tr '\n' ' ') "
