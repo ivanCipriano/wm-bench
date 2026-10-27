@@ -1,0 +1,7 @@
+##### nodo tnode05, commit 52ef9b1
+##### attacchi T2.1 {'b': 'all'} sulle baseline di L1 dev (repo /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench)
+
+########## cpp: baseline di L1 dev
+T2.1 "all" qwen25_coder_7b: campioni 144, passavano 120, passano ancora 120 (100.00%), stati {'APPLIED': 138, 'UNCHANGED': 6}
+T2.1 "all" deepseek_coder_6p7b: campioni 144, passavano 97, passano ancora 97 (100.00%), stati {'APPLIED': 138, 'UNCHANGED': 6}
+TOTALE cpp T2.1 "all": 217/217 (100.00%) OK
