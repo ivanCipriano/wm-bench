@@ -1,0 +1,51 @@
+##### acw attacks T2.4 on L1 test
+attack              4/4    COMPLETE
+execute             4/4    COMPLETE
+detect              4/4    COMPLETE
+metrics             4/4    COMPLETE
+
+##### T2.4 {"p": 0.75} qwen25_coder_7b python
+  status {'APPLIED': 1424, 'UNCHANGED': 1252}  changed 0.532138  1-CodeBLEU 0.134286 (changed only 0.252352)
+  detail means {"kept": 2.200843, "n": 3.359551, "p": 0.75, "removed": 1.158708}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 1, 2, 3, 10]  n=1 0.4671  removed mean 0.617  targets {'entry': 2676}
+  tpr_at_fpr 0.9989  unchanged_fraction 0.4679  auroc 0.9999  pass_at_1 0.3935  delta_pass_at_1_pp 37.1076  delta_pass_at_1_pp_vs_marked 35.7623  changed_fraction 0.5321  tool_error_fraction 0.0000  codebleu_distance 0.1343
+  fractions UNCHANGED 0.4679  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1424): passed 10  not compiling 3  compiling but failing 1411  {'FAILED': 1411, 'PASSED': 10, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.9993 (n=1424)
+
+##### T2.4 {"p": 0.75} deepseek_coder_6p7b python
+  status {'APPLIED': 1217, 'UNCHANGED': 1455, 'NOT_APPLICABLE': 4}  changed 0.455464  1-CodeBLEU 0.123176 (changed only 0.270846)
+  detail means {"kept": 2.238291, "n": 3.391947, "p": 0.75, "removed": 1.153657}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 1, 3, 11]  n=1 0.5445  removed mean 0.525  targets {'entry': 2672}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 4}
+  tpr_at_fpr 1.0000  unchanged_fraction 0.5445  auroc 1.0000  pass_at_1 0.4114  delta_pass_at_1_pp 28.8490  delta_pass_at_1_pp_vs_marked 27.4664  changed_fraction 0.4555  tool_error_fraction 0.0000  codebleu_distance 0.1234
+  fractions UNCHANGED 0.5437  NOT_APPLICABLE 0.0015  TOOL_ERROR 0.0000
+  exec (APPLIED 1217): passed 7  not compiling 0  compiling but failing 1210  {'FAILED': 1210, 'PASSED': 7}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 1.0000 (n=1217)
+
+##### T2.4 {"p": 0.5} qwen25_coder_7b python
+  status {'APPLIED': 1424, 'UNCHANGED': 1252}  changed 0.532138  1-CodeBLEU 0.276551 (changed only 0.519698)
+  detail means {"kept": 1.477528, "n": 3.359551, "p": 0.5, "removed": 1.882022}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 1, 2, 3, 10]  n=1 0.4671  removed mean 1.001  targets {'entry': 2676}
+  tpr_at_fpr 0.9970  unchanged_fraction 0.4679  auroc 0.9998  pass_at_1 0.3920  delta_pass_at_1_pp 37.2571  delta_pass_at_1_pp_vs_marked 35.9118  changed_fraction 0.5321  tool_error_fraction 0.0000  codebleu_distance 0.2766
+  fractions UNCHANGED 0.4679  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1424): passed 6  not compiling 3  compiling but failing 1415  {'FAILED': 1415, 'PASSED': 6, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.9958 (n=1424)
+
+##### T2.4 {"p": 0.5} deepseek_coder_6p7b python
+  status {'APPLIED': 1217, 'UNCHANGED': 1455, 'NOT_APPLICABLE': 4}  changed 0.455464  1-CodeBLEU 0.266627 (changed only 0.586272)
+  detail means {"kept": 1.464256, "n": 3.391947, "p": 0.5, "removed": 1.927691}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 1, 3, 11]  n=1 0.5445  removed mean 0.878  targets {'entry': 2672}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 4}
+  tpr_at_fpr 1.0000  unchanged_fraction 0.5445  auroc 1.0000  pass_at_1 0.4088  delta_pass_at_1_pp 29.1106  delta_pass_at_1_pp_vs_marked 27.7280  changed_fraction 0.4555  tool_error_fraction 0.0000  codebleu_distance 0.2670
+  fractions UNCHANGED 0.5437  NOT_APPLICABLE 0.0015  TOOL_ERROR 0.0000
+  exec (APPLIED 1217): passed 0  not compiling 0  compiling but failing 1217  {'FAILED': 1217}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 1.0000 (n=1217)

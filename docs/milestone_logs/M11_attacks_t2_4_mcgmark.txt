@@ -1,0 +1,53 @@
+##### mcgmark attacks T2.4 on L1 test
+attack              4/4    COMPLETE
+execute             4/4    COMPLETE
+detect              4/4    COMPLETE
+metrics             4/4    COMPLETE
+
+##### T2.4 {"p": 0.75} qwen25_coder_7b python
+  status {'APPLIED': 1781, 'UNCHANGED': 877, 'NOT_APPLICABLE': 18}  changed 0.670053  1-CodeBLEU 0.170004 (changed only 0.255435)
+  detail means {"kept": 2.531162, "n": 3.833801, "p": 0.75, "removed": 1.302639}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 1, 2, 3, 115]  n=1 0.3100  removed mean 0.873  targets {'entry': 2658}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 18}
+  tpr_at_fpr 0.0703  unchanged_fraction 0.3299  auroc 0.5124  pass_at_1 0.1599  delta_pass_at_1_pp 60.7623  delta_pass_at_1_pp_vs_marked 21.3752  changed_fraction 0.6701  tool_error_fraction 0.0000  codebleu_distance 0.1712
+  fractions UNCHANGED 0.3277  NOT_APPLICABLE 0.0067  TOOL_ERROR 0.0000
+  exec (APPLIED 1781): passed 7  not compiling 267  compiling but failing 1507  {'FAILED': 1496, 'SYNTAX_ERROR': 267, 'PASSED': 7, 'TIMEOUT': 11}
+  detection status {'FAILED': 2457, 'OK': 219}  FAILED fraction 0.9182
+  tpr_at_fpr_changed_only 0.0747 (n=1781)
+
+##### T2.4 {"p": 0.75} deepseek_coder_6p7b python
+  status {'APPLIED': 1336, 'UNCHANGED': 1329, 'NOT_APPLICABLE': 11}  changed 0.501313  1-CodeBLEU 0.1552 (changed only 0.310865)
+  detail means {"kept": 2.577096, "n": 3.886228, "p": 0.75, "removed": 1.309132}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 1, 2, 3, 78]  n=1 0.4837  removed mean 0.656  targets {'entry': 2665}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 11}
+  tpr_at_fpr 0.0176  unchanged_fraction 0.4987  auroc 0.4877  pass_at_1 0.2317  delta_pass_at_1_pp 47.1226  delta_pass_at_1_pp_vs_marked 10.6129  changed_fraction 0.5013  tool_error_fraction 0.0000  codebleu_distance 0.1558
+  fractions UNCHANGED 0.4966  NOT_APPLICABLE 0.0041  TOOL_ERROR 0.0000
+  exec (APPLIED 1336): passed 7  not compiling 148  compiling but failing 1181  {'FAILED': 1177, 'SYNTAX_ERROR': 148, 'TIMEOUT': 4, 'PASSED': 7}
+  detection status {'FAILED': 2620, 'OK': 56}  FAILED fraction 0.9791
+  tpr_at_fpr_changed_only 0.0254 (n=1336)
+
+##### T2.4 {"p": 0.5} qwen25_coder_7b python
+  status {'APPLIED': 1781, 'UNCHANGED': 877, 'NOT_APPLICABLE': 18}  changed 0.670053  1-CodeBLEU 0.318094 (changed only 0.477944)
+  detail means {"kept": 1.708029, "n": 3.833801, "p": 0.5, "removed": 2.125772}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 1, 2, 3, 115]  n=1 0.3100  removed mean 1.424  targets {'entry': 2658}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 18}
+  tpr_at_fpr 0.0628  unchanged_fraction 0.3299  auroc 0.5088  pass_at_1 0.1599  delta_pass_at_1_pp 60.7623  delta_pass_at_1_pp_vs_marked 21.3752  changed_fraction 0.6701  tool_error_fraction 0.0000  codebleu_distance 0.3202
+  fractions UNCHANGED 0.3277  NOT_APPLICABLE 0.0067  TOOL_ERROR 0.0000
+  exec (APPLIED 1781): passed 7  not compiling 180  compiling but failing 1594  {'FAILED': 1590, 'SYNTAX_ERROR': 180, 'PASSED': 7, 'TIMEOUT': 4}
+  detection status {'FAILED': 2475, 'OK': 201}  FAILED fraction 0.9249
+  tpr_at_fpr_changed_only 0.0634 (n=1781)
+
+##### T2.4 {"p": 0.5} deepseek_coder_6p7b python
+  status {'APPLIED': 1336, 'UNCHANGED': 1329, 'NOT_APPLICABLE': 11}  changed 0.501313  1-CodeBLEU 0.269343 (changed only 0.539493)
+  detail means {"kept": 1.701347, "n": 3.886228, "p": 0.5, "removed": 2.18488}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 1, 2, 3, 78]  n=1 0.4837  removed mean 1.095  targets {'entry': 2665}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 11}
+  tpr_at_fpr 0.0116  unchanged_fraction 0.4987  auroc 0.4846  pass_at_1 0.2317  delta_pass_at_1_pp 47.1226  delta_pass_at_1_pp_vs_marked 10.6129  changed_fraction 0.5013  tool_error_fraction 0.0000  codebleu_distance 0.2705
+  fractions UNCHANGED 0.4966  NOT_APPLICABLE 0.0041  TOOL_ERROR 0.0000
+  exec (APPLIED 1336): passed 7  not compiling 89  compiling but failing 1240  {'FAILED': 1239, 'SYNTAX_ERROR': 89, 'PASSED': 7, 'TIMEOUT': 1}
+  detection status {'FAILED': 2636, 'OK': 40}  FAILED fraction 0.9851
+  tpr_at_fpr_changed_only 0.0135 (n=1336)

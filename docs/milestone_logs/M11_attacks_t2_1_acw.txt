@@ -1,0 +1,109 @@
+##### acw attacks T2.1 on L1 test
+attack              8/8    COMPLETE
+execute             8/8    COMPLETE
+detect              8/8    COMPLETE
+metrics             8/8    COMPLETE
+
+##### T2.1 {"b": 1, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python
+  status {'UNCHANGED': 1561, 'APPLIED': 1115}  changed 0.416667  1-CodeBLEU 0.061314 (changed only 0.147153)
+  detail means {"b": 1.0, "n_points": 1.272646, "n_types": 1.0, "n_types_applicable": 1.678027}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.417  n_types_applicable mean 0.699  rejected {}
+  T2.1 applied types {'commutative_swap': 305, 'comparison_flip': 268, 'compound_assignment': 124, 'for_to_while': 178, 'if_else_inversion': 132, 'ruff:assign-if-exp': 4, 'ruff:identity-comprehension': 4, 'ruff:inline-immediately-returned-variable': 18, 'ruff:list-comprehension': 5, 'ruff:merge-comparisons': 1, 'ruff:remove-unnecessary-else': 72, 'ruff:use-any': 4}
+  ACW overlap (regole di inserimento congelate: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 22, 23, 25, 27, 28, 30, 34, 36, 39, 40, 41, 43, 44, 45]): tipi applicati equivalenti 205/1115 (18.4%), media per campione 18.4%; attacco in parte mirato
+  tpr_at_fpr 0.9167  unchanged_fraction 0.5833  auroc 0.9957  pass_at_1 0.7507  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.4167  tool_error_fraction 0.0000  codebleu_distance 0.0613
+  fractions UNCHANGED 0.5833  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1115): passed 753  not compiling 3  compiling but failing 359  {'PASSED': 753, 'FAILED': 320, 'TIMEOUT': 39, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.8018 (n=1115)
+
+##### T2.1 {"b": 1, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python
+  status {'UNCHANGED': 1700, 'APPLIED': 976}  changed 0.364723  1-CodeBLEU 0.070067 (changed only 0.192109)
+  detail means {"b": 1.0, "n_points": 1.272541, "n_types": 1.0, "n_types_applicable": 1.719262}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.365  n_types_applicable mean 0.627  rejected {}
+  T2.1 applied types {'commutative_swap': 221, 'comparison_flip': 237, 'compound_assignment': 93, 'for_to_while': 148, 'if_else_inversion': 177, 'ruff:for-index-underscore': 3, 'ruff:inline-immediately-returned-variable': 8, 'ruff:list-comprehension': 9, 'ruff:merge-comparisons': 2, 'ruff:merge-duplicate-blocks': 1, 'ruff:remove-unnecessary-else': 71, 'ruff:use-any': 6}
+  ACW overlap (regole di inserimento congelate: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 22, 23, 25, 27, 28, 30, 34, 36, 39, 40, 41, 43, 44, 45]): tipi applicati equivalenti 166/976 (17.0%), media per campione 17.0%; attacco in parte mirato
+  tpr_at_fpr 0.9383  unchanged_fraction 0.6353  auroc 0.9968  pass_at_1 0.6861  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.3647  tool_error_fraction 0.0000  codebleu_distance 0.0701
+  fractions UNCHANGED 0.6353  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 976): passed 587  not compiling 0  compiling but failing 389  {'PASSED': 587, 'FAILED': 382, 'TIMEOUT': 7}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.8309 (n=976)
+
+##### T2.1 {"b": 2, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python
+  status {'UNCHANGED': 1561, 'APPLIED': 1115}  changed 0.416667  1-CodeBLEU 0.076869 (changed only 0.184485)
+  detail means {"b": 2.0, "n_points": 1.912108, "n_types": 1.387444, "n_types_applicable": 1.678027}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.578  n_types_applicable mean 0.699  rejected {}
+  T2.1 applied types {'commutative_swap': 372, 'comparison_flip': 370, 'compound_assignment': 209, 'for_to_while': 262, 'if_else_inversion': 136, 'ruff:assign-if-exp': 7, 'ruff:identity-comprehension': 6, 'ruff:inline-immediately-returned-variable': 18, 'ruff:list-comprehension': 6, 'ruff:merge-comparisons': 2, 'ruff:merge-list-appends-into-extend': 3, 'ruff:remove-unnecessary-else': 152, 'ruff:use-any': 4}
+  ACW overlap (regole di inserimento congelate: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 22, 23, 25, 27, 28, 30, 34, 36, 39, 40, 41, 43, 44, 45]): tipi applicati equivalenti 309/1547 (20.0%), media per campione 22.4%; attacco in parte mirato
+  tpr_at_fpr 0.8853  unchanged_fraction 0.5833  auroc 0.9937  pass_at_1 0.7507  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.4167  tool_error_fraction 0.0000  codebleu_distance 0.0769
+  fractions UNCHANGED 0.5833  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1115): passed 753  not compiling 3  compiling but failing 359  {'PASSED': 753, 'FAILED': 320, 'TIMEOUT': 39, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.7265 (n=1115)
+
+##### T2.1 {"b": 2, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python
+  status {'UNCHANGED': 1700, 'APPLIED': 976}  changed 0.364723  1-CodeBLEU 0.0865 (changed only 0.237165)
+  detail means {"b": 2.0, "n_points": 1.970287, "n_types": 1.390369, "n_types_applicable": 1.719262}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.507  n_types_applicable mean 0.627  rejected {}
+  T2.1 applied types {'commutative_swap': 305, 'comparison_flip': 305, 'compound_assignment': 164, 'for_to_while': 220, 'if_else_inversion': 163, 'ruff:assign-if-exp': 1, 'ruff:for-index-underscore': 3, 'ruff:inline-immediately-returned-variable': 8, 'ruff:list-comprehension': 12, 'ruff:merge-comparisons': 2, 'ruff:merge-duplicate-blocks': 7, 'ruff:remove-unnecessary-else': 159, 'ruff:use-any': 8}
+  ACW overlap (regole di inserimento congelate: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 22, 23, 25, 27, 28, 30, 34, 36, 39, 40, 41, 43, 44, 45]): tipi applicati equivalenti 282/1357 (20.8%), media per campione 21.9%; attacco in parte mirato
+  tpr_at_fpr 0.9137  unchanged_fraction 0.6353  auroc 0.9942  pass_at_1 0.6861  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.3647  tool_error_fraction 0.0000  codebleu_distance 0.0865
+  fractions UNCHANGED 0.6353  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 976): passed 587  not compiling 0  compiling but failing 389  {'PASSED': 587, 'FAILED': 382, 'TIMEOUT': 7}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.7633 (n=976)
+
+##### T2.1 {"b": 3, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python
+  status {'UNCHANGED': 1561, 'APPLIED': 1115}  changed 0.416667  1-CodeBLEU 0.080402 (changed only 0.192964)
+  detail means {"b": 3.0, "n_points": 2.109417, "n_types": 1.513004, "n_types_applicable": 1.678027}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.630  n_types_applicable mean 0.699  rejected {}
+  T2.1 applied types {'commutative_swap': 397, 'comparison_flip': 409, 'compound_assignment': 245, 'for_to_while': 283, 'if_else_inversion': 130, 'ruff:assign-if-exp': 8, 'ruff:identity-comprehension': 7, 'ruff:inline-immediately-returned-variable': 18, 'ruff:list-comprehension': 6, 'ruff:merge-comparisons': 1, 'ruff:merge-list-appends-into-extend': 4, 'ruff:remove-unnecessary-else': 173, 'ruff:use-any': 6}
+  ACW overlap (regole di inserimento congelate: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 22, 23, 25, 27, 28, 30, 34, 36, 39, 40, 41, 43, 44, 45]): tipi applicati equivalenti 346/1687 (20.5%), media per campione 22.4%; attacco in parte mirato
+  tpr_at_fpr 0.8703  unchanged_fraction 0.5833  auroc 0.9926  pass_at_1 0.7507  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.4167  tool_error_fraction 0.0000  codebleu_distance 0.0804
+  fractions UNCHANGED 0.5833  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1115): passed 753  not compiling 3  compiling but failing 359  {'PASSED': 753, 'FAILED': 320, 'TIMEOUT': 39, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.6906 (n=1115)
+
+##### T2.1 {"b": 3, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python
+  status {'UNCHANGED': 1700, 'APPLIED': 976}  changed 0.364723  1-CodeBLEU 0.08985 (changed only 0.24635)
+  detail means {"b": 3.0, "n_points": 2.140369, "n_types": 1.505123, "n_types_applicable": 1.719262}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.549  n_types_applicable mean 0.627  rejected {}
+  T2.1 applied types {'commutative_swap': 342, 'comparison_flip': 338, 'compound_assignment': 170, 'for_to_while': 223, 'if_else_inversion': 140, 'ruff:assign-if-exp': 1, 'ruff:for-index-underscore': 3, 'ruff:inline-immediately-returned-variable': 8, 'ruff:list-comprehension': 15, 'ruff:merge-comparisons': 6, 'ruff:merge-duplicate-blocks': 8, 'ruff:remove-unnecessary-else': 202, 'ruff:use-any': 13}
+  ACW overlap (regole di inserimento congelate: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 22, 23, 25, 27, 28, 30, 34, 36, 39, 40, 41, 43, 44, 45]): tipi applicati equivalenti 350/1469 (23.8%), media per campione 22.9%; attacco in parte mirato
+  tpr_at_fpr 0.9099  unchanged_fraction 0.6353  auroc 0.9936  pass_at_1 0.6861  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.3647  tool_error_fraction 0.0000  codebleu_distance 0.0898
+  fractions UNCHANGED 0.6353  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 976): passed 587  not compiling 0  compiling but failing 389  {'PASSED': 587, 'FAILED': 382, 'TIMEOUT': 7}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.7531 (n=976)
+
+##### T2.1 {"b": "all", "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python
+  status {'UNCHANGED': 1561, 'APPLIED': 1115}  changed 0.416667  1-CodeBLEU 0.081374 (changed only 0.195299)
+  detail means {"n_points": 2.174888, "n_types": 1.556951, "n_types_applicable": 1.678027}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.649  n_types_applicable mean 0.699  rejected {}
+  T2.1 applied types {'commutative_swap': 411, 'comparison_flip': 419, 'compound_assignment': 255, 'for_to_while': 284, 'if_else_inversion': 131, 'ruff:assign-if-exp': 10, 'ruff:identity-comprehension': 7, 'ruff:inline-immediately-returned-variable': 18, 'ruff:list-comprehension': 6, 'ruff:merge-comparisons': 2, 'ruff:merge-list-appends-into-extend': 4, 'ruff:remove-unnecessary-else': 179, 'ruff:use-any': 10}
+  ACW overlap (regole di inserimento congelate: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 22, 23, 25, 27, 28, 30, 34, 36, 39, 40, 41, 43, 44, 45]): tipi applicati equivalenti 365/1736 (21.0%), media per campione 22.5%; attacco in parte mirato
+  tpr_at_fpr 0.8677  unchanged_fraction 0.5833  auroc 0.9920  pass_at_1 0.7507  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.4167  tool_error_fraction 0.0000  codebleu_distance 0.0814
+  fractions UNCHANGED 0.5833  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1115): passed 753  not compiling 3  compiling but failing 359  {'PASSED': 753, 'FAILED': 320, 'TIMEOUT': 39, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.6843 (n=1115)
+
+##### T2.1 {"b": "all", "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python
+  status {'UNCHANGED': 1700, 'APPLIED': 976}  changed 0.364723  1-CodeBLEU 0.090936 (changed only 0.249328)
+  detail means {"n_points": 2.173156, "n_types": 1.545082, "n_types_applicable": 1.719262}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.564  n_types_applicable mean 0.627  rejected {}
+  T2.1 applied types {'commutative_swap': 350, 'comparison_flip': 344, 'compound_assignment': 178, 'for_to_while': 223, 'if_else_inversion': 142, 'ruff:assign-if-exp': 1, 'ruff:for-index-underscore': 3, 'ruff:inline-immediately-returned-variable': 8, 'ruff:list-comprehension': 15, 'ruff:merge-comparisons': 6, 'ruff:merge-duplicate-blocks': 8, 'ruff:remove-unnecessary-else': 209, 'ruff:use-any': 21}
+  ACW overlap (regole di inserimento congelate: [1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 22, 23, 25, 27, 28, 30, 34, 36, 39, 40, 41, 43, 44, 45]): tipi applicati equivalenti 368/1508 (24.4%), media per campione 23.0%; attacco in parte mirato
+  tpr_at_fpr 0.9081  unchanged_fraction 0.6353  auroc 0.9935  pass_at_1 0.6861  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.3647  tool_error_fraction 0.0000  codebleu_distance 0.0909
+  fractions UNCHANGED 0.6353  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 976): passed 587  not compiling 0  compiling but failing 389  {'PASSED': 587, 'FAILED': 382, 'TIMEOUT': 7}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.7480 (n=976)

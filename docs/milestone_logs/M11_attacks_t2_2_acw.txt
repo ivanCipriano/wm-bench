@@ -1,8 +1,8 @@
 ##### acw attacks T2.2 on L1 test
-attack        4/4    COMPLETE
-execute       4/4    COMPLETE
-detect        4/4    COMPLETE
-metrics       4/4    COMPLETE
+attack              4/4    COMPLETE
+execute             4/4    COMPLETE
+detect              4/4    COMPLETE
+metrics             4/4    COMPLETE
 
 ##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} qwen25_coder_7b python
   status {'UNCHANGED': 1267, 'APPLIED': 1409}  changed 0.526532  1-CodeBLEU 0.023627 (changed only 0.044873)
@@ -11,6 +11,10 @@ metrics       4/4    COMPLETE
   attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
   prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
   tpr_at_fpr 0.5493  unchanged_fraction 0.4735  auroc 0.9750  pass_at_1 0.7500  delta_pass_at_1_pp 1.4574  delta_pass_at_1_pp_vs_marked 0.1121  changed_fraction 0.5265  tool_error_fraction 0.0000  codebleu_distance 0.0236
+  fractions UNCHANGED 0.4735  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1409): passed 1082  not compiling 0  compiling but failing 327  {'FAILED': 305, 'PASSED': 1082, 'TIMEOUT': 22}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.1448 (n=1409)
 
 ##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} deepseek_coder_6p7b python
   status {'UNCHANGED': 1572, 'APPLIED': 1104}  changed 0.412556  1-CodeBLEU 0.023471 (changed only 0.056893)
@@ -19,6 +23,10 @@ metrics       4/4    COMPLETE
   attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
   prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
   tpr_at_fpr 0.6405  unchanged_fraction 0.5874  auroc 0.9806  pass_at_1 0.6839  delta_pass_at_1_pp 1.6069  delta_pass_at_1_pp_vs_marked 0.2242  changed_fraction 0.4126  tool_error_fraction 0.0000  codebleu_distance 0.0235
+  fractions UNCHANGED 0.5874  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1104): passed 746  not compiling 0  compiling but failing 358  {'PASSED': 746, 'FAILED': 358}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.1286 (n=1104)
 
 ##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} qwen25_coder_7b python
   status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.534678 (changed only 0.534678)
@@ -27,6 +35,10 @@ metrics       4/4    COMPLETE
   attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
   prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
   tpr_at_fpr 0.2025  unchanged_fraction 0.0000  auroc 0.9054  pass_at_1 0.5370  delta_pass_at_1_pp 22.7578  delta_pass_at_1_pp_vs_marked 21.4126  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.5347
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1437  not compiling 1  compiling but failing 1238  {'PASSED': 1437, 'FAILED': 1209, 'TIMEOUT': 29, 'SYNTAX_ERROR': 1}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.2025 (n=2676)
 
 ##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} deepseek_coder_6p7b python
   status {'APPLIED': 2672, 'UNCHANGED': 4}  changed 0.998505  1-CodeBLEU 0.534555 (changed only 0.535356)
@@ -35,3 +47,7 @@ metrics       4/4    COMPLETE
   attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
   prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
   tpr_at_fpr 0.1678  unchanged_fraction 0.0015  auroc 0.8951  pass_at_1 0.4832  delta_pass_at_1_pp 21.6741  delta_pass_at_1_pp_vs_marked 20.2915  changed_fraction 0.9985  tool_error_fraction 0.0000  codebleu_distance 0.5346
+  fractions UNCHANGED 0.0015  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2672): passed 1289  not compiling 1  compiling but failing 1382  {'PASSED': 1289, 'FAILED': 1362, 'TIMEOUT': 20, 'SYNTAX_ERROR': 1}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.1665 (n=2672)

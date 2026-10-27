@@ -1,0 +1,53 @@
+##### promptmark attacks T2.4 on L1 test
+attack              4/4    COMPLETE
+execute             4/4    COMPLETE
+detect              4/4    COMPLETE
+metrics             4/4    COMPLETE
+
+##### T2.4 {"p": 0.75} qwen25_coder_7b python
+  status {'APPLIED': 2208, 'UNCHANGED': 465, 'NOT_APPLICABLE': 3}  changed 0.826038  1-CodeBLEU 0.159817 (changed only 0.193691)
+  detail means {"kept": 2.162138, "n": 3.294837, "p": 0.75, "removed": 1.132699}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 2, 3, 4, 11]  n=1 0.1736  removed mean 0.936  targets {'entry': 2673}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 2, 'extraction_failed': 1}
+  tpr_at_fpr 0.0333  unchanged_fraction 0.1740  auroc 0.6581  pass_at_1 0.1528  delta_pass_at_1_pp 61.1734  delta_pass_at_1_pp_vs_marked 61.9208  changed_fraction 0.8260  tool_error_fraction 0.0000  codebleu_distance 0.1600
+  fractions UNCHANGED 0.1738  NOT_APPLICABLE 0.0011  TOOL_ERROR 0.0000
+  exec (APPLIED 2208): passed 26  not compiling 0  compiling but failing 2182  {'FAILED': 2182, 'PASSED': 26}
+  detection status {'OK': 2675, 'FAILED': 1}  FAILED fraction 0.0004
+  tpr_at_fpr_changed_only 0.0403 (n=2208)
+
+##### T2.4 {"p": 0.75} deepseek_coder_6p7b python
+  status {'APPLIED': 1580, 'UNCHANGED': 1092, 'NOT_APPLICABLE': 4}  changed 0.591317  1-CodeBLEU 0.122918 (changed only 0.208183)
+  detail means {"kept": 2.293038, "n": 3.432911, "p": 0.75, "removed": 1.139873}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 1, 2, 3, 12]  n=1 0.4083  removed mean 0.674  targets {'entry': 2672}
+  T2.4 NOT_APPLICABLE reasons {'extraction_failed': 1, 'entry_not_found': 3}
+  tpr_at_fpr 0.0381  unchanged_fraction 0.4087  auroc 0.5963  pass_at_1 0.3311  delta_pass_at_1_pp 36.8834  delta_pass_at_1_pp_vs_marked 37.7803  changed_fraction 0.5913  tool_error_fraction 0.0000  codebleu_distance 0.1231
+  fractions UNCHANGED 0.4081  NOT_APPLICABLE 0.0015  TOOL_ERROR 0.0000
+  exec (APPLIED 1580): passed 30  not compiling 0  compiling but failing 1550  {'FAILED': 1548, 'PASSED': 30, 'TIMEOUT': 2}
+  detection status {'OK': 2674, 'FAILED': 2}  FAILED fraction 0.0007
+  tpr_at_fpr_changed_only 0.0620 (n=1580)
+
+##### T2.4 {"p": 0.5} qwen25_coder_7b python
+  status {'APPLIED': 2208, 'UNCHANGED': 465, 'NOT_APPLICABLE': 3}  changed 0.826038  1-CodeBLEU 0.420574 (changed only 0.509717)
+  detail means {"kept": 1.397645, "n": 3.294837, "p": 0.5, "removed": 1.897192}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 2, 3, 4, 11]  n=1 0.1736  removed mean 1.567  targets {'entry': 2673}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 2, 'extraction_failed': 1}
+  tpr_at_fpr 0.0116  unchanged_fraction 0.1740  auroc 0.5973  pass_at_1 0.1499  delta_pass_at_1_pp 61.4723  delta_pass_at_1_pp_vs_marked 62.2197  changed_fraction 0.8260  tool_error_fraction 0.0000  codebleu_distance 0.4210
+  fractions UNCHANGED 0.1738  NOT_APPLICABLE 0.0011  TOOL_ERROR 0.0000
+  exec (APPLIED 2208): passed 18  not compiling 0  compiling but failing 2190  {'FAILED': 2190, 'PASSED': 18}
+  detection status {'OK': 2675, 'FAILED': 1}  FAILED fraction 0.0004
+  tpr_at_fpr_changed_only 0.0140 (n=2208)
+
+##### T2.4 {"p": 0.5} deepseek_coder_6p7b python
+  status {'APPLIED': 1580, 'UNCHANGED': 1092, 'NOT_APPLICABLE': 4}  changed 0.591317  1-CodeBLEU 0.335384 (changed only 0.56803)
+  detail means {"kept": 1.456962, "n": 3.432911, "p": 0.5, "removed": 1.975949}
+  tools {}
+  T2.4 n min/p25/median/p75/max [0, 1, 2, 3, 12]  n=1 0.4083  removed mean 1.168  targets {'entry': 2672}
+  T2.4 NOT_APPLICABLE reasons {'extraction_failed': 1, 'entry_not_found': 3}
+  tpr_at_fpr 0.0138  unchanged_fraction 0.4087  auroc 0.5601  pass_at_1 0.3221  delta_pass_at_1_pp 37.7803  delta_pass_at_1_pp_vs_marked 38.6771  changed_fraction 0.5913  tool_error_fraction 0.0000  codebleu_distance 0.3359
+  fractions UNCHANGED 0.4081  NOT_APPLICABLE 0.0015  TOOL_ERROR 0.0000
+  exec (APPLIED 1580): passed 6  not compiling 0  compiling but failing 1574  {'FAILED': 1574, 'PASSED': 6}
+  detection status {'OK': 2674, 'FAILED': 2}  FAILED fraction 0.0007
+  tpr_at_fpr_changed_only 0.0209 (n=1580)
