@@ -138,7 +138,7 @@ scritto da `scripts/supersede_attack_cells.py`. I report (`check_attacks.py`) le
 celle con l'hash corrente.
 
 **Verifica ripetuta.** Canoniche e baseline di L1 dev in C++ con `b = all`: nessun campione che
-passava deve fallire per T2.1. Esito: _da completare_.
+passava deve fallire per T2.1. **Esito (27 ottobre 2026, commit 52ef9b1):** canoniche 164/164 (151 modificate, 0 rotte); baseline di L1 dev 217/217 (Qwen 120/120, DeepSeek 97/97). Log: `M11_t2_1_cpp_v2_canonical.txt`, `M11_t2_1_cpp_v2_baseline_dev.txt`. Rilancio delle 8 celle C++ di STONE autorizzato.
 
 ## 2. T2.4 troncamento
 
