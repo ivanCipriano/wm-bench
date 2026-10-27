@@ -23,6 +23,15 @@
 #                                                   # riscritta con il metodo congelato
 #   bash scripts/submit_attacks_l1.sh control_metrics stone T2.2      # c) FPR e AUROC (dopo b e 4)
 #   Stato e report: python scripts/check_attacks.py METODO T2.2 --control --report
+# T3.1 ri-marcatura con k2 (ADR-014 §3): prima la soglia di k2, congelata prima del test (I3),
+# poi l'attacco (generatore del metodo con k2; ACW su CPU, gli altri su gpuq) e le rilevazioni:
+#   bash scripts/submit_attacks_l1.sh k2_detect_dev    stone T3.1 1/1  # a) negativi umani dev L1+L2 con k2
+#   bash scripts/submit_attacks_l1.sh k2_calibrate     stone T3.1      # b) soglia di k2 (dopo a)
+#   bash scripts/submit_attacks_l1.sh k2_freeze        stone T3.1      # c) congela la soglia di k2
+#   bash scripts/submit_attacks_l1.sh k2_detect_test   stone T3.1 1/1  # d) negativi umani test con k2
+#   bash scripts/submit_attacks_l1.sh attack           stone T3.1 1/1  # 1) ri-marcatura
+#   poi execute, detect (k1) e k2_detect (attaccati con k2) dopo 1); metrics dopo execute e detect;
+#   bash scripts/submit_attacks_l1.sh k2_metrics       stone T3.1      # e) categorie k1/k2 (dopo tutto)
 # Catena senza aspettare a mano (AFTER = passi da attendere, stesso metodo e attacchi):
 #   bash scripts/submit_attacks_l1.sh attack stone T2.1 1/1
 #   AFTER=attack bash scripts/submit_attacks_l1.sh execute stone T2.1 1/1
@@ -32,7 +41,7 @@
 # esecuzione dell'utente; cluster_info §4). Nodi guasti: export WMB_EXCLUDE_NODES=gnode13,gnode14.
 set -euo pipefail
 
-USAGE="usage: submit_attacks_l1.sh attack|execute|detect|metrics|control_attack|control_detect|control_metrics METHOD ATTACK[,ATTACK] [K/M] [--dry-run]"
+USAGE="usage: submit_attacks_l1.sh attack|execute|detect|metrics|control_attack|control_detect|control_metrics|k2_detect_dev|k2_calibrate|k2_freeze|k2_detect_test|k2_detect|k2_metrics METHOD ATTACK[,ATTACK] [K/M] [--dry-run]"
 STEP="${1:?$USAGE}"
 METHOD="${2:?$USAGE}"
 ATTACKS="${3:?$USAGE}"
@@ -60,6 +69,11 @@ if [ "$METHOD" = all ] && [ "$STEP" != control_attack ]; then
 fi
 TEST=("levels=[L1]" "splits=[test]" "languages=$LANGS" "attacks=[$ATTACKS]")
 [ "$METHOD" = all ] || TEST=("methods=[$METHOD]" "${TEST[@]}")
+# Seconda chiave senza attacco (T3.1): negativi umani, configurazione congelata del metodo.
+K2=("methods=[$METHOD]" "languages=$LANGS" "attacks=[]")
+case "$STEP" in
+    k2_*) [ "$ATTACKS" = T3.1 ] || { echo "the k2 steps are only for T3.1" >&2; exit 2; } ;;
+esac
 
 case "$STEP" in
     attack|detect)
@@ -88,6 +102,32 @@ case "$STEP" in
         SHARE="1/1"; MODE="${4:-}"
         ARGS=(--jobs 1 "stage=metrics_attack_control" "detection.threshold_levels=[L1,L2]"
               "${TEST[@]}")
+        ;;
+    k2_detect_dev)
+        SHARE="${4:?$USAGE}"; MODE="${5:-}"
+        ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=detect_k2"
+              "levels=[L1,L2]" "splits=[dev]" "${K2[@]}")
+        ;;
+    k2_calibrate)
+        SHARE="1/1"; MODE="${4:-}"
+        ARGS=(--jobs 1 "stage=calibrate_k2" "levels=[L1,L2]" "${K2[@]}")
+        ;;
+    k2_freeze)
+        SHARE="1/1"; MODE="${4:-}"
+        ARGS=(--jobs 1 "stage=freeze_k2" "levels=[L1,L2]" "${K2[@]}")
+        ;;
+    k2_detect_test)
+        SHARE="${4:?$USAGE}"; MODE="${5:-}"
+        ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=detect_k2"
+              "levels=[L1]" "splits=[test]" "${K2[@]}")
+        ;;
+    k2_detect)
+        SHARE="${4:?$USAGE}"; MODE="${5:-}"
+        ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=detect_k2" "${TEST[@]}")
+        ;;
+    k2_metrics)
+        SHARE="1/1"; MODE="${4:-}"
+        ARGS=(--jobs 1 "stage=metrics_remark" "detection.threshold_levels=[L1,L2]" "${TEST[@]}")
         ;;
     *) echo "unknown step: $STEP" >&2; exit 2 ;;
 esac
@@ -118,7 +158,8 @@ fi
 echo "##### job attivi: $ACTIVE, posti liberi: $FREE su $MAX_JOBS"
 if [ "$MODE" != "--dry-run" ]; then
     NEED=1
-    case "$STEP" in metrics|control_metrics) ;; *) NEED="${JOBS:-1}" ;; esac
+    case "$STEP" in metrics|control_metrics|k2_calibrate|k2_freeze|k2_metrics) ;;
+        *) NEED="${JOBS:-1}" ;; esac
     if [ "$FREE" -lt 1 ] || [ "$NEED" -gt "$FREE" ]; then
         echo "not enough free slots: need $NEED, free $FREE (wait for a job to end or lower JOBS)" >&2
         exit 2

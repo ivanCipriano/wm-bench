@@ -31,7 +31,7 @@ from bench.config.schema import ExperimentConfig
 from bench.domain.enums import Language
 from bench.domain.errors import ConfigError
 from bench.domain.models import ThresholdSet
-from bench.hpo.freeze import ensure_not_frozen
+from bench.hpo.freeze import MAIN_KEY_ID, ensure_not_frozen
 from bench.hpo.grid import resolve
 from bench.metrics.calibration import MIN_SCORE, ThresholdCalibrator
 from bench.pipeline.stage import Cell, Stage, StageContext
@@ -57,11 +57,19 @@ def levels_tag(levels: Sequence[str]) -> str | None:
 
 
 def threshold_ref(
-    method: str, model_id: str, language: str, cfg_hash: str, levels: Sequence[str] = ("L1",)
+    method: str,
+    model_id: str,
+    language: str,
+    cfg_hash: str,
+    levels: Sequence[str] = ("L1",),
+    key_id: str = MAIN_KEY_ID,
 ) -> ArtifactRef:
-    """Soglia congelata di (metodo, modello, linguaggio, configurazione) calibrata su ``levels``."""
+    """Soglia congelata di (metodo, modello, linguaggio, configurazione) calibrata su ``levels``;
+    per una chiave diversa da k1 (T3.1) nella sottocartella ``<key_id>/``."""
     tag = levels_tag(levels)
     folder = f"thresholds/{method}/{model_id}/{language}" + (f"/{tag}" if tag else "")
+    if key_id != MAIN_KEY_ID:
+        return ArtifactRef.of(f"threshold_{key_id}", f"{folder}/{key_id}/{cfg_hash}.json")
     return ArtifactRef.of("threshold", f"{folder}/{cfg_hash}.json")
 
 
@@ -148,6 +156,7 @@ class CalibrateStage(Stage):
     output_kinds: ClassVar[frozenset[str]] = frozenset({"threshold"})
     cell_axes: ClassVar[tuple[str, ...]] = ("method", "model_id", "language")
     sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
+    key_id: ClassVar[str] = MAIN_KEY_ID  # k2: fase ``calibrate_k2`` (T3.1)
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
@@ -190,8 +199,9 @@ class CalibrateStage(Stage):
 
         def det(subject: str, level: str) -> ArtifactRef:
             return detection_ref(
-                method, model_id, cfg_hash, subject, level, language, CALIBRATION_SPLIT
-            )
+                method, model_id, cfg_hash, subject, level, language, CALIBRATION_SPLIT,
+                self.key_id,
+            )  # fmt: skip
 
         if "L2" not in levels:
             return {level: det("neg_human", level) for level in levels}
@@ -208,7 +218,11 @@ class CalibrateStage(Stage):
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, language = self._require(cell)
-        return [threshold_ref(method, model_id, language, self.config_hash(cell), self.levels())]
+        return [
+            threshold_ref(
+                method, model_id, language, self.config_hash(cell), self.levels(), self.key_id
+            )
+        ]
 
     def _negatives(self, ctx: StageContext, cell: Cell) -> pd.DataFrame:
         """Tabella dei negativi di sviluppo con la colonna ``part``."""
@@ -226,7 +240,9 @@ class CalibrateStage(Stage):
     def run(self, cell: Cell, ctx: StageContext) -> None:
         cfg = self._cfg()
         method, model_id, language = self._require(cell)
-        override = ensure_not_frozen(ctx.store, method, self.name, cfg.hpo.allow_frozen_override)
+        override = ensure_not_frozen(
+            ctx.store, method, self.name, cfg.hpo.allow_frozen_override, self.key_id
+        )
         cfg_hash = self.config_hash(cell)
         adapter: Any = make_adapter(cfg, method)
         table = primary_view(self._negatives(ctx, cell), adapter)

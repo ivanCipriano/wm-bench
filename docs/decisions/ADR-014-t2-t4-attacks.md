@@ -213,3 +213,92 @@ Fissata ora, prima di vedere i dati (TODO 32 in `docs/cluster_info.md`):
 Due punti da confermare con l'utente prima dell'implementazione (lettura letterale provvisoria:
 contano come le altre funzioni): se `main` dei programmi CodeNet e `__init__` delle classi di
 ClassEval rientrano fra le funzioni estraibili.
+
+## 3. T3.1 ri-marcatura con una chiave diversa
+
+Decisioni dell'utente del 27 ottobre 2026. SPEC §12: "ACW: riapplicazione con `k2`. Metodi in
+generazione: rigenerazione con stesso modello e metodo e chiave `k2`"; rilevazione con entrambe le
+chiavi e quale watermark viene rilevato (k1, k2, entrambi, nessuno).
+
+### 3.1 Che cosa si rigenera (interpretazione dello SPEC)
+
+Il codice finale deve **derivare da quello marcato con k1**: lo SPEC chiede quale watermark viene
+rilevato, e rigenerare da zero dal prompt del problema darebbe un codice che non contiene k1 per
+costruzione. Così T3.1 è anche coerente con ACW, dove k2 si applica al codice marcato con k1.
+
+- **Metodi in generazione** (STONE, MCGMark, PromptMark; SWEET quando sarà congelato): il
+  generatore dello stesso metodo, con la configurazione congelata e `key_id = k2`, **riscrive** il
+  campione marcato con k1 usando i testi già approvati di T2.2(a): system prompt
+  `configs/prompt/attacks/system.txt` e prompt `conservative.txt` (SHA-256 fra i parametri della
+  griglia, come T2.2). Decoding di generazione del metodo e del livello (L1: temperatura 0,2,
+  top-p 0,95, `max_new_tokens` 512), un campione per campione marcato, non il greedy
+  dell'attaccante di T2.2. Seme del campione da `derive_seed(global_seed, "attack", "T3.1",
+  params_hash, sample_id)` (SPEC §18). Codice estratto con la regola D4.
+  - MCGMark: regole già adottate (prefill della fence, D20; solo Python); messaggio atteso del
+    campione marcato (non dipende dalla chiave).
+  - PromptMark: il ciclo di feedback usa la green list di k2 (la chiave della richiesta).
+- **ACW** (post-hoc): ACW riapplicato con k2 al codice marcato con k1, stesse 30 regole
+  congelate; cambia solo la chiave (k2 sceglie un altro sottoinsieme). Con 30 regole su 43 la
+  sovrapposizione attesa fra i due sottoinsiemi è 30 · 30 / 43 ≈ 21 regole. **Il lancio di ACW
+  aspetta la conferma dell'utente sulla licenza di Sourcery.**
+- **Stati per campione:** `APPLIED` se il codice cambia, `UNCHANGED` se resta uguale (o, per
+  ACW, se nessuna regola di k2 lo modifica), `TOOL_ERROR` con il codice marcato se la generazione o
+  l'estrazione falliscono (I1, I5), `NOT_APPLICABLE` per i linguaggi non supportati.
+- **Variante aggiuntiva** (solo se avanza tempo): rigenerazione da zero dal prompt con k2, come
+  misura della specificità della chiave.
+
+### 3.2 Soglia di k2
+
+La simmetria fra chiavi vale solo in media (nel codice pochi token frequentissimi possono essere
+verdi con una chiave e rossi con l'altra; per ACW e PromptMark la chiave cambia direttamente cosa
+si misura). Quindi:
+
+1. rilevazione con k2 dei negativi umani di sviluppo (stessi soggetti della calibrazione
+   definitiva di k1: nativi di L1 e di L2, integrazione combinata L1+L2);
+2. calibrazione della soglia di k2 con la stessa procedura di k1 (FPR obiettivo, punteggio
+   principale del metodo, punteggi secondari), output
+   `thresholds/<metodo>/<modello>/<lang>/L1L2/k2/<cfg>.json`;
+3. **congelamento** della soglia di k2 prima di rilevare il test (I3): `freeze/<metodo>.k2.json`
+   con lo sha256 di ogni soglia; dopo il congelamento la calibrazione di k2 rifiuta il metodo;
+4. rilevazione con k2 dei negativi umani di **test**, solo come verifica: FPR effettivo con k2.
+
+Le rilevazioni con k2 stanno in `detection/<metodo>/<modello>/<cfg>/k2/<soggetto>/...` (quelle di
+k1 non cambiano percorso). Il contesto di condizionamento è quello del problema, come per tutti gli
+attaccati (SPEC §9.1).
+
+### 3.3 Report per cella
+
+Rilevazione di ogni campione attaccato sia con k1 (fase `detect` normale, soglia congelata di k1)
+sia con k2 (soglia congelata di k2). Per cella, tutte con intervallo di confidenza (I7):
+
+- **TPR con k1** (metrica principale, come per gli altri attacchi) e AUROC con k1, Pass@1 e
+  ΔPass@1 rispetto alla baseline e al marcato (fase `metrics`);
+- le quattro categorie per campione: **solo k1**, **solo k2**, **entrambi**, **nessuno**;
+- **TPR con k2** e **AUROC con k2** (contro i negativi umani di test rilevati con k2);
+- **FPR effettivo con k2** sui negativi umani di test (Clopper-Pearson);
+- frazioni di `UNCHANGED`, `NOT_APPLICABLE` e `TOOL_ERROR`;
+- le due soglie (k1 e k2) e i due FPR di test (k1 dal protocollo, k2 dalla verifica) per metodo e
+  modello; se le soglie di k1 e k2 differiscono molto, va segnalato (risultato sulla dipendenza
+  dalla chiave da riportare nella tesi);
+- ACW: le quattro categorie anche in funzione della sovrapposizione fra i sottoinsiemi di regole
+  di k1 e k2.
+
+Prima del lancio: stima del costo per metodo e modello (SWEET compreso, quando sarà congelato).
+
+### 3.4 Implementazione e ordine dei passi
+
+- Attacco `T3.1` (`src/bench/attacks/t3/remark.py`, `configs/attack/t3_1_remark.yaml`): la fase
+  `attack` passa all'attacco il generatore del metodo (`MethodSetup`: adapter, configurazione
+  congelata, decoding del livello, cartella `_runs/attack/T3.1/...` per la ripresa). Risorse: quelle
+  della fase `watermark` del metodo (ACW su CPU, gli altri su GPU).
+- Fasi della seconda chiave (`src/bench/pipeline/stages/remark.py`): `detect_k2`, `calibrate_k2`,
+  `freeze_k2`, `metrics_remark`; la configurazione è sempre quella congelata di k1, anche su dev.
+- ACW, sovrapposizione: oltre alle regole in comune fra i due sottoinsiemi (un numero per metodo:
+  il sottoinsieme dipende solo dalla chiave), per ogni campione il numero di regole **applicate da
+  k2** (`applicable_rules` del worker) che stanno anche nel sottoinsieme di k1; le quattro
+  categorie si riportano per 0, 1, 2 e 3+ di queste regole.
+- Ordine (`scripts/submit_attacks_l1.sh`): `k2_detect_dev` → `k2_calibrate` → `k2_freeze` →
+  `k2_detect_test`; poi `attack` T3.1 → `execute`, `detect` e `k2_detect` → `metrics` →
+  `k2_metrics`. Report: `python scripts/check_attacks.py METODO T3.1 --report`.
+- Stima dei costi prima del lancio: `scripts/estimate_t3_1_cost.py` (tempi dei lanci già fatti con
+  la configurazione congelata).

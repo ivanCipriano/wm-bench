@@ -28,6 +28,7 @@ from bench.store.hashing import sha256_bytes
 from bench.store.refs import ArtifactRef
 
 FINAL_LEVELS: tuple[str, ...] = ("L1", "L2")
+MAIN_KEY_ID = "k1"  # chiave principale (SPEC §9.6); k2 solo per T3.1 (ADR-014 §3)
 
 
 class FrozenCell(FrozenModel):
@@ -66,14 +67,19 @@ class FreezeRecord(FrozenModel):
         return None
 
 
-def freeze_ref(method: str) -> ArtifactRef:
-    """Record di congelamento di un metodo."""
-    return ArtifactRef.of("freeze", f"freeze/{method}.json")
+def freeze_ref(method: str, key_id: str = MAIN_KEY_ID) -> ArtifactRef:
+    """Record di congelamento di un metodo; con una chiave diversa da k1 quello delle soglie di
+    quella chiave (``freeze/<metodo>.<key_id>.json``, T3.1)."""
+    if key_id == MAIN_KEY_ID:
+        return ArtifactRef.of("freeze", f"freeze/{method}.json")
+    return ArtifactRef.of(f"freeze_{key_id}", f"freeze/{method}.{key_id}.json")
 
 
-def load_freeze(store: ArtifactStore, method: str) -> FreezeRecord | None:
-    """Record di congelamento del metodo, o ``None`` se non è congelato."""
-    ref = freeze_ref(method)
+def load_freeze(
+    store: ArtifactStore, method: str, key_id: str = MAIN_KEY_ID
+) -> FreezeRecord | None:
+    """Record di congelamento del metodo (della chiave), o ``None`` se non è congelato."""
+    ref = freeze_ref(method, key_id)
     if not store.exists(ref):
         return None
     return store.read_model(ref, FreezeRecord)
@@ -94,7 +100,9 @@ def file_sha256(path: Any) -> str | None:
         return None
 
 
-def ensure_not_frozen(store: ArtifactStore, method: str, stage: str, override: bool) -> bool:
+def ensure_not_frozen(
+    store: ArtifactStore, method: str, stage: str, override: bool, key_id: str = MAIN_KEY_ID
+) -> bool:
     """Rifiuta una fase che cambierebbe soglie o scelta di un metodo congelato.
 
     Returns:
@@ -104,12 +112,13 @@ def ensure_not_frozen(store: ArtifactStore, method: str, stage: str, override: b
     Raises:
         ConfigError: metodo congelato senza ``hpo.allow_frozen_override``.
     """
-    record = load_freeze(store, method)
+    record = load_freeze(store, method, key_id)
     if record is None:
         return False
     if not override:
         raise ConfigError(
-            f"{method} was frozen on {record.frozen_at:%Y-%m-%d} (freeze/{method}.json): "
+            f"{method} was frozen on {record.frozen_at:%Y-%m-%d} "
+            f"({freeze_ref(method, key_id).path}): "
             f"stage {stage} would change its thresholds or selection. Any change is a deviation: "
             "rerun with hpo.allow_frozen_override=true only after recording it in "
             "docs/deviations.md"

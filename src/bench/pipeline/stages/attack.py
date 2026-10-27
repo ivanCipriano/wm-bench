@@ -31,7 +31,14 @@ from typing import Any, ClassVar
 
 import pandas as pd
 
-from bench.attacks.base import Attack, AttackContext, AttackPools, resolve_attack, sample_rng
+from bench.attacks.base import (
+    Attack,
+    AttackContext,
+    AttackPools,
+    MethodSetup,
+    resolve_attack,
+    sample_rng,
+)
 from bench.attacks.llm import LocalLLM
 from bench.attacks.tools import ToolRunner
 from bench.config.builder import repo_root
@@ -41,11 +48,12 @@ from bench.domain.enums import AttackStatus, Language, Source
 from bench.domain.errors import ConfigError
 from bench.domain.ids import sample_id
 from bench.domain.models import CodeSample, Problem
+from bench.generation.decoding import neutral_settings
 from bench.hpo.grid import resolve
 from bench.lang.parsers import default_parsers
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.attack_pools import attack_pool_ref
-from bench.pipeline.stages.generate_baseline import problems_ref
+from bench.pipeline.stages.generate_baseline import decoding_for, problems_ref
 from bench.pipeline.stages.watermark import make_adapter, watermarked_ref
 from bench.registry import STAGES
 from bench.store.refs import ArtifactRef
@@ -234,7 +242,11 @@ class AttackStage(Stage):
         logger.info(
             "%s: %d samples, attack %s %s", cell.key(), len(parents), attack_id, attack.params
         )
-        outcomes = attack.apply_many([p.code for p in parents], lang, contexts)
+        if attack.needs_method:
+            setup = self.method_setup(ctx, cell, problems)
+            outcomes = attack.apply_with_method(parents, lang, contexts, setup)
+        else:
+            outcomes = attack.apply_many([p.code for p in parents], lang, contexts)
         rows = []
         for parent, out in zip(parents, outcomes, strict=True):
             child = parent.model_copy(
@@ -295,6 +307,31 @@ class AttackStage(Stage):
             extra["changed_fraction"],
             extra["codebleu_distance_mean"],
         )
+
+    def method_setup(
+        self, ctx: StageContext, cell: Cell, problems: dict[str, Problem]
+    ) -> MethodSetup:
+        """Generatore del metodo della cella per T3.1 (ADR-014 §3): configurazione congelata,
+        decoding di generazione del livello, cartella di lavoro stabile (ripresa del worker)."""
+        cfg = self._cfg()
+        method, model_id, level, language, split, attack_id, params_hash = self._require(cell)
+        if method not in self._adapters:
+            self._adapters[method] = make_adapter(cfg, method)
+        adapter = self._adapters[method]
+        hp, cfg_hash, _ = resolve(cfg, adapter, cell.config_hash)
+        model = cfg.models_catalog[model_id]
+        decoding = {**neutral_settings(decoding_for(cfg, level)), "torch_dtype": model.dtype}
+        run_dir = ctx.store.root.joinpath(
+            "_runs", "attack", attack_id, params_hash, method, model_id, cfg_hash,
+            f"{level}_{language}_{split}",
+        )  # fmt: skip
+        device = "cuda:0" if self.method_uses_gpu(method) else "cpu"
+        return MethodSetup(adapter, hp, model, decoding, problems, run_dir, device)
+
+    def method_uses_gpu(self, method: str) -> bool:
+        """Se il generatore del metodo usa la GPU (regola ``watermark`` delle risorse)."""
+        rule = self._cfg().resources.gpu_methods_by_stage.get("watermark", {})
+        return bool(rule.get(method, True))
 
     @staticmethod
     def _summary(

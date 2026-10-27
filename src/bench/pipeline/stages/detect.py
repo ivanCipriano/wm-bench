@@ -71,14 +71,24 @@ OUTPUT_COLUMNS = [*EXTRA_COLUMNS, *RECORD_COLUMNS]
 
 
 def detection_ref(
-    method: str, model_id: str, cfg_hash: str, subject: str, level: str, language: str, split: str
+    method: str,
+    model_id: str,
+    cfg_hash: str,
+    subject: str,
+    level: str,
+    language: str,
+    split: str,
+    key_id: str = KEY_ID,
 ) -> ArtifactRef:
-    """Punteggi di un soggetto di una cella."""
+    """Punteggi di un soggetto di una cella; con una chiave diversa da ``k1`` (T3.1, ADR-014 §3)
+    nella sottocartella ``<key_id>/`` della configurazione (i percorsi di k1 non cambiano)."""
     if subject not in SUBJECTS and not subject.startswith("attacked/"):
         raise ConfigError(f"unknown detection subject {subject!r}")
+    key = "" if key_id == KEY_ID else f"{key_id}/"
     return ArtifactRef.of(
-        "detection",
-        f"detection/{method}/{model_id}/{cfg_hash}/{subject}/{level}_{language}_{split}.parquet",
+        "detection" if key_id == KEY_ID else f"detection_{key_id}",
+        f"detection/{method}/{model_id}/{cfg_hash}/{key}{subject}/{level}_{language}_{split}"
+        ".parquet",
     )
 
 
@@ -98,6 +108,7 @@ class DetectStage(Stage):
         "attack_id",
     )
     sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
+    key_id: ClassVar[str] = KEY_ID  # chiave della rilevazione (k2: fasi ``detect_k2``, T3.1)
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
@@ -200,7 +211,7 @@ class DetectStage(Stage):
         method, model_id, level, language, split = self._require(cell)
         cfg_hash = self.config_hash(cell)
         return [
-            detection_ref(method, model_id, cfg_hash, s, level, language, split)
+            detection_ref(method, model_id, cfg_hash, s, level, language, split, self.key_id)
             for s in self.cell_subjects(cell)
         ]
 
@@ -239,12 +250,15 @@ class DetectStage(Stage):
                 self._input(adapter, model, prompts, problems, sample, subject)
                 for sample in samples
             ]
+            key = () if self.key_id == KEY_ID else (self.key_id,)
             run_dir = (
-                ctx.store.root / "_runs" / "detect" / method / model_id / cfg_hash / subject
-                / f"{level}_{language}_{split}"
+                ctx.store.root.joinpath("_runs", "detect", method, model_id, cfg_hash, *key)
+                / subject / f"{level}_{language}_{split}"
             )  # fmt: skip
-            logger.info("%s %s: %d codes", cell.key(), subject, len(inputs))
-            results = adapter.detect_codes(inputs, hp, model, KEY_ID, decoding, run_dir, device)
+            logger.info("%s %s (%s): %d codes", cell.key(), subject, self.key_id, len(inputs))
+            results = adapter.detect_codes(
+                inputs, hp, model, self.key_id, decoding, run_dir, device
+            )
             self._write(ctx, cell, subject, ref, samples, results, cfg_hash, model_id)
 
     def _input(
@@ -290,7 +304,7 @@ class DetectStage(Stage):
                 method=str(cell.method),
                 model_id=model_id,
                 config_hash=cfg_hash,
-                key_id=KEY_ID,
+                key_id=self.key_id,
                 status=result.status,
                 score=result.score,
                 native_decision=result.native_decision,
@@ -325,7 +339,7 @@ class DetectStage(Stage):
                 "min": float(scores.min()) if scores.notna().any() else None,
                 "max": float(scores.max()) if scores.notna().any() else None,
             },
-            "key_id": KEY_ID,
+            "key_id": self.key_id,
         }
         manifest = ctx.make_manifest(
             ref,

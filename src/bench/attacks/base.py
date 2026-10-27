@@ -91,6 +91,21 @@ class AttackContext:
 
 
 @dataclass(frozen=True)
+class MethodSetup:
+    """Generatore del metodo per la ri-marcatura (T3.1, ADR-014 §3): adapter con la configurazione
+    congelata, modello, decoding di generazione del livello, problemi della cella e cartella di
+    lavoro del worker (ripresa)."""
+
+    adapter: Any
+    hp: dict[str, Any]
+    model: Any
+    decoding: dict[str, Any]
+    problems: Mapping[str, Problem]
+    run_dir: Path
+    device: str = "cuda:0"
+
+
+@dataclass(frozen=True)
 class AttackOutcome:
     """Esito di un attacco su un campione: codice (l'originale se non applicato) e dettagli."""
 
@@ -139,6 +154,8 @@ class Attack(ABC):
     needs_pools: ClassVar[bool] = False
     needs_tools: ClassVar[bool] = False
     needs_llm: ClassVar[bool] = False
+    # Usa il generatore del metodo marcato (T3.1): la fase attack chiama ``apply_with_method``.
+    needs_method: ClassVar[bool] = False
     version: ClassVar[int] = 1
 
     def __init__(self, params: Mapping[str, Any]) -> None:
@@ -177,6 +194,17 @@ class Attack(ABC):
         for code, ctx in zip(codes, ctxs, strict=True):
             out.append(self.safe_apply(code, language, ctx))
         return out
+
+    def apply_with_method(
+        self,
+        parents: Sequence[Any],
+        language: Language,
+        ctxs: Sequence[AttackContext],
+        setup: MethodSetup,
+    ) -> list[AttackOutcome]:
+        """Attacco con il generatore del metodo sui campioni marcati ``parents`` (solo per gli
+        attacchi con ``needs_method``)."""
+        raise ConfigError(f"{self.attack_id} does not use the method generator")
 
     def safe_apply(self, code: str, language: Language, ctx: AttackContext) -> AttackOutcome:
         """``apply`` con i casi comuni: linguaggio non supportato, codice vuoto, eccezioni."""
@@ -270,7 +298,8 @@ def attack_grid(attack_id: str, root: Path | None = None) -> AttackGrid:
 def make_attack(attack_id: str, params: Mapping[str, Any]) -> Attack:
     """Istanza registrata di un attacco con i parametri dati."""
     import bench.attacks.t1
-    import bench.attacks.t2  # noqa: F401  (popola ATTACKS)
+    import bench.attacks.t2
+    import bench.attacks.t3  # noqa: F401  (popola ATTACKS)
     from bench.registry import ATTACKS
 
     return ATTACKS.get(attack_id)(params)

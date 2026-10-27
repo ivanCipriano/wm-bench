@@ -1,0 +1,11 @@
+# T3.1 ri-marcatura con una chiave diversa (SPEC §12; ADR-014 §3; decisioni dell'utente del 27
+# ottobre 2026). Metodi in generazione: il generatore del metodo con la configurazione congelata e
+# la chiave key_id riscrive il campione marcato con k1 con i testi approvati di T2.2(a) (stessi
+# SHA-256 di configs/attack/t2_2_llm_rewrite.yaml), decoding di generazione del livello. ACW:
+# riapplicazione con key_id. Rilevazione con k1 (detect) e con k2 (detect_k2, soglia di k2
+# calibrata e congelata su dev, calibrate_k2 e freeze_k2).
+attack_id: T3.1
+points:
+  - key_id: k2
+    system_sha256: 1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe
+    prompt_sha256: 84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7

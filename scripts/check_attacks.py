@@ -11,6 +11,11 @@ Con ``--control`` aggiunge i passi del controllo negativo (D34: attacco sulla ba
 rilevazione, metriche) per i punti con ``negative_control`` e, con ``--report``, per ogni cella
 l'FPR sulla baseline riscritta accanto a TPR e AUROC e l'esito della regola dell'utente.
 
+Per T3.1 (ri-marcatura con k2, ADR-014 §3) aggiunge i passi della seconda chiave (soglia di k2,
+congelamento, negativi umani di test con k2, attaccati con k2, metriche della ri-marcatura) e, con
+``--report``, le quattro categorie k1/k2, TPR, AUROC e FPR di test con k2, le due soglie e le
+frazioni di stato, tutte con intervallo di confidenza.
+
 Con ``--report`` stampa, per cella, l'intensità dell'attacco (dal manifest della fase attack:
 stati, frazione modificata, 1 − CodeBLEU, medie dei conteggi) e le metriche (TPR, AUROC, Pass@1,
 ΔPass@1 rispetto alla baseline e al marcato non attaccato), con la frazione di campioni
@@ -31,7 +36,7 @@ import pandas as pd
 
 from bench.attacks.base import grid_attacks, negative_control_attacks
 from bench.config.builder import load_experiment
-from bench.hpo.freeze import FINAL_LEVELS, load_freeze
+from bench.hpo.freeze import FINAL_LEVELS, freeze_ref, load_freeze
 from bench.pipeline.stage import Cell
 from bench.pipeline.stages.attack import attacked_ref, attacked_subject
 from bench.pipeline.stages.attack_control import (
@@ -39,10 +44,11 @@ from bench.pipeline.stages.attack_control import (
     control_detection_ref,
     control_metrics_ref,
 )
-from bench.pipeline.stages.calibrate import primary_view
+from bench.pipeline.stages.calibrate import primary_view, threshold_ref
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
 from bench.pipeline.stages.metrics import _detected, metrics_ref
+from bench.pipeline.stages.remark import ALT_KEY_ID, REMARK_ATTACK, remark_metrics_ref
 from bench.pipeline.stages.watermark import make_adapter
 from bench.store.artifact_store import ArtifactStore
 
@@ -75,12 +81,10 @@ def main() -> int:
     if record is None:
         sys.stdout.write(f"##### {method}: NOT FROZEN\n")
         return 1
-    names: tuple[str, ...] = ("attack", "execute", "detect", "metrics")
-    if args.control:
-        names += ("control_attack", "control_detect", "control_metrics")
-    steps: dict[str, list[tuple[str, Any]]] = {s: [] for s in names}
+    steps: dict[str, list[tuple[str, Any]]] = {s: [] for s in _step_names(args)}
     report: list[tuple[str, Any, Any, Any, Any]] = []
     control: list[tuple[str, Any, Any]] = []
+    remark: list[tuple[str, Any]] = []
     for attack_id in args.attacks.split(","):
         for attack in grid_attacks(attack_id).values():
             for cell in record.cells:
@@ -113,18 +117,17 @@ def main() -> int:
                 ):
                     key = (attack_id, params_hash)
                     control.append(_add_control(steps, method, model, lang, h, key, name, ref))
+                if attack_id == REMARK_ATTACK:
+                    remark.append(_add_remark(steps, method, model, lang, h, params_hash, name))
 
     sys.stdout.write(f"##### {method} attacks {args.attacks} on {LEVEL} {SPLIT}\n")
-    for step, refs in steps.items():
-        missing = [n for n, r in refs if not store.exists(r)]
-        state = "COMPLETE" if not missing else "INCOMPLETE"
-        sys.stdout.write(f"{step:<16} {len(refs) - len(missing):>4}/{len(refs):<4} {state}\n")
-        if args.missing:
-            sys.stdout.write("".join(f"    missing: {m}\n" for m in missing))
+    _write_steps(store, steps, args.missing)
     if args.report:
         _write_report(store, report, make_adapter(cfg, method))
         if args.control:
             _write_control(store, control, cfg.detection.target_fpr)
+        if remark:
+            _write_remark(store, remark)
     return 0
 
 
@@ -148,6 +151,76 @@ def _add_control(
     cref = control_metrics_ref(method, model, h, LEVEL, lang, SPLIT, list(FINAL_LEVELS), key)
     steps["control_metrics"].append((name, cref))
     return name, ref, cref
+
+
+def _step_names(args: argparse.Namespace) -> tuple[str, ...]:
+    """Passi da controllare: quelli di ogni attacco, del controllo negativo e di T3.1."""
+    names: tuple[str, ...] = ("attack", "execute", "detect", "metrics")
+    if args.control:
+        names += ("control_attack", "control_detect", "control_metrics")
+    if REMARK_ATTACK in args.attacks.split(","):
+        names += ("k2_threshold", "k2_freeze", "k2_neg_test", "k2_detect", "k2_metrics")
+    return names
+
+
+def _write_steps(
+    store: ArtifactStore, steps: dict[str, list[tuple[str, Any]]], show_missing: bool
+) -> None:
+    """Artefatti completi per passo (il primo ``INCOMPLETE`` è il prossimo da lanciare)."""
+    for step, refs in steps.items():
+        missing = [n for n, r in refs if not store.exists(r)]
+        state = "COMPLETE" if not missing else "INCOMPLETE"
+        sys.stdout.write(f"{step:<16} {len(refs) - len(missing):>4}/{len(refs):<4} {state}\n")
+        if show_missing:
+            sys.stdout.write("".join(f"    missing: {m}\n" for m in missing))
+
+
+def _add_remark(
+    steps: dict[str, list[tuple[str, Any]]],
+    method: str,
+    model: str,
+    lang: str,
+    h: str,
+    params_hash: str,
+    name: str,
+) -> tuple[str, Any]:
+    """Passi della seconda chiave di una cella T3.1; ritorna (nome, metriche della ri-marcatura)."""
+    steps["k2_threshold"].append(
+        (name, threshold_ref(method, model, lang, h, FINAL_LEVELS, ALT_KEY_ID))
+    )
+    if not steps["k2_freeze"]:
+        steps["k2_freeze"].append((method, freeze_ref(method, ALT_KEY_ID)))
+    steps["k2_neg_test"].append(
+        (name, detection_ref(method, model, h, "neg_human", LEVEL, lang, SPLIT, ALT_KEY_ID))
+    )
+    subject = attacked_subject(REMARK_ATTACK, params_hash)
+    steps["k2_detect"].append(
+        (name, detection_ref(method, model, h, subject, LEVEL, lang, SPLIT, ALT_KEY_ID))
+    )
+    ref = remark_metrics_ref(
+        method, model, h, LEVEL, lang, SPLIT, list(FINAL_LEVELS), (REMARK_ATTACK, params_hash)
+    )
+    steps["k2_metrics"].append((name, ref))
+    return name, ref
+
+
+def _write_remark(store: ArtifactStore, remark: list[tuple[str, Any]]) -> None:
+    """T3.1: tutte le metriche della ri-marcatura con IC; le due soglie a confronto."""
+    for name, ref in remark:
+        sys.stdout.write(f"\n##### T3.1 k1/k2 {name}\n")
+        if not store.exists(ref):
+            sys.stdout.write("  (metrics_remark missing)\n")
+            continue
+        table = store.read_table(ref)
+        for row in table.to_dict(orient="records"):
+            low, high = row["ci_low"], row["ci_high"]
+            ci = f"[{low:.4f}; {high:.4f}]" if pd.notna(low) and pd.notna(high) else ""
+            sys.stdout.write(f"  {row['name']!s:<34} {row['value']:.4f} {ci} n={row['n']}\n")
+        values = dict(zip(table["name"], table["value"], strict=True))
+        t1, t2 = values.get("threshold_k1"), values.get("threshold_k2")
+        if t1 is not None and t2 is not None:
+            ratio = t2 / t1 if t1 else float("nan")
+            sys.stdout.write(f"  THRESHOLDS k1 {t1:.4f}  k2 {t2:.4f}  k2/k1 {ratio:.3f}\n")
 
 
 def _write_report(

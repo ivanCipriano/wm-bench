@@ -291,6 +291,36 @@ class PromptEmbedder(MethodAdapter):
             metrics=metrics,
         )
 
+    def rewrite_items(
+        self,
+        items: Sequence[WorkerItem],
+        problems: Sequence[Problem],
+        hp: dict[str, Any],
+        model: ModelSpec,
+        key_id: str,
+        decoding: dict[str, Any],
+        system_prompt: str,
+        run_dir: Path,
+        device: str = "cuda:0",
+    ) -> WorkerRun:
+        """Generazione marcata da messaggi dati (T3.1, ADR-014 §3): un campione per item
+        (``n = 1``), con la chiave ``key_id`` e la configurazione ``hp``; i parametri del livello
+        (:meth:`request_hparams`) vengono da ``problems``. Ritorna i risultati grezzi del worker."""
+        native = {**self.to_native_hparams(hp), **self.request_hparams(problems)}
+        request = self.build_request(
+            WorkerOp.EMBED,
+            model,
+            hp,
+            key_id,
+            {**decoding, "num_return_sequences": 1},
+            system_prompt,
+            run_dir,
+            device,
+        )
+        if native != request.hparams:
+            request = dataclasses.replace(request, hparams=native)
+        return self.run_worker(request, list(items))
+
     def _seed_function(self, problems: Sequence[Problem], model: ModelSpec) -> Any:
         """Seme di un campione: del campione (un campione per item) o del problema."""
         problem_seeds = {

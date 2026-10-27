@@ -35,7 +35,15 @@ SAME_RESOURCES_AS = {
     "attack_baseline": "attack",
     "detect_attack_control": "detect",
     "metrics_attack_control": "metrics",
+    # Seconda chiave di T3.1 (ADR-014 §3): come le fasi della prima chiave.
+    "detect_k2": "detect",
+    "calibrate_k2": "calibrate",
+    "freeze_k2": "freeze",
+    "metrics_remark": "metrics",
 }
+# Attacchi che usano il generatore del metodo (T3.1): risorse della fase ``watermark`` del metodo
+# (ACW su CPU, gli altri su GPU).
+METHOD_GENERATOR_ATTACKS = frozenset({"T3.1"})
 
 
 class ResourcePolicy:
@@ -59,6 +67,8 @@ class ResourcePolicy:
     ) -> ResourceClass:
         """Classe di risorse per una fase (eventualmente per metodo o attacco)."""
         stage = SAME_RESOURCES_AS.get(stage, stage)
+        if stage == "attack" and attack in METHOD_GENERATOR_ATTACKS and method is not None:
+            stage = "watermark"
         if stage in self.rules.gpu_stages:
             return ResourceClass.GPU_NVIDIA
         by_method = self.rules.gpu_methods_by_stage.get(stage)
