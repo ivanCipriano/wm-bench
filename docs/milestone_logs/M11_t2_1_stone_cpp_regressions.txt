@@ -1,0 +1,1388 @@
+##### stone T2.1 {'ruff_version': '0.7.4', 'ruff_rules': [{'type': 'remove-unnecessary-else', 'codes': ['RET505', 'RET506', 'RET507', 'RET508'], 'acw': [1]}, {'type': 'boolean-if-exp-identity', 'codes': ['SIM210', 'SIM211'], 'acw': [3]}, {'type': 'list-comprehension', 'codes': ['PERF401'], 'acw': [4, 29]}, {'type': 'merge-comparisons', 'codes': ['PLR1714'], 'acw': [6]}, {'type': 'merge-nested-ifs', 'codes': ['SIM102'], 'acw': [9]}, {'type': 'inline-immediately-returned-variable', 'codes': ['RET504'], 'acw': [11]}, {'type': 'for-index-underscore', 'codes': ['B007'], 'acw': [12]}, {'type': 'comprehension-to-generator', 'codes': ['C419'], 'acw': [15]}, {'type': 'use-any', 'codes': ['SIM110'], 'acw': [16]}, {'type': 'min-max-identity', 'codes': ['FURB136'], 'acw': [18]}, {'type': 'merge-duplicate-blocks', 'codes': ['SIM114'], 'acw': [19]}, {'type': 'merge-else-if-into-elif', 'codes': ['PLR5501'], 'acw': [22]}, {'type': 'identity-comprehension', 'codes': ['C416'], 'acw': [31]}, {'type': 'merge-list-appends-into-extend', 'codes': ['FURB113'], 'acw': [32]}, {'type': 'assign-if-exp', 'codes': ['SIM108'], 'acw': [35]}], 'b': 1} cpp L1 test
+
+=== qwen25_coder_7b: 840 campioni, APPLIED con esito cambiato 2
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                     2  (100.0% degli APPLIED)
+
+=== deepseek_coder_6p7b: 840 campioni, APPLIED con esito cambiato 2
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                     2  (100.0% degli APPLIED)
+
+----- qwen25_coder_7b humaneval/89 #0 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment'], 'b': 1, 'chosen': ['compound_assignment'], 'n_points': 3, 'n_types': 1, 'n_types_applicable': 2, 'points': {'compound_assignment': 3}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:42:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   42 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:42:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   42 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:42:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   42 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
+         } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         } else {
+-            result += c;
++            result = result + (c);
+         }
+     }
+     return result;
+
+----- deepseek_coder_6p7b humaneval/11 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment'], 'b': 1, 'chosen': ['compound_assignment'], 'n_points': 1, 'n_types': 1, 'n_types_applicable': 2, 'points': {'compound_assignment': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:34:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   34 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:34:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   34 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:34:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   34 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -10,7 +10,7 @@
+ string string_xor(string a,string b){
+     string result = "";
+     for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+     }
+     return result;
+ }
+
+----- qwen25_coder_7b humaneval/89 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment'], 'b': 1, 'chosen': ['compound_assignment'], 'n_points': 3, 'n_types': 1, 'n_types_applicable': 2, 'points': {'compound_assignment': 3}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:42:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   42 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:42:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   42 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:42:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   42 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
+         } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         } else {
+-            result += c;
++            result = result + (c);
+         }
+     }
+     return result;
+
+----- deepseek_coder_6p7b humaneval/11 #3 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment'], 'b': 1, 'chosen': ['compound_assignment'], 'n_points': 1, 'n_types': 1, 'n_types_applicable': 2, 'points': {'compound_assignment': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:34:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   34 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:34:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   34 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:34:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   34 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -10,7 +10,7 @@
+ string string_xor(string a,string b){
+     string result = "";
+     for(int i=0; i<a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+     }
+     return result;
+ }
+##### stone T2.1 {'ruff_version': '0.7.4', 'ruff_rules': [{'type': 'remove-unnecessary-else', 'codes': ['RET505', 'RET506', 'RET507', 'RET508'], 'acw': [1]}, {'type': 'boolean-if-exp-identity', 'codes': ['SIM210', 'SIM211'], 'acw': [3]}, {'type': 'list-comprehension', 'codes': ['PERF401'], 'acw': [4, 29]}, {'type': 'merge-comparisons', 'codes': ['PLR1714'], 'acw': [6]}, {'type': 'merge-nested-ifs', 'codes': ['SIM102'], 'acw': [9]}, {'type': 'inline-immediately-returned-variable', 'codes': ['RET504'], 'acw': [11]}, {'type': 'for-index-underscore', 'codes': ['B007'], 'acw': [12]}, {'type': 'comprehension-to-generator', 'codes': ['C419'], 'acw': [15]}, {'type': 'use-any', 'codes': ['SIM110'], 'acw': [16]}, {'type': 'min-max-identity', 'codes': ['FURB136'], 'acw': [18]}, {'type': 'merge-duplicate-blocks', 'codes': ['SIM114'], 'acw': [19]}, {'type': 'merge-else-if-into-elif', 'codes': ['PLR5501'], 'acw': [22]}, {'type': 'identity-comprehension', 'codes': ['C416'], 'acw': [31]}, {'type': 'merge-list-appends-into-extend', 'codes': ['FURB113'], 'acw': [32]}, {'type': 'assign-if-exp', 'codes': ['SIM108'], 'acw': [35]}], 'b': 2} cpp L1 test
+
+=== qwen25_coder_7b: 840 campioni, APPLIED con esito cambiato 5
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                     5  (100.0% degli APPLIED)
+
+=== deepseek_coder_6p7b: 840 campioni, APPLIED con esito cambiato 4
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                     4  (100.0% degli APPLIED)
+
+----- deepseek_coder_6p7b humaneval/11 #4 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 2, 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- deepseek_coder_6p7b humaneval/11 #3 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 2, 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i=0; i<a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i=0;
++        while (i<a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- deepseek_coder_6p7b humaneval/11 #0 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 2, 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- qwen25_coder_7b humaneval/89 #3 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 2, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                            ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 2 * 2) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 2 * 2) % 26;
++            result = result + ('a' + (c - 'a' + 2 * 2) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+         }
+     }
+     return result;
+
+----- qwen25_coder_7b humaneval/89 #0 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 2, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- qwen25_coder_7b humaneval/89 #4 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 2, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- qwen25_coder_7b humaneval/89 #5 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 2, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- deepseek_coder_6p7b humaneval/11 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 2, 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- qwen25_coder_7b humaneval/89 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 2, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+##### stone T2.1 {'ruff_version': '0.7.4', 'ruff_rules': [{'type': 'remove-unnecessary-else', 'codes': ['RET505', 'RET506', 'RET507', 'RET508'], 'acw': [1]}, {'type': 'boolean-if-exp-identity', 'codes': ['SIM210', 'SIM211'], 'acw': [3]}, {'type': 'list-comprehension', 'codes': ['PERF401'], 'acw': [4, 29]}, {'type': 'merge-comparisons', 'codes': ['PLR1714'], 'acw': [6]}, {'type': 'merge-nested-ifs', 'codes': ['SIM102'], 'acw': [9]}, {'type': 'inline-immediately-returned-variable', 'codes': ['RET504'], 'acw': [11]}, {'type': 'for-index-underscore', 'codes': ['B007'], 'acw': [12]}, {'type': 'comprehension-to-generator', 'codes': ['C419'], 'acw': [15]}, {'type': 'use-any', 'codes': ['SIM110'], 'acw': [16]}, {'type': 'min-max-identity', 'codes': ['FURB136'], 'acw': [18]}, {'type': 'merge-duplicate-blocks', 'codes': ['SIM114'], 'acw': [19]}, {'type': 'merge-else-if-into-elif', 'codes': ['PLR5501'], 'acw': [22]}, {'type': 'identity-comprehension', 'codes': ['C416'], 'acw': [31]}, {'type': 'merge-list-appends-into-extend', 'codes': ['FURB113'], 'acw': [32]}, {'type': 'assign-if-exp', 'codes': ['SIM108'], 'acw': [35]}], 'b': 3} cpp L1 test
+
+=== qwen25_coder_7b: 840 campioni, APPLIED con esito cambiato 5
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                     5  (100.0% degli APPLIED)
+
+=== deepseek_coder_6p7b: 840 campioni, APPLIED con esito cambiato 4
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                     4  (100.0% degli APPLIED)
+
+----- qwen25_coder_7b humaneval/89 #4 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 3, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- deepseek_coder_6p7b humaneval/11 #4 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 3, 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- deepseek_coder_6p7b humaneval/11 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 3, 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- deepseek_coder_6p7b humaneval/11 #3 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 3, 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i=0; i<a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i=0;
++        while (i<a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- qwen25_coder_7b humaneval/89 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 3, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- deepseek_coder_6p7b humaneval/11 #0 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 3, 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- qwen25_coder_7b humaneval/89 #5 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 3, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- qwen25_coder_7b humaneval/89 #3 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 3, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                            ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 2 * 2) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 2 * 2) % 26;
++            result = result + ('a' + (c - 'a' + 2 * 2) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+         }
+     }
+     return result;
+
+----- qwen25_coder_7b humaneval/89 #0 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 3, 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+##### stone T2.1 {'ruff_version': '0.7.4', 'ruff_rules': [{'type': 'remove-unnecessary-else', 'codes': ['RET505', 'RET506', 'RET507', 'RET508'], 'acw': [1]}, {'type': 'boolean-if-exp-identity', 'codes': ['SIM210', 'SIM211'], 'acw': [3]}, {'type': 'list-comprehension', 'codes': ['PERF401'], 'acw': [4, 29]}, {'type': 'merge-comparisons', 'codes': ['PLR1714'], 'acw': [6]}, {'type': 'merge-nested-ifs', 'codes': ['SIM102'], 'acw': [9]}, {'type': 'inline-immediately-returned-variable', 'codes': ['RET504'], 'acw': [11]}, {'type': 'for-index-underscore', 'codes': ['B007'], 'acw': [12]}, {'type': 'comprehension-to-generator', 'codes': ['C419'], 'acw': [15]}, {'type': 'use-any', 'codes': ['SIM110'], 'acw': [16]}, {'type': 'min-max-identity', 'codes': ['FURB136'], 'acw': [18]}, {'type': 'merge-duplicate-blocks', 'codes': ['SIM114'], 'acw': [19]}, {'type': 'merge-else-if-into-elif', 'codes': ['PLR5501'], 'acw': [22]}, {'type': 'identity-comprehension', 'codes': ['C416'], 'acw': [31]}, {'type': 'merge-list-appends-into-extend', 'codes': ['FURB113'], 'acw': [32]}, {'type': 'assign-if-exp', 'codes': ['SIM108'], 'acw': [35]}], 'b': 'all'} cpp L1 test
+
+=== qwen25_coder_7b: 840 campioni, APPLIED con esito cambiato 5
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                     5  (100.0% degli APPLIED)
+
+=== deepseek_coder_6p7b: 840 campioni, APPLIED con esito cambiato 4
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                     4  (100.0% degli APPLIED)
+
+----- deepseek_coder_6p7b humaneval/11 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 'all', 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- deepseek_coder_6p7b humaneval/11 #0 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 'all', 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- qwen25_coder_7b humaneval/89 #5 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 'all', 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- deepseek_coder_6p7b humaneval/11 #4 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 'all', 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i = 0; i < a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i = 0;
++        while (i < a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- deepseek_coder_6p7b humaneval/11 #3 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'for_to_while': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'for_to_while'], 'b': 'all', 'chosen': ['compound_assignment', 'for_to_while'], 'n_points': 2, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 1, 'for_to_while': 1}, 'rejected': []}
+stderr_tail          ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   mismatched types ‘const _CharT*’ and ‘int’
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:36:63: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   36 |         result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
+      |                                                               ^
+--- marcato
++++ attaccato
+@@ -9,8 +9,12 @@
+ using namespace std;
+ string string_xor(string a,string b){
+     string result = "";
+-    for(int i=0; i<a.size(); i++) {
+-        result += ((a[i] - '0') ^ (b[i] - '0')) + '0';
++    {
++        int i=0;
++        while (i<a.size()) {
++        result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0');
++        i++;
++    }
+     }
+     return result;
+ }
+
+----- qwen25_coder_7b humaneval/89 #4 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 'all', 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- qwen25_coder_7b humaneval/89 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 'all', 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
+
+----- qwen25_coder_7b humaneval/89 #3 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 'all', 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                            ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:60: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+      |                                                            ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 2 * 2) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 2 * 2) % 26;
++            result = result + ('a' + (c - 'a' + 2 * 2) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 2 * 2) % 26);
+         }
+     }
+     return result;
+
+----- qwen25_coder_7b humaneval/89 #0 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'acw_equivalent': {'compound_assignment': [], 'if_else_inversion': []}, 'acw_equivalent_rules': [], 'applied': ['compound_assignment', 'if_else_inversion'], 'b': 'all', 'chosen': ['compound_assignment', 'if_else_inversion'], 'n_points': 4, 'n_types': 2, 'n_types_applicable': 2, 'points': {'compound_assignment': 3, 'if_else_inversion': 1}, 'rejected': []}
+stderr_tail                                                    ^
+/usr/include/c++/14/bits/basic_string.h:3726:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(_CharT, __cxx11::basic_string<_CharT, _Traits, _Alloc>&&)’
+ 3726 |     operator+(_CharT __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3726:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘std::__cxx11::basic_string<_CharT, _Traits, _Alloc>’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3733:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, const _CharT*)’
+ 3733 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3733:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   mismatched types ‘const _CharT*’ and ‘int’
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+/usr/include/c++/14/bits/basic_string.h:3740:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::__cxx11::basic_string<_CharT, _Traits, _Alloc> std::operator+(__cxx11::basic_string<_CharT, _Traits, _Alloc>&&, _CharT)’
+ 3740 |     operator+(basic_string<_CharT, _Traits, _Alloc>&& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/14/bits/basic_string.h:3740:5: note:   template argument deduction/substitution failed:
+test.cpp:44:56: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘int’)
+   44 |             result = result + ('A' + (c - 'A' + 4) % 26);
+      |                                                        ^
+--- marcato
++++ attaccato
+@@ -16,11 +16,11 @@
+     string result = "";
+     for (char &c : s) {
+         if (c >= 'a' && c <= 'z') {
+-            result += 'a' + (c - 'a' + 4) % 26;
+-        } else if (c >= 'A' && c <= 'Z') {
+-            result += 'A' + (c - 'A' + 4) % 26;
++            result = result + ('a' + (c - 'a' + 4) % 26);
++        } else if (!(c >= 'A' && c <= 'Z')) {
++            result = result + (c);
+         } else {
+-            result += c;
++            result = result + ('A' + (c - 'A' + 4) % 26);
+         }
+     }
+     return result;
