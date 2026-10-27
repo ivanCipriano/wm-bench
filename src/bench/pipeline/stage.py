@@ -215,7 +215,8 @@ class CellPlanner:
             if cell.attack_id is None or cell.attack_params_hash is not None:
                 out.append(cell)
             else:
-                out.extend(replace(cell, attack_params_hash=h) for h in points(cell.attack_id))
+                found = points(cell.attack_id, language=cell.language)
+                out.extend(replace(cell, attack_params_hash=h) for h in found)
         return out
 
     def _selected(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:

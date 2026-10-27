@@ -16,6 +16,13 @@ Ogni combinazione ha un ``attack_params_hash`` (12 caratteri) del JSON canonico 
 e versione dell'implementazione: correggere un attacco (``version``) cambia l'hash e quindi le
 celle, invece di mescolare risultati di implementazioni diverse.
 
+``catalog_version`` (es. ``{cpp: 2}``) è la versione dell'implementazione **per linguaggio**
+(decisione dell'utente del 27 ottobre 2026, T2.1 C++): una correzione che riguarda un solo
+linguaggio cambia l'hash solo delle celle di quel linguaggio. La versione 1 (il default) non entra
+nell'hash, quindi le celle degli altri linguaggi tengono l'hash di prima; i risultati della
+versione precedente restano con il loro hash, marcati come superati
+(``scripts/supersede_attack_cells.py``).
+
 **Determinismo:** l'RNG di un campione nasce da
 ``derive_seed(global_seed, "attack", attack_id, params_hash, sample_id)`` (SPEC §18).
 """
@@ -107,9 +114,14 @@ def tool_error(original: str, error: str, detail: dict[str, Any] | None = None) 
     )
 
 
-def attack_params_hash(attack_id: str, params: Mapping[str, Any], version: int) -> str:
-    """Hash (12 caratteri) di ID, parametri e versione dell'implementazione."""
-    payload = {"attack_id": attack_id, "params": dict(params), "version": version}
+def attack_params_hash(
+    attack_id: str, params: Mapping[str, Any], version: int, catalog_version: int = 1
+) -> str:
+    """Hash (12 caratteri) di ID, parametri, versione dell'implementazione e versione del catalogo
+    del linguaggio della cella (solo se diversa da 1: gli hash della versione 1 non cambiano)."""
+    payload: dict[str, Any] = {"attack_id": attack_id, "params": dict(params), "version": version}
+    if catalog_version != 1:
+        payload["catalog_version"] = catalog_version
     return sha256_json(payload)[:PARAMS_HASH_LENGTH]
 
 
@@ -131,10 +143,18 @@ class Attack(ABC):
 
     def __init__(self, params: Mapping[str, Any]) -> None:
         self.params = dict(params)
+        # versione del catalogo per linguaggio (``catalog_version`` della griglia; default 1)
+        self.catalog_versions: dict[str, int] = {}
 
-    def params_hash(self) -> str:
-        """``attack_params_hash`` della cella."""
-        return attack_params_hash(self.attack_id, self.params, self.version)
+    def catalog_version(self, language: Language | str | None) -> int:
+        """Versione del catalogo per il linguaggio (1 se non indicata o senza linguaggio)."""
+        return 1 if language is None else self.catalog_versions.get(str(language), 1)
+
+    def params_hash(self, language: Language | str | None = None) -> str:
+        """``attack_params_hash`` della cella del linguaggio ``language``."""
+        return attack_params_hash(
+            self.attack_id, self.params, self.version, self.catalog_version(language)
+        )
 
     def manifest_extra(self) -> dict[str, Any]:
         """Informazioni dell'attacco per il manifest della cella (es. SHA-256 dei prompt)."""
@@ -190,6 +210,8 @@ class AttackGrid:
     # Punti con il controllo negativo (misura aggiuntiva, D34): lo stesso attacco applicato alla
     # baseline senza watermark; ogni voce è un sottoinsieme dei parametri che il punto deve avere.
     negative_control: tuple[dict[str, Any], ...] = ()
+    # Versione del catalogo per linguaggio (``catalog_version``; i linguaggi assenti valgono 1).
+    catalog_version: Mapping[str, int] = field(default_factory=dict)
 
 
 def _product(space: Mapping[str, Sequence[Any]]) -> list[dict[str, Any]]:
@@ -222,7 +244,11 @@ def _grids(root: Path) -> dict[str, AttackGrid]:
         for match in control:
             if not any(match.items() <= p.items() for p in points):
                 raise ConfigError(f"{path}: negative_control {match} matches no point")
-        grids[attack_id] = AttackGrid(attack_id, path, points, enabled, control)
+        versions = {str(k): v for k, v in (data.get("catalog_version") or {}).items()}
+        for lang, v in versions.items():
+            if lang not in {str(x) for x in Language} or not isinstance(v, int) or v < 1:
+                raise ConfigError(f"{path}: catalog_version {lang}: {v!r} is not valid")
+        grids[attack_id] = AttackGrid(attack_id, path, points, enabled, control, versions)
     return grids
 
 
@@ -250,32 +276,41 @@ def make_attack(attack_id: str, params: Mapping[str, Any]) -> Attack:
     return ATTACKS.get(attack_id)(params)
 
 
-def grid_attacks(attack_id: str, root: Path | None = None) -> dict[str, Attack]:
-    """``attack_params_hash`` → attacco, per tutte le combinazioni della griglia."""
+def grid_attacks(
+    attack_id: str, root: Path | None = None, language: Language | str | None = None
+) -> dict[str, Attack]:
+    """``attack_params_hash`` → attacco, per tutte le combinazioni della griglia; gli hash sono
+    quelli delle celle di ``language`` (versione del catalogo di quel linguaggio)."""
+    grid = attack_grid(attack_id, root)
     out: dict[str, Attack] = {}
-    for params in attack_grid(attack_id, root).points:
+    for params in grid.points:
         attack = make_attack(attack_id, params)
-        out[attack.params_hash()] = attack
+        attack.catalog_versions = dict(grid.catalog_version)
+        out[attack.params_hash(language)] = attack
     return out
 
 
-def negative_control_attacks(attack_id: str, root: Path | None = None) -> dict[str, Attack]:
+def negative_control_attacks(
+    attack_id: str, root: Path | None = None, language: Language | str | None = None
+) -> dict[str, Attack]:
     """Punti della griglia con il controllo negativo sulla baseline (``negative_control``, D34)."""
     grid = attack_grid(attack_id, root)
     return {
         h: a
-        for h, a in grid_attacks(attack_id, root).items()
+        for h, a in grid_attacks(attack_id, root, language).items()
         if any(match.items() <= a.params.items() for match in grid.negative_control)
     }
 
 
-def resolve_attack(attack_id: str, params_hash: str | None) -> Attack:
-    """Attacco di una cella dal suo hash.
+def resolve_attack(
+    attack_id: str, params_hash: str | None, language: Language | str | None = None
+) -> Attack:
+    """Attacco di una cella dal suo hash (fra quelli delle celle di ``language``).
 
     Raises:
         ConfigError: hash mancante o fuori dalla griglia.
     """
-    attacks = grid_attacks(attack_id)
+    attacks = grid_attacks(attack_id, language=language)
     if params_hash is None or params_hash not in attacks:
         raise ConfigError(
             f"attack {attack_id}: attack_params_hash {params_hash} is not in the grid "

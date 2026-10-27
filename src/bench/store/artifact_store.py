@@ -22,7 +22,7 @@ import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import pandas as pd
 import pyarrow.parquet as pq
@@ -144,6 +144,20 @@ class ArtifactStore:
             }
         )
         self._write_text_atomic(manifest_path, final.model_dump_json(indent=2))
+        return final
+
+    def mark_superseded(self, ref: ArtifactRef, info: dict[str, Any]) -> Manifest:
+        """Segna come superato un artefatto completo (dati e stato invariati): ``info`` va in
+        ``extra["superseded"]`` del manifest. I report usano solo le celle correnti.
+
+        Raises:
+            MissingInputError: artefatto mancante o incompleto.
+        """
+        self._require(ref)
+        manifest = self.read_manifest(ref)
+        assert manifest is not None
+        final = manifest.model_copy(update={"extra": {**manifest.extra, "superseded": info}})
+        self._write_text_atomic(self.manifest_of(ref), final.model_dump_json(indent=2))
         return final
 
     @staticmethod

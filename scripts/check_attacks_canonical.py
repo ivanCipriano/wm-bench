@@ -140,11 +140,12 @@ class _Ctx:
         self.store = store
 
 
-def grid_points(attack_id: str, wanted: dict[str, str]) -> dict[str, Any]:
-    """Punti della griglia con i parametri ``wanted`` (tutti se vuoto; ``b=all`` per T2.1)."""
+def grid_points(attack_id: str, wanted: dict[str, str], language: str) -> dict[str, Any]:
+    """Punti della griglia con i parametri ``wanted`` (tutti se vuoto; ``b=all`` per T2.1), con
+    gli hash delle celle di ``language`` (versione del catalogo del linguaggio)."""
     return {
         h: a
-        for h, a in grid_attacks(attack_id).items()
+        for h, a in grid_attacks(attack_id, language=language).items()
         if all(str(a.params.get(k)) == v for k, v in wanted.items())
     }
 
@@ -196,7 +197,7 @@ def check_language(
     if "T1.5" in attack_ids:
         report_log_sites(checker, language)
     for attack_id in attack_ids:
-        for params_hash, attack in grid_points(attack_id, wanted or {}).items():
+        for params_hash, attack in grid_points(attack_id, wanted or {}, language).items():
             if attack.needs_pools and not (pools.comments and pools.names):
                 sys.stdout.write(f"{attack_id} {attack.params}: SKIPPED (run stage attack_pools)\n")
                 continue
@@ -262,7 +263,7 @@ def check_baseline_dev(
     parsers = default_parsers()
     sys.stdout.write(f"\n########## {language}: baseline di L1 dev\n")
     for attack_id in attack_ids:
-        for params_hash, attack in grid_points(attack_id, wanted).items():
+        for params_hash, attack in grid_points(attack_id, wanted, language).items():
             total_before = total_still = 0
             for model_id in cfg.models:
                 table = store.read_table(baseline_ref(model_id, LEVEL, language, "dev"))

@@ -153,3 +153,13 @@ def test_model_roundtrip(store: ArtifactStore) -> None:
 def test_artifact_ref_validation(bad: str) -> None:
     with pytest.raises(ValueError):
         ArtifactRef.of("k", bad)
+
+
+def test_mark_superseded_keeps_data(store: ArtifactStore, df: pd.DataFrame) -> None:
+    store.write_table(REF, df, make_manifest())
+    store.mark_superseded(REF, {"by_attack_params_hash": "abc", "reason": "test"})
+    manifest = store.read_manifest(REF)
+    assert manifest is not None and manifest.extra["superseded"]["by_attack_params_hash"] == "abc"
+    assert store.verify(REF)
+    with pytest.raises(MissingInputError):
+        store.mark_superseded(ArtifactRef.of("baseline", "baseline/x/none.parquet"), {})

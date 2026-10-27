@@ -34,8 +34,13 @@ trasformano insieme). Restrizioni, tutte per non cambiare la semantica:
   espansa ne crea uno nuovo: ``l *= 2`` vale anche per le liste); mai ``*=``, ``|=``, ``&=``,
   ``^=``, ``@=``. Java (cast implicito della forma composta): solo variabili locali o parametri
   con tipo ``double`` (+ - * / %), ``String`` (+=), ``int``/``long`` con ``e`` letterale intero,
-  ``boolean`` (& | ^). JavaScript: mai ``&&=``, ``||=``, ``??=`` (assegnano solo a volte). Solo
-  come istruzione o aggiornamento di un ``for``;
+  ``boolean`` (& | ^). JavaScript: mai ``&&=``, ``||=``, ``??=`` (assegnano solo a volte). C++
+  (catalogo versione 2, decisione dell'utente del 27 ottobre 2026): solo variabili locali o
+  parametri con tipo dichiarato aritmetico (``primitive_type`` o ``sized_type_specifier``: ``int``,
+  ``long long``, ``double``, ``char``, ``size_t``, …), senza puntatori, riferimenti o array; niente
+  ``string``, ``auto`` o tipi non trovati (``s += 'a' + k`` su ``std::string`` usa la conversione
+  implicita di ``operator+=(char)``, mentre ``s = s + ('a' + k)`` non compila: humaneval/89 e
+  humaneval/11 di STONE in L1 test). Solo come istruzione o aggiornamento di un ``for``;
 - ``commutative_swap``: ``a * b``, ``a == b``, ``a != b`` (e ``===``, ``!==``) → operandi scambiati,
   solo con operandi identificatori o letterali numerici (nessun effetto collaterale, nessun ordine
   di valutazione da conservare) e almeno un identificatore;
@@ -190,9 +195,10 @@ class Rule:
     name: ClassVar[str]
     languages: ClassVar[frozenset[Language]] = ALL
 
-    def __init__(self, lang: Language, names: NameFactory | None = None) -> None:
+    def __init__(self, lang: Language, names: NameFactory | None = None, version: int = 1) -> None:
         self.lang = lang
         self.names = names
+        self.version = version  # versione del catalogo del linguaggio (catalog_version)
         self.ops: set[str] = set()
 
     def match(self, node: Node, src: bytes) -> bool:
@@ -559,6 +565,8 @@ _JS_NEVER = frozenset({b"&&=", b"||=", b"??="})
 _JAVA_INT_OPS = frozenset(
     {b"+=", b"-=", b"*=", b"/=", b"%=", b"<<=", b">>=", b">>>=", b"&=", b"|=", b"^="}
 )
+# C++: dalla versione 2 del catalogo, operatori composti solo su variabili di tipo aritmetico.
+CPP_TYPED_COMPOUND = 2
 # Java: operatori ammessi per tipo della variabile (int e long solo con un letterale intero).
 _JAVA_OPS = {
     b"double": frozenset({b"+=", b"-=", b"*=", b"/=", b"%="}),
@@ -567,6 +575,29 @@ _JAVA_OPS = {
     b"int": _JAVA_INT_OPS,
     b"long": _JAVA_INT_OPS,
 }
+
+
+def _cpp_arithmetic_local(node: Node, name: bytes) -> bool:
+    """C++: ``name`` è una variabile locale o un parametro della funzione (o lambda) con un solo
+    tipo dichiarato, aritmetico, e dichiaratore semplice (niente puntatori, riferimenti, array)."""
+    fn = node.parent
+    while fn is not None and fn.type not in ("function_definition", "lambda_expression"):
+        fn = fn.parent
+    if fn is None:
+        return False
+    kinds: set[bool] = set()
+    for n in iter_nodes(fn):
+        if n.type not in ("declaration", "parameter_declaration", "optional_parameter_declaration",
+                          "for_range_loop"):  # fmt: skip
+            continue
+        t = _field(n, "type")
+        for decl in _fields(n, "declarator"):
+            target = _field(decl, "declarator") if decl.type == "init_declarator" else decl
+            if target is not None and target.type == "identifier" and target.text == name:
+                kinds.add(t is not None and t.type in ("primitive_type", "sized_type_specifier"))
+            elif target is not None and (target.text or b"").lstrip(b"*&").strip() == name:
+                kinds.add(False)  # puntatore, riferimento o array con lo stesso nome
+    return kinds == {True}
 
 
 def _numeric_literal(node: Node | None) -> bool:
@@ -648,7 +679,7 @@ class CompoundAssignment(Rule):
             kind = _java_local_type(node, left.text or b"") or b""
             literal_ok = kind not in (b"int", b"long") or right.type in INT_LITERALS
             return op in _JAVA_OPS.get(kind, frozenset()) and literal_ok
-        return True  # C++
+        return self.version < CPP_TYPED_COMPOUND or _cpp_arithmetic_local(node, left.text or b"")
 
     def build(self, node: Node, src: bytes, text_of: Callable[[Node], bytes]) -> bytes:
         parts = self._parts(node)
@@ -750,11 +781,17 @@ def _compiles(code: str) -> bool:
 
 
 def apply_ast_type(
-    code: str, lang: Language, type_name: str, parsers: ParserService, names: NameFactory | None
+    code: str,
+    lang: Language,
+    type_name: str,
+    parsers: ParserService,
+    names: NameFactory | None,
+    version: int = 1,
 ) -> tuple[str, int, set[int]] | None:
     """Applica un tipo AST in tutti i suoi punti: (codice, punti, regole ACW equivalenti);
-    ``None`` se il risultato non si analizza più mentre l'originale sì."""
-    rule = CATALOG[type_name][lang](lang, names)
+    ``None`` se il risultato non si analizza più mentre l'originale sì. ``version``: versione
+    del catalogo del linguaggio."""
+    rule = CATALOG[type_name][lang](lang, names, version)
     src = code.encode("utf-8")
     tree = parsers.parse(code, lang)
     new_src, points = rewrite(src, tree.root_node, rule)
@@ -768,13 +805,15 @@ def apply_ast_type(
     return new, points, rule.acw_rules()
 
 
-def ast_applicable(code: str, lang: Language, parsers: ParserService) -> dict[str, int]:
+def ast_applicable(
+    code: str, lang: Language, parsers: ParserService, version: int = 1
+) -> dict[str, int]:
     """Punti di ogni tipo AST nel codice (solo i tipi con almeno un punto)."""
     src = code.encode("utf-8")
     root = parsers.parse(code, lang).root_node
     out = {}
     for type_name in ast_types(lang):
-        n = count_matches(src, root, CATALOG[type_name][lang](lang))
+        n = count_matches(src, root, CATALOG[type_name][lang](lang, None, version))
         if n:
             out[type_name] = n
     return out
@@ -872,7 +911,7 @@ class RefactorAttack(Attack):
                 out[i] = tool_error(codes[i], "ruff could not analyse the code", {"tool": "ruff"})
                 continue
             applicable = {
-                **ast_applicable(codes[i], lang, ctxs[i].parsers),
+                **ast_applicable(codes[i], lang, ctxs[i].parsers, self.catalog_version(lang)),
                 **(ruff_found[i] or {}),
             }
             chosen = (
@@ -941,7 +980,9 @@ class RefactorAttack(Attack):
         for type_name in ast_types(lang):
             if type_name not in chosen:
                 continue
-            result = apply_ast_type(code, lang, type_name, ctx.parsers, names)
+            result = apply_ast_type(
+                code, lang, type_name, ctx.parsers, names, self.catalog_version(lang)
+            )
             if result is None:
                 rejected.append(type_name)
                 continue

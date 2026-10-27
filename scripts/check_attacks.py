@@ -82,12 +82,13 @@ def main() -> int:
     report: list[tuple[str, Any, Any, Any, Any]] = []
     control: list[tuple[str, Any, Any]] = []
     for attack_id in args.attacks.split(","):
-        controlled = set(negative_control_attacks(attack_id)) if args.control else set()
-        for params_hash, attack in grid_attacks(attack_id).items():
+        for attack in grid_attacks(attack_id).values():
             for cell in record.cells:
                 if cell.not_applicable or cell.config_hash is None:
                     continue
                 model, lang, h = cell.model_id, cell.language, cell.config_hash
+                # hash della cella con la versione corrente del catalogo del suo linguaggio
+                params_hash = attack.params_hash(lang)
                 name = f"{attack_id} {json.dumps(attack.params, sort_keys=True)} {model} {lang}"
                 base = Cell(
                     method=method, model_id=model, level=LEVEL, language=lang, split=SPLIT,
@@ -107,7 +108,9 @@ def main() -> int:
                 )
                 steps["metrics"].append((name, ref))
                 report.append((name, attacked, ref, exe, det))
-                if params_hash in controlled:
+                if args.control and params_hash in negative_control_attacks(
+                    attack_id, language=lang
+                ):
                     key = (attack_id, params_hash)
                     control.append(_add_control(steps, method, model, lang, h, key, name, ref))
 

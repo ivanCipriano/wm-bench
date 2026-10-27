@@ -147,3 +147,42 @@ def test_python_semantics_preserved(program: str, tmp_path: Path) -> None:
         xs = [rng.randint(-5, 5) for _ in range(rng.randint(0, 8))]
         n = rng.randint(-3, 6)
         assert env_a["f"](list(xs), n) == env_b["f"](list(xs), n), attacked
+
+
+CPP_STRING = (
+    "#include <string>\nusing namespace std;\n"
+    "string f(string s, int k, long long w) {\n"
+    '    string r = ""; std::string t; auto c = 1; int a = 0; double d = 0; int *p = &a;\n'
+    "    for (char &x : s) { r += 'a' + k; t += x; c += 1; a += k; d *= 2; w -= 1; x += 1; p += 1; }\n"
+    "    return r;\n}\n"
+)
+
+
+def test_cpp_compound_assignment_arithmetic_only() -> None:
+    """Catalogo C++ versione 2: solo variabili di tipo aritmetico (humaneval/89 e /11 di STONE:
+    ``r += 'a' + k`` su ``std::string`` espanso non compila)."""
+    result = apply_ast_type(CPP_STRING, CPP, "compound_assignment", P, None, version=2)
+    assert result is not None
+    new, points, _ = result
+    assert points == 3  # a, d, w
+    assert "a = a + (k)" in new and "d = d * (2)" in new and "w = w - (1)" in new
+    assert "r += 'a' + k" in new and "t += x" in new and "c += 1" in new and "x += 1" in new
+    assert "p += 1" in new
+    old = apply_ast_type(CPP_STRING, CPP, "compound_assignment", P, None, version=1)
+    assert old is not None and old[1] == 8  # versione 1: tutte (comportamento del primo lancio)
+
+
+def test_catalog_version_changes_only_cpp_hash() -> None:
+    attack = _attack("all")
+    assert attack.catalog_version(CPP) == 2 and attack.catalog_version(PY) == 1
+    hashes = {lang: attack.params_hash(lang) for lang in (PY, JAVA, CPP, JS)}
+    assert hashes[PY] == hashes[JAVA] == hashes[JS] == attack.params_hash()
+    assert hashes[CPP] != hashes[PY]
+    assert attack.params_hash(CPP) in grid_attacks("T2.1", language=CPP)
+    assert attack.params_hash(CPP) not in grid_attacks("T2.1", language=PY)
+
+
+def test_runs_with_cpp_catalog_version(tmp_path: Path) -> None:
+    out = _apply(_attack("all"), CPP_STRING, CPP, tmp_path)
+    assert out.status is AttackStatus.APPLIED
+    assert "r += 'a' + k" in out.code and out.detail["points"]["compound_assignment"] == 3

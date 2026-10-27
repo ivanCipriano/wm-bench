@@ -5,6 +5,10 @@
 # che ACW usa (tabella in docs/attacks/t2_1_ruff_sourcery.md), con la versione di Ruff fissata;
 # acw = regole di inserimento di ACW (refact_list.py) equivalenti, per la sovrapposizione.
 attack_id: T2.1
+# Versione del catalogo per linguaggio (1 se assente): entra solo nell'hash delle celle di quel
+# linguaggio. cpp 2 (27 ottobre 2026): compound_assignment solo su variabili di tipo aritmetico
+# (ADR-014 §1.6); le celle C++ della versione 1 restano, marcate come superate.
+catalog_version: {python: 1, java: 1, cpp: 2, javascript: 1}
 fixed:
   ruff_version: 0.7.4
   ruff_rules:

@@ -157,7 +157,7 @@ class AttackStage(Stage):
         return resolve(self._cfg(), self._adapters[method], cell.config_hash)[1]
 
     def attack(self, cell: Cell) -> Attack:
-        return resolve_attack(str(cell.attack_id), cell.attack_params_hash)
+        return resolve_attack(str(cell.attack_id), cell.attack_params_hash, cell.language)
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
         method, model_id, level, language, split, _, _ = self._require(cell)
@@ -275,7 +275,7 @@ class AttackStage(Stage):
             )
         df = pd.DataFrame(rows, columns=[*CodeSample.model_fields, *EXTRA_COLUMNS])
         df["sample_index"] = df["sample_index"].astype("Int64")
-        extra = self._summary(attack, outcomes, df, tools)
+        extra = self._summary(attack, outcomes, df, tools, lang)
         if llm is not None:
             extra["attacker"] = llm.info()
         manifest = ctx.make_manifest(
@@ -298,7 +298,11 @@ class AttackStage(Stage):
 
     @staticmethod
     def _summary(
-        attack: Attack, outcomes: list[Any], df: pd.DataFrame, tools: ToolRunner | None
+        attack: Attack,
+        outcomes: list[Any],
+        df: pd.DataFrame,
+        tools: ToolRunner | None,
+        language: Language,
     ) -> dict[str, Any]:
         """Intensità dell'attacco nella cella (confrontabile fra linguaggi)."""
         statuses = Counter(str(o.status) for o in outcomes)
@@ -316,8 +320,9 @@ class AttackStage(Stage):
         return {
             "attack_id": attack.attack_id,
             "attack_params": attack.params,
-            "attack_params_hash": attack.params_hash(),
+            "attack_params_hash": attack.params_hash(language),
             "attack_version": attack.version,
+            "catalog_version": attack.catalog_version(language),
             "status_counts": dict(statuses),
             "changed_fraction": round(changed / applicable, 6) if applicable else None,
             "codebleu_distance_mean": round(float(df["codebleu_distance"].mean()), 6)

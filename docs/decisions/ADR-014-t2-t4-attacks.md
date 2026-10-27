@@ -56,6 +56,7 @@ Ogni restrizione evita un cambio di semantica; la colonna "motivo" va riportata 
 | | | | solo come istruzione o aggiornamento di un `for` (non dentro un'espressione) | il valore dell'espressione non cambia, ma si limita la trasformazione ai casi ovvi |
 | | | | Python: `+=`, `-=` solo con `e` letterale numerico; mai `*=`, `\|=`, `&=`, `^=`, `@=` | su liste, insiemi e array la forma composta modifica l'oggetto (visibile da altri riferimenti), quella espansa ne crea uno nuovo; `l *= 2` vale anche per le liste |
 | | | | Java: solo locali o parametri `double` (`+ - * / %`), `String` (`+=`), `int`/`long` con `e` letterale intero, `boolean` (`& \| ^`) | la forma composta ha un cast implicito: `short s; s += 1` → `s = s + (1)` non compila, `int k; k += 1.5` nemmeno |
+| | | | C++ (catalogo versione 2, §1.6): solo locali o parametri con tipo dichiarato aritmetico (`primitive_type` o `sized_type_specifier`: `int`, `long long`, `double`, `char`, `bool`, `size_t`, …), dichiaratore semplice; niente `string`, `auto`, puntatori, riferimenti, array, tipi non trovati | `operator+=` di una classe può accettare conversioni che `operator+` non accetta: `string s; s += 'a' + k` (int → char) compila, `s = s + ('a' + k)` no |
 | | | | JS: mai `&&=`, `\|\|=`, `??=` | assegnano solo a volte |
 | `commutative_swap` | tutti | `a * b`, `a == b`, `a != b`, `===`, `!==` → operandi scambiati | operandi identificatori o letterali numerici, almeno un identificatore | nessun effetto collaterale né ordine di valutazione da conservare |
 | `comparison_flip` | tutti | `a < b` → `b > a`, `a <= b` → `b >= a` | come sopra | come sopra |
@@ -100,6 +101,44 @@ di ACW.
 Comando: `scripts/check_attacks_canonical.sh --attacks T2.1 --params b=all [--baseline-dev]`.
 
 **Esito (26 ottobre 2026):** canoniche 541/542 (Python) e 164/164 negli altri linguaggi; baseline di L1 dev 99,52% (Python), 100% (Java, C++, JavaScript). I 5 fallimenti sono `TIMEOUT` di programmi al limite di tempo, non errori di semantica (si ripetono anche con il solo `comparison_flip`, che non cambia il costo): nessuna restrizione aggiunta. Log: `M11_t2_1_canonical.txt`, `M11_t2_1_baseline_dev.txt`.
+
+### 1.6 Correzione dopo il primo lancio: catalogo C++ versione 2 (27 ottobre 2026)
+
+**Caso.** Sul primo lancio di L1 test, T2.1 ha rotto la compilazione di 2–5 campioni C++ di STONE
+su 840 per modello (ΔPass@1 rispetto al marcato 0,24–0,60 pp; `M11_attacks_t2_1_stone.txt`),
+tutti con `compound_assignment` (`M11_t2_1_stone_cpp_regressions.txt`):
+
+- humaneval/89 (Qwen, campioni 0, 1, 3, 4, 5): `result += 'a' + (c - 'a' + 4) % 26` →
+  `result = result + ('a' + (c - 'a' + 4) % 26)`;
+- humaneval/11 (DeepSeek, campioni 0, 1, 3, 4): `result += ((a[i] - '0') ^ (b[i] - '0')) + '0'` →
+  `result = result + (((a[i] - '0') ^ (b[i] - '0')) + '0')`.
+
+Su `std::string`, `operator+=(char)` accetta l'`int` con una conversione implicita, mentre
+`operator+(string, …)` è un template e la deduzione fallisce (`string + int` non compila). Le
+verifiche di §1.5 non lo avevano visto perché né le canoniche né la baseline di dev contenevano
+questo schema.
+
+**Decisione dell'utente.** La soglia del 99% serviva a cercare casi non previsti, non ad
+autorizzarli: ogni rottura dovuta a una trasformazione si chiude con una restrizione. In C++
+`compound_assignment` si applica solo a variabili locali o parametri con tipo dichiarato
+aritmetico (stessa logica di Java; riga C++ della tabella di §1.2).
+
+**Versione del catalogo per linguaggio.** `configs/attack/t2_1_refactor.yaml` ha
+`catalog_version: {python: 1, java: 1, cpp: 2, javascript: 1}`. Nell'`attack_params_hash` di una
+cella entra solo la versione del suo linguaggio, e solo se diversa da 1
+(`src/bench/attacks/base.py`): cambiano solo le 8 celle C++ di STONE (4 valori di `b` × 2
+modelli), che si rilanciano; Python, Java e JavaScript tengono hash e risultati. Il codice
+conserva il comportamento della versione 1 (la restrizione vale da `catalog_version` 2), quindi
+le celle vecchie restano riproducibili. Con il nuovo hash cambia anche l'RNG dei campioni
+(SPEC §18): con `b` < all i tipi estratti in C++ possono essere diversi da quelli del primo lancio.
+
+**Risultati superati.** Le celle C++ della versione 1 restano con il loro hash; nel manifest di
+attacco, esecuzione, rilevazione e metriche c'è `extra.superseded` (hash nuovo, versioni, motivo),
+scritto da `scripts/supersede_attack_cells.py`. I report (`check_attacks.py`) leggono solo le
+celle con l'hash corrente.
+
+**Verifica ripetuta.** Canoniche e baseline di L1 dev in C++ con `b = all`: nessun campione che
+passava deve fallire per T2.1. Esito: _da completare_.
 
 ## 2. T2.4 troncamento
 

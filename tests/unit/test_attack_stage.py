@@ -189,3 +189,15 @@ def test_execute_detect_metrics_refs_for_attacked_cells(acfg: ExperimentConfig) 
     refs = met._refs(cell)
     assert {"attacked_det", "exec_attacked", "exec_marked", "neg_human"} <= set(refs)
     assert met.outputs(cell)[0].path.as_posix().startswith(f"metrics/attacked/T1.5/{h}/{METHOD}/")
+
+
+def test_cells_use_the_catalog_version_of_their_language(acfg: ExperimentConfig) -> None:
+    """T2.1 ha ``catalog_version`` cpp 2: le celle C++ hanno l'hash della versione 2, quelle degli
+    altri linguaggi l'hash di prima (decisione dell'utente del 27 ottobre 2026)."""
+    cfg = rebuild(acfg, attacks=["T2.1"], languages=["python", "cpp"])
+    by_lang: dict[str, set[str]] = {}
+    for c in CellPlanner(cfg).cells_for(AttackStage):
+        by_lang.setdefault(str(c.language), set()).add(str(c.attack_params_hash))
+    assert by_lang["python"] == {a.params_hash() for a in grid_attacks("T2.1").values()}
+    assert by_lang["cpp"] == set(grid_attacks("T2.1", language="cpp"))
+    assert not by_lang["python"] & by_lang["cpp"]

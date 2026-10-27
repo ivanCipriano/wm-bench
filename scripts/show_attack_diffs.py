@@ -111,7 +111,7 @@ def main() -> int:
     if len(attacks) != 1:
         sys.stdout.write(f"##### the filter {wanted} selects {len(attacks)} grid points\n")
         return 1
-    ((params_hash, attack),) = attacks.items()
+    (attack,) = attacks.values()
     problems = store.read_table(problems_ref(LEVEL, args.language))
     entries = dict(zip(problems["problem_key"], problems["entry_point"], strict=True))
     sys.stdout.write(
@@ -121,6 +121,7 @@ def main() -> int:
     for cell in record.cells:
         if cell.language != args.language or cell.not_applicable or cell.config_hash is None:
             continue
+        params_hash = attack.params_hash(cell.language)  # versione corrente del catalogo
         ref = attacked_ref(
             args.attack, params_hash, args.method, cell.model_id, cell.config_hash, LEVEL,
             args.language, SPLIT,
@@ -146,8 +147,10 @@ def main() -> int:
                 {**{str(k): v for k, v in row.items()}, "original": original, "category": category}
             )
         n = len(table)
-        selected = "APPLIED con esito cambiato" if args.regressions else "APPLIED"
-        sys.stdout.write(f"\n=== {cell.model_id}: {n} campioni, {selected} {len(rows)}\n")
+        sys.stdout.write(
+            f"\n=== {cell.model_id}: {n} campioni, "
+            f"{'APPLIED con esito cambiato' if args.regressions else 'APPLIED'} {len(rows)}\n"
+        )
         for category in CATEGORIES:
             k = counts[category]
             share = k / len(rows) if rows else 0.0
@@ -159,17 +162,21 @@ def main() -> int:
             f"({shown['category']})\n"
         )
         if args.regressions:
-            sys.stdout.write(
-                f"exec {shown['exec_marked']} -> {shown['exec_attacked']}\n"
-                f"attack_detail {shown['attack_detail']}\n"
-                f"stderr_tail {shown['stderr_tail']}\n"
-            )
+            _write_regression(shown)
         diff = difflib.unified_diff(
             shown["original"].splitlines(), shown["code"].splitlines(), "marcato", "attaccato",
             lineterm="",
         )  # fmt: skip
         sys.stdout.write("\n".join(diff) + "\n")
     return 0
+
+
+def _write_regression(shown: dict[str, Any]) -> None:
+    sys.stdout.write(
+        f"exec {shown['exec_marked']} -> {shown['exec_attacked']}\n"
+        f"attack_detail {shown['attack_detail']}\n"
+        f"stderr_tail {shown['stderr_tail']}\n"
+    )
 
 
 def _regressions(
