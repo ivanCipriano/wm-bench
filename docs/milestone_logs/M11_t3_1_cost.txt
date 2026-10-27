@@ -1,0 +1,38 @@
+
+##### sweet: NOT FROZEN (stima quando sarà congelato)
+
+##### acw  (ri-marcatura su CPU, rilevazione su CPU)
+  qwen25_coder_7b python: ri-marcatura 3.8 h – 3.8 h (watermark L1 test, worker); rilevazione k2 10.4 h
+      neg_human/L1_dev 2.7 h (worker); neg_human/L2_dev 0.4 h (worker); neg_integration/L2_dev 2.2 h (worker); neg_human/L1_test 1.3 h (worker); positives/L1_test 3.8 h (worker)
+  deepseek_coder_6p7b python: ri-marcatura 3.8 h – 3.8 h (watermark L1 test, worker); rilevazione k2 11.0 h
+      neg_human/L1_dev 3.4 h (worker); neg_human/L2_dev 0.4 h (worker); neg_integration/L2_dev 2.2 h (worker); neg_human/L1_test 1.3 h (worker); positives/L1_test 3.7 h (worker)
+  TOTALE acw: ri-marcatura 7.6 h – 7.6 h (CPU); rilevazione k2 21.4 h (CPU)
+
+##### stone  (ri-marcatura su GPU_NVIDIA, rilevazione su GPU_NVIDIA)
+  qwen25_coder_7b python: ri-marcatura 0.4 h – 2.5 h (watermark L1 test, worker); rilevazione k2 0.1 h
+      neg_human/L1_dev 0.1 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.0 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  qwen25_coder_7b java: ri-marcatura 0.3 h – 1.6 h (watermark L1 test, worker); rilevazione k2 0.2 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.1 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  qwen25_coder_7b cpp: ri-marcatura 0.1 h – 0.8 h (watermark L1 test, worker); rilevazione k2 0.2 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.1 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  deepseek_coder_6p7b python: ri-marcatura 0.3 h – 1.9 h (watermark L1 test, worker); rilevazione k2 0.1 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.0 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  deepseek_coder_6p7b java: ri-marcatura 0.3 h – 1.7 h (watermark L1 test, worker); rilevazione k2 0.2 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.1 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  deepseek_coder_6p7b cpp: ri-marcatura 0.5 h – 3.1 h (watermark L1 test, worker); rilevazione k2 0.2 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.1 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  TOTALE stone: ri-marcatura 1.9 h – 11.6 h (GPU_NVIDIA); rilevazione k2 1.0 h (GPU_NVIDIA)
+
+##### promptmark  (ri-marcatura su GPU_NVIDIA, rilevazione su CPU)
+  qwen25_coder_7b python: ri-marcatura 25.0 h – 25.0 h (watermark L1 test, worker); rilevazione k2 0.0 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.0 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  deepseek_coder_6p7b python: ri-marcatura 24.7 h – 24.7 h (watermark L1 test, worker); rilevazione k2 0.0 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.0 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  TOTALE promptmark: ri-marcatura 49.7 h – 49.7 h (GPU_NVIDIA); rilevazione k2 0.0 h (CPU)
+
+##### mcgmark  (ri-marcatura su GPU_NVIDIA, rilevazione su GPU_NVIDIA)
+  qwen25_coder_7b python: ri-marcatura 3.1 h – 3.1 h (watermark L1 test, worker); rilevazione k2 0.0 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.0 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  deepseek_coder_6p7b python: ri-marcatura 3.2 h – 3.2 h (watermark L1 test, worker); rilevazione k2 0.0 h
+      neg_human/L1_dev 0.0 h (worker); neg_human/L2_dev 0.0 h (worker); neg_integration/L2_dev 0.0 h (worker); neg_human/L1_test 0.0 h (worker); positives/L1_test 0.0 h (worker)
+  TOTALE mcgmark: ri-marcatura 6.3 h – 6.3 h (GPU_NVIDIA); rilevazione k2 0.1 h (GPU_NVIDIA)
