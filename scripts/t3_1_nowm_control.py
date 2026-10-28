@@ -134,7 +134,10 @@ def main() -> int:
         h = str(cell.config_hash)
         ph = attack.params_hash(lang)
         table = store.read_table(watermarked_ref(args.method, args.model, h, LEVEL, lang, SPLIT))
-        rows = [clean(r) for r in table.to_dict(orient="records")]
+        columns = list(
+            CodeSample.model_fields
+        )  # come la fase attack: senza le colonne d'inserimento
+        rows = [clean(r) for r in table[columns].to_dict(orient="records")]
         rows.sort(key=lambda r: derive_seed(cfg.global_seed, "t3_1-nowm-control", r["sample_id"]))
         parents = [CodeSample.model_validate(r) for r in rows[: args.n]]
         ids = {p.sample_id for p in parents}
