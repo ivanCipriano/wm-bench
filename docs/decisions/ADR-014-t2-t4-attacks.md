@@ -323,7 +323,8 @@ Log: `M11_attacks_t3_1_stone.txt` (report), `M11_t3_1_diag_stone.txt` (tempo e u
   non compila. Anche con un'estrazione diversa i test chiamerebbero un nome che non esiste: l'esito
   `COMPILE_ERROR` è corretto, non un artefatto. **Decisione dell'utente del 28 ottobre 2026:** il
   risultato si accetta così com'è, senza deviazione; nella tesi va scritto che con STONE la
-  ri-marcatura con k2 rompe l'interfaccia del codice in Java e C++, con le percentuali precise.
+  ri-marcatura con k2 rompe l'interfaccia del codice in Java e C++, con le percentuali precise
+  (poi allargata a Python dopo la misura: vedi la frase per la tesi più sotto).
 - **Misura** (`bench.attacks.interface`, euristica descritta nel modulo): per cella, campioni
   `APPLIED` con la funzione d'ingresso rinominata o mancante e fallimenti di Pass@1 divisi fra
   questi e gli altri, nel report di `check_attacks.py` (T2.2 e T3.1) e in
