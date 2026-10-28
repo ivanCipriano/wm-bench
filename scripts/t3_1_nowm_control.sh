@@ -29,7 +29,7 @@ export PATH=$WMB/bench-core/bin:\$PATH
 cd $REPO_ROOT
 umask 002
 echo "##### nodo \$(hostname), commit \$(git rev-parse --short HEAD)"
-python scripts/t3_1_nowm_control.py $*
+python -u scripts/t3_1_nowm_control.py $*
 EOF
 JOB=$(sbatch --parsable -p gpuq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_gpuq_qos \
     --gres gpu:1 -c 4 --mem 48G -t 240 ${EXCLUDE[@]+"${EXCLUDE[@]}"} --job-name wmb-t3-1-nowm \
