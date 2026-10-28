@@ -1,0 +1,45 @@
+##### stone attacks T4.1 on L1 test
+attack              4/4    COMPLETE
+execute             4/4    COMPLETE
+detect              4/4    COMPLETE
+metrics             4/4    COMPLETE
+
+##### T4.1 {"rename": false} qwen25_coder_7b python
+  status {'APPLIED': 2674, 'TOOL_ERROR': 2}  changed 0.999253  1-CodeBLEU 0.486125 (changed only 0.486489)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.0004  unchanged_fraction 0.0000  auroc 0.5416  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9993  tool_error_fraction 0.0007  codebleu_distance 0.4861
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0007
+  exec (APPLIED 2674): passed 1967  not compiling 0  compiling but failing 707  {'PASSED': 1967, 'FAILED': 677, 'TIMEOUT': 30}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.0000 (n=2674)
+
+##### T4.1 {"rename": false} deepseek_coder_6p7b python
+  status {'APPLIED': 2674, 'TOOL_ERROR': 2}  changed 0.999253  1-CodeBLEU 0.498539 (changed only 0.498912)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.0011  unchanged_fraction 0.0000  auroc 0.4098  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9993  tool_error_fraction 0.0007  codebleu_distance 0.4985
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0007
+  exec (APPLIED 2674): passed 1893  not compiling 0  compiling but failing 781  {'PASSED': 1893, 'FAILED': 772, 'TIMEOUT': 9}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.0011 (n=2674)
+
+##### T4.1 {"rename": true} qwen25_coder_7b python
+  status {'APPLIED': 2674, 'TOOL_ERROR': 2}  changed 0.999253  1-CodeBLEU 0.523058 (changed only 0.523449)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.0004  unchanged_fraction 0.0000  auroc 0.6000  pass_at_1 0.7351  delta_pass_at_1_pp 2.9522  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9993  tool_error_fraction 0.0007  codebleu_distance 0.5231
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0007
+  exec (APPLIED 2674): passed 1967  not compiling 0  compiling but failing 707  {'PASSED': 1967, 'FAILED': 677, 'TIMEOUT': 30}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.0000 (n=2674)
+
+##### T4.1 {"rename": true} deepseek_coder_6p7b python
+  status {'APPLIED': 2674, 'TOOL_ERROR': 2}  changed 0.999253  1-CodeBLEU 0.552008 (changed only 0.552421)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.0011  unchanged_fraction 0.0000  auroc 0.4769  pass_at_1 0.7074  delta_pass_at_1_pp -0.7474  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9993  tool_error_fraction 0.0007  codebleu_distance 0.5520
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0007
+  exec (APPLIED 2674): passed 1893  not compiling 0  compiling but failing 781  {'PASSED': 1893, 'FAILED': 772, 'TIMEOUT': 9}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.0011 (n=2674)
