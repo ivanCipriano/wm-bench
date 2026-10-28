@@ -23,7 +23,9 @@ def _policy(
     ("stage", "method", "attack", "expected"),
     [
         ("generate_baseline", None, None, ResourceClass.GPU_NVIDIA),
-        ("imperceptibility", None, None, ResourceClass.GPU_NVIDIA),
+        ("perplexity", None, None, ResourceClass.GPU_NVIDIA),
+        ("adversarial_unixcoder", None, None, ResourceClass.GPU_NVIDIA),
+        ("adversarial_logreg", None, None, ResourceClass.CPU),
         ("watermark", "stone", None, ResourceClass.GPU_NVIDIA),
         ("watermark", "acw", None, ResourceClass.CPU),
         ("detect", "sweet", None, ResourceClass.GPU_NVIDIA),
