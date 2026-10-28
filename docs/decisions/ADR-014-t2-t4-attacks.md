@@ -350,8 +350,9 @@ mangle: {toplevel: false}})` con rinomina: le opzioni di `compress` sono quelle 
 versione fissata, gli altri gruppi (`parse`, `format`) anche. Con `toplevel` falso (default) né
 `compress` né `mangle` toccano i nomi a livello di file, comprese le funzioni dichiarate come
 `const nome = (...) => {...}`. Opzioni di `compress` attive per default secondo la documentazione
-di terser 5 (l'elenco esatto della versione installata si stampa nel log della verifica sulle
-canoniche, `node tools/js/t4_batch.mjs defaults`, e sostituisce questo se diverso):
+di terser 5 (l'elenco esatto della versione installata, la sezione "Compress options" del suo
+README, si stampa nel log della verifica sulle canoniche e sostituisce questo se diverso; l'API di
+terser non espone i default):
 `arrows`, `booleans`, `collapse_vars`, `comparisons`, `computed_props`, `conditionals`,
 `dead_code`, `directives`, `drop_debugger`, `evaluate`, `hoist_props`, `if_return`, `inline` (3),
 `join_vars`, `keep_fargs`, `loops`, `negate_iife`, `properties`, `reduce_funcs`, `reduce_vars`,
@@ -361,14 +362,26 @@ canoniche, `node tools/js/t4_batch.mjs defaults`, e sostituisce questo se divers
 
 ### 4.3 T4.2 JavaScript: esbuild 0.24.0
 
-`buildSync({stdin, bundle: true, format: "cjs", platform: "node", treeShaking: false})`, cioè
-`esbuild --bundle --format=cjs --platform=node --tree-shaking=false`. **Motivazione** (decisione
+`buildSync({stdin, bundle: true, format: "cjs", platform: "node", treeShaking: false, packages:
+"external"})`, cioè `esbuild --bundle --format=cjs --platform=node --tree-shaking=false
+--packages=external`. **Motivazione** (decisione
 dell'utente): con i default esbuild avvolge il codice in una IIFE e, con il tree-shaking, elimina la
 funzione della soluzione, che nel file non è mai chiamata; in un progetto reale la funzione è
 raggiungibile da chi la chiama e non verrebbe eliminata: senza tree-shaking e con l'output per Node
 si riproduce questa condizione sul campione isolato. Gli import dei moduli di Node (`fs`,
 `readline` in CodeNet) restano `require` esterni. Il codice entra da stdin con un nome fisso
 (`input.js`), così il commento con il percorso che esbuild mette in testa non dipende dal lotto.
+
+**Pacchetti npm esterni** (`--packages=external`, decisione dell'utente del 28 ottobre 2026, prima
+di qualsiasi lancio di T4.2): la prima verifica sulle canoniche ha dato `TOOL_ERROR` su HumanEval/162,
+che importa `js-md5`, assente nell'ambiente dei tool. **Motivazione:** in un progetto Node le
+dipendenze npm restano installate a parte; copiarle nel file aggiungerebbe codice della libreria,
+senza watermark, che falserebbe la rilevazione. Con l'opzione i `require`/`import` di pacchetti npm
+restano tali, come quelli dei moduli di Node. Verifiche: quanti campioni di L1 importano pacchetti
+npm, per gruppo, con i problemi coinvolti, e che per i campioni senza pacchetti l'output sia
+identico con e senza l'opzione (`scripts/count_npm_imports.py`, log `M11_t4_2_npm.txt`; lo stesso
+confronto sulle canoniche nel log della verifica). T4.2 non era ancora stato lanciato: la versione
+dell'attacco resta 1.
 
 ### 4.4 Verifiche e report
 

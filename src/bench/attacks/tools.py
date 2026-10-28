@@ -183,6 +183,7 @@ class ToolRunner:
             "terser": self._t4_available,
             "terser-mangle": self._t4_available,
             "esbuild": self._t4_available,
+            "esbuild-bundled": self._t4_available,
         }
         return checks[tool]()
 
@@ -210,6 +211,7 @@ class ToolRunner:
                 "terser": [str(self.js_bin / "terser"), "--version"],
                 "terser-mangle": [str(self.js_bin / "terser"), "--version"],
                 "esbuild": [str(self.js_bin / "esbuild"), "--version"],
+                "esbuild-bundled": [str(self.js_bin / "esbuild"), "--version"],
             }[tool]  # fmt: skip
             try:
                 proc = subprocess.run(
@@ -304,6 +306,7 @@ class ToolRunner:
             "terser": lambda: self._t4("terser"),
             "terser-mangle": lambda: self._t4("terser-mangle"),
             "esbuild": lambda: self._t4("esbuild"),
+            "esbuild-bundled": lambda: self._t4("esbuild-bundled"),  # diagnostica di T4.2
         }
         if tool not in builders:
             raise ValueError(f"unknown tool {tool!r}")

@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 
 from bench.attacks.base import AttackContext, grid_attacks, make_attack
+from bench.attacks.t4.minify import npm_packages
 from bench.attacks.tools import ToolRunner
 from bench.config.builder import repo_root
 from bench.domain.enums import AttackStatus, Language
@@ -116,3 +117,18 @@ def test_esbuild_bundle_keeps_function(runner: ToolRunner) -> None:
     assert out[0].status is AttackStatus.APPLIED
     assert "sumSquares" in out[0].code  # niente tree-shaking
     assert out[0].code == out[1].code  # il nome del file nel lotto non entra nel bundle
+
+
+def test_npm_packages_ignores_relative_node_and_builtin_modules() -> None:
+    code = (
+        "const md5 = require('js-md5');\nconst fs = require(\"fs\");\n"
+        "const p = require('node:path');\nimport y from './a';\n"
+        "import { a } from '@scope/pkg/sub';\nimport 'lodash/fp';\n"
+        "const c = await import('chalk');\n"
+    )
+    assert npm_packages(code, frozenset({"fs", "path"})) == [
+        "js-md5",
+        "@scope/pkg",
+        "lodash",
+        "chalk",
+    ]

@@ -39,7 +39,6 @@ import inspect
 import json
 import re
 import statistics
-import subprocess
 import sys
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
@@ -49,6 +48,7 @@ from typing import Any
 from bench.attacks.base import AttackContext, AttackPools, grid_attacks, sample_rng
 from bench.attacks.t1.common import statement_sites
 from bench.attacks.t1.local_edits import LOG_LANGUAGES, _excluded_site, log_sites
+from bench.attacks.t4.minify import node_builtins, npm_packages
 from bench.attacks.tools import ToolRunner
 from bench.config.builder import load_experiment, repo_root
 from bench.data.attack_pools import AttackPool
@@ -252,6 +252,8 @@ def check_language(
                 )
             if attack.group == "T4":
                 report_t4_names(checker, lang, keys, attacked)
+            if attack_id == "T4.2" and lang is Language.JAVASCRIPT:
+                report_t4_2_external(tools, keys, checker.codes, attacked)
             if attack_id == "T1.2" and lang is Language.JAVA and broken:
                 isolate_recipes(checker, tools, broken)
             if attack_id == "T2.1" and broken:
@@ -281,20 +283,28 @@ def report_t4_names(
 ) -> None:
     """T4: la funzione d'ingresso mantiene il nome (e, in Python, i nomi dei parametri)?"""
     lost: list[str] = []
+    never: list[str] = []  # nome assente già nella canonica (metadati diversi dal codice)
     renamed: list[str] = []
     for key in keys:
         problem = next(p for p in checker.problems if p.problem_key == key)
         name = problem.entry_point
         if not name:
             continue
-        if not re.search(rf"(?<![\w$]){re.escape(name)}(?![\w$])", attacked[key]):
-            lost.append(key)
+        pattern = rf"(?<![\w$]){re.escape(name)}(?![\w$])"
+        if not re.search(pattern, checker.codes[key]):
+            never.append(f"{key} ({name})")
+        elif not re.search(pattern, attacked[key]):
+            lost.append(f"{key} ({name})")
         if lang is Language.PYTHON:
             before = _entry_params(checker.codes[key], name)
             after = _entry_params(attacked[key], name)
             if before is not None and after is not None and before != after:
                 renamed.append(f"{key} {before} -> {after}")
     sys.stdout.write(f"    funzione d'ingresso assente dopo l'attacco: {len(lost)} {lost[:10]}\n")
+    if never:
+        sys.stdout.write(
+            f"    nome dei metadati assente già nella canonica: {len(never)} {never[:10]}\n"
+        )
     if lang is Language.PYTHON:
         sys.stdout.write(
             f"    parametri della funzione d'ingresso rinominati: {len(renamed)} {renamed[:10]}\n"
@@ -309,11 +319,29 @@ def report_t4_defaults(languages: list[str]) -> None:
         signature = inspect.signature(python_minifier.minify)
         sys.stdout.write(f"##### python-minifier: minify{signature}\n")
     if "javascript" in languages:
-        script = repo_root() / "tools" / "js" / "t4_batch.mjs"
-        proc = subprocess.run(
-            ["node", str(script), "defaults"], capture_output=True, text=True, check=False
-        )
-        sys.stdout.write(f"##### terser: opzioni di default\n{proc.stdout or proc.stderr}\n")
+        readme = repo_root() / "tools" / "js" / "node_modules" / "terser" / "README.md"
+        text = readme.read_text(encoding="utf-8") if readme.is_file() else ""
+        match = re.search(r"^## Compress options$.*?(?=^## )", text, re.MULTILINE | re.DOTALL)
+        section = match.group(0) if match else f"(sezione non trovata in {readme})"
+        sys.stdout.write(f"##### terser: opzioni di compress (README installato)\n{section}\n")
+
+
+def report_t4_2_external(
+    tools: ToolRunner, keys: list[str], codes: dict[str, str], attacked: dict[str, str]
+) -> None:
+    """T4.2: canoniche che importano pacchetti npm e, per le altre, se l'output con
+    ``--packages=external`` è identico a quello senza (decisione dell'utente, 28 ottobre 2026)."""
+    builtins = node_builtins(tools)
+    npm = {k: npm_packages(codes[k], builtins) for k in keys}
+    with_npm = [f"{k} {v}" for k, v in npm.items() if v]
+    plain = [k for k in keys if not npm[k]]
+    bundled = tools.run("esbuild-bundled", [codes[k] for k in plain])
+    same = sum(1 for k, r in zip(plain, bundled, strict=True) if r.code == attacked[k])
+    sys.stdout.write(
+        f"    canoniche con pacchetti npm: {len(with_npm)} {with_npm}\n"
+        f"    senza pacchetti npm, output identico senza --packages=external: "
+        f"{same}/{len(plain)}\n"
+    )
 
 
 def check_baseline_dev(

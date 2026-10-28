@@ -19,13 +19,44 @@ codice originale.
 
 from __future__ import annotations
 
+import json
+import re
+import subprocess
 from typing import ClassVar
 
 from bench.attacks.t1.tooling import ToolAttack
+from bench.attacks.tools import ToolRunner
 from bench.domain.enums import Language
 from bench.registry import ATTACKS
 
 PYTHON_MINIFIER = "python-minifier"
+# require("x"), import ... from "x", import "x", import("x"): il nome del modulo importato.
+_JS_IMPORT = re.compile(
+    r"""(?:\brequire\s*\(\s*|\bimport\s*\(\s*|\bfrom\s+|\bimport\s+)(['"])([^'"\n]+)\1"""
+)
+
+
+def node_builtins(runner: ToolRunner) -> frozenset[str]:
+    """Moduli predefiniti del Node dell'ambiente dei tool (``require('module').builtinModules``)."""
+    proc = subprocess.run(
+        ["node", "-e", "console.log(JSON.stringify(require('module').builtinModules))"],
+        capture_output=True, text=True, env=runner.env(), check=True, timeout=60,
+    )  # fmt: skip
+    return frozenset(json.loads(proc.stdout))
+
+
+def npm_packages(code: str, builtins: frozenset[str]) -> list[str]:
+    """Pacchetti npm importati dal codice (non relativi, non ``node:``, non predefiniti), in
+    ordine di comparsa; per lo scoped ``@a/b/c`` il pacchetto è ``@a/b``, per ``a/b`` è ``a``."""
+    out: list[str] = []
+    for _, spec in _JS_IMPORT.findall(code):
+        if spec.startswith((".", "/", "node:")):
+            continue
+        parts = spec.split("/")
+        package = "/".join(parts[:2]) if spec.startswith("@") else parts[0]
+        if package not in builtins and package not in out:
+            out.append(package)
+    return out
 
 
 @ATTACKS.register("T4.1")

@@ -2,13 +2,17 @@
 //
 //   node t4_batch.mjs terser        f00000.js ...  # T4.1 senza rinomina: compress di default
 //   node t4_batch.mjs terser-mangle f00000.js ...  # T4.1 con rinomina: compress + mangle (toplevel=false)
-//   node t4_batch.mjs esbuild       f00000.js ...  # T4.2: bundle, cjs, node, senza tree-shaking
-//   node t4_batch.mjs defaults                     # opzioni di default di terser (per l'ADR)
+//   node t4_batch.mjs esbuild       f00000.js ...  # T4.2: bundle, cjs, node, senza tree-shaking,
+//                                                  #       pacchetti npm esterni
+//   node t4_batch.mjs esbuild-bundled f00000.js ... # diagnostica: come esbuild, pacchetti non esterni
 //
 // Ogni file si riscrive al suo posto. Al primo errore il processo esce con codice 1: il ToolRunner
 // divide il lotto finché l'errore resta su un solo file (TOOL_ERROR con il codice originale).
 // esbuild legge il codice da stdin con un nome fisso, così il commento con il percorso che mette
-// in testa al bundle non dipende dalla posizione del file nel lotto.
+// in testa al bundle non dipende dalla posizione del file nel lotto. Con --packages=external i
+// require/import di pacchetti npm restano tali, come i moduli di Node (decisione dell'utente del
+// 28 ottobre 2026: in un progetto le dipendenze restano installate a parte, e copiarle nel file
+// aggiungerebbe codice senza watermark).
 import { readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname } from "node:path";
@@ -34,6 +38,7 @@ async function apply(mode, file) {
     format: "cjs",
     platform: "node",
     treeShaking: false,
+    ...(mode === "esbuild" ? { packages: "external" } : {}),
     write: false,
     logLevel: "silent",
   });
@@ -41,12 +46,7 @@ async function apply(mode, file) {
 }
 
 const [mode, ...files] = process.argv.slice(2);
-if (mode === "defaults") {
-  const options = terser._default_options ? await terser._default_options() : null;
-  process.stdout.write(JSON.stringify(options, null, 2) + "\n");
-  process.exit(0);
-}
-if (!(mode in TERSER) && mode !== "esbuild") {
+if (!(mode in TERSER) && mode !== "esbuild" && mode !== "esbuild-bundled") {
   process.stderr.write(`unknown mode: ${mode}\n`);
   process.exit(2);
 }
