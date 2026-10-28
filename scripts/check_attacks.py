@@ -35,7 +35,9 @@ from typing import Any
 import pandas as pd
 
 from bench.attacks.base import grid_attacks, negative_control_attacks
+from bench.attacks.interface import pass_failures
 from bench.config.builder import load_experiment
+from bench.domain.models import Problem
 from bench.hpo.freeze import FINAL_LEVELS, freeze_ref, load_freeze
 from bench.pipeline.stage import Cell
 from bench.pipeline.stages.attack import attacked_ref, attacked_subject
@@ -47,12 +49,14 @@ from bench.pipeline.stages.attack_control import (
 from bench.pipeline.stages.calibrate import primary_view, threshold_ref
 from bench.pipeline.stages.detect import detection_ref
 from bench.pipeline.stages.execute import execution_ref
+from bench.pipeline.stages.generate_baseline import problems_ref
 from bench.pipeline.stages.metrics import _detected, metrics_ref
 from bench.pipeline.stages.remark import ALT_KEY_ID, REMARK_ATTACK, remark_metrics_ref
 from bench.pipeline.stages.watermark import make_adapter
 from bench.store.artifact_store import ArtifactStore
 
 LEVEL, SPLIT = "L1", "test"
+LLM_REWRITES = frozenset({"T2.2", "T3.1"})  # riscritture con LLM: funzione d'ingresso rinominata?
 REPORT_METRICS = (
     "tpr_at_fpr", "auroc", "pass_at_1", "delta_pass_at_1_pp", "delta_pass_at_1_pp_vs_marked",
     "changed_fraction", "tool_error_fraction", "codebleu_distance",
@@ -262,6 +266,29 @@ def _write_report(
             sys.stdout.write("  " + "  ".join(parts) + "\n")
         if store.exists(attacked):
             _write_outcomes(store, attacked, ref, exe, det, adapter)
+            if extra.get("attack_id") in LLM_REWRITES and store.exists(exe):
+                _write_entry(store, attacked, exe)
+
+
+def _write_entry(store: ArtifactStore, attacked: Any, exe: Any) -> None:
+    """Fallimenti di Pass@1 divisi fra funzione d'ingresso rinominata o mancante e altri
+    (decisione dell'utente del 28 ottobre 2026, T3.1; ``bench.attacks.interface``)."""
+    samples = store.read_table(attacked)
+    lang = str(samples["language"].iloc[0])
+    problems = {
+        str(r["problem_key"]): Problem.model_validate(r)
+        for r in store.read_table(problems_ref(LEVEL, lang)).to_dict(orient="records")
+    }
+    runs = store.read_table(exe)
+    status = {str(k): str(v) for k, v in zip(runs["sample_id"], runs["status"], strict=True)}
+    got = pass_failures(samples.to_dict(orient="records"), status, problems)
+    applied = int((samples["attack_status"] == "APPLIED").sum())
+    lost = got["renamed"] + got["missing"]
+    sys.stdout.write(
+        f"  pass@1 failures {got['failed']}/{got['n']}: entry point renamed {got['renamed']}, "
+        f"missing {got['missing']}, other {got['other']}; entry lost in "
+        f"{lost}/{applied} APPLIED ({lost / max(1, applied):.4f})\n"
+    )
 
 
 def _write_outcomes(

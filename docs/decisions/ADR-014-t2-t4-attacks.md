@@ -305,6 +305,36 @@ Prima del lancio: stima del costo per metodo e modello (SWEET compreso, quando s
 - Stima dei costi prima del lancio: `scripts/estimate_t3_1_cost.py` (tempi dei lanci già fatti con
   la configurazione congelata).
 
+### 3.5 Esiti: STONE (28 ottobre 2026)
+
+Log: `M11_attacks_t3_1_stone.txt` (report), `M11_t3_1_diag_stone.txt` (tempo e uscite),
+`M11_t3_1_stone_java_regressions.txt` e `M11_t3_1_stone_cpp_regressions.txt` (diff).
+
+- **Tempo reale** della ri-marcatura: 14,9 h di GPU (somma di `elapsed_s` del worker), contro la
+  stima 1,9–11,6 h di `M11_t3_1_cost.txt`; per DeepSeek il costo pesa di più (Python 5,2 h).
+- **Rilevazione:** già senza attacco STONE ha TPR fra 0 e 8,8% su L1 test (`M10_test_stone.txt`),
+  quindi T3.1 dice poco sulla rimozione di k1; TPR con k1 0–2%, con k2 0,2–7,6%, entrambi ≈ 0.
+  Soglie di k2 diverse da quelle di k1 (k2/k1 da 0,55 a 1,54: dipendenza dalla chiave da
+  riportare); FPR di test con k2 ≤ 1,51% (qwen Python: 1,51% [0,83; 2,52]).
+- **La ri-marcatura rompe l'interfaccia in Java e C++.** Il generatore con k2 rinomina la funzione
+  d'ingresso nonostante il prompt lo vieti (`intersperse` → `intersperseNumbers`, `total_match` →
+  `totalMatch`, `sum_to_n` → classe `SumNumbers`); la regola D4 non trova l'`entry_point` e
+  antepone il prompt, quindi il file riscritto finisce nel corpo della firma originale e il campione
+  non compila. Anche con un'estrazione diversa i test chiamerebbero un nome che non esiste: l'esito
+  `COMPILE_ERROR` è corretto, non un artefatto. **Decisione dell'utente del 28 ottobre 2026:** il
+  risultato si accetta così com'è, senza deviazione; nella tesi va scritto che con STONE la
+  ri-marcatura con k2 rompe l'interfaccia del codice in Java e C++, con le percentuali precise.
+- **Misura** (`bench.attacks.interface`, euristica descritta nel modulo): per cella, campioni
+  `APPLIED` con la funzione d'ingresso rinominata o mancante e fallimenti di Pass@1 divisi fra
+  questi e gli altri, nel report di `check_attacks.py` (T2.2 e T3.1) e in
+  `scripts/t3_1_renames.py`, che confronta T3.1 con T2.2(a) (stesso prompt, senza watermark).
+- **Ipotesi sulla causa** (richiesta dell'utente): STONE spinge verso i token verdi solo i token non
+  sintattici, che comprendono i nomi; con `prefix_length = 0` la green list è una per chiave. Se
+  il nome originale ha token rossi per k2, il bias può spingere verso un altro nome.
+  `scripts/t3_1_renames.py --greens` misura, nei campioni rinominati, la frazione di token verdi
+  per k2 (e per k1, come controllo) nel nome originale e nel nome nuovo; T2.2 fa da controllo
+  senza watermark. Esito: _da completare con `M11_t3_1_renames.txt`_.
+
 ## 4. T4.1 minificazione e T4.2 bundling
 
 Decisioni dell'utente del 28 ottobre 2026. Codice in `src/bench/attacks/t4/minify.py`, griglie in
