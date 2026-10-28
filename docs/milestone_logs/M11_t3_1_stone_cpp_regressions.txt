@@ -1,0 +1,251 @@
+##### stone T3.1 {'key_id': 'k2', 'system_sha256': '1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe', 'prompt_sha256': '84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7'} cpp L1 test
+
+=== qwen25_coder_7b: 840 campioni, APPLIED con esito cambiato 145
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       1  (0.7% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                   144  (99.3% degli APPLIED)
+
+=== deepseek_coder_6p7b: 840 campioni, APPLIED con esito cambiato 421
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       1  (0.2% degli APPLIED)
+  cosmetic_body            1  (0.2% degli APPLIED)
+  body                   419  (99.5% degli APPLIED)
+
+----- qwen25_coder_7b humaneval/74 #5 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'embed_status': 'OK', 'extraction_ok': True}
+stderr_tail test.cpp: In function ‘std::vector<std::__cxx11::basic_string<char> > total_match(std::vector<std::__cxx11::basic_string<char> >, std::vector<std::__cxx11::basic_string<char> >)’:
+test.cpp:42:69: error: a function-definition is not allowed here before ‘{’ token
+   42 | vector<string> totalMatch(vector<string> lst1, vector<string> lst2) {
+      |                                                                     ^
+In file included from /usr/include/features.h:523,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/os_defines.h:39,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:683,
+                 from /usr/include/c++/14/cstdlib:41,
+                 from /usr/include/c++/14/stdlib.h:36,
+                 from test.cpp:2:
+/usr/include/assert.h:66:1: error: expected unqualified-id before string constant
+   66 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+test.cpp:50:46: error: a function-definition is not allowed here before ‘{’ token
+   50 | bool issame(vector<string> a,vector<string>b){
+      |                                              ^
+test.cpp:58:9: warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]
+   58 | int main(){
+      |         ^~
+test.cpp:58:9: note: remove parentheses to default-initialize a variable
+   58 | int main(){
+      |         ^~
+      |         --
+test.cpp:58:9: note: or replace parentheses with braces to value-initialize a variable
+test.cpp:58:11: error: a function-definition is not allowed here before ‘{’ token
+   58 | int main(){
+      |           ^
+test.cpp:68:2: error: expected ‘}’ at end of input
+   68 | }
+      |  ^
+test.cpp:39:68: note: to match this ‘{’
+   39 | vector<string> total_match(vector<string> lst1,vector<string> lst2){
+      |                                                                    ^
+test.cpp:68:2: warning: no return statement in function returning non-void [-Wreturn-type]
+   68 | }
+      |  ^
+--- marcato
++++ attaccato
+@@ -1,7 +1,26 @@
++/*
++Write a function that accepts two vectors of strings and returns the vector that has 
++total number of chars in the all strings of the vector less than the other vector.
++
++if the two vectors have the same number of chars, return the first vector.
++
++Examples
++total_match({}, {}) ➞ {}
++total_match({"hi", "admin"}, {"hI", "Hi"}) ➞ {"hI", "Hi"}
++total_match({"hi", "admin"}, {"hi", "hi", "admin", "project"}) ➞ {"hi", "admin"}
++total_match({"hi", "admin"}, {"hI", "hi", "hi"}) ➞ {"hI", "hi", "hi"}
++total_match({"4"}, {"1", "2", "3", "4", "5"}) ➞ {"4"}
++*/
++#include<stdio.h>
++#include<vector>
++#include<string>
+ using namespace std;
+ vector<string> total_match(vector<string> lst1,vector<string> lst2){
++using namespace std;
++
++vector<string> totalMatch(vector<string> lst1, vector<string> lst2) {
+     int count1 = 0, count2 = 0;
+-    for(const auto& s : lst1) count1 += s.size();
+-    for(const auto& s : lst2) count2 += s.size();
++    for (const auto& s : lst1) count1 += s.size();
++    for (const auto& s : lst2) count2 += s.size();
+     return count1 <= count2 ? lst1 : lst2;
+ }
+
+----- deepseek_coder_6p7b humaneval/60 #4 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'embed_status': 'OK', 'extraction_ok': True}
+stderr_tail In file included from /usr/include/features.h:523,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/os_defines.h:39,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:683,
+                 from /usr/include/c++/14/cstdlib:41,
+                 from /usr/include/c++/14/stdlib.h:36,
+                 from test.cpp:2:
+/usr/include/assert.h: In function ‘int sum_to_n(int)’:
+/usr/include/assert.h:66:1: error: expected unqualified-id before string constant
+   66 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+test.cpp:54:9: warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]
+   54 | int main(){
+      |         ^~
+test.cpp:54:9: note: remove parentheses to default-initialize a variable
+   54 | int main(){
+      |         ^~
+      |         --
+test.cpp:54:9: note: or replace parentheses with braces to value-initialize a variable
+test.cpp:54:11: error: a function-definition is not allowed here before ‘{’ token
+   54 | int main(){
+      |           ^
+test.cpp:60:2: error: expected ‘}’ at end of input
+   60 | }
+      |  ^
+test.cpp:37:20: note: to match this ‘{’
+   37 | int sum_to_n(int n){
+      |                    ^
+test.cpp:60:2: warning: no return statement in function returning non-void [-Wreturn-type]
+   60 | }
+      |  ^
+--- marcato
++++ attaccato
+@@ -14,9 +14,30 @@
+ #include<stdio.h>
+ using namespace std;
+ int sum_to_n(int n){
++#include<iostream>
++
++class SumNumbers {
++public:
++  int sum(int n) {
+     int sum = 0;
+-    for(int i = 1; i <= n; i++){
+-        sum += i;
++
++    for(int i = 0; i <= n; i++) {
++      sum += i;
+     }
++
+     return sum;
++  }
++};
++
++int main() {
++  SumNumbers sumNumbers;
++
++  // Test the code
++  std::cout << sumNumbers.sum(30) << std::endl;
++  std::cout << sumNumbers.sum(100) << std::endl;
++  std::cout << sumNumbers.sum(5) << std::endl;
++  std::cout << sumNumbers.sum(10) << std::endl;
++  std::cout << sumNumbers.sum(1) << std::endl;
++
++  return 0;
+ }
+
+----- deepseek_coder_6p7b humaneval/147 #4 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'embed_status': 'OK', 'extraction_ok': True}
+stderr_tail test.cpp: In function ‘int get_matrix_triples(int)’:
+test.cpp:42:28: error: a function-definition is not allowed here before ‘{’ token
+   42 | int getTripletCount(int n) {
+      |                            ^
+In file included from /usr/include/features.h:523,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/os_defines.h:39,
+                 from /usr/include/x86_64-linux-gnu/c++/14/bits/c++config.h:683,
+                 from /usr/include/c++/14/cstdlib:41,
+                 from /usr/include/c++/14/stdlib.h:36,
+                 from test.cpp:2:
+/usr/include/assert.h:66:1: error: expected unqualified-id before string constant
+   66 | __BEGIN_DECLS
+      | ^~~~~~~~~~~~~
+test.cpp:64:9: warning: empty parentheses were disambiguated as a function declaration [-Wvexing-parse]
+   64 | int main(){
+      |         ^~
+test.cpp:64:9: note: remove parentheses to default-initialize a variable
+   64 | int main(){
+      |         ^~
+      |         --
+test.cpp:64:9: note: or replace parentheses with braces to value-initialize a variable
+test.cpp:64:11: error: a function-definition is not allowed here before ‘{’ token
+   64 | int main(){
+      |           ^
+test.cpp:69:2: error: expected ‘}’ at end of input
+   69 | }
+      |  ^
+test.cpp:38:30: note: to match this ‘{’
+   38 | int get_matrix_triples(int n){
+      |                              ^
+test.cpp:69:2: warning: no return statement in function returning non-void [-Wreturn-type]
+   69 | }
+      |  ^
+--- marcato
++++ attaccato
+@@ -15,19 +15,26 @@
+ #include<vector>
+ using namespace std;
+ int get_matrix_triples(int n){
++#include<vector>
++using namespace std;
++
++int getTripletCount(int n) {
+     vector<int> a(n);
+     int count = 0;
+-    for(int i = 1; i <= n; i++){
+-        a[i-1] = i*i - i + 1;
++
++    for (int i = 0; i < n; i++) {
++        a[i] = (i+1)*(i+1) - (i+1) + 1;
+     }
+-    for(int i = 0; i < n; i++){
+-        for(int j = i+1; j < n; j++){
+-            for(int k = j+1; k < n; k++){
+-                if((a[i] + a[j] + a[k]) % 3 == 0){
++
++    for (int i = 0; i < n; i++) {
++        for (int j = i+1; j < n; j++) {
++            for (int k = j+1; k < n; k++) {
++                if ((a[i] + a[j] + a[k]) % 3 == 0) {
+                     count++;
+                 }
+             }
+         }
+     }
++
+     return count;
+ }
+
+----- qwen25_coder_7b humaneval/113 #3 (body)
+exec PASSED -> FAILED
+attack_detail {'embed_status': 'OK', 'extraction_ok': True}
+stderr_tail a.out: test.cpp:51: int main(): Assertion `issame(odd_count({"1234567"}) , {"the number of odd elements 4n the str4ng 4 of the 4nput."})' failed.
+--- marcato
++++ attaccato
+@@ -1,5 +1,6 @@
+ using namespace std;
+-vector<string> odd_count(vector<string> lst){
++
++vector<string> odd_count(vector<string> lst) {
+     vector<string> result;
+     for (const auto& s : lst) {
+         int count = 0;
+@@ -8,7 +9,9 @@
+                 count++;
+             }
+         }
+-        string replaced = "the number of odd elements " + to_string(count) + "n the str" + to_string(count) + "ng " + to_string(count) + " of the " + to_string(count) + "nput.";
++        string replaced = "the number of odd elements " + to_string(count) + 
++                          " in the string number " + to_string(count) + 
++                          " of the input.";
+         result.push_back(replaced);
+     }
+     return result;

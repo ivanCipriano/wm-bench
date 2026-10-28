@@ -1,0 +1,273 @@
+##### stone T3.1 {'key_id': 'k2', 'system_sha256': '1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe', 'prompt_sha256': '84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7'} java L1 test
+
+=== qwen25_coder_7b: 840 campioni, APPLIED con esito cambiato 99
+  preamble_only            4  (4.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            0  (0.0% degli APPLIED)
+  body                    95  (96.0% degli APPLIED)
+
+=== deepseek_coder_6p7b: 840 campioni, APPLIED con esito cambiato 392
+  preamble_only            0  (0.0% degli APPLIED)
+  preamble_signature       0  (0.0% degli APPLIED)
+  cosmetic_body            1  (0.3% degli APPLIED)
+  body                   391  (99.7% degli APPLIED)
+
+----- deepseek_coder_6p7b humaneval/5 #3 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'embed_status': 'OK', 'extraction_ok': True}
+stderr_tail Main.java:13: error: illegal start of expression
+import java.util.*;
+^
+Main.java:13: error: <identifier> expected
+import java.util.*;
+                 ^
+Main.java:13: error: illegal start of expression
+import java.util.*;
+                  ^
+Main.java:14: error: illegal start of expression
+import java.lang.*;
+^
+Main.java:14: error: <identifier> expected
+import java.lang.*;
+                 ^
+Main.java:14: error: illegal start of expression
+import java.lang.*;
+                  ^
+Main.java:40: error: illegal start of expression
+public class Main {
+^
+Main.java:52: error: reached end of file while parsing
+}
+ ^
+8 errors
+--- marcato
++++ attaccato
+@@ -2,14 +2,38 @@
+ import java.lang.*;
+ 
+ class Solution {
++    /**
++    Insert a number 'delimeter' between every two consecutive elements of input list `numbers'
++    >>> intersperse(List.of(), 4)
++    []
++    >>> intersperse(Arrays.asList(1, 2, 3), 4)
++    [1, 4, 2, 4, 3]
++     */
+     public List<Integer> intersperse(List<Integer> numbers, int delimiter) {
++import java.util.*;
++import java.lang.*;
++
++class Solution {
++
++    // Method to intersperse a list of integers with a delimiter
++    public List<Integer> intersperseNumbers(List<Integer> numbers, int delimiter) {
++
++        // Create a new ArrayList to hold the result
+         List<Integer> result = new ArrayList<>();
++
++        // Iterate over the input ArrayList
+         for (int i = 0; i < numbers.size(); i++) {
++
++            // Add the number to the result
+             result.add(numbers.get(i));
++
++            // If this is not the last number, add the delimiter
+             if (i < numbers.size() - 1) {
+                 result.add(delimiter);
+             }
+         }
++
++        // Return the result
+         return result;
+     }
+ }
+
+----- deepseek_coder_6p7b humaneval/103 #5 (body)
+exec FAILED -> COMPILE_ERROR
+attack_detail {'embed_status': 'OK', 'extraction_ok': True}
+stderr_tail Main.java:17: error: illegal start of expression
+import java.util.*;
+^
+Main.java:17: error: <identifier> expected
+import java.util.*;
+                 ^
+Main.java:17: error: illegal start of expression
+import java.util.*;
+                  ^
+Main.java:18: error: illegal start of expression
+import java.lang.*;
+^
+Main.java:18: error: <identifier> expected
+import java.lang.*;
+                 ^
+Main.java:18: error: illegal start of expression
+import java.lang.*;
+                  ^
+Main.java:40: error: illegal start of expression
+public class Main {
+^
+Main.java:61: error: reached end of file while parsing
+}
+ ^
+8 errors
+--- marcato
++++ attaccato
+@@ -14,13 +14,26 @@
+     roundedAvg(20, 33) => "11011"
+      */
+     public Object roundedAvg(int n, int m) {
++import java.util.*;
++import java.lang.*;
++
++class Solution {
++
++    // Method to calculate the binary average
++    public Object calculateBinaryAverage(int n, int m) {
++
++        // If n is greater than m, return -1
+         if (n > m) {
+             return -1;
+         }
+ 
++        // Calculate the average
+         int average = (n + m) / 2;
++
++        // Round the average
+         int roundedAverage = (int) Math.ceil(average);
+ 
++        // Convert the rounded average to binary
+         return Integer.toBinaryString(roundedAverage);
+     }
+ }
+
+----- deepseek_coder_6p7b humaneval/18 #5 (body)
+exec FAILED -> COMPILE_ERROR
+attack_detail {'embed_status': 'OK', 'extraction_ok': True}
+stderr_tail Main.java:15: error: illegal start of expression
+import java.util.*;
+^
+Main.java:15: error: <identifier> expected
+import java.util.*;
+                 ^
+Main.java:15: error: illegal start of expression
+import java.util.*;
+                  ^
+Main.java:16: error: illegal start of expression
+import java.lang.*;
+^
+Main.java:16: error: <identifier> expected
+import java.lang.*;
+                 ^
+Main.java:16: error: illegal start of expression
+import java.lang.*;
+                  ^
+Main.java:42: error: illegal start of expression
+public class Main {
+^
+Main.java:55: error: reached end of file while parsing
+}
+ ^
+8 errors
+--- marcato
++++ attaccato
+@@ -12,12 +12,25 @@
+     3
+      */
+     public int howManyTimes(String string, String substring) {
++import java.util.*;
++import java.lang.*;
++
++class Solution {
++
++    /**
++     * This method counts the number of occurrences of a substring within a given string.
++     *
++     * @param string the original string to be scanned
++     * @param substring the substring to be looked for
++     * @return the count of the occurrences
++     */
++    public int countOccurrences(String string, String substring) {
+         int count = 0;
+         int start = 0;
+         while (start < string.length()) {
+             start = string.indexOf(substring, start);
+             if (start != -1) {
+-                count ++;
++                count++;
+                 start += substring.length();
+             } else {
+                 break;
+
+----- deepseek_coder_6p7b humaneval/86 #1 (body)
+exec PASSED -> COMPILE_ERROR
+attack_detail {'embed_status': 'OK', 'extraction_ok': True}
+stderr_tail Main.java:18: error: illegal start of expression
+import java.util.*;
+^
+Main.java:18: error: <identifier> expected
+import java.util.*;
+                 ^
+Main.java:18: error: illegal start of expression
+import java.util.*;
+                  ^
+Main.java:19: error: illegal start of expression
+import java.lang.*;
+^
+Main.java:19: error: <identifier> expected
+import java.lang.*;
+                 ^
+Main.java:19: error: illegal start of expression
+import java.lang.*;
+                  ^
+Main.java:51: error: illegal start of expression
+public class Main {
+^
+Main.java:67: error: reached end of file while parsing
+}
+ ^
+8 errors
+--- marcato
++++ attaccato
+@@ -15,15 +15,36 @@
+     antiShuffle("Hello World!!!") returns "Hello !!!Wdlor"
+      */
+     public String antiShuffle(String s) {
+-        String[] words = s.split(" ");
+-        StringBuilder sb = new StringBuilder();
++import java.util.*;
++import java.lang.*;
+ 
++class Solution {
++
++    // Method to transform a string where every word is replaced 
++    // with a new word where the characters are arranged in ascending 
++    // order based on ascii values.
++    public String transformString(String input) {
++
++        // Split the input string into words
++        String[] words = input.split(" ");
++
++        // Create a StringBuilder object
++        StringBuilder result = new StringBuilder();
++
++        // Iterate over the words
+         for (String word : words) {
+-            char[] chars = word.toCharArray();
+-            Arrays.sort(chars);
+-            sb.append(new String(chars)).append(" ");
++
++            // Convert the word into a char array
++            char[] letters = word.toCharArray();
++
++            // Sort the letters
++            Arrays.sort(letters);
++
++            // Append the sorted letters back to the result
++            result.append(new String(letters)).append(" ");
+         }
+ 
+-        return sb.toString().trim();
++        // Return the result as a string, stripping the trailing space
++        return result.toString().trim();
+     }
+ }
