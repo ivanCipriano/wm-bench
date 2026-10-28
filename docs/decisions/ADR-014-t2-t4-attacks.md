@@ -359,7 +359,25 @@ Log: `M11_attacks_t3_1_stone.txt` (report), `M11_t3_1_diag_stone.txt` (tempo e u
   verso nomi con token verdi. **Limite:** T2.2 cambia sia il watermark sia il modello (Llama
   invece del generatore del metodo), quindi il confronto (a) non separa i due effetti, e MCGMark
   rinomina anche lui; l'effetto del solo watermark si isolerebbe con la stessa riscrittura del
-  generatore senza watermark (non eseguita).
+  generatore senza watermark.
+- **Controllo ridotto senza watermark** (decisione dell'utente del 28 ottobre 2026): stessa
+  riscrittura di T3.1 con il generatore di STONE e δ = 0 (stesso prompt, decoding e seme), DeepSeek,
+  Java e C++, 200 campioni marcati per linguaggio scelti con `derive_seed`
+  (`scripts/t3_1_nowm_control.py`); tasso di rinomina con intervallo di Clopper-Pearson, accanto a
+  quello di T3.1 sugli stessi campioni. Serve solo a quantificare la parte del tasso dovuta al
+  watermark: il meccanismo è già mostrato dal confronto k2/k1. Esito: _da completare con
+  `M11_t3_1_nowm_control.txt`_.
+- **Frase per la tesi** (decisione dell'utente del 28 ottobre 2026, allargata a Python): con STONE
+  la ri-marcatura con k2 rompe l'interfaccia del codice in tutti e tre i linguaggi: la funzione
+  d'ingresso viene rinominata o sparisce nel 4,0–43,7% dei campioni riscritti (Qwen: Java 4,0%,
+  C++ 11,7%, Python 19,6%; DeepSeek: Java 43,7%, C++ 43,0%, Python 40,7%), contro 0–2,7% con lo
+  stesso prompt senza watermark e con un altro modello (T2.2(a)); in Java e C++ il codice non
+  compila più, in Python compila ma fallisce i test. Il meccanismo è il bias di k2 sui token non
+  sintattici, che comprendono i nomi: nei campioni rinominati il nome nuovo ha una frazione di
+  token verdi per k2 molto più alta del nome originale (DeepSeek C++ 0,125 → 0,487 con γ = 0,25),
+  mentre con k1 lo scarto è piccolo. Con MCGMark (solo Python) anche il tasso di rinomina di T3.1 è
+  più alto che in T2.2 (7,9% e 33,2% contro 1,7% e 1,8%), ma la causa non è stata misurata e può
+  essere diversa: MCGMark per costruzione salta gli identificatori quando inserisce i bit.
 
 ## 4. T4.1 minificazione e T4.2 bundling
 
