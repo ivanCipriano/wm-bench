@@ -1,0 +1,37 @@
+##### T4.2: pacchetti npm nei campioni JavaScript di L1 (68 moduli predefiniti di Node)
+
+baseline qwen25_coder_7b L1_dev: 144 campioni, con pacchetti npm 0
+  pacchetti {}
+  problemi []
+  senza pacchetti npm: output identico con e senza --packages=external 144/144
+  con pacchetti npm: TOOL_ERROR con --packages=external 0/0, senza 0/0
+
+baseline qwen25_coder_7b L1_test: 840 campioni, con pacchetti npm 0
+  pacchetti {}
+  problemi []
+  senza pacchetti npm: output identico con e senza --packages=external 840/840
+  con pacchetti npm: TOOL_ERROR con --packages=external 0/0, senza 0/0
+
+sweet qwen25_coder_7b 887251018a09 L1_dev: 144 campioni, con pacchetti npm 0
+  pacchetti {}
+  problemi []
+  senza pacchetti npm: output identico con e senza --packages=external 144/144
+  con pacchetti npm: TOOL_ERROR con --packages=external 0/0, senza 0/0
+
+baseline deepseek_coder_6p7b L1_dev: 144 campioni, con pacchetti npm 0
+  pacchetti {}
+  problemi []
+  senza pacchetti npm: output identico con e senza --packages=external 144/144
+  con pacchetti npm: TOOL_ERROR con --packages=external 0/0, senza 0/0
+
+baseline deepseek_coder_6p7b L1_test: 840 campioni, con pacchetti npm 0
+  pacchetti {}
+  problemi []
+  senza pacchetti npm: output identico con e senza --packages=external 840/840
+  con pacchetti npm: TOOL_ERROR con --packages=external 0/0, senza 0/0
+
+sweet deepseek_coder_6p7b 5dea927e685a L1_dev: 144 campioni, con pacchetti npm 0
+  pacchetti {}
+  problemi []
+  senza pacchetti npm: output identico con e senza --packages=external 144/144
+  con pacchetti npm: TOOL_ERROR con --packages=external 0/0, senza 0/0
