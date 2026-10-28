@@ -80,6 +80,8 @@ case "$STEP" in
     tune)
         SHARE="1/1"; MODE="${3:-}"
         ARGS=(--jobs 1 "stage=tune" "${FINAL[@]}")
+        # FORCE=1 rifà la scelta anche se esiste già (estensione locale della griglia, D31).
+        [ "${FORCE:-0}" = 1 ] && ARGS+=("force=true")
         ;;
     *) echo "unknown step: $STEP" >&2; exit 2 ;;
 esac

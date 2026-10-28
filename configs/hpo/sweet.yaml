@@ -7,3 +7,25 @@ space:
   entropy_threshold: [0.3, 0.6, 0.9, 1.2]
 include:
   - {gamma: 0.5, delta: 0.5, entropy_threshold: 0.5}   # default del codice
+# Estensione locale oltre δ = 4 (D31), una sola volta: celle con vincitore δ = 4 e crescita del
+# TPR ≥ 2 punti fra δ = 3 e δ = 4 nella scelta su L1+L2 (M9_hpo_final_sweet.txt); δ = 5 e 6 con
+# γ e soglia di entropia del vincitore della cella. Non estese: le due celle JavaScript (δ = 3).
+local:
+  - hparams: {gamma: 0.5, delta: 5.0, entropy_threshold: 0.3}
+    cells: &g050_e03
+      - {model_id: deepseek_coder_6p7b, language: cpp}       # +9,9 punti
+      - {model_id: qwen25_coder_7b, language: cpp}           # +8,3 punti
+  - hparams: {gamma: 0.5, delta: 6.0, entropy_threshold: 0.3}
+    cells: *g050_e03
+  - hparams: {gamma: 0.25, delta: 5.0, entropy_threshold: 0.3}
+    cells: &g025_e03
+      - {model_id: deepseek_coder_6p7b, language: java}      # +8,6 punti
+      - {model_id: deepseek_coder_6p7b, language: python}    # +19,5 punti
+      - {model_id: qwen25_coder_7b, language: java}          # +7,7 punti
+  - hparams: {gamma: 0.25, delta: 6.0, entropy_threshold: 0.3}
+    cells: *g025_e03
+  - hparams: {gamma: 0.25, delta: 5.0, entropy_threshold: 0.9}
+    cells: &g025_e09
+      - {model_id: qwen25_coder_7b, language: python}        # +6,6 punti
+  - hparams: {gamma: 0.25, delta: 6.0, entropy_threshold: 0.9}
+    cells: *g025_e09
