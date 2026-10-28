@@ -349,16 +349,21 @@ problema).
 mangle: {toplevel: false}})` con rinomina: le opzioni di `compress` sono quelle di default della
 versione fissata, gli altri gruppi (`parse`, `format`) anche. Con `toplevel` falso (default) né
 `compress` né `mangle` toccano i nomi a livello di file, comprese le funzioni dichiarate come
-`const nome = (...) => {...}`. Opzioni di `compress` attive per default secondo la documentazione
-di terser 5 (l'elenco esatto della versione installata, la sezione "Compress options" del suo
-README, si stampa nel log della verifica sulle canoniche e sostituisce questo se diverso; l'API di
-terser non espone i default):
-`arrows`, `booleans`, `collapse_vars`, `comparisons`, `computed_props`, `conditionals`,
-`dead_code`, `directives`, `drop_debugger`, `evaluate`, `hoist_props`, `if_return`, `inline` (3),
-`join_vars`, `keep_fargs`, `loops`, `negate_iife`, `properties`, `reduce_funcs`, `reduce_vars`,
-`sequences`, `side_effects`, `switches`, `typeofs`, `unused`, `passes` = 1; spente: `drop_console`,
-`hoist_funs`, `hoist_vars`, `keep_classnames`, `keep_fnames`, `module`, `toplevel`, tutte le
-`unsafe*`. I commenti si tolgono (il default di `format.comments` conserva solo quelli di licenza).
+`const nome = (...) => {...}`. Opzioni di `compress` della versione installata (sezione
+"Compress options" del README di terser 5.36.0, stampata in `M11_canonical_t4_js.txt`; l'API non
+espone i default):
+- **attive:** `arrows`, `booleans`, `collapse_vars`, `comparisons`, `computed_props`,
+  `conditionals`, `dead_code`, `directives`, `drop_debugger`, `evaluate`, `hoist_props`,
+  `if_return`, `inline` (= 3), `join_vars`, `keep_fargs`, `lhs_constants`, `loops`, `negate_iife`,
+  `properties`, `reduce_funcs`, `reduce_vars`, `sequences` (limite 200), `side_effects`,
+  `switches`, `typeofs`, `unused`; `passes` = 1, `ecma` = 5 (non introduce sintassi ES2015+),
+  `pure_getters` = `"strict"`;
+- **spente:** `arguments`, `booleans_as_integers`, `drop_console`, `expression`, `hoist_funs`,
+  `hoist_vars`, `keep_classnames`, `keep_fnames`, `keep_infinity`, `module`, `pure_new`,
+  `toplevel` (quindi `unused` non elimina le funzioni e le variabili a livello di file), tutte le
+  `unsafe*`; `global_defs`, `pure_funcs` e `top_retain` vuoti.
+
+I commenti si tolgono (il default di `format.comments` conserva solo quelli di licenza).
 
 ### 4.3 T4.2 JavaScript: esbuild 0.24.0
 
@@ -384,6 +389,23 @@ confronto sulle canoniche nel log della verifica). T4.2 non era ancora stato lan
 dell'attacco resta 1.
 
 ### 4.4 Verifiche e report
+
+**Esito sulle canoniche di L1** (`M11_canonical_t4.txt`, `M11_canonical_t4_js.txt`, 28 ottobre 2026):
+- Python, T4.1: senza rinomina 542/542; con rinomina 541/542, l'unica caduta (mbpp/255,
+  `TIMEOUT` al test 86) ha codice **identico** a quello della variante senza rinomina, che passa: caso
+  al limite di tempo, non dovuto alla trasformazione, nessuna restrizione. Parametri della funzione
+  d'ingresso rinominati: 0; funzione d'ingresso assente: 0. 1 − CodeBLEU 0,33 e 0,36.
+- JavaScript: T4.1 164/164 in entrambe le varianti (1 − CodeBLEU 0,65 e 0,74); T4.2 con
+  `--packages=external` 164/164, nessun `TOOL_ERROR` (HumanEval/162 compreso), 1 − CodeBLEU 0,41,
+  nessun `UNCHANGED`: l'attacco non è leggero. Funzione d'ingresso assente: 0. HumanEval/114: il nome
+  dei metadati (`minSubarraySum`) è diverso da quello del codice (`minSubArraySum`) già nella
+  canonica; i test passano, è solo un limite del controllo.
+- `--packages=external`: output identico a quello senza l'opzione per tutte le 161 canoniche senza
+  pacchetti npm; nei campioni di L1 (baseline di sviluppo e test dei due modelli, SWEET di sviluppo
+  con la configurazione scelta; `M11_t4_2_npm.txt`) **nessun** campione importa pacchetti npm e
+  l'output è identico in tutti (144 + 840 + 144 per modello). Il riconoscimento dei pacchetti conta
+  per errore anche due canoniche (HumanEval/105 e 19: la parola `from` seguita da una stringa in un
+  commento); l'unica che importa davvero un pacchetto è HumanEval/162 (`js-md5`).
 
 - **Prima del lancio:** `scripts/check_attacks_canonical.py --languages python,javascript
   --attacks T4.1,T4.2` sulle canoniche di L1: le canoniche che passavano devono passare con
