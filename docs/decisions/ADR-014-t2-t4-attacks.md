@@ -333,7 +333,33 @@ Log: `M11_attacks_t3_1_stone.txt` (report), `M11_t3_1_diag_stone.txt` (tempo e u
   il nome originale ha token rossi per k2, il bias può spingere verso un altro nome.
   `scripts/t3_1_renames.py --greens` misura, nei campioni rinominati, la frazione di token verdi
   per k2 (e per k1, come controllo) nel nome originale e nel nome nuovo; T2.2 fa da controllo
-  senza watermark. Esito: _da completare con `M11_t3_1_renames.txt`_.
+  senza watermark.
+- **Esito della misura** (`M11_t3_1_renames.txt`, `M11_attacks_t3_1_stone_v2.txt`). Funzione
+  d'ingresso rinominata o mancante, STONE T3.1, sui campioni `APPLIED` (sul totale della cella;
+  quota dei fallimenti di Pass@1 dovuta alla funzione persa):
+
+  | modello | Java | C++ | Python |
+  |---|---|---|---|
+  | Qwen | 33/830 = 4,0% (3,9%; 12,4%) | 98/835 = 11,7% (11,7%; 34,6%) | 429/2189 = 19,6% (16,0%; 41,8%) |
+  | DeepSeek | 353/807 = 43,7% (42,0%; 68,8%) | 334/777 = 43,0% (39,8%; 58,0%) | 255/627 = 40,7% (9,5%; 27,0%) |
+
+  In T2.2(a), stesso prompt con Llama e senza watermark, la frazione è fra 0 e 2,7% in tutte le
+  celle di STONE. **Il fenomeno c'è anche in Python**: lì il codice resta valido (la funzione
+  d'ingresso contiene solo la docstring, la riscritta ha un altro nome) e i test falliscono invece di
+  non compilare, per questo non compariva fra i `COMPILE_ERROR`. **C'è anche con MCGMark** (solo
+  Python): T3.1 7,9% (Qwen) e 33,2% (DeepSeek), T2.2 1,7% e 1,8%.
+- **Token verdi** (STONE, γ = 0,25 tranne Qwen Python con 0,5): nei rinominati di T3.1 il nome nuovo
+  ha una frazione di token verdi per k2 nettamente più alta del nome originale, e il nome originale
+  è sotto γ: DeepSeek C++ 0,125 → 0,487 (nuovo > originale 247/286), Java 0,175 → 0,470 (277/344),
+  Python 0,165 → 0,247 (151/255); Qwen C++ 0,090 → 0,532 (84/94), Java 0,000 → 0,358 (24/25),
+  Python 0,388 → 0,710 (313/429). Con k1 (controllo) lo scarto è molto più piccolo (es. DeepSeek
+  C++ 0,175 → 0,304, 150/286; Qwen Python 0,472 → 0,522, 200/429). I rinominati di T2.2 sono troppo
+  pochi (6–11 per cella) per fare da controllo. **Conclusione:** i dati sono coerenti con
+  l'ipotesi: il bias di k2 sui token non sintattici spinge via dai nomi con token rossi per k2
+  verso nomi con token verdi. **Limite:** T2.2 cambia sia il watermark sia il modello (Llama
+  invece del generatore del metodo), quindi il confronto (a) non separa i due effetti, e MCGMark
+  rinomina anche lui; l'effetto del solo watermark si isolerebbe con la stessa riscrittura del
+  generatore senza watermark (non eseguita).
 
 ## 4. T4.1 minificazione e T4.2 bundling
 
