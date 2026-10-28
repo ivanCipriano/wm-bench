@@ -1,0 +1,45 @@
+fatal: detected dubious ownership in repository at '/mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench
+##### nodo tnode05, commit 
+##### attacchi T4.1,T4.2  sulle canoniche di L1 (repo /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench)
+##### python-minifier: minify(source, filename=None, remove_annotations=RemoveAnnotationsOptions(remove_variable_annotations=True, remove_return_annotations=True, remove_argument_annotations=True, remove_class_attribute_annotations=False), remove_pass=True, remove_literal_statements=False, combine_imports=True, hoist_literals=True, rename_locals=True, preserve_locals=None, rename_globals=False, preserve_globals=None, remove_object_base=True, convert_posargs_to_args=True, preserve_shebang=True, remove_asserts=False, remove_debug=False, remove_explicit_return_none=True, remove_builtin_exception_brackets=True, constant_folding=True)
+##### terser: opzioni di default
+{}
+
+
+########## python: 542 canoniche, 542 passano senza attacco (esecuzione delle canoniche della M4)
+T4.1 {"rename": false}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.3304
+    funzione d'ingresso assente dopo l'attacco: 0 []
+    parametri della funzione d'ingresso rinominati: 0 []
+T4.1 {"rename": true}: passano 541/542, rotte 1, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.3635
+  ROTTA mbpp/255: TIMEOUT 'plus tests: fail (time limit of test 86)'
+      @@ -1,8 +1,3 @@
+      -"""
+      -Write a function that takes in a list and length n, and generates all combinations (with repetition) of the elements of the list and returns a list with a tuple for each combination.
+      -assert combinations_colors( ["Red","Green","Blue"],1)==[('Red',), ('Green',), ('Blue',)]
+      -"""
+      -
+      -from itertools import combinations_with_replacement 
+      -def combinations_colors(l, n):
+      -    return list(combinations_with_replacement(l, n))
+      +'\nWrite a function that takes in a list and length n, and generates all combinations (with repetition) of the elements of the list and returns a list with a tuple for each combination.\nassert combinations_colors( ["Red","Green","Blue"],1)==[(\'Red\',), (\'Green\',), (\'Blue\',)]\n'
+      +from itertools import combinations_with_replacement
+      +def combinations_colors(l,n):return list(combinations_with_replacement(l,n))
+    funzione d'ingresso assente dopo l'attacco: 0 []
+    parametri della funzione d'ingresso rinominati: 0 []
+T4.2 {}: passano 542/542, rotte 0, stati {'NOT_APPLICABLE': 542}, modificate 0/542, 1-CodeBLEU 0.0000
+    funzione d'ingresso assente dopo l'attacco: 0 []
+    parametri della funzione d'ingresso rinominati: 0 []
+
+########## javascript: 164 canoniche, 164 passano senza attacco (esecuzione delle canoniche della M4)
+T4.1 {"rename": false}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.6541
+    funzione d'ingresso assente dopo l'attacco: 1 ['humaneval/114']
+T4.1 {"rename": true}: passano 164/164, rotte 0, stati {'APPLIED': 164}, modificate 164/164, 1-CodeBLEU 0.7409
+    funzione d'ingresso assente dopo l'attacco: 1 ['humaneval/114']
+T4.2 {}: passano 164/164, rotte 0, stati {'APPLIED': 163, 'TOOL_ERROR': 1}, modificate 163/164, 1-CodeBLEU 0.4120
+    TOOL_ERROR: exit 1: f00000.js: Build failed with 1 error:
+input.js:9:20: ERROR: Could not resolve "js-md5"
+
+    funzione d'ingresso assente dopo l'attacco: 1 ['humaneval/114']
