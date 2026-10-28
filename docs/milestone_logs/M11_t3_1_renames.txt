@@ -1,0 +1,69 @@
+##### nodo gnode11, commit 650e32f
+
+##### stone: funzione d'ingresso nei campioni APPLIED
+  T3.1  qwen25_coder_7b      python  APPLIED  2189  renamed  429  missing    0  lost 0.1960  | pass@1 failures 1026/2676: renamed 429, missing 0, other 597
+  T2.2  qwen25_coder_7b      python  APPLIED   345  renamed    6  missing    1  lost 0.0203  | pass@1 failures 720/2676: renamed 6, missing 1, other 713
+  T3.1  qwen25_coder_7b      java    APPLIED   830  renamed   25  missing    8  lost 0.0398  | pass@1 failures 266/840: renamed 25, missing 8, other 233
+  T2.2  qwen25_coder_7b      java    APPLIED   536  renamed   11  missing    0  lost 0.0205  | pass@1 failures 217/840: renamed 11, missing 0, other 206
+  T3.1  qwen25_coder_7b      cpp     APPLIED   835  renamed   94  missing    4  lost 0.1174  | pass@1 failures 283/840: renamed 94, missing 4, other 185
+  T2.2  qwen25_coder_7b      cpp     APPLIED   824  renamed    0  missing    1  lost 0.0012  | pass@1 failures 185/840: renamed 0, missing 1, other 184
+  T3.1  deepseek_coder_6p7b  python  APPLIED   627  renamed  255  missing    0  lost 0.4067  | pass@1 failures 943/2676: renamed 255, missing 0, other 688
+  T2.2  deepseek_coder_6p7b  python  APPLIED   369  renamed   10  missing    0  lost 0.0271  | pass@1 failures 791/2676: renamed 10, missing 0, other 781
+  T3.1  deepseek_coder_6p7b  java    APPLIED   807  renamed  344  missing    9  lost 0.4374  | pass@1 failures 513/840: renamed 344, missing 9, other 160
+  T2.2  deepseek_coder_6p7b  java    APPLIED   426  renamed    6  missing    0  lost 0.0141  | pass@1 failures 248/840: renamed 6, missing 0, other 242
+  T3.1  deepseek_coder_6p7b  cpp     APPLIED   777  renamed  286  missing   48  lost 0.4299  | pass@1 failures 576/840: renamed 286, missing 48, other 242
+  T2.2  deepseek_coder_6p7b  cpp     APPLIED   838  renamed    0  missing    0  lost 0.0000  | pass@1 failures 344/840: renamed 0, missing 0, other 344
+
+##### mcgmark: funzione d'ingresso nei campioni APPLIED
+  T3.1  qwen25_coder_7b      python  APPLIED  2561  renamed  193  missing    9  lost 0.0789  | pass@1 failures 1999/2676: renamed 193, missing 9, other 1797
+  T2.2  qwen25_coder_7b      python  APPLIED  1616  renamed   25  missing    2  lost 0.0167  | pass@1 failures 1312/2676: renamed 25, missing 2, other 1285
+  T3.1  deepseek_coder_6p7b  python  APPLIED  2550  renamed  833  missing   13  lost 0.3318  | pass@1 failures 2214/2676: renamed 833, missing 13, other 1368
+  T2.2  deepseek_coder_6p7b  python  APPLIED  1716  renamed   30  missing    1  lost 0.0181  | pass@1 failures 1501/2676: renamed 30, missing 1, other 1470
+
+##### promptmark: funzione d'ingresso nei campioni APPLIED
+  T3.1  qwen25_coder_7b python: attacked MISSING
+  T2.2  qwen25_coder_7b      python  APPLIED   306  renamed    6  missing    0  lost 0.0196  | pass@1 failures 617/2676: renamed 6, missing 0, other 611
+  T3.1  deepseek_coder_6p7b python: attacked MISSING
+  T2.2  deepseek_coder_6p7b  python  APPLIED   451  renamed   12  missing    0  lost 0.0266  | pass@1 failures 791/2676: renamed 12, missing 0, other 779
+
+##### STONE: token verdi nei nomi dei campioni rinominati
+
+  T3.1 deepseek_coder_6p7b cpp (gamma 0.25): 286 renamed
+    k1: original green fraction 0.175 first token green 0.287; new green fraction 0.304 first token green 0.441; new > original 150/286
+    k2: original green fraction 0.125 first token green 0.157; new green fraction 0.487 first token green 0.650; new > original 247/286
+
+  T2.2 deepseek_coder_6p7b java (gamma 0.25): 6 renamed
+    k1: original green fraction 0.500 first token green 0.000; new green fraction 0.250 first token green 0.000; new > original 0/6
+    k2: original green fraction 0.000 first token green 0.000; new green fraction 0.250 first token green 0.000; new > original 6/6
+
+  T3.1 deepseek_coder_6p7b java (gamma 0.25): 344 renamed
+    k1: original green fraction 0.208 first token green 0.262; new green fraction 0.339 first token green 0.567; new > original 206/344
+    k2: original green fraction 0.175 first token green 0.131; new green fraction 0.470 first token green 0.642; new > original 277/344
+
+  T2.2 deepseek_coder_6p7b python (gamma 0.25): 10 renamed
+    k1: original green fraction 0.075 first token green 0.600; new green fraction 0.230 first token green 0.600; new > original 10/10
+    k2: original green fraction 0.155 first token green 0.000; new green fraction 0.000 first token green 0.000; new > original 0/10
+
+  T3.1 deepseek_coder_6p7b python (gamma 0.25): 255 renamed
+    k1: original green fraction 0.237 first token green 0.349; new green fraction 0.236 first token green 0.400; new > original 84/255
+    k2: original green fraction 0.165 first token green 0.220; new green fraction 0.247 first token green 0.357; new > original 151/255
+
+  T3.1 qwen25_coder_7b cpp (gamma 0.25): 94 renamed
+    k1: original green fraction 0.192 first token green 0.138; new green fraction 0.224 first token green 0.319; new > original 31/94
+    k2: original green fraction 0.090 first token green 0.064; new green fraction 0.532 first token green 0.436; new > original 84/94
+
+  T2.2 qwen25_coder_7b java (gamma 0.25): 11 renamed
+    k1: original green fraction 0.295 first token green 0.000; new green fraction 0.500 first token green 0.818; new > original 5/11
+    k2: original green fraction 0.000 first token green 0.000; new green fraction 0.159 first token green 0.273; new > original 4/11
+
+  T3.1 qwen25_coder_7b java (gamma 0.25): 25 renamed
+    k1: original green fraction 0.228 first token green 0.000; new green fraction 0.288 first token green 0.280; new > original 13/25
+    k2: original green fraction 0.000 first token green 0.000; new green fraction 0.358 first token green 0.480; new > original 24/25
+
+  T2.2 qwen25_coder_7b python (gamma 0.5): 6 renamed
+    k1: original green fraction 0.500 first token green 0.000; new green fraction 0.600 first token green 0.000; new > original 6/6
+    k2: original green fraction 0.500 first token green 0.000; new green fraction 0.600 first token green 0.000; new > original 6/6
+
+  T3.1 qwen25_coder_7b python (gamma 0.5): 429 renamed
+    k1: original green fraction 0.472 first token green 0.382; new green fraction 0.522 first token green 0.510; new > original 200/429
+    k2: original green fraction 0.388 first token green 0.266; new green fraction 0.710 first token green 0.781; new > original 313/429
