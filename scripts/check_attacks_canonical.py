@@ -22,14 +22,24 @@ dev** di entrambi i modelli e si riporta, per linguaggio e modello, la frazione 
 passavano prima e passano ancora (attesa: almeno il 99%). Per ogni campione (o canonica) rotto da
 T2.1 si riapplica **un tipo di regola alla volta** fra quelli applicati, per trovare quello che lo
 rompe: le regole non si tolgono senza la decisione dell'utente.
+
+T4.1 e T4.2 (decisioni dell'utente del 28 ottobre 2026): ``--languages python,javascript --attacks
+T4.1,T4.2``. Oltre al riepilogo stampa le opzioni di default delle versioni fissate (python-minifier
+e terser, per l'ADR) e, per ogni configurazione, le canoniche in cui il nome della funzione
+d'ingresso non compare più nel codice attaccato e (Python) quelle in cui i parametri della funzione
+d'ingresso hanno cambiato nome. Le rotture si chiudono con una restrizione, come per T2.1.
 """
 
 from __future__ import annotations
 
 import argparse
+import ast
 import difflib
+import inspect
 import json
+import re
 import statistics
+import subprocess
 import sys
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
@@ -240,6 +250,8 @@ def check_language(
                     f"  ROTTA {key}: {record.status} {str(record.stderr_tail or '')[-300:]!r}\n"
                     f"{_diff(checker.codes[key], attacked[key])}\n"
                 )
+            if attack.group == "T4":
+                report_t4_names(checker, lang, keys, attacked)
             if attack_id == "T1.2" and lang is Language.JAVA and broken:
                 isolate_recipes(checker, tools, broken)
             if attack_id == "T2.1" and broken:
@@ -249,6 +261,59 @@ def check_language(
                     for k in broken
                 ]
                 isolate_types(checker, attack, lang, items)
+
+
+def _entry_params(code: str, entry_point: str) -> list[str] | None:
+    """Nomi dei parametri della funzione d'ingresso (Python), ``None`` se non si trova."""
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name == entry_point:
+            args = node.args
+            return [a.arg for a in [*args.posonlyargs, *args.args, *args.kwonlyargs]]
+    return None
+
+
+def report_t4_names(
+    checker: Checker, lang: Language, keys: list[str], attacked: dict[str, str]
+) -> None:
+    """T4: la funzione d'ingresso mantiene il nome (e, in Python, i nomi dei parametri)?"""
+    lost: list[str] = []
+    renamed: list[str] = []
+    for key in keys:
+        problem = next(p for p in checker.problems if p.problem_key == key)
+        name = problem.entry_point
+        if not name:
+            continue
+        if not re.search(rf"(?<![\w$]){re.escape(name)}(?![\w$])", attacked[key]):
+            lost.append(key)
+        if lang is Language.PYTHON:
+            before = _entry_params(checker.codes[key], name)
+            after = _entry_params(attacked[key], name)
+            if before is not None and after is not None and before != after:
+                renamed.append(f"{key} {before} -> {after}")
+    sys.stdout.write(f"    funzione d'ingresso assente dopo l'attacco: {len(lost)} {lost[:10]}\n")
+    if lang is Language.PYTHON:
+        sys.stdout.write(
+            f"    parametri della funzione d'ingresso rinominati: {len(renamed)} {renamed[:10]}\n"
+        )
+
+
+def report_t4_defaults(languages: list[str]) -> None:
+    """Opzioni di default delle versioni fissate di python-minifier e terser (ADR-014 §4)."""
+    if "python" in languages:
+        import python_minifier
+
+        signature = inspect.signature(python_minifier.minify)
+        sys.stdout.write(f"##### python-minifier: minify{signature}\n")
+    if "javascript" in languages:
+        script = repo_root() / "tools" / "js" / "t4_batch.mjs"
+        proc = subprocess.run(
+            ["node", str(script), "defaults"], capture_output=True, text=True, check=False
+        )
+        sys.stdout.write(f"##### terser: opzioni di default\n{proc.stdout or proc.stderr}\n")
 
 
 def check_baseline_dev(
@@ -393,6 +458,8 @@ def main() -> int:
     sys.stdout.write(
         f"##### attacchi {args.attacks} {wanted or ''} sulle {target} (repo {Path(repo_root())})\n"
     )
+    if any(a.startswith("T4.") for a in args.attacks.split(",")):
+        report_t4_defaults(args.languages.split(","))
     for language in args.languages.split(","):
         if args.baseline_dev:
             check_baseline_dev(cfg, store, language, args.attacks.split(","), wanted)

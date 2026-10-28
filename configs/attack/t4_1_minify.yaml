@@ -1,0 +1,6 @@
+# T4.1 minificazione (SPEC §12; ADR-014 §4; decisioni dell'utente del 28 ottobre 2026): solo Python
+# (python-minifier 2.11.3, rename = rename_locals) e JavaScript (terser 5.36.0, rename = mangle con
+# toplevel falso); trasformazioni di default delle versioni fissate.
+attack_id: T4.1
+space:
+  rename: [false, true]

@@ -62,6 +62,7 @@ logger = logging.getLogger(__name__)
 
 CODEBLEU_LANG = {"python": "python", "java": "java", "cpp": "cpp", "javascript": "javascript"}
 EXTRA_COLUMNS = ["attack_detail", "codebleu_distance"]
+IN_PROCESS_TOOLS = frozenset({"black", "python-minifier"})  # versione dal pacchetto installato
 
 
 def attacked_ref(
@@ -372,18 +373,21 @@ class AttackStage(Stage):
                 k: round(statistics.fmean(v), 6) for k, v in sorted(numeric.items())
             },
             "tool_versions": {
-                t: tools.version(t) for t in tool_names if tools is not None and t != "black"
+                t: tools.version(t)
+                for t in tool_names
+                if tools is not None and t not in IN_PROCESS_TOOLS
             }
-            | ({"black": _black_version()} if "black" in tool_names else {}),
+            | {t: _package_version(t) for t in tool_names if t in IN_PROCESS_TOOLS},
             "parent_embed_status_counts": dict(Counter(df["embed_status"].fillna("None"))),
             **attack.manifest_extra(),
         }
 
 
-def _black_version() -> str:
+def _package_version(package: str) -> str:
+    """Versione di un tool Python che gira in processo (black, python-minifier)."""
     from importlib.metadata import version
 
-    return version("black")
+    return version(package)
 
 
 def _clean(row: dict[Any, Any]) -> dict[str, Any]:

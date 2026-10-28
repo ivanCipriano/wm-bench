@@ -1,0 +1,5 @@
+# T4.2 bundling (SPEC §12; ADR-014 §4; decisione dell'utente del 28 ottobre 2026): solo JavaScript,
+# esbuild 0.24.0 --bundle --format=cjs --platform=node --tree-shaking=false.
+attack_id: T4.2
+points:
+  - {}

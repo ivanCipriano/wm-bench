@@ -28,6 +28,8 @@ class ToolAttack(Attack):
     group: ClassVar[str] = "T1"
     needs_tools: ClassVar[bool] = True
     tools: ClassVar[dict[Language, str]]
+    # Tool che gira in processo con ``apply_python`` invece che con il ``ToolRunner``.
+    in_process_tool: ClassVar[str] = "black"
 
     def tool(self, language: Language) -> str:
         return self.tools[Language(language)]
@@ -56,11 +58,13 @@ class ToolAttack(Attack):
                 out[i] = AttackOutcome(code, AttackStatus.UNCHANGED, {"empty": True})
             else:
                 todo.append(i)
+        if not todo:
+            return [o for o in out if o is not None]
         tool = self.tool(lang)
-        if tool == "black":
+        if tool == self.in_process_tool:
             for i in todo:
                 out[i] = self._python(codes[i])
-        elif todo:
+        else:
             runner = ctxs[0].tools if ctxs else None
             if runner is None:
                 raise ConfigError(f"{self.attack_id}: no ToolRunner in the attack context")
@@ -92,11 +96,12 @@ class ToolAttack(Attack):
                     out[i] = outcome(codes[i], res.code, detail)
 
     def _python(self, code: str) -> AttackOutcome:
+        detail = {"tool": self.in_process_tool}
         try:
             new = self.apply_python(code)
         except Exception as exc:  # black solleva errori diversi per codice non valido
-            return tool_error(code, f"{type(exc).__name__}: {exc}", {"tool": "black"})
-        return outcome(code, code if new is None else new, {"tool": "black"})
+            return tool_error(code, f"{type(exc).__name__}: {exc}", detail)
+        return outcome(code, code if new is None else new, detail)
 
 
 @ATTACKS.register("T1.1")

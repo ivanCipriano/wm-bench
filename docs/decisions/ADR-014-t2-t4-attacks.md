@@ -304,3 +304,81 @@ Prima del lancio: stima del costo per metodo e modello (SWEET compreso, quando s
   `k2_metrics`. Report: `python scripts/check_attacks.py METODO T3.1 --report`.
 - Stima dei costi prima del lancio: `scripts/estimate_t3_1_cost.py` (tempi dei lanci già fatti con
   la configurazione congelata).
+
+## 4. T4.1 minificazione e T4.2 bundling
+
+Decisioni dell'utente del 28 ottobre 2026. Codice in `src/bench/attacks/t4/minify.py`, griglie in
+`configs/attack/t4_1_minify.yaml` (`rename` ∈ {falso, vero}) e `configs/attack/t4_2_bundle.yaml`
+(un punto); i tool JavaScript girano a lotti in un solo processo Node con
+`tools/js/t4_batch.mjs` (API delle versioni fissate in `tools/js/package.json`). Nessuna scelta
+casuale. Le celle si pianificano solo nei linguaggi dell'attacco (T4.1 Python e JavaScript, T4.2
+JavaScript): nessuna cella `NOT_APPLICABLE` per Java e C++.
+
+### 4.1 T4.1 Python: python-minifier 2.11.3
+
+`python_minifier.minify(code, rename_locals=rename, rename_globals=False)`, tutte le altre opzioni
+al default della versione fissata:
+
+| Opzione | Default | Effetto |
+|---|---|---|
+| `remove_annotations` | vero (variabili, ritorno, argomenti; non gli attributi di classe) | toglie le annotazioni di tipo |
+| `remove_pass` | vero | toglie i `pass` superflui |
+| `remove_literal_statements` | **falso** | le docstring restano |
+| `combine_imports` | vero | unisce gli `import` consecutivi |
+| `hoist_literals` | vero | porta in una variabile i letterali ripetuti (solo dove può rinominare) |
+| `rename_locals` | **parametro `rename`** | rinomina le variabili locali |
+| `rename_globals` | **falso, sempre** | nomi a livello di modulo invariati, compresa la funzione d'ingresso |
+| `remove_object_base` | vero | `class A(object)` → `class A` |
+| `convert_posargs_to_args` | vero | argomenti solo posizionali → normali |
+| `preserve_shebang` | vero | |
+| `remove_asserts`, `remove_debug` | falso | `assert` e `if __debug__` restano |
+| `remove_explicit_return_none` | vero | `return None` → `return` |
+| `remove_builtin_exception_brackets` | vero | `raise ValueError()` → `raise ValueError` |
+| `constant_folding` | vero | calcola le espressioni costanti |
+| — | — | in ogni caso: spazi, indentazione con tab, istruzioni unite con `;` |
+
+**Parametri della funzione d'ingresso** (richiesta dell'utente): con `rename_locals` la libreria
+**non** rinomina i parametri, li copia in una variabile locale (`def f(numbers): A=numbers; ...`),
+quindi le chiamate con argomenti per nome restano valide (verificato in locale e nel test
+`test_python_minify_keeps_entry_point_and_parameters`; la verifica sulle canoniche lo conta per ogni
+problema).
+
+### 4.2 T4.1 JavaScript: terser 5.36.0
+
+`minify(code, {compress: {}, mangle: false})` senza rinomina, `minify(code, {compress: {},
+mangle: {toplevel: false}})` con rinomina: le opzioni di `compress` sono quelle di default della
+versione fissata, gli altri gruppi (`parse`, `format`) anche. Con `toplevel` falso (default) né
+`compress` né `mangle` toccano i nomi a livello di file, comprese le funzioni dichiarate come
+`const nome = (...) => {...}`. Opzioni di `compress` attive per default secondo la documentazione
+di terser 5 (l'elenco esatto della versione installata si stampa nel log della verifica sulle
+canoniche, `node tools/js/t4_batch.mjs defaults`, e sostituisce questo se diverso):
+`arrows`, `booleans`, `collapse_vars`, `comparisons`, `computed_props`, `conditionals`,
+`dead_code`, `directives`, `drop_debugger`, `evaluate`, `hoist_props`, `if_return`, `inline` (3),
+`join_vars`, `keep_fargs`, `loops`, `negate_iife`, `properties`, `reduce_funcs`, `reduce_vars`,
+`sequences`, `side_effects`, `switches`, `typeofs`, `unused`, `passes` = 1; spente: `drop_console`,
+`hoist_funs`, `hoist_vars`, `keep_classnames`, `keep_fnames`, `module`, `toplevel`, tutte le
+`unsafe*`. I commenti si tolgono (il default di `format.comments` conserva solo quelli di licenza).
+
+### 4.3 T4.2 JavaScript: esbuild 0.24.0
+
+`buildSync({stdin, bundle: true, format: "cjs", platform: "node", treeShaking: false})`, cioè
+`esbuild --bundle --format=cjs --platform=node --tree-shaking=false`. **Motivazione** (decisione
+dell'utente): con i default esbuild avvolge il codice in una IIFE e, con il tree-shaking, elimina la
+funzione della soluzione, che nel file non è mai chiamata; in un progetto reale la funzione è
+raggiungibile da chi la chiama e non verrebbe eliminata: senza tree-shaking e con l'output per Node
+si riproduce questa condizione sul campione isolato. Gli import dei moduli di Node (`fs`,
+`readline` in CodeNet) restano `require` esterni. Il codice entra da stdin con un nome fisso
+(`input.js`), così il commento con il percorso che esbuild mette in testa non dipende dal lotto.
+
+### 4.4 Verifiche e report
+
+- **Prima del lancio:** `scripts/check_attacks_canonical.py --languages python,javascript
+  --attacks T4.1,T4.2` sulle canoniche di L1: le canoniche che passavano devono passare con
+  entrambe le varianti; il log conta anche le canoniche in cui il nome della funzione d'ingresso
+  non compare più e (Python) quelle con i parametri rinominati. Ogni rottura si chiude con una
+  restrizione, come per T2.1 (§1.6).
+- **Report di T4.2** (richiesta dell'utente): frazione di campioni `UNCHANGED` e distanza media
+  1 − CodeBLEU accanto al TPR (`check_attacks.py METODO T4.2 --report`, riga `status` e
+  `1-CodeBLEU`); se l'attacco cambia poco su funzioni singole va dichiarato che è leggero.
+- **Metodi:** T4.1 Python per STONE, MCGMark, PromptMark e ACW; T4.1 JavaScript e T4.2 solo per
+  SWEET (l'unico metodo in JavaScript), da lanciare quando SWEET sarà congelato.

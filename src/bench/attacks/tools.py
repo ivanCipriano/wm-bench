@@ -180,8 +180,19 @@ class ToolRunner:
             "clang-tidy": lambda: self.which("clang-tidy") is not None,
             "prettier": lambda: (self.js_bin / "prettier").exists(),
             "eslint": lambda: (self.js_bin / "eslint").exists(),
+            "terser": self._t4_available,
+            "terser-mangle": self._t4_available,
+            "esbuild": self._t4_available,
         }
         return checks[tool]()
+
+    def _t4_available(self) -> bool:
+        modules = self.tools_root / "js" / "node_modules"
+        return (
+            self.which("node") is not None
+            and (modules / "terser").is_dir()
+            and (modules / "esbuild").is_dir()
+        )
 
     def version(self, tool: str) -> str:
         """Versione effettiva del tool (in cache), per il manifest."""
@@ -196,6 +207,9 @@ class ToolRunner:
                 "clang-tidy": ["clang-tidy", "--version"],
                 "prettier": [str(self.js_bin / "prettier"), "--version"],
                 "eslint": [str(self.js_bin / "eslint"), "--version"],
+                "terser": [str(self.js_bin / "terser"), "--version"],
+                "terser-mangle": [str(self.js_bin / "terser"), "--version"],
+                "esbuild": [str(self.js_bin / "esbuild"), "--version"],
             }[tool]  # fmt: skip
             try:
                 proc = subprocess.run(
@@ -287,6 +301,9 @@ class ToolRunner:
             "clang-tidy": self._clang_tidy,
             "prettier": self._prettier,
             "eslint": self._eslint,
+            "terser": lambda: self._t4("terser"),
+            "terser-mangle": lambda: self._t4("terser-mangle"),
+            "esbuild": lambda: self._t4("esbuild"),
         }
         if tool not in builders:
             raise ValueError(f"unknown tool {tool!r}")
@@ -392,6 +409,16 @@ class ToolRunner:
             ],
             ok_codes=(0, 1),  # 1 = restano problemi non correggibili
         )  # fmt: skip
+
+    def _t4(self, mode: str) -> _ToolSpec:
+        """T4 (minificazione e bundling): ``tools/js/t4_batch.mjs`` applica terser o esbuild con
+        le API della versione fissata a tutti i file del lotto, in un solo processo Node."""
+        script = self.tools_root / "js" / "t4_batch.mjs"
+        return _ToolSpec(
+            mode,
+            _flat(".js"),
+            lambda root, files: ["node", str(script), mode, *(f.name for f in files)],
+        )
 
     # ------------------------------------------------------------------ lotti
     def _run_chunk(self, spec: _ToolSpec, codes: list[str]) -> list[ToolResult]:

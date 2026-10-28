@@ -216,7 +216,12 @@ class CellPlanner:
                 out.append(cell)
             else:
                 found = points(cell.attack_id, language=cell.language)
-                out.extend(replace(cell, attack_params_hash=h) for h in found)
+                # niente celle per i linguaggi che l'attacco non supporta (T4: solo py e js)
+                out.extend(
+                    replace(cell, attack_params_hash=h)
+                    for h, attack in found.items()
+                    if cell.language is None or attack.supports(cell.language)
+                )
         return out
 
     def _selected(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:

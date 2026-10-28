@@ -90,6 +90,8 @@ def main() -> int:
             for cell in record.cells:
                 if cell.not_applicable or cell.config_hash is None:
                     continue
+                if not attack.supports(cell.language):  # es. T4 in Java e C++: nessuna cella
+                    continue
                 model, lang, h = cell.model_id, cell.language, cell.config_hash
                 # hash della cella con la versione corrente del catalogo del suo linguaggio
                 params_hash = attack.params_hash(lang)

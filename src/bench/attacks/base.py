@@ -299,7 +299,8 @@ def make_attack(attack_id: str, params: Mapping[str, Any]) -> Attack:
     """Istanza registrata di un attacco con i parametri dati."""
     import bench.attacks.t1
     import bench.attacks.t2
-    import bench.attacks.t3  # noqa: F401  (popola ATTACKS)
+    import bench.attacks.t3
+    import bench.attacks.t4  # noqa: F401  (popola ATTACKS)
     from bench.registry import ATTACKS
 
     return ATTACKS.get(attack_id)(params)

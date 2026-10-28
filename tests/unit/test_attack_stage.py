@@ -201,3 +201,10 @@ def test_cells_use_the_catalog_version_of_their_language(acfg: ExperimentConfig)
     assert by_lang["python"] == {a.params_hash() for a in grid_attacks("T2.1").values()}
     assert by_lang["cpp"] == set(grid_attacks("T2.1", language="cpp"))
     assert not by_lang["python"] & by_lang["cpp"]
+
+
+def test_no_cells_for_unsupported_languages(acfg: ExperimentConfig) -> None:
+    """T4.1 solo Python e JavaScript, T4.2 solo JavaScript: nessuna cella negli altri linguaggi."""
+    cfg = rebuild(acfg, attacks=["T4.1", "T4.2"], languages=["python", "java", "javascript"])
+    found = {(c.attack_id, str(c.language)) for c in CellPlanner(cfg).cells_for(AttackStage)}
+    assert found == {("T4.1", "python"), ("T4.1", "javascript"), ("T4.2", "javascript")}
