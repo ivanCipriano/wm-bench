@@ -98,7 +98,7 @@ di ACW.
   passavano e passano ancora, per linguaggio, attesa **≥ 99%**. Per ogni campione rotto, il tipo
   responsabile: un caso non previsto diventa una nuova restrizione e il controllo si ripete.
 
-Comando: `scripts/check_attacks_canonical.sh --attacks T2.1 --params b=all [--baseline-dev]`.
+Comando: `LOG=<file nuovo> scripts/check_attacks_canonical.sh --attacks T2.1 --params b=all [--baseline-dev]` (`LOG` è obbligatorio e non può essere un log esistente: il 28 ottobre 2026 il comando stampato dallo script, con la destinazione fissa `M10_canonical_attacks.txt`, ha sovrascritto quel log con l'output di T2.1 C++ v2, che era già in `M11_t2_1_cpp_v2_baseline_dev.txt`; ripristinato dal repository).
 
 **Esito (26 ottobre 2026):** canoniche 541/542 (Python) e 164/164 negli altri linguaggi; baseline di L1 dev 99,52% (Python), 100% (Java, C++, JavaScript). I 5 fallimenti sono `TIMEOUT` di programmi al limite di tempo, non errori di semantica (si ripetono anche con il solo `comparison_flip`, che non cambia il costo): nessuna restrizione aggiunta. Log: `M11_t2_1_canonical.txt`, `M11_t2_1_baseline_dev.txt`.
 

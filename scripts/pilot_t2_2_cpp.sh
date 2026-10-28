@@ -6,7 +6,8 @@
 #
 # Due job: riscrittura su gpuq (Llama-3.1-8B-Instruct, fino a 200 campioni), poi test su defq
 # (originale, attaccato, riparato; parte solo se il primo è riuscito). A job finiti:
-#   python scripts/pilot_t2_2_cpp.py report > docs/milestone_logs/M11_t2_2_cpp_pilot.txt
+#   python scripts/pilot_t2_2_cpp.py report | tee docs/milestone_logs/M11_t2_2_cpp_pilot_2.txt
+# (file nuovo: non riscrivere un log già committato; se esiste, usare un altro nome)
 # Con "bash scripts/pilot_t2_2_cpp.sh execute" rilancia solo i test (riscrittura già fatta).
 # Scrive solo in $WMB/tmp/t2_2_cpp_pilot/; log in $WMB/logs/pilot_t2_2_cpp_<job>.log.
 set -euo pipefail

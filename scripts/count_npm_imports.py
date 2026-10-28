@@ -2,7 +2,8 @@
 qualcosa per gli altri? (decisioni dell'utente del 28 ottobre 2026; ADR-014 §4.3)
 
 Uso (con bench-core e Node di ``tools/js``, nodo di login; qualche minuto):
-    python scripts/count_npm_imports.py | tee docs/milestone_logs/M11_t4_2_npm.txt
+    python scripts/count_npm_imports.py | tee docs/milestone_logs/M11_t4_2_npm_2.txt
+    (file nuovo: non riscrivere un log già committato; se esiste, usare un altro nome)
 
 Campioni: baseline di L1 (sviluppo e test) di ogni modello e marcati di SWEET su L1 sviluppo con la
 configurazione scelta su L1+L2 (l'unico metodo in JavaScript; il test di SWEET non c'è ancora). Per

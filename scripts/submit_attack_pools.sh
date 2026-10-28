@@ -8,7 +8,8 @@
 # Variabile opzionale JOBS (default: i posti liberi, al massimo 4; con meno job un job fa più
 # linguaggi, uno dopo l'altro).
 #
-# Poi: python scripts/thestack_partition_report.py > docs/milestone_logs/M10_attack_pools.txt
+# Poi: python scripts/thestack_partition_report.py | tee docs/milestone_logs/M10_attack_pools_2.txt
+# (file nuovo: non riscrivere un log già committato; se esiste, usare un altro nome)
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"

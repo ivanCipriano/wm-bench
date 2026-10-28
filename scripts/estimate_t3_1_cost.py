@@ -2,7 +2,8 @@
 dell'utente del 27 ottobre 2026).
 
 Uso (con bench-core, nodo di login, nessun job; pochi secondi):
-    python scripts/estimate_t3_1_cost.py [METHOD ...] | tee docs/milestone_logs/M11_t3_1_cost.txt
+    python scripts/estimate_t3_1_cost.py [METHOD ...] | tee docs/milestone_logs/M11_t3_1_cost_2.txt
+    (file nuovo: non riscrivere un log già committato; se esiste, usare un altro nome)
 
 Senza argomenti: tutti i metodi congelati (SWEET compreso, quando lo sarà). I tempi vengono dai
 lanci già fatti con la configurazione congelata: somma di ``elapsed_s`` dei risultati del worker

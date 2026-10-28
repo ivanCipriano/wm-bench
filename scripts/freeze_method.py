@@ -2,6 +2,7 @@
 
 Uso (con bench-core, nodo di login, nessun job; pochi secondi):
     python scripts/freeze_method.py METHOD | tee docs/milestone_logs/M10_freeze_METHOD.txt
+    (file nuovo: non riscrivere un log già committato; se esiste, usare un altro nome)
 
 Controlla che la scelta e le soglie del metodo siano quelle definitive su L1+L2 e che la griglia
 non sia cambiata; poi scrive ``freeze/<metodo>.json`` e stampa il record (data, commit,
