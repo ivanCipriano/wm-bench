@@ -1,0 +1,60 @@
+
+##### acw qwen25_coder_7b python vs baseline (marked 2676, reference 2676)
+  property                     marked  reference
+  ends_with_newline             1.000      0.998
+  ends_with_2_newlines          0.000      0.000
+  starts_with_whitespace        0.000      0.000
+  has_cr                        0.000      0.001
+  has_tab                       1.000      0.000  <--
+  has_trailing_spaces           0.171      0.199
+  has_blank_line                0.404      0.355
+  has_double_blank_line         0.283      0.056  <--
+  has_single_quote              0.253      0.258
+  has_double_quote              0.325      0.325
+  has_triple_double_quote       0.290      0.290
+  has_comment                   0.422      0.528
+  has_import                    0.232      0.232
+  indent_2_spaces               0.000      0.001
+  has_non_ascii                 0.024      0.024
+  marked: chars median 219, lines median 9
+  reference: chars median 261, lines median 9
+  exact pairs 2676: identical 0, identical after whitespace normalisation 0
+    first difference at char 98/503|441
+      parent: 'List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbe'
+      marked: 'List[float], threshold: float) -> bool:\n\t""" Check if in given list of numbers, are any two numbers '
+    first difference at char 98/529|475
+      parent: 'List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbe'
+      marked: 'List[float], threshold: float) -> bool:\n\t""" Check if in given list of numbers, are any two numbers '
+    first difference at char 98/503|441
+      parent: 'List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbe'
+      marked: 'List[float], threshold: float) -> bool:\n\t""" Check if in given list of numbers, are any two numbers '
+
+##### acw deepseek_coder_6p7b python vs baseline (marked 2676, reference 2676)
+  property                     marked  reference
+  ends_with_newline             1.000      1.000
+  ends_with_2_newlines          0.002      0.002
+  starts_with_whitespace        0.000      0.000
+  has_cr                        0.000      0.000
+  has_tab                       1.000      0.000  <--
+  has_trailing_spaces           0.019      0.022
+  has_blank_line                0.301      0.299
+  has_double_blank_line         0.239      0.011  <--
+  has_single_quote              0.206      0.206
+  has_double_quote              0.157      0.157
+  has_triple_double_quote       0.095      0.095
+  has_comment                   0.051      0.051
+  has_import                    0.138      0.138
+  indent_2_spaces               0.000      0.000
+  has_non_ascii                 0.000      0.000
+  marked: chars median 121, lines median 6
+  reference: chars median 135, lines median 6
+  exact pairs 2676: identical 0, identical after whitespace normalisation 0
+    first difference at char 25/246|204
+      parent: 'from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: floa'
+      marked: 'from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: flo'
+    first difference at char 25/362|313
+      parent: 'from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: floa'
+      marked: 'from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: flo'
+    first difference at char 25/245|207
+      parent: 'from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: floa'
+      marked: 'from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: flo'
