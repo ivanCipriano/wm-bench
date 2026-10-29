@@ -1,0 +1,46 @@
+##### ClassEval pilot: 10 classes x 2 models x 6 samples, max_new_tokens 2048
+sandbox image 432fd0442437b029, packages Pillow==9.5.0,PyPDF2==3.0.1,beautifulsoup4==4.12.3,gensim==4.3.2,nltk==3.8.1,numpy==1.26.4,openpyxl==3.0.10,pandas==1.5.3,python-docx==1.1.2,reportlab==4.0.4,scipy==1.11.4
+
+## qwen25_coder_7b
+  truncated (no EOS within the limit): 0/60 = 0.0%
+  new tokens: median 674, p90 953, max 1255
+  extraction ok: 60/60 = 100.0%
+  samples passing all tests: 21/60 = 35.0%
+  classes with at least one passing sample: 5/10 = 50.0%
+  statuses: {'FAILED': 36, 'PASSED': 21, 'SYNTAX_ERROR': 3}
+  truncated and not passing: 0
+    classeval/ClassEval_10     PASS PASS PASS PASS PASS PASS  truncated 0
+    classeval/ClassEval_21     PASS PASS PASS PASS PASS PASS  truncated 0
+    classeval/ClassEval_28     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_42     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_61     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_69     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_76     PASS PASS PASS PASS PASS PASS  truncated 0
+    classeval/ClassEval_78     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_79     SYNT PASS FAIL SYNT SYNT PASS  truncated 0
+    classeval/ClassEval_99     FAIL FAIL FAIL PASS FAIL FAIL  truncated 0
+
+## deepseek_coder_6p7b
+  truncated (no EOS within the limit): 0/60 = 0.0%
+  new tokens: median 544, p90 868, max 1066
+  extraction ok: 60/60 = 100.0%
+  samples passing all tests: 27/60 = 45.0%
+  classes with at least one passing sample: 6/10 = 60.0%
+  statuses: {'FAILED': 33, 'PASSED': 27}
+  truncated and not passing: 0
+    classeval/ClassEval_10     PASS PASS PASS PASS PASS PASS  truncated 0
+    classeval/ClassEval_21     FAIL FAIL PASS FAIL PASS FAIL  truncated 0
+    classeval/ClassEval_28     FAIL PASS PASS PASS PASS FAIL  truncated 0
+    classeval/ClassEval_42     PASS PASS PASS PASS PASS PASS  truncated 0
+    classeval/ClassEval_61     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_69     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_76     PASS PASS PASS PASS PASS PASS  truncated 0
+    classeval/ClassEval_78     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_79     FAIL FAIL FAIL FAIL FAIL FAIL  truncated 0
+    classeval/ClassEval_99     PASS PASS FAIL PASS FAIL FAIL  truncated 0
+
+## canonical solutions passing every repeat (all classes): 92/94 = 97.9%
+  classeval/ClassEval_17: ['FAILED', 'FAILED', 'FAILED']: 'Assertion: 1/7 test classes not passed: CalendarTestGetUpcomingEvents: run 5, failures 1, errors 0'
+  classeval/ClassEval_48: ['FAILED', 'FAILED', 'FAILED']: 'Assertion: 1/4 test classes not passed: IpUtilTestGetHostname: run 5, failures 1, errors 0'
+
+## truncated overall: 0/120 = 0.0%; rule: stop if > 5% -> OK
