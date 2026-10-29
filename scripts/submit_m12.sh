@@ -9,11 +9,17 @@
 #   aggiungere --dry-run in fondo per vedere solo il piano; K/M divide le celle fra le due persone.
 #
 # Ordine: 1), 2) e 3) insieme; 4) dopo tutti e tre (AFTER=perplexity,logreg,unixcoder).
+#
+# Solo ACW, misure secondarie al netto della formattazione (regole 44 e 45, ADR-015 §7):
+#   bash scripts/submit_m12.sh logreg_fmtfree    acw 1/1  # a) logreg sul codice normalizzato (CPU)
+#   bash scripts/submit_m12.sh unixcoder_fmtfree acw 1/1  # b) UniXcoder sul codice normalizzato (gpuq)
+#   bash scripts/submit_m12.sh acw_format        acw      # c) rilevamento senza 44 e 45 e AUROC di
+#                                                         #    a) e b) (CPU; dopo a e b)
 # Stato e report: python scripts/check_m12.py METODO [--report].
 # AFTER (opzionale): passi da attendere, come in submit_attacks_l1.sh (ID salvati a ogni invio,
 # un file per utente).
 set -euo pipefail
-USAGE="usage: submit_m12.sh perplexity|logreg|unixcoder|metrics METHOD [K/M] [--dry-run]"
+USAGE="usage: submit_m12.sh perplexity|logreg|unixcoder|metrics|logreg_fmtfree|unixcoder_fmtfree|acw_format METHOD [K/M] [--dry-run]"
 STEP="${1:?$USAGE}"
 METHOD="${2:?$USAGE}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -41,9 +47,18 @@ case "$STEP" in
         ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=perplexity"
               "execution.sources=[llm_baseline,llm_watermarked,baseline_twin]" "${TEST[@]}")
         ;;
-    logreg|unixcoder)
+    logreg|unixcoder|logreg_fmtfree|unixcoder_fmtfree)
+        case "$STEP" in
+            *_fmtfree) [ "$METHOD" = acw ] || { echo "$STEP: only for acw" >&2; exit 2; } ;;
+        esac
         SHARE="${3:?$USAGE}"; MODE="${4:-}"
         ARGS=(--jobs "${JOBS:-$DEFAULT_JOBS}" --share "$SHARE" "stage=adversarial_$STEP"
+              "${TEST[@]}")
+        ;;
+    acw_format)
+        [ "$METHOD" = acw ] || { echo "$STEP: only for acw" >&2; exit 2; }
+        SHARE="1/1"; MODE="${3:-}"
+        ARGS=(--jobs 1 "stage=metrics_acw_format" "detection.threshold_levels=[L1,L2]"
               "${TEST[@]}")
         ;;
     metrics)
@@ -76,7 +91,7 @@ fi
 echo "##### job attivi: $ACTIVE, posti liberi: $FREE su $MAX_JOBS"
 if [ "$MODE" != "--dry-run" ]; then
     NEED=1
-    [ "$STEP" = metrics ] || NEED="${JOBS:-1}"
+    case "$STEP" in metrics|acw_format) ;; *) NEED="${JOBS:-1}" ;; esac
     if [ "$FREE" -lt 1 ] || [ "$NEED" -gt "$FREE" ]; then
         echo "not enough free slots: need $NEED, free $FREE (wait for a job to end or lower JOBS)" >&2
         exit 2

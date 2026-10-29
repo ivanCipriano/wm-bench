@@ -50,6 +50,26 @@ def empty_counts(table: pd.DataFrame) -> tuple[int, int]:
     return sum(is_empty(c) for c in table["code"]), len(table)
 
 
+TAB_WIDTH = 4  # spazi per tab della regola 45 di ACW (``tab_convert_process``)
+
+
+def format_free(code: str) -> str:
+    """Codice "al netto della formattazione" di ACW (decisione dell'utente del 29 ottobre 2026):
+    i tab dell'indentazione diventano 4 spazi (inverso della regola 45) e le sequenze di righe
+    vuote si riducono a una (regola 44, autopep8 E301/E302/E305/E306). Si applica allo stesso modo
+    a marcati e riferimento."""
+    out: list[str] = []
+    previous_blank = False
+    for raw in code.split("\n"):
+        body = raw.lstrip(" \t")
+        line = raw[: len(raw) - len(body)].replace("\t", " " * TAB_WIDTH) + body
+        blank = not line.strip()
+        if not (blank and previous_blank):
+            out.append(line)
+        previous_blank = blank
+    return "\n".join(out)
+
+
 def codebleu_score(reference: str, hypothesis: str, language: str) -> float:
     """CodeBLEU (``codebleu==0.7.0``) di ``hypothesis`` rispetto a un solo riferimento."""
     if reference == hypothesis:

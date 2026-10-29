@@ -5,6 +5,8 @@
 - ``adversarial_logreg`` (CPU) e ``adversarial_unixcoder`` (GPU): predizioni out-of-fold dei due
   classificatori avversari per ogni riferimento del metodo (baseline; per MCGMark la gemella e, come
   confronto secondario, la baseline normale);
+- ``adversarial_logreg_fmtfree`` e ``adversarial_unixcoder_fmtfree``: gli stessi classificatori sul
+  codice senza la formattazione di ACW (``imp.format_free``), misura secondaria solo per ACW;
 - ``metrics_imperceptibility`` (CPU): CodeBLEU, ΔNLL e ΔPPL e AUROC dei classificatori con IC,
   campioni vuoti per parte (``bench.metrics.imperceptibility``).
 
@@ -50,6 +52,10 @@ OBSERVER = "starcoder2_7b"
 CLASSIFIER = "unixcoder_base"
 PPL_SOURCES = ("llm_baseline", "llm_watermarked", "baseline_twin")
 VARIANTS = ("logreg", "unixcoder")
+# Classificatori sul codice "al netto della formattazione" (``imp.format_free``), misura
+# secondaria solo per ACW (decisione dell'utente del 29 ottobre 2026: regole 44 e 45).
+FORMAT_FREE_METHODS = frozenset({"acw"})
+FORMAT_FREE = "_fmtfree"
 EMPTY_GAP = 0.02  # differenza delle frazioni di vuoti da segnalare (decisione dell'utente)
 
 
@@ -245,6 +251,13 @@ class PerplexityStage(_MethodStage):
 class _AdversarialStage(_MethodStage):
     variant: ClassVar[str]
     output_kinds: ClassVar[frozenset[str]] = frozenset({"adversarial"})
+    format_free: ClassVar[bool] = False  # codice normalizzato con ``imp.format_free``
+
+    @classmethod
+    def normalize_cell(cls, cell: Cell) -> Cell | None:
+        if cls.format_free and cell.method not in FORMAT_FREE_METHODS:
+            return None
+        return cell
 
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
         refs = [self.samples(cell, None)]
@@ -280,9 +293,10 @@ class _AdversarialStage(_MethodStage):
             splits = folds(data["problem_key"].astype(str), data["label"], seed)
             labels = data["label"].to_numpy()
             groups = data["problem_key"].astype(str).to_numpy()
-            scores, log = self.fit(
-                [str(c) for c in data["code"]], labels, groups, splits, Language(language), seed
-            )
+            codes = [str(c) for c in data["code"]]
+            if self.format_free:
+                codes = [imp.format_free(c) for c in codes]
+            scores, log = self.fit(codes, labels, groups, splits, Language(language), seed)
             fold_of = np.empty(len(data), dtype=int)
             for k, (_, test) in enumerate(splits):
                 fold_of[test] = k
@@ -299,6 +313,7 @@ class _AdversarialStage(_MethodStage):
                 "n_positives": int(labels.sum()),
                 "n_negatives": int((labels == 0).sum()),
                 "folds_disjoint_by_problem": True,  # check_folds non ha sollevato
+                "format_free": self.format_free,
                 "fold_auroc": fold_auc,
                 "fold_log": log,
             }
@@ -339,6 +354,51 @@ class AdversarialUnixcoderStage(_AdversarialStage):
     ) -> tuple[Array, list[dict[str, Any]]]:  # fmt: skip
         path = str(self._cfg().models_catalog[CLASSIFIER].path)
         return unixcoder_oof(codes, labels, groups, splits, path, seed)
+
+
+@STAGES.register("adversarial_logreg_fmtfree")
+class AdversarialLogregFormatFreeStage(AdversarialLogregStage):
+    """Regressione logistica sul codice senza la formattazione di ACW (secondaria)."""
+
+    name: ClassVar[str] = "adversarial_logreg_fmtfree"
+    variant: ClassVar[str] = "logreg" + FORMAT_FREE
+    format_free: ClassVar[bool] = True
+
+
+@STAGES.register("adversarial_unixcoder_fmtfree")
+class AdversarialUnixcoderFormatFreeStage(AdversarialUnixcoderStage):
+    """UniXcoder sul codice senza la formattazione di ACW (secondaria)."""
+
+    name: ClassVar[str] = "adversarial_unixcoder_fmtfree"
+    variant: ClassVar[str] = "unixcoder" + FORMAT_FREE
+    format_free: ClassVar[bool] = True
+
+
+def adversarial_metrics(
+    add: Callable[..., None], oof: pd.DataFrame, fold_auc: list[float], name: str, seed: int,
+    n_boot: int,
+) -> None:  # fmt: skip
+    """AUROC out-of-fold di un classificatore (IC bootstrap per problema) e media fra i fold
+    (media ± deviazione standard)."""
+    pos = oof.loc[oof["label"] == 1, "score"].to_numpy()
+    neg = oof.loc[oof["label"] == 0, "score"].to_numpy()
+    groups = {k: g for k, g in oof.groupby("problem_key", sort=True)}
+    keys = list(groups)
+    rng = np.random.default_rng(seed)
+    boots = []
+    for _ in range(n_boot):
+        sample = pd.concat([groups[keys[j]] for j in rng.integers(0, len(keys), len(keys))])
+        p = sample.loc[sample["label"] == 1, "score"].to_numpy()
+        q = sample.loc[sample["label"] == 0, "score"].to_numpy()
+        if len(p) and len(q):
+            boots.append(auroc(p, q))
+    ci = tuple(np.percentile(boots, [2.5, 97.5])) if boots else (float("nan"),) * 2
+    add(f"{name}_auroc_oof", auroc(pos, neg), (float(ci[0]), float(ci[1])), "cluster_bootstrap",
+        len(oof))  # fmt: skip
+    if fold_auc:
+        mean, sd = float(np.mean(fold_auc)), float(np.std(fold_auc, ddof=1))
+        add(f"{name}_auroc_fold_mean", mean, (mean - sd, mean + sd), "mean_pm_sd_folds",
+            len(fold_auc))  # fmt: skip
 
 
 # ---------------------------------------------------------------------------- metriche
@@ -489,23 +549,10 @@ class ImperceptibilityMetricsStage(_MethodStage):
         manifest = ctx.store.read_manifest(ref)
         fold_auc = list((manifest.extra or {}).get("fold_auroc", [])) if manifest else []
         name = f"adversarial_{variant}"
-        pos = oof.loc[oof["label"] == 1, "score"].to_numpy()
-        neg = oof.loc[oof["label"] == 0, "score"].to_numpy()
         seed = derive_seed(self._cfg().global_seed, "bootstrap", f"{name}{suffix}", cell.key())
-        groups = {k: g for k, g in oof.groupby("problem_key", sort=True)}
-        keys = list(groups)
-        rng = np.random.default_rng(seed)
-        boots = []
-        for _ in range(self._cfg().detection.n_bootstrap):
-            sample = pd.concat([groups[keys[j]] for j in rng.integers(0, len(keys), len(keys))])
-            p = sample.loc[sample["label"] == 1, "score"].to_numpy()
-            q = sample.loc[sample["label"] == 0, "score"].to_numpy()
-            if len(p) and len(q):
-                boots.append(auroc(p, q))
-        ci = tuple(np.percentile(boots, [2.5, 97.5])) if boots else (float("nan"),) * 2
-        add(f"{name}_auroc_oof{suffix}", auroc(pos, neg), (float(ci[0]), float(ci[1])),
-            "cluster_bootstrap", len(oof))  # fmt: skip
-        if fold_auc:
-            mean, sd = float(np.mean(fold_auc)), float(np.std(fold_auc, ddof=1))
-            add(f"{name}_auroc_fold_mean{suffix}", mean, (mean - sd, mean + sd),
-                "mean_pm_sd_folds", len(fold_auc))  # fmt: skip
+
+        def add_suffixed(metric: str, *args: Any) -> None:
+            add(f"{metric}{suffix}", *args)
+
+        adversarial_metrics(add_suffixed, oof, fold_auc, name, seed,
+                            self._cfg().detection.n_bootstrap)  # fmt: skip

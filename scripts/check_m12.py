@@ -8,7 +8,9 @@ Passi: ``perplexity`` (marcati, riferimenti), ``logreg`` e ``unixcoder`` (un out
 riferimento), ``metrics``. Il report stampa per cella le metriche con IC, i campioni vuoti per parte
 con la segnalazione delle celle in cui le due frazioni differiscono di più di 2 punti (decisione
 dell'utente del 28 ottobre 2026), l'esito del controllo dei fold e, per MCGMark, le metriche di
-capacità della fase ``metrics`` (SPEC §13.5).
+capacità della fase ``metrics`` (SPEC §13.5). Per ACW anche i passi al netto della formattazione
+(``logreg_fmtfree``, ``unixcoder_fmtfree``, ``acw_format``; ADR-015 §7) e le loro metriche accanto
+alle ufficiali.
 """
 
 from __future__ import annotations
@@ -20,7 +22,10 @@ from typing import Any
 from bench.config.builder import load_experiment
 from bench.hpo.freeze import FINAL_LEVELS, load_freeze
 from bench.pipeline.stage import Cell
+from bench.pipeline.stages.acw_format import acw_format_ref
 from bench.pipeline.stages.imperceptibility import (
+    FORMAT_FREE,
+    FORMAT_FREE_METHODS,
     ImperceptibilityMetricsStage,
     adversarial_ref,
     imperceptibility_ref,
@@ -60,6 +65,9 @@ def main() -> int:
         "unixcoder": [],
         "metrics": [],
     }
+    format_free = method in FORMAT_FREE_METHODS
+    if format_free:
+        steps.update({"logreg_fmtfree": [], "unixcoder_fmtfree": [], "acw_format": []})
     cells = []
     for frozen in record.cells:
         if frozen.not_applicable or frozen.config_hash is None:
@@ -74,34 +82,12 @@ def main() -> int:
         )
         name = f"{frozen.model_id} {frozen.language}"
         cells.append((name, cell))
-        steps["perplexity"].append((f"{name} marked", stage.ppl(cell, None)))
-        for r in references(method):
-            steps["perplexity"].append((f"{name} {r}", stage.ppl(cell, r)))
-            for variant in ("logreg", "unixcoder"):
-                ref = adversarial_ref(
-                    variant,
-                    method,
-                    frozen.model_id,
-                    frozen.config_hash,
-                    r,
-                    LEVEL,
-                    frozen.language,
-                    SPLIT,
-                )
-                steps[variant].append((f"{name} {r}", ref))
-        steps["metrics"].append(
-            (
-                name,
-                imperceptibility_ref(
-                    method, frozen.model_id, frozen.config_hash, LEVEL, frozen.language, SPLIT
-                ),
-            )
-        )
+        add_steps(steps, stage, method, name, cell)
     sys.stdout.write(f"##### {method} M12 on {LEVEL} {SPLIT}\n")
     for step, refs in steps.items():
         missing = [n for n, r in refs if not store.exists(r)]
         state = "COMPLETE" if not missing else "INCOMPLETE"
-        sys.stdout.write(f"{step:<12} {len(refs) - len(missing):>4}/{len(refs):<4} {state}\n")
+        sys.stdout.write(f"{step:<18} {len(refs) - len(missing):>4}/{len(refs):<4} {state}\n")
         for n in missing:
             sys.stdout.write(f"    missing: {n}\n")
     if args.report:
@@ -112,8 +98,36 @@ def main() -> int:
                 sys.stdout.write("  metrics: MISSING\n")
                 continue
             flagged += write_cell(store, method, name, cell, ref)
+            if format_free:
+                write_format(store, method, cell)
         sys.stdout.write(f"\nempty-fraction gaps > 2 points: {flagged or 'none'}\n")
     return 0
+
+
+def add_steps(
+    steps: dict[str, list[tuple[str, Any]]],
+    stage: ImperceptibilityMetricsStage,
+    method: str,
+    name: str,
+    cell: Cell,
+) -> None:
+    """Artefatti attesi di una cella, per passo."""
+    model, h, lang = str(cell.model_id), str(cell.config_hash), str(cell.language)
+    format_free = method in FORMAT_FREE_METHODS
+    steps["perplexity"].append((f"{name} marked", stage.ppl(cell, None)))
+    for r in references(method):
+        steps["perplexity"].append((f"{name} {r}", stage.ppl(cell, r)))
+        for variant in ("logreg", "unixcoder"):
+            ref = adversarial_ref(variant, method, model, h, r, LEVEL, lang, SPLIT)
+            steps[variant].append((f"{name} {r}", ref))
+            if format_free:
+                ref = adversarial_ref(
+                    variant + FORMAT_FREE, method, model, h, r, LEVEL, lang, SPLIT
+                )
+                steps[variant + FORMAT_FREE].append((f"{name} {r}", ref))
+    if format_free:
+        steps["acw_format"].append((name, acw_format_ref(method, model, h, LEVEL, lang, SPLIT)))
+    steps["metrics"].append((name, imperceptibility_ref(method, model, h, LEVEL, lang, SPLIT)))
 
 
 def write_cell(store: ArtifactStore, method: str, name: str, cell: Cell, ref: Any) -> list[str]:
@@ -147,6 +161,19 @@ def write_cell(store: ArtifactStore, method: str, name: str, cell: Cell, ref: An
                 if row["name"] in CAPACITY:
                     sys.stdout.write(fmt(row) + "\n")
     return flagged
+
+
+def write_format(store: ArtifactStore, method: str, cell: Cell) -> None:
+    """ACW al netto della formattazione: rilevamento ufficiale e senza 44 e 45 affiancati."""
+    ref = acw_format_ref(
+        method, str(cell.model_id), str(cell.config_hash), LEVEL, str(cell.language), SPLIT
+    )
+    sys.stdout.write("  --- format-free (rules 44, 45; ADR-015 §7)\n")
+    if not store.exists(ref):
+        sys.stdout.write("  acw_format: MISSING\n")
+        return
+    for row in store.read_table(ref).to_dict(orient="records"):
+        sys.stdout.write(fmt(row) + "\n")
 
 
 if __name__ == "__main__":

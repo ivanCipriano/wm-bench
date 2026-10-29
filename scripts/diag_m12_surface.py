@@ -21,6 +21,7 @@ import argparse
 import re
 import sys
 from collections.abc import Callable
+from statistics import median
 from typing import Any
 
 import pandas as pd
@@ -34,6 +35,8 @@ from bench.store.artifact_store import ArtifactStore
 
 LEVEL, SPLIT = "L1", "test"
 N_EXAMPLES = 3
+ASCII_MAX = 127
+FLAG_GAP = 0.2  # differenza di frequenza da segnalare
 
 PROPERTIES: dict[str, Callable[[str], bool]] = {
     "ends_with_newline": lambda c: c.endswith("\n"),
@@ -50,7 +53,7 @@ PROPERTIES: dict[str, Callable[[str], bool]] = {
     "has_comment": lambda c: re.search(r"(^|\s)#", c) is not None,
     "has_import": lambda c: re.search(r"^\s*(import|from)\s", c, re.M) is not None,
     "indent_2_spaces": lambda c: re.search(r"^  \S", c, re.M) is not None,
-    "has_non_ascii": lambda c: any(ord(ch) > 127 for ch in c),
+    "has_non_ascii": lambda c: any(ord(ch) > ASCII_MAX for ch in c),
 }
 
 
@@ -73,14 +76,13 @@ def surface(marked: pd.DataFrame, reference: pd.DataFrame) -> None:
     for name, test in PROPERTIES.items():
         m = sum(test(str(c)) for c in marked["code"]) / len(marked)
         r = sum(test(str(c)) for c in reference["code"]) / len(reference)
-        flag = "  <--" if abs(m - r) > 0.2 else ""
+        flag = "  <--" if abs(m - r) > FLAG_GAP else ""
         sys.stdout.write(f"  {name:<26} {m:>8.3f} {r:>10.3f}{flag}\n")
     for label, part in (("marked", marked), ("reference", reference)):
-        lengths = part["code"].astype(str).str.len()
-        lines = part["code"].astype(str).str.count("\n") + 1
-        sys.stdout.write(
-            f"  {label}: chars median {lengths.median():.0f}, lines median {lines.median():.0f}\n"
-        )
+        codes = [str(c) for c in part["code"]]
+        chars = median(len(c) for c in codes)
+        lines = median(c.count("\n") + 1 for c in codes)
+        sys.stdout.write(f"  {label}: chars median {chars:.0f}, lines median {lines:.0f}\n")
 
 
 def exact(marked: pd.DataFrame, reference: pd.DataFrame) -> None:

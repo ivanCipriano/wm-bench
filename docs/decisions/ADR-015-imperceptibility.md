@@ -101,3 +101,42 @@ d'impercettibilità.
 `python scripts/check_m12.py METODO [--report]`. Ordine: perplexity, logreg e unixcoder insieme;
 metrics dopo i tre. Risorse in `configs/resources/default.yaml` (`perplexity` e
 `adversarial_unixcoder` su gpuq).
+
+## 7. ACW al netto della formattazione (D38)
+
+**Osservazione** (`M12_acw.txt`, `M12_acw_surface.txt`, `scripts/diag_m12_surface.py`): per ACW
+UniXcoder ha AUROC **1,000** in tutti i fold e per entrambi i modelli, logreg 0,63–0,71. La causa è
+una regola di ACW stessa, non la pipeline: la **regola 45** (`tab_convert_process` in
+`third_party/ACW/source/one_rule_format.py`) converte ogni 4 spazi d'indentazione in un tab, è nel
+sottoinsieme della chiave congelata e si applica a qualunque codice indentato: il 100% dei marcati
+ha tab, contro lo 0% della baseline. Anche la **regola 44** (autopep8 E301/E302/E305/E306) lascia
+una traccia: doppie righe vuote nel 24–28% dei marcati contro l'1–6% della baseline. Le feature di
+logreg (token, nodi tree-sitter, stile dei nomi) non vedono l'indentazione.
+
+**Misure** (decisione dell'utente del 29 ottobre 2026, secondarie; le principali restano quelle
+delle §2–4, con l'AUROC 1,000 e questa causa):
+
+- **classificatori sul codice normalizzato** (fasi `adversarial_logreg_fmtfree`, CPU, e
+  `adversarial_unixcoder_fmtfree`, GPU; `imp.format_free`): a marcati e baseline si applica la
+  stessa normalizzazione, i tab dell'indentazione diventano 4 spazi (inverso della regola 45) e le
+  sequenze di righe vuote si riducono a una (regola 44); stessi fold, stessi iperparametri.
+  Metriche `adversarial_<variante>_fmtfree_auroc_oof` e `..._auroc_fold_mean`;
+- **rilevamento senza le regole 44 e 45** (fase `metrics_acw_format`, CPU, nessuna nuova
+  rilevazione): punteggio = frazione delle regole di k1 diverse da 44 e 45 rimaste invariate, da
+  `rule_unchanged` in `DetectionRecord.extra`. Soglia ricalibrata all'1% di FPR sui negativi umani
+  di sviluppo L1+L2 (stesse parti e stesso calibratore della fase `calibrate`; la fase ricalcola
+  anche la soglia ufficiale sugli stessi negativi, `threshold_official_recomputed`, che deve
+  coincidere con quella congelata). Metriche, accanto alle ufficiali ricalcolate con la soglia
+  congelata: `tpr_at_fpr_<official|format_free>|<clean|T1.1>`, `auroc_<...>|<...>`,
+  `fpr_human_test_<...>`, `threshold_format_free`, `n_rules_k1`, `n_format_rules_in_k1`.
+
+**Limite:** la soglia della variante è calibrata dopo il test, ma solo sui negativi di sviluppo
+(I3): è una misura descrittiva, non una configurazione congelata.
+
+**Esecuzione:** `scripts/submit_m12.sh logreg_fmtfree|unixcoder_fmtfree acw 1/1`, poi
+`scripts/submit_m12.sh acw_format acw` (dopo i due); report in `check_m12.py acw --report`.
+
+**Per la tesi** (decisione dell'utente): con la chiave congelata ACW è riconoscibile
+dall'indentazione (regola 45), e lo stesso tratto lo rende fragile alla riformattazione.
+
+**Esito:** _da completare con il report._

@@ -1,7 +1,8 @@
 # Regole della ResourcePolicy (SPEC §15.2, §16.3; cluster_info §4).
 # M12 (ADR-015): perplexity (StarCoder2) e classificatore UniXcoder su GPU; regressione logistica
-# e metriche dell'impercettibilità su CPU.
-gpu_stages: [generate_baseline, generate_baseline_twin, perplexity, adversarial_unixcoder]
+# e metriche dell'impercettibilità su CPU; per ACW anche le varianti sul codice senza formattazione.
+gpu_stages: [generate_baseline, generate_baseline_twin, perplexity, adversarial_unixcoder,
+             adversarial_unixcoder_fmtfree]
 gpu_methods_by_stage:
   watermark: {sweet: true, acw: false, stone: true, promptmark: true, mcgmark: true}
   # Rilevazione: SWEET usa il modello. STONE usa solo il tokenizer, ma la green list nasce da un
