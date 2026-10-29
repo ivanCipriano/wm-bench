@@ -1,0 +1,13 @@
+##### nodo gnode03, commit 7cc3cec
+
+##### stone deepseek_coder_6p7b java: 200 campioni marcati, costo atteso 0.62 h (elapsed_s di T3.1 sugli stessi campioni)
+  senza watermark (delta 0): APPLIED 177/200; funzione persa sugli APPLIED 36/177 = 0.203 [0.147; 0.270], sul totale 36/200 = 0.180 [0.129; 0.240]
+  T3.1 (k2), stessi campioni: APPLIED 193/200; funzione persa sugli APPLIED 71/193 = 0.368 [0.300; 0.440], sul totale 71/200 = 0.355 [0.289; 0.426]
+  coppie discordanti: solo senza watermark 17, solo T3.1 52
+
+##### stone deepseek_coder_6p7b cpp: 200 campioni marcati, costo atteso 0.73 h (elapsed_s di T3.1 sugli stessi campioni)
+  senza watermark (delta 0): APPLIED 198/200; funzione persa sugli APPLIED 34/198 = 0.172 [0.122; 0.232], sul totale 34/200 = 0.170 [0.121; 0.229]
+  T3.1 (k2), stessi campioni: APPLIED 184/200; funzione persa sugli APPLIED 79/184 = 0.429 [0.357; 0.504], sul totale 79/200 = 0.395 [0.327; 0.466]
+  coppie discordanti: solo senza watermark 13, solo T3.1 58
+
+TOTALE costo atteso 1.35 h di GPU (più il caricamento)
