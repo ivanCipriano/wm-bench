@@ -17,6 +17,7 @@ Il modello genera il corpo; ``loc_to_generate`` sono le righe di codice del corp
 from __future__ import annotations
 
 import re
+import textwrap
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -56,6 +57,27 @@ class PromptedFunction:
     loc_to_generate: int
     doc_kind: str = "docstring"
     start_line: int = 0  # riga della funzione nel file (chiave di The Stack, come i negativi)
+
+
+def dedent_python(code: str, lang: Language) -> str:
+    """Codice Python senza l'indentazione comune (``textwrap.dedent``), gli altri invariati.
+
+    Decisione dell'utente del 29 ottobre 2026: i metodi di CodeSearchNet e le risposte dei modelli
+    possono avere tutte le righe indentate, e senza questa normalizzazione risultano non validi
+    ("unexpected indent") anche se corretti. Si applica prima di ogni analisi che fa il parsing,
+    allo stesso modo per baseline, metodi e negativi.
+    """
+    return textwrap.dedent(code) if Language(lang) is Language.PYTHON else code
+
+
+def tree_sitter_valid(code: str, lang: Language, parsers: ParserService) -> bool:
+    """Validità sintattica di riferimento di L3 senza test (decisione dell'utente del 29 ottobre
+    2026): il codice (Python senza indentazione comune) si analizza senza nodi ERROR, da solo o
+    negli involucri delle funzioni isolate (metodi Java in una classe, ADR-004). ``javac`` e
+    ``g++ -fsyntax-only`` restano informativi: fuori dal loro progetto falliscono anche su codice
+    corretto."""
+    code = dedent_python(code, lang)
+    return bool(code.strip()) and parse_standalone(code, lang, parsers) is not None
 
 
 def clean_doc(raw: str) -> str:

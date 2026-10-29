@@ -166,6 +166,33 @@ Decoding `level234` (1.024 token). L'estrazione (D4) tratta CodeSearchNet e The 
 HumanEval+ e HumanEvalPack: se il codice estratto non definisce l'`entry_point` si antepone il
 prompt (il modello ha restituito solo il corpo).
 
+**Dichiarazioni per la tesi** (decisione dell'utente del 29 ottobre 2026):
+
+- in Java e JavaScript il commento di documentazione dei prompt è **ricostruito** nella forma
+  `/** ... */` dal testo di `func_documentation_string`: `whole_func_string` di CodeSearchNet non
+  lo contiene (0 casi `source` su 26.881 in Java e 4.420 in JavaScript);
+- in JavaScript le funzioni non dichiarate con un nome (proprietà `foo: function(...)`, funzioni
+  anonime: 2.042 su 6.483, circa un terzo) sono **escluse dai prompt**; restano fra i negativi.
+
+**Indentazione del codice Python** (decisione dell'utente del 29 ottobre 2026): prima del controllo
+di validità e di ogni analisi che fa il parsing, il codice Python di CodeSearchNet perde
+l'indentazione comune con `textwrap.dedent`, allo stesso modo per baseline, metodi e negativi
+(`dedent_python`): nel loader (prompt, canoniche e negativi; conteggio `python_dedented` nel
+manifest), nell'estrazione del codice (`DEDENT_DATASETS`, prima della regola che antepone il prompt)
+e, a difesa, nell'executor `syntax`. Senza, un metodo con tutte le righe indentate dà
+"unexpected indent" a `py_compile` anche se corretto (test `test_l3_syntax.py`). Nota: tree-sitter
+accetta l'indentazione iniziale senza nodi ERROR; il problema lo vede solo `py_compile`.
+
+**Misura funzionale di CodeSearchNet e The Stack** (decisione dell'utente del 29 ottobre 2026): la
+misura di riferimento è la **validità sintattica con tree-sitter** (`tree_sitter_valid`: nessun
+nodo ERROR, con gli involucri delle funzioni isolate di ADR-004, Python dopo `dedent`); l'executor
+`syntax` la applica per prima (`SYNTAX_ERROR` con `tree-sitter: ERROR node`, senza sandbox).
+`javac` e `g++ -fsyntax-only` restano **solo informativi**: su metodi e funzioni staccati dal loro
+progetto falliscono anche su codice corretto (tipi, membri e intestazioni mancanti). Pass@1 non si
+riporta (I6). Il report di L3 riporta la validità tree-sitter (marcati, riferimento, differenza) e,
+a parte, l'esito della compilazione. La canonica dell'executor `syntax` è la funzione umana
+completa (non prompt + soluzione, che in L3 la duplicherebbe).
+
 **Esecuzione:** `prepare_data` con `levels=[L3]` (`bash scripts/submit_l3.sh data`, un job CPU)
 scrive `data/splits/split_L3.parquet`, `data/problems/L3_<lang>.parquet` (Python: ClassEval +
 CodeSearchNet) e `data/negatives/L3_<lang>_native.parquet`; poi

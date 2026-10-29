@@ -10,11 +10,15 @@ La stessa regola vale per la baseline e per tutti i metodi in generazione:
    The Stack, ADR-016), se il codice non definisce l'``entry_point``, si antepone il prompt del
    dataset; per MBPP+ no, perché il prompt è solo testo;
 3. se non si trova nulla: ``code=""`` ed ``extraction_ok=False``.
+
+Per CodeSearchNet Python il codice estratto perde l'indentazione comune (``textwrap.dedent``)
+prima del passo 2 e di ogni analisi successiva (ADR-016).
 """
 
 from __future__ import annotations
 
 import re
+import textwrap
 from abc import ABC, abstractmethod
 
 from tree_sitter import Node
@@ -31,6 +35,9 @@ LANGUAGE_TAGS: dict[Language, frozenset[str]] = {
     Language.JAVASCRIPT: frozenset({"javascript", "js", "node", "jsx"}),
 }
 # Dataset a completamento di funzione: se manca la definizione si antepone il prompt.
+# Dataset in cui il codice Python si normalizza con ``textwrap.dedent`` (decisione dell'utente del
+# 29 ottobre 2026: metodi di CodeSearchNet tutti indentati, altrimenti "unexpected indent").
+DEDENT_DATASETS: frozenset[str] = frozenset({"codesearchnet"})
 PREPEND_PROMPT_DATASETS: frozenset[str] = frozenset(
     {
         "humanevalplus",
@@ -127,6 +134,8 @@ class FencedCodeExtractor(CodeExtractor):
         code = self.select(raw_output or "", lang)
         if code is None:
             return "", False
+        if problem.dataset in DEDENT_DATASETS and lang is Language.PYTHON:
+            code = textwrap.dedent(code)  # metodi tutti indentati (ADR-016)
         if (
             problem.dataset in PREPEND_PROMPT_DATASETS
             and problem.entry_point

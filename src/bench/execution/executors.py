@@ -20,6 +20,7 @@ import json
 import logging
 import os
 import shutil
+import textwrap
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -304,8 +305,13 @@ SYNTAX_CMD: dict[Language, list[str]] = {
 class SyntaxExecutor(Executor):
     """Validità sintattica (tree-sitter) e compilazione per i dati senza test (SPEC §11.3).
 
-    I metodi Java isolati (CodeSearchNet) vengono racchiusi in una classe prima di ``javac``.
-    Da riverificare quando arrivano i dati di L3/L4 (Milestone 8).
+    La misura di riferimento è la validità con tree-sitter (``tree_sitter_valid``: nessun nodo
+    ERROR, con gli involucri delle funzioni isolate): se manca, ``SYNTAX_ERROR`` con
+    ``tree-sitter: ERROR node`` senza invocare la sandbox. Gli altri campioni passano a ``javac``,
+    ``g++ -fsyntax-only``, ``node --check`` o ``py_compile``, solo informativi per Java e C++
+    (decisione dell'utente del 29 ottobre 2026, ADR-016): staccati dal loro progetto falliscono
+    anche su codice corretto. I metodi Java isolati vanno in una classe prima di ``javac``; il
+    codice Python perde l'indentazione comune.
     """
 
     name: ClassVar[str] = "syntax"
@@ -319,17 +325,27 @@ class SyntaxExecutor(Executor):
         self.parsers = default_parsers()
 
     def precheck(self, sample: SampleToRun) -> ExecutionRecord | None:
-        if not sample.code.strip() or self.parsers.has_error(sample.code, self.language):
+        from bench.data.l3_prompts import tree_sitter_valid
+
+        if not tree_sitter_valid(sample.code, self.language, self.parsers):
             return self.record(
                 sample, ExecStatus.SYNTAX_ERROR, stderr_tail="tree-sitter: ERROR node"
             )
         return None
 
+    def canonical(self, problem: Problem) -> str:
+        """La funzione umana completa (in L3 il prompt ne è già una parte, ADR-016)."""
+        return problem.canonical_solution or ""
+
     def budget_s(self, n_samples: int) -> float:
         return n_samples * (self.exec_cfg.compile_timeout_s + 5) + INVOCATION_MARGIN_S
 
     def source(self, code: str) -> str:
-        """Sorgente compilato (i metodi Java isolati vanno in una classe)."""
+        """Sorgente controllato e compilato: i metodi Java isolati vanno in una classe; il codice
+        Python perde l'indentazione comune (``textwrap.dedent``: metodi di CodeSearchNet, ADR-016).
+        """
+        if self.language is Language.PYTHON:
+            return textwrap.dedent(code)
         if self.language is Language.JAVA:
             root = self.parsers.parse(code, Language.JAVA).root_node
             kinds = {child.type for child in root.children}

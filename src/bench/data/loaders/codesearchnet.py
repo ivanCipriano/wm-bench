@@ -15,12 +15,13 @@ dell'integrazione di L1: così l'esclusione D39 è un confronto di chiavi.
 
 from __future__ import annotations
 
+import dataclasses
 from collections import Counter
 from typing import Any, ClassVar
 
 import xxhash
 
-from bench.data.l3_prompts import PromptedFunction, brace_prompt, python_prompt
+from bench.data.l3_prompts import PromptedFunction, brace_prompt, dedent_python, python_prompt
 from bench.data.loaders.base import (
     DatasetLoader,
     check_rows,
@@ -80,12 +81,15 @@ class CodeSearchNetLoader(DatasetLoader):
         drops: Counter[str] = Counter()
         kinds: Counter[str] = Counter()
         out: list[Problem] = []
+        dedented = 0
         for row in frame.itertuples(index=False):
             doc = str(row.func_documentation_string or "")
             if not doc.strip():
                 drops["no_documentation"] += 1
                 continue
-            code = normalize_newlines(str(row.whole_func_string))
+            raw = normalize_newlines(str(row.whole_func_string))
+            code = dedent_python(raw, lang)
+            dedented += code != raw
             if lang is Language.PYTHON:
                 fn = python_prompt(code, self.parsers)
             else:
@@ -100,6 +104,7 @@ class CodeSearchNetLoader(DatasetLoader):
             "dropped": dict(sorted(drops.items())),
             "doc_kind": dict(sorted(kinds.items())),
             "candidates": len(out),
+            "python_dedented": dedented,
         }
         return out, funnel
 
@@ -107,7 +112,9 @@ class CodeSearchNetLoader(DatasetLoader):
         """Tutte le funzioni dello split di test che si analizzano (negativi di L3)."""
         lang = self._check_language(language)
         cands, stats = CodeSearchNetSource(self.spec, self.parsers).candidates(lang, SPLIT)
-        return cands, stats.as_dict()
+        out = [dataclasses.replace(c, code=dedent_python(c.code, lang)) for c in cands]
+        changed = sum(a.code != b.code for a, b in zip(cands, out, strict=True))
+        return out, stats.as_dict() | {"python_dedented": changed}
 
     def load_problems(self, language: Language) -> list[Problem]:
         return self.prompt_pool(language)[0]
