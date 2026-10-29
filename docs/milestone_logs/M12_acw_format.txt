@@ -1,0 +1,94 @@
+##### acw M12 on L1 test
+perplexity            4/4    COMPLETE
+logreg                2/2    COMPLETE
+unixcoder             2/2    COMPLETE
+metrics               2/2    COMPLETE
+logreg_fmtfree        2/2    COMPLETE
+unixcoder_fmtfree     2/2    COMPLETE
+acw_format            2/2    COMPLETE
+
+##### acw qwen25_coder_7b python (config 86851261a344)
+  empty_fraction_marked                    0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.7270 [0.7062; 0.7485] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8321 [0.8161; 0.8481] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.1051 [-0.1235; -0.0885] n=446 (cluster_bootstrap)
+  delta_nll_mean                           0.0656 [0.0439; 0.0875] n=446 (cluster_bootstrap)
+  delta_nll_median                         -0.0030 [-0.0159; 0.0074] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           0.7452 [0.5144; 1.0137] n=446 (cluster_bootstrap)
+  delta_ppl_median                         -0.0076 [-0.0529; 0.0654] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.7063 [0.6817; 0.7320] n=5352 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.7070 [0.6927; 0.7213] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          1.0000 [1.0000; 1.0000] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    1.0000 [1.0000; 1.0000] n=5 (mean_pm_sd_folds)
+  codebleu_exact                           0.8323 [0.8119; 0.8522] n=446 (cluster_bootstrap)
+  delta_nll_exact                          0.0656 [0.0444; 0.0890] n=446 (cluster_bootstrap)
+  delta_ppl_exact                          0.7452 [0.5207; 0.9831] n=446 (cluster_bootstrap)
+  empty_gap: 0.0000
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.698, 0.718, 0.687, 0.712, 0.721]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [1.0, 1.0, 1.0, 1.0, 1.0]
+  --- format-free (rules 44, 45; ADR-015 §7)
+  threshold_official                       1.0000 [nan; nan] n=1 (frozen)
+  threshold_official_recomputed            1.0000 [nan; nan] n=2000 (dev_negatives)
+  threshold_format_free                    inf [nan; nan] n=2000 (dev_negatives)
+  achieved_fpr_dev_format_free             0.0000 [nan; nan] n=2000 (dev_negatives)
+  n_rules_k1                               30.0000 [nan; nan] n=30 (count)
+  n_format_rules_in_k1                     2.0000 [nan; nan] n=30 (count)
+  fpr_human_test_official                  0.0000 [0.0000; 0.0040] n=928 (clopper_pearson)
+  fpr_human_test_format_free               0.0000 [0.0000; 0.0040] n=928 (clopper_pearson)
+  tpr_at_fpr_official|clean                0.9981 [0.9959; 1.0000] n=2676 (cluster_bootstrap)
+  auroc_official|clean                     0.9999 [0.9998; 1.0000] n=3604 (cluster_bootstrap+negative_resampling)
+  tpr_at_fpr_format_free|clean             0.0000 [0.0000; 0.0000] n=2676 (cluster_bootstrap)
+  auroc_format_free|clean                  0.9524 [0.9426; 0.9616] n=3604 (cluster_bootstrap+negative_resampling)
+  tpr_at_fpr_official|T1.1                 0.0000 [0.0000; 0.0000] n=2676 (cluster_bootstrap)
+  auroc_official|T1.1                      0.9485 [0.9384; 0.9581] n=3604 (cluster_bootstrap+negative_resampling)
+  tpr_at_fpr_format_free|T1.1              0.0000 [0.0000; 0.0000] n=2676 (cluster_bootstrap)
+  auroc_format_free|T1.1                   0.9522 [0.9425; 0.9618] n=3604 (cluster_bootstrap+negative_resampling)
+  adversarial_logreg_fmtfree_auroc_oof     0.7063 [0.6817; 0.7322] n=5352 (cluster_bootstrap)
+  adversarial_logreg_fmtfree_auroc_fold_mean 0.7070 [0.6927; 0.7213] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_fmtfree_auroc_oof  0.7413 [0.7152; 0.7680] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_fmtfree_auroc_fold_mean 0.7468 [0.7326; 0.7610] n=5 (mean_pm_sd_folds)
+
+##### acw deepseek_coder_6p7b python (config 86851261a344)
+  empty_fraction_marked                    0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.7859 [0.7701; 0.8034] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8437 [0.8275; 0.8590] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.0578 [-0.0702; -0.0458] n=446 (cluster_bootstrap)
+  delta_nll_mean                           0.0531 [0.0387; 0.0680] n=446 (cluster_bootstrap)
+  delta_nll_median                         0.0352 [0.0226; 0.0491] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           0.5662 [0.4427; 0.6922] n=446 (cluster_bootstrap)
+  delta_ppl_median                         0.2162 [0.1042; 0.3588] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.6340 [0.6101; 0.6584] n=5352 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.6380 [0.6211; 0.6549] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          1.0000 [1.0000; 1.0000] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    1.0000 [1.0000; 1.0000] n=5 (mean_pm_sd_folds)
+  codebleu_exact                           0.8907 [0.8775; 0.9047] n=446 (cluster_bootstrap)
+  delta_nll_exact                          0.0531 [0.0382; 0.0683] n=446 (cluster_bootstrap)
+  delta_ppl_exact                          0.5662 [0.4483; 0.6864] n=446 (cluster_bootstrap)
+  empty_gap: 0.0000
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.634, 0.668, 0.629, 0.632, 0.628]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [1.0, 1.0, 1.0, 1.0, 1.0]
+  --- format-free (rules 44, 45; ADR-015 §7)
+  threshold_official                       1.0000 [nan; nan] n=1 (frozen)
+  threshold_official_recomputed            1.0000 [nan; nan] n=2000 (dev_negatives)
+  threshold_format_free                    inf [nan; nan] n=2000 (dev_negatives)
+  achieved_fpr_dev_format_free             0.0000 [nan; nan] n=2000 (dev_negatives)
+  n_rules_k1                               30.0000 [nan; nan] n=30 (count)
+  n_format_rules_in_k1                     2.0000 [nan; nan] n=30 (count)
+  fpr_human_test_official                  0.0000 [0.0000; 0.0040] n=928 (clopper_pearson)
+  fpr_human_test_format_free               0.0000 [0.0000; 0.0040] n=928 (clopper_pearson)
+  tpr_at_fpr_official|clean                1.0000 [1.0000; 1.0000] n=2676 (cluster_bootstrap)
+  auroc_official|clean                     1.0000 [1.0000; 1.0000] n=3604 (cluster_bootstrap+negative_resampling)
+  tpr_at_fpr_format_free|clean             0.0000 [0.0000; 0.0000] n=2676 (cluster_bootstrap)
+  auroc_format_free|clean                  0.9526 [0.9429; 0.9623] n=3604 (cluster_bootstrap+negative_resampling)
+  tpr_at_fpr_official|T1.1                 0.0000 [0.0000; 0.0000] n=2676 (cluster_bootstrap)
+  auroc_official|T1.1                      0.9484 [0.9394; 0.9573] n=3604 (cluster_bootstrap+negative_resampling)
+  tpr_at_fpr_format_free|T1.1              0.0000 [0.0000; 0.0000] n=2676 (cluster_bootstrap)
+  auroc_format_free|T1.1                   0.9521 [0.9427; 0.9612] n=3604 (cluster_bootstrap+negative_resampling)
+  adversarial_logreg_fmtfree_auroc_oof     0.6340 [0.6099; 0.6582] n=5352 (cluster_bootstrap)
+  adversarial_logreg_fmtfree_auroc_fold_mean 0.6380 [0.6211; 0.6549] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_fmtfree_auroc_oof  0.6864 [0.6597; 0.7112] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_fmtfree_auroc_fold_mean 0.6963 [0.6648; 0.7277] n=5 (mean_pm_sd_folds)
+
+empty-fraction gaps > 2 points: none
