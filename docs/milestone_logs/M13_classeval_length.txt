@@ -1,0 +1,45 @@
+
+## qwen25_coder_7b (94 classes)
+  skeleton  median 500, max 1512; > 1024: 3, > 1536: 0, > 2048: 0
+  solution  median 284, max 826; > 1024: 0, > 1536: 0, > 2048: 0
+  full      median 744, max 1768; > 1024: 18, > 1536: 2, > 2048: 0
+  longest (full tokens):
+    classeval/ClassEval_17     full  1768 skeleton  1512 solution   330
+    classeval/ClassEval_54     full  1560 skeleton  1070 solution   581
+    classeval/ClassEval_58     full  1414 skeleton   745 solution   760
+    classeval/ClassEval_57     full  1399 skeleton   700 solution   733
+    classeval/ClassEval_72     full  1399 skeleton  1202 solution   288
+    classeval/ClassEval_42     full  1365 skeleton   953 solution   492
+    classeval/ClassEval_39     full  1339 skeleton   617 solution   826
+    classeval/ClassEval_81     full  1179 skeleton   731 solution   520
+    classeval/ClassEval_36     full  1176 skeleton   901 solution   359
+    classeval/ClassEval_35     full  1168 skeleton   777 solution   472
+
+## deepseek_coder_6p7b (94 classes)
+  skeleton  median 616, max 1697; > 1024: 8, > 1536: 1, > 2048: 0
+  solution  median 398, max 1172; > 1024: 1, > 1536: 0, > 2048: 0
+  full      median 923, max 2051; > 1024: 36, > 1536: 7, > 2048: 1
+  longest (full tokens):
+    classeval/ClassEval_17     full  2051 skeleton  1697 solution   467
+    classeval/ClassEval_54     full  1819 skeleton  1242 solution   718
+    classeval/ClassEval_39     full  1783 skeleton   765 solution  1172
+    classeval/ClassEval_58     full  1674 skeleton   906 solution   894
+    classeval/ClassEval_42     full  1653 skeleton  1131 solution   634
+    classeval/ClassEval_72     full  1652 skeleton  1391 solution   399
+    classeval/ClassEval_57     full  1634 skeleton   765 solution   931
+    classeval/ClassEval_49     full  1483 skeleton  1186 solution   414
+    classeval/ClassEval_36     full  1451 skeleton  1091 solution   478
+    classeval/ClassEval_43     full  1428 skeleton  1102 solution   429
+
+## pilot qwen25_coder_7b: not truncated 54, repeating docstrings 54
+  truncated classeval/ClassEval_42 #0 (1024 tokens), end: "room_type is new, add new type in available_rooms.\n        :param room_type: str, check out room type\n        :param room_number: int, check out room number\n        >>> hotel = Hotel('peace hotel', {'single': 5, 'double': 3})\n        >>> hotel.check_out('single', 2)\n        >>> hotel.available_rooms"
+  truncated classeval/ClassEval_42 #1 (1024 tokens), end: "ble_rooms.\n        If room_type is new, add new type in available_rooms.\n        :param room_type: str, check out room type\n        :param room_number: int, check out room number\n        >>> hotel = Hotel('peace hotel', {'single': 5, 'double': 3})\n        >>> hotel.check_out('single', 2)\n        >>>"
+  truncated classeval/ClassEval_42 #2 (1024 tokens), end: "ck out rooms, add number for specific type in available_rooms.\n        If room_type is new, add new type in available_rooms.\n        :param room_type: str, check out room type\n        :param room_number: int, check out room number\n        >>> hotel = Hotel('peace hotel', {'single': 5, 'double': 3})\n"
+  truncated classeval/ClassEval_42 #3 (1024 tokens), end: "ype in available_rooms.\n        If room_type is new, add new type in available_rooms.\n        :param room_type: str, check out room type\n        :param room_number: int, check out room number\n        >>> hotel = Hotel('peace hotel', {'single': 5, 'double': 3})\n        >>> hotel.check_out('single', 2"
+  truncated classeval/ClassEval_42 #4 (1024 tokens), end: "type in available_rooms.\n        If room_type is new, add new type in available_rooms.\n        :param room_type: str, check out room type\n        :param room_number: int, check out room number\n        >>> hotel = Hotel('peace hotel', {'single': 5, 'double': 3})\n        >>> hotel.check_out('single', "
+  truncated classeval/ClassEval_42 #5 (1024 tokens), end: 'm_number\n\n    def check_out(self, room_type, room_number):\n        """\n        Check out rooms, add number for specific type in available_rooms.\n        If room_type is new, add new type in available_rooms.\n        :param room_type: str, check out room type\n        :param room_number: int, check out'
+
+## pilot deepseek_coder_6p7b: not truncated 57, repeating docstrings 48
+  truncated classeval/ClassEval_21 #0 (1024 tokens), end: ", '%H:%M')\n        new_course_end_time = datetime.strptime(new_course['end_time'], '%H:%M')\n        for course in self.courses:\n            course_start_time = datetime.strptime(course['start_time'], '%H:%M')\n            course_end_time = datetime.strptime(course['end_time'], '%H:%M')\n            if"
+  truncated classeval/ClassEval_21 #1 (1024 tokens), end: ", '%H:%M')\n        new_course_end_time = datetime.strptime(new_course['end_time'], '%H:%M')\n        for course in self.courses:\n            course_start_time = datetime.strptime(course['start_time'], '%H:%M')\n            course_end_time = datetime.strptime(course['end_time'], '%H:%M')\n            if"
+  truncated classeval/ClassEval_21 #3 (1024 tokens), end: ", '%H:%M')\n        new_course_end_time = datetime.strptime(new_course['end_time'], '%H:%M')\n        for course in self.courses:\n            course_start_time = datetime.strptime(course['start_time'], '%H:%M')\n            course_end_time = datetime.strptime(course['end_time'], '%H:%M')\n            if"
