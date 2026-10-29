@@ -139,4 +139,29 @@ delle §2–4, con l'AUROC 1,000 e questa causa):
 **Per la tesi** (decisione dell'utente): con la chiave congelata ACW è riconoscibile
 dall'indentazione (regola 45), e lo stesso tratto lo rende fragile alla riformattazione.
 
-**Esito:** _da completare con il report._
+**Esito** (`M12_acw_format.txt`; Qwen / DeepSeek, Python, L1 test; k1 ha 30 regole, fra cui 44 e
+45):
+
+| misura | ufficiale | al netto della formattazione |
+|---|---|---|
+| UniXcoder AUROC OOF | 1,000 / 1,000 | **0,741** [0,715; 0,768] / **0,686** [0,660; 0,711] |
+| logreg AUROC OOF | 0,706 / 0,634 | 0,706 / 0,634 (invariato) |
+| soglia (1% FPR, dev L1+L2, 2.000 negativi) | 1,0 (ricalcolata = congelata) | **+∞** |
+| TPR pulito | 0,998 / 1,000 | 0 / 0 |
+| AUROC pulito | 1,000 / 1,000 | 0,952 / 0,953 |
+| TPR dopo T1.1 | 0 / 0 | 0 / 0 |
+| AUROC dopo T1.1 | 0,949 / 0,948 | 0,952 / 0,952 |
+| FPR sui negativi umani di test (928) | 0 / 0 | 0 / 0 |
+
+- **Percettibilità:** tolti tab e righe vuote multiple, UniXcoder scende da 1,000 a 0,74 / 0,69:
+  quasi tutta la separazione perfetta viene dalla formattazione. Il resto (0,19–0,24 sopra il caso)
+  viene dalle altre 28 regole, coerente con CodeBLEU −0,06 / −0,11 rispetto alla variabilità
+  naturale. Logreg non cambia: le sue feature non vedono l'indentazione (attesa, conferma la causa).
+- **Rilevamento:** senza 44 e 45 l'ordinamento resta buono (AUROC 0,95) e non risente di T1.1
+  (0,952 pulito e dopo T1.1), ma **nessuna soglia finita** rispetta l'1% di FPR: più del 1% dei
+  negativi umani di sviluppo (> 20 su 2.000) ha punteggio massimo, cioè è già un punto fisso di
+  tutte le altre 28 regole; la soglia diventa +∞ e il TPR 0. Le regole di formattazione quindi non
+  servono a riconoscere i marcati (lo fanno anche le altre), ma a **escludere il codice umano**: il
+  codice indentato con spazi cambia sempre sotto la regola 45, e questo porta i negativi sotto 1,0.
+  Lo stesso tratto spiega la fragilità: T1.1 riformatta, 44 e 45 tornano a cambiare e il punteggio
+  ufficiale scende sotto la soglia 1,0 su tutti i marcati (TPR 0, AUROC ancora 0,95).
