@@ -171,7 +171,32 @@ scrive `data/splits/split_L3.parquet`, `data/problems/L3_<lang>.parquet` (Python
 CodeSearchNet) e `data/negatives/L3_<lang>_native.parquet`; poi
 `python scripts/preview_l3_prompts.py` sul nodo di login.
 
-**Esito:** _da completare con `M13_l3_prompts.txt` (conteggi dei filtri, D39, esempi)._
+**Esito** (`M13_l3_prompts.txt`): split L3 = 94 classi + 1.500 funzioni di CodeSearchNet + 500 di
+The Stack, tutte di test.
+
+| linguaggio | righe | pool dei prompt (scarti principali) | D39 (prompt / negativi) | prompt | negativi |
+|---|---|---|---|---|---|
+| Python | 22.176 | 22.147 (25 senza docstring nel codice, 3 non analizzabili, 1 corpo vuoto) | 0 / 0 | 500 + 94 ClassEval | 22.173 + 94 |
+| Java | 26.909 | 26.881 (28 non analizzabili) | 788 / 788 | 500 | 26.093 |
+| JavaScript | 6.483 | 4.420 (2.042 senza nome, 21 non analizzabili) | 546 / 788 | 500 | 5.674 |
+| C++ | 45.794 file, 462.756 funzioni | 30.630 (12.601 Doxygen, 18.029 normali) | — | 500 | 10.000 |
+
+- Java: `whole_func_string` non contiene mai il Javadoc (`doc_kind = built` per tutte), quindi il
+  commento del prompt è sempre ricostruito da `func_documentation_string`; per JavaScript lo
+  stesso (4.420 `built`).
+- JavaScript: il 32% delle funzioni non ha nome per tree-sitter (proprietà `foo: function`,
+  funzioni anonime) e non entra nel pool; D39 toglie dal pool 546 delle 788 funzioni di L1 (le altre
+  erano già senza nome).
+- C++: scarti dei filtri sul commento: non inglese 11.851, lunghezza 4.444, generati 3.462, codice
+  commentato 3.440, direttive 281, licenze 30 (gli altri: 366.842 senza commento sopra, 32.392 con
+  errori di sintassi, 4.938 senza nome, 2.229 a corpo vuoto, 2.217 generate o minificate).
+- Righe del corpo dei 500 prompt (media ± dev. st.): Python 13,6 ± 16,2, Java 13,5 ± 18,5,
+  JavaScript 21,9 ± 42,9, C++ 16,4 ± 21,7; nessuno spostamento fra decili.
+- In CodeSearchNet Python i metodi hanno la riga `def` senza indentazione e il corpo con quella
+  originale (come nel dataset): i prompt la conservano.
+- Le funzioni C++ e i metodi Java usano spesso tipi e membri del loro progetto: la compilazione
+  dell'executor `syntax` (`g++ -fsyntax-only`, `javac`) fallirà spesso anche per codice corretto.
+  Per I6 Pass@1 non si riporta; lo stato `syntax` resta informativo.
 
 ## 3. Tests4Py (L4)
 
