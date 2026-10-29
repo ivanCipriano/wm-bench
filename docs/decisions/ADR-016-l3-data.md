@@ -113,8 +113,65 @@ resta esclusa da Pass@1 (D41). Via libera alla generazione di ClassEval.
 
 ## 2. CodeSearchNet e The Stack C++
 
-_Da completare_ (loader, prompt firma + docstring e commento di documentazione + firma, filtri dei
-commenti di The Stack come ADR-012, esclusione D39, esempi di prompt per linguaggio, TODO 35).
+Decisioni dell'utente del 29 ottobre 2026: prompt firma + docstring (CodeSearchNet) e commento di
+documentazione + firma (The Stack), 500 funzioni per linguaggio stratificate per righe, executor
+`syntax`, niente Pass@1 (I6); commenti di The Stack filtrati come le raccolte degli attacchi;
+esclusione delle funzioni già usate in L1 (D39). Prima della generazione l'utente vede un esempio di
+prompt per linguaggio (TODO 35, `scripts/preview_l3_prompts.py`).
+
+**CodeSearchNet** (`bench/data/loaders/codesearchnet.py`, split di **test**):
+
+- *pool dei prompt*: funzioni con `func_documentation_string` non vuota da cui si costruisce il
+  prompt (`bench/data/l3_prompts.py`):
+  - Python: il codice fino alla fine della docstring (prima istruzione del corpo); senza docstring
+    nel codice la funzione si scarta (`no_doc_in_code`);
+  - Java e JavaScript: il commento di documentazione del sorgente se `whole_func_string` lo
+    contiene (`doc_kind = source`), altrimenti ricostruito da `func_documentation_string` come
+    `/** ... */` (`built`), poi la firma fino alla graffa del corpo compresa;
+  - scarti contati: `no_documentation`, `parse_error`, `no_name` (funzione senza nome per
+    tree-sitter, per esempio una proprietà `foo: function(...)`), `empty_body`;
+- *negativi*: tutte le funzioni dello split di test che si analizzano (come l'integrazione di L1);
+- **D39**: le funzioni già negativi di integrazione del test L1 (Java, JavaScript) si tolgono dal
+  pool e dai negativi, con i conteggi nel manifest (`d39_*`);
+- 500 prompt per linguaggio stratificati per decili delle righe del corpo del pool
+  (`derive_seed(global_seed, "sample", "codesearchnet", lang, "l3_prompts")`).
+
+**The Stack C++** (`bench/data/loaders/thestack_cpp.py`, repository del bucket `l3_test`):
+
+- *pool dei prompt*: funzioni più esterne con un blocco di commenti contiguo subito sopra (o sopra il
+  loro `template`), che passa i filtri sul testo pulito dell'intero blocco: lunghezza 10-2.000
+  caratteri, poi `license`, `generated`, `directive`, `code`, `non_english` di ADR-012 (stesse
+  espressioni regolari); scartate anche le funzioni generate o minificate (riga oltre 200 caratteri
+  o marcatori) e quelle con corpo vuoto. Si accettano commenti Doxygen (`/**`, `/*!`, `///`, `//!`)
+  e normali (`//`, `/* */`), contati a parte (`doc_kind`);
+- prompt = commento + firma fino alla graffa del corpo; canonica = commento + funzione;
+- *negativi*: le 500 funzioni dei prompt + 9.500 altre funzioni del bucket, stratificate per decili
+  delle righe di tutte le funzioni del bucket (10.000, SPEC §10.2);
+- `problem_key = thestack/<hexsha>:<riga>`, la stessa chiave del negativo della funzione.
+
+**Template** (`configs/prompt/user/{codesearchnet_python,codesearchnet_java,
+codesearchnet_javascript,thestack_cpp_cpp}.j2`), per esempio Java:
+
+```text
+Complete the following Java method.
+Implement the body of the method following its documentation comment. Keep exactly the method name and signature given in the code.
+Return the complete method in a single ```java code block.
+
+```java
+{{ prompt }}```
+```
+
+Python dice "function" e "docstring", JavaScript e C++ "function" e "documentation comment".
+Decoding `level234` (1.024 token). L'estrazione (D4) tratta CodeSearchNet e The Stack come
+HumanEval+ e HumanEvalPack: se il codice estratto non definisce l'`entry_point` si antepone il
+prompt (il modello ha restituito solo il corpo).
+
+**Esecuzione:** `prepare_data` con `levels=[L3]` (`bash scripts/submit_l3.sh data`, un job CPU)
+scrive `data/splits/split_L3.parquet`, `data/problems/L3_<lang>.parquet` (Python: ClassEval +
+CodeSearchNet) e `data/negatives/L3_<lang>_native.parquet`; poi
+`python scripts/preview_l3_prompts.py` sul nodo di login.
+
+**Esito:** _da completare con `M13_l3_prompts.txt` (conteggi dei filtri, D39, esempi)._
 
 ## 3. Tests4Py (L4)
 

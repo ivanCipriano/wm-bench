@@ -55,6 +55,7 @@ def _csn_frame(lang: str, split: str, rng: random.Random) -> pd.DataFrame:
                 "whole_func_string": code,
                 "language": lang,
                 "func_code_string": code,
+                "func_documentation_string": f"Compute the value number {i} from x.",
                 "func_code_url": f"https://example.org/{lang}/{split}/{i}",
             }
         )

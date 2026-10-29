@@ -36,11 +36,14 @@ import pandas as pd
 from bench.config.resources import ResourceClass
 from bench.config.schema import ExperimentConfig
 from bench.data.loaders.base import human_sample
+from bench.data.loaders.classeval import ClassEvalLoader
 from bench.data.loaders.codenet import CodeNetLoader
+from bench.data.loaders.codesearchnet import CodeSearchNetLoader, human_negative
 from bench.data.loaders.humanevalpack import HumanEvalPackLoader
 from bench.data.loaders.humanevalplus import HumanEvalPlusLoader
 from bench.data.loaders.mbpp_original import MbppOriginalLoader
 from bench.data.loaders.mbppplus import MbppPlusLoader
+from bench.data.loaders.thestack_cpp import TheStackCppLoader
 from bench.data.negatives import StratifiedSampler, code_fingerprint, deduplicate, ks_statistic
 from bench.data.sources import Candidate, CodeSearchNetSource, TheStackCppSource
 from bench.data.splitter import ProblemSplitter, apply_split, apply_split_samples, family_of
@@ -130,11 +133,12 @@ class PrepareDataStage(Stage):
 
     def _languages(self) -> list[Language]:
         cfg = self._cfg()
-        unsupported = sorted(str(lv) for lv in cfg.levels if lv not in (Level.L1, Level.L2))
+        supported = (Level.L1, Level.L2, Level.L3)
+        unsupported = sorted(str(lv) for lv in cfg.levels if lv not in supported)
         if unsupported:
             raise ConfigError(
-                f"prepare_data: levels {unsupported} are not available yet (L3/L4 from "
-                "Milestone 13); run with levels=[L1] or levels=[L1,L2]"
+                f"prepare_data: levels {unsupported} are not available yet (L4 after L3, "
+                "Milestone 13); run with levels among [L1, L2, L3]"
             )
         return [Language(lang) for lang in cfg.languages]
 
@@ -149,11 +153,20 @@ class PrepareDataStage(Stage):
     def inputs(self, cell: Cell) -> list[ArtifactRef]:
         if self._level(cell) is Level.L1:
             return []
+        if self._level(cell) is Level.L3:  # D39: integrazione del test L1 da CodeSearchNet
+            sources = self._cfg().negatives.sources
+            return [integration_ref(lang, "test") for lang in self._languages()
+                    if sources.get(lang, {}).get("test") == "codesearchnet"]  # fmt: skip
         # Il riferimento combinato della nuova integrazione usa i nativi di sviluppo di L1.
         return [native_ref(lang) for lang in self._languages()]
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
         langs = self._languages()
+        if self._level(cell) is Level.L3:
+            refs = [split_ref("L3")]
+            for lang in langs:
+                refs += [problems_ref(lang, "L3"), native_ref(lang, "L3")]
+            return refs
         if self._level(cell) is Level.L2:
             refs = [split_ref("L2")]
             for lang in langs:
@@ -169,6 +182,9 @@ class PrepareDataStage(Stage):
     def run(self, cell: Cell, ctx: StageContext) -> None:
         if self._level(cell) is Level.L2:
             self._run_l2(ctx)
+            return
+        if self._level(cell) is Level.L3:
+            self._run_l3(ctx)
             return
         cfg = self._cfg()
         langs = self._languages()
@@ -269,6 +285,9 @@ class PrepareDataStage(Stage):
         fams = self._cfg().split.families
         if level is Level.L2:
             return fams["codenet"].total
+        if level is Level.L3:  # ClassEval (solo Python) + CodeSearchNet o The Stack
+            family = "thestack" if lang is Language.CPP else "csn"
+            return fams[family].total + (fams["classeval"].total if lang is Language.PYTHON else 0)
         if lang is Language.PYTHON:
             return fams["humaneval"].total + fams["mbpp"].total
         return fams["humaneval"].total
@@ -321,7 +340,12 @@ class PrepareDataStage(Stage):
         return rows
 
     def _write_natives(
-        self, ctx: StageContext, lang: Language, samples: list[CodeSample], level: Level = Level.L1
+        self,
+        ctx: StageContext,
+        lang: Language,
+        samples: list[CodeSample],
+        level: Level = Level.L1,
+        expected: int | None = None,
     ) -> dict[str, int]:
         parsers = default_parsers()
         locs = {s.sample_id: function_loc(s.code, lang, parsers) for s in samples}
@@ -339,7 +363,9 @@ class PrepareDataStage(Stage):
                 ref,
                 n_rows_in=len(samples),
                 n_rows_out=len(df),
-                n_rows_expected=self._expected_natives(lang, level),
+                n_rows_expected=self._expected_natives(lang, level)
+                if expected is None
+                else expected,
                 extra=extra,
             ),
         )
@@ -436,6 +462,138 @@ class PrepareDataStage(Stage):
             df,
             ctx.make_manifest(
                 ref, n_rows_in=len(candidates), n_rows_out=len(df), n_rows_expected=n, extra=extra
+            ),
+        )
+
+    # ------------------------------------------------------------------ Livello 3
+    def _l1_test_integration_keys(self, ctx: StageContext, lang: Language) -> set[str]:
+        """Funzioni di CodeSearchNet test già negativi di integrazione del test L1 (D39)."""
+        if self._cfg().negatives.sources.get(lang, {}).get("test") != "codesearchnet":
+            return set()
+        table = ctx.store.read_table(integration_ref(lang, "test"))
+        return {str(k) for k in table["problem_key"]}
+
+    def _sample_prompts(
+        self, pool: list[Problem], dataset: str, lang: Language
+    ) -> tuple[list[Problem], dict[str, Any]]:
+        """``l3_prompts`` prompt stratificati per decili delle righe del corpo del pool."""
+        cfg = self._cfg()
+        n = cfg.negatives.l3_prompts
+        by_key = {p.problem_key: p for p in pool}
+        cands = [
+            Candidate(p.problem_key, p.canonical_solution or "", int(p.loc_to_generate or 0), "")
+            for p in pool
+        ]
+        seed = derive_seed(cfg.global_seed, "sample", dataset, str(lang), "l3_prompts")
+        reference = [c.loc for c in cands]
+        result = StratifiedSampler(cfg.negatives.n_bins).sample(reference, cands, n, seed)
+        info = {
+            "seed": seed,
+            "pool": _loc_stats(reference),
+            "selected_loc": _loc_stats([c.loc for c in result.selected]),
+            **result.as_dict(),
+        }
+        return [by_key[c.key] for c in result.selected], info
+
+    def _run_l3(self, ctx: StageContext) -> None:
+        cfg = self._cfg()
+        langs = self._languages()
+        parsers = default_parsers()
+        splitter = ProblemSplitter(cfg.split, cfg.global_seed)
+        problems: dict[Language, list[Problem]] = {}
+        natives: dict[Language, list[CodeSample]] = {}
+        info: dict[Language, dict[str, Any]] = {}
+        for lang in langs:
+            problems[lang], natives[lang], info[lang] = [], [], {}
+            if lang is Language.PYTHON:
+                classeval = ClassEvalLoader(cfg.datasets["classeval"], parsers)
+                problems[lang] += classeval.load_problems(lang)
+                natives[lang] += classeval.load_human_negatives(lang)
+            if lang is Language.CPP:
+                stack = TheStackCppLoader(
+                    cfg.datasets["thestack_cpp"], cfg.negatives.thestack_partition,
+                    cfg.global_seed, parsers,
+                )  # fmt: skip
+                pool, negatives, pool_info = stack.pools
+                chosen, sample_info = self._sample_prompts(pool, "thestack_cpp", lang)
+                problems[lang] += chosen
+                natives[lang] += self._stack_negatives(chosen, negatives, lang)
+                info[lang]["thestack_cpp"] = pool_info | {"prompt_sampling": sample_info}
+                continue
+            csn = CodeSearchNetLoader(cfg.datasets["codesearchnet"], parsers)
+            excluded = self._l1_test_integration_keys(ctx, lang)
+            pool, funnel = csn.prompt_pool(lang)
+            negatives, neg_stats = csn.negative_pool(lang)
+            kept_pool = [p for p in pool if p.problem_key not in excluded]
+            kept_neg = [c for c in negatives if c.key not in excluded]
+            chosen, sample_info = self._sample_prompts(kept_pool, "codesearchnet", lang)
+            problems[lang] += chosen
+            natives[lang] += [human_negative(c, lang, "codesearchnet") for c in kept_neg]
+            info[lang]["codesearchnet"] = {
+                "prompt_funnel": funnel,
+                "negative_source": neg_stats,
+                # D39: funzioni già negativi di integrazione del test L1, tolte da prompt e negativi
+                "d39_l1_integration_test": len(excluded),
+                "d39_excluded_from_prompt_pool": len(pool) - len(kept_pool),
+                "d39_excluded_from_negatives": len(negatives) - len(kept_neg),
+                "prompt_sampling": sample_info,
+            }
+        split: dict[str, Split] = {}
+        for lang in langs:  # le famiglie contano i problemi di un linguaggio (500 per linguaggio)
+            split |= splitter.assign(problems[lang])
+        self._write_split_l3(ctx, splitter, split)
+        for lang in langs:
+            self._write_problems(
+                ctx, lang, apply_split(problems[lang], split), Level.L3, {"sources": info[lang]}
+            )
+            assigned = [s.model_copy(update={"split": Split.TEST}) for s in natives[lang]]
+            self._write_natives(ctx, lang, assigned, Level.L3, expected=len(assigned))
+
+    def _stack_negatives(
+        self, chosen: list[Problem], negatives: list[Candidate], lang: Language
+    ) -> list[CodeSample]:
+        """Negativi C++ di L3: le funzioni dei prompt + le altre fino a ``l3_thestack_negatives``,
+        stratificate per decili delle righe di tutte le funzioni del bucket."""
+        cfg = self._cfg()
+        chosen_keys = {p.problem_key for p in chosen}
+        own = [c for c in negatives if c.key in chosen_keys]
+        if len(own) != len(chosen_keys):
+            raise DataError(f"thestack_cpp: {len(chosen_keys) - len(own)} prompts without negative")
+        rest = [c for c in negatives if c.key not in chosen_keys]
+        n = cfg.negatives.l3_thestack_negatives - len(own)
+        seed = derive_seed(cfg.global_seed, "sample", "thestack_cpp", str(lang), "l3_negatives")
+        reference = [c.loc for c in negatives]
+        result = StratifiedSampler(cfg.negatives.n_bins).sample(reference, rest, n, seed)
+        kept = sorted(own + result.selected, key=lambda c: c.key)
+        return [human_negative(c, lang, "thestack_cpp") for c in kept]
+
+    def _write_split_l3(
+        self, ctx: StageContext, splitter: ProblemSplitter, split: dict[str, Split]
+    ) -> None:
+        rows = [
+            {
+                "problem_key": key,
+                "family": family_of(key),
+                "split": str(part),
+                "role": "prompt",
+                "split_seed": splitter.rank(key)[0],
+            }
+            for key, part in sorted(split.items())
+        ]
+        df = pd.DataFrame(rows)
+        counts = Counter(f"{r['family']}/{r['split']}" for r in rows)
+        ref = split_ref("L3")
+        ctx.store.write_table(
+            ref,
+            df,
+            ctx.make_manifest(
+                ref,
+                n_rows_in=len(split),
+                n_rows_out=len(df),
+                n_rows_expected=sum(
+                    self._expected_problems(lang, Level.L3) for lang in self._languages()
+                ),  # fmt: skip
+                extra={"counts": dict(sorted(counts.items()))},
             ),
         )
 

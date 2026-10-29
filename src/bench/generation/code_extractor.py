@@ -6,9 +6,9 @@ La stessa regola vale per la baseline e per tutti i metodi in generazione:
    altrimenti il primo blocco chiuso senza tag; altrimenti un blocco aperto e mai chiuso
    (output troncato da ``max_new_tokens``), con il tag atteso o senza tag; altrimenti
    l'intero testo, se non è vuoto e si analizza senza errori;
-2. per i dataset a completamento di funzione (HumanEval+, HumanEvalPack), se il codice non
-   definisce l'``entry_point``, si antepone il prompt del dataset; per MBPP+ no, perché il
-   prompt è solo testo;
+2. per i dataset a completamento di funzione (HumanEval+, HumanEvalPack; in L3 CodeSearchNet e
+   The Stack, ADR-016), se il codice non definisce l'``entry_point``, si antepone il prompt del
+   dataset; per MBPP+ no, perché il prompt è solo testo;
 3. se non si trova nulla: ``code=""`` ed ``extraction_ok=False``.
 """
 
@@ -31,7 +31,14 @@ LANGUAGE_TAGS: dict[Language, frozenset[str]] = {
     Language.JAVASCRIPT: frozenset({"javascript", "js", "node", "jsx"}),
 }
 # Dataset a completamento di funzione: se manca la definizione si antepone il prompt.
-PREPEND_PROMPT_DATASETS: frozenset[str] = frozenset({"humanevalplus", "humanevalpack"})
+PREPEND_PROMPT_DATASETS: frozenset[str] = frozenset(
+    {
+        "humanevalplus",
+        "humanevalpack",
+        "codesearchnet",
+        "thestack_cpp",
+    }  # L3: completamento (ADR-016)
+)
 
 _CLOSED = re.compile(r"```[ \t]*([^\n`]*)\n(.*?)```", re.DOTALL)
 _OPEN = re.compile(r"```[ \t]*([^\n`]*)\n(.*)\Z", re.DOTALL)

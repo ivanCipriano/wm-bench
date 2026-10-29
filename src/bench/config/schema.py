@@ -124,6 +124,10 @@ class NegativesConfig(_Frozen):
     n_bins: int = Field(default=10, gt=0)
     sources: dict[Language, dict[Literal["dev", "test"], str]]
     thestack_partition: dict[str, float]
+    # Livello 3 (SPEC §10.2): prompt per linguaggio da CodeSearchNet e The Stack e negativi di
+    # test di The Stack C++ (i 500 prompt compresi).
+    l3_prompts: int = Field(default=500, gt=0)
+    l3_thestack_negatives: int = Field(default=10000, gt=0)
 
     @model_validator(mode="after")
     def _partition(self) -> NegativesConfig:

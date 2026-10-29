@@ -6,6 +6,8 @@ families:
   mbpp: {dev: 72, total: 378}          # problemi di MBPP+
   codenet: {dev: 50, total: 250}       # L2: i 250 problemi di codenet_selected.yaml (M9)
   classeval: {dev: 0, total: 94}       # L3: solo test (SPEC §10.4), 100 classi meno le 6 escluse
+  csn: {dev: 0, total: 500}            # L3: 500 funzioni di CodeSearchNet test per linguaggio
+  thestack: {dev: 0, total: 500}       # L3: 500 funzioni C++ del bucket l3_test di The Stack
 # Soluzioni MBPP originali senza problema in MBPP+ (D7, cluster_info §10.1): solo negativi,
 # assegnati con la proporzione di MBPP+ (596 -> 114 dev / 482 test).
 mbpp_extra_assignment: proportional

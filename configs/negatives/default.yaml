@@ -2,6 +2,8 @@
 min_dev_negatives: 2000        # negativi di sviluppo per linguaggio, integrazione compresa
 l1_test_total: 928             # negativi di test L1 per linguaggio = negativi umani di test L1 Python
 n_bins: 10                     # campionamento stratificato per decili di righe
+l3_prompts: 500                # prompt di L3 per linguaggio (CodeSearchNet, The Stack; SPEC §10.2)
+l3_thestack_negatives: 10000   # negativi di test di L3 C++, i 500 prompt compresi
 sources:                       # da dove viene l'integrazione, per linguaggio e parte
   python: {dev: codesearchnet}
   java: {dev: codesearchnet, test: codesearchnet}
