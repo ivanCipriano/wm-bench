@@ -247,6 +247,10 @@ Project_CodeNet/
 
 - ClassEval: submodule `third_party/ClassEval` (aggiunto in Milestone 0).
 - Tests4Py: rinviato alla Milestone 13 (Livello 4 provvisorio).
+- **Criteri di fattibilità del pilota Tests4Py** (decisione dell'utente del 29 ottobre 2026, fissati prima di iniziare il pilota): il pilota sui 5 progetti parte solo dopo che tutto L3 è completo. L4 si dichiara **non fattibile**, riportando i numeri raccolti fino a quel punto, se si verifica anche una sola di queste condizioni:
+  1. preparare gli ambienti dei 5 progetti richiede più di **una giornata di lavoro**;
+  2. lo spazio occupato (ambienti, sorgenti dei progetti, cache) supera la **quota disponibile** su `$WMB`;
+  3. la suite di test di almeno un progetto non sta nei **limiti dei job SLURM** (§4: 9 h su `defq`, 7 h su `gpuq`/`aiq`).
 
 ---
 
@@ -343,3 +347,5 @@ Vincolo dell'utente: nessuna fuga di informazione tra sviluppo e test.
 | 31 | **Promemoria (richiesta dell'utente del 26 ottobre 2026): appena SWEET è congelato, lanciare T2.2** (entrambe le varianti, 4 linguaggi: `submit_attacks_l1.sh attack sweet T2.2 ...`, poi execute, detect, metrics) **e il controllo negativo** (D34: `control_detect` e `control_metrics` di SWEET; la baseline JavaScript riscritta si fa già con `control_attack all`). Report con `check_attacks.py sweet T2.2 --control --report` | Milestone 11 (SWEET) |
 | 32 | **T2.4 in k** (decisione dell'utente del 26 ottobre 2026): curva di troncamento in k funzioni su ClassEval (L3) e sui programmi CodeNet di L2 test con almeno 2 funzioni, per tutti i metodi applicabili. Definizione già fissata in ADR-014 §2.3 (k funzioni da tenere estratte con l'RNG dell'attacco, k da 1 al totale; ClassEval: la classe con i soli k metodi). **Prima del lancio: stima dei costi all'utente**; da confermare se `main` e `__init__` contano fra le funzioni. Serve alla figura "curva di troncamento in k" della M14 | Milestone 13 |
 | 33 | **T3.1 con ACW sbloccato** (27 ottobre 2026): il blocco in attesa della conferma sulla licenza di Sourcery è stato tolto dall'utente lo stesso giorno; ACW si lancia come gli altri metodi (attacco su CPU, passi `k2_*`). Gli altri metodi: dopo la stima dei costi (`scripts/estimate_t3_1_cost.py`, anche per SWEET quando sarà congelato). ADR-014 §3 | Milestone 11 |
+| 34 | **ClassEval, pilota prima della generazione** (decisione dell'utente del 29 ottobre 2026): mostrare all'utente il testo del template (`configs/prompt/user/classeval_python.j2`), poi pilota su 10 classi con entrambi i modelli (`scripts/pilot_classeval.sh`): risposte troncate dal limite di 1.024 token e classi che passano i test. **Se il troncamento supera il 5%, fermarsi e proporre una soluzione prima del lancio** | Milestone 13 |
+| 35 | **CodeSearchNet e The Stack in L3:** prima della generazione mostrare all'utente un esempio di prompt per linguaggio; per The Stack il commento di documentazione passa gli stessi filtri delle raccolte degli attacchi (niente licenze o copyright, niente commenti generati, solo inglese; ADR-012); riportare le funzioni di CodeSearchNet escluse perché già in L1 (D39) | Milestone 13 |

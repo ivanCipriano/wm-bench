@@ -3,3 +3,7 @@ name: classeval
 version: null
 files:
   data: ${paths.repo}/third_party/ClassEval/data/ClassEval_data.json
+  excluded: ${paths.repo}/configs/dataset/classeval_excluded.yaml   # 6 classi dell'oracle (D21)
+expected_rows:
+  data: 100            # classi del file
+  classes: 94          # classi del Livello 3, tolte le escluse (TODO 30)

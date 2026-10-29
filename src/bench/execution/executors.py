@@ -10,7 +10,8 @@ per problema; il runner (``containers/runner/wmb_runner.py``) li esegue uno per 
 - ``humanevalpack`` (Java, C++, JavaScript): logica di ``humanevalsynthesize-<lang>`` di
   bigcode-evaluation-harness (``bench.execution.harness``);
 - ``syntax`` (dati senza test, L3/L4): tree-sitter sull'host, poi compilazione o controllo
-  sintattico nella sandbox.
+  sintattico nella sandbox;
+- ``classeval`` (L3): la classe con i test ufficiali di ClassEval (``classeval_check.py``).
 """
 
 from __future__ import annotations
@@ -458,6 +459,122 @@ class CodeNetExecutor(Executor):
         return job, files
 
 
+CLASSEVAL_CHECK = Path(__file__).with_name("classeval_check.py")
+CLASSEVAL_CLASS_TIMEOUT_S = 5  # func_set_timeout(5) di test_pipeline.py, per classe di test
+
+
+def add_static_statement(code: str) -> str:
+    """``AutoTest.add_static_statement`` di ClassEval, riga per riga.
+
+    Toglie i ``@staticmethod`` e lo rimette davanti ai metodi (indentazione 4) senza ``self`` né
+    ``cls`` nella riga della firma.
+    """
+    lines = [line for line in code.split("\n") if "@staticmethod" not in line]
+    out: list[str] = []
+    for line in lines:
+        spaces = len(line) - len(line.lstrip())
+        if (
+            line.strip().startswith("def ")
+            and "self" not in line
+            and "cls" not in line
+            and spaces == 4  # noqa: PLR2004 - regola dell'originale
+        ):
+            out.append("    @staticmethod")
+        out.append(line)
+    return "\n".join(out)
+
+
+def classeval_program(code: str, imports: list[str], test: str) -> str:
+    """Programma eseguito: import della classe + generazione + ``"\\n"`` + test.
+
+    Come ``gen_code_list`` e ``gen_py_file`` di ``test_pipeline.py``; l'estrazione del codice è
+    quella unica del benchmark (D4), non ``extract_code`` di ClassEval.
+    """
+    return "\n".join(imports) + "\n" + add_static_statement(code) + "\n" + test
+
+
+@EXECUTORS.register("classeval")
+class ClassEvalExecutor(Executor):
+    """ClassEval (L3): la classe con i test ufficiali, ogni classe di test entro 5 s.
+
+    Usa la modalità ``program`` del runner come ``codenet``: ``main.py`` (regola
+    ``syntax_python``), ``py_compile`` (``SYNTAX_ERROR``), poi ``classeval_check.py`` (file
+    accessorio) importa il modulo ed esegue le classi di test: PASSED solo se passano tutte (il
+    ``success`` di ClassEval). Le dipendenze dei test sono nell'immagine ``sandbox_l3``.
+
+    Args:
+        tests: ``task_id`` → ``test``, ``test_classes``, ``import_statement`` (default: dal loader
+            di ClassEval).
+    """
+
+    name: ClassVar[str] = "classeval"
+
+    def __init__(
+        self,
+        config: ExperimentConfig,
+        sandbox: Sandbox,
+        language: Language,
+        workdir_root: Path,
+        tests: dict[str, dict[str, Any]] | None = None,
+    ) -> None:
+        super().__init__(config, sandbox, language, workdir_root)
+        if language is not Language.PYTHON:
+            raise ConfigError("classeval executor is Python only")
+        if tests is None:
+            from bench.data.loaders.classeval import ClassEvalLoader
+
+            tests = ClassEvalLoader(config.datasets["classeval"]).tests()
+        self.tests = tests
+
+    def test_for(self, problem: Problem) -> dict[str, Any]:
+        """Test, classi di test e import della classe."""
+        if problem.test_ref not in self.tests:
+            raise ConfigError(f"no ClassEval test for {problem.test_ref}")
+        return self.tests[problem.test_ref]
+
+    def canonical(self, problem: Problem) -> str:
+        return problem.canonical_solution or ""
+
+    def class_timeout_s(self, problem: Problem) -> float:
+        """Tempo dell'esecuzione: 5 s per classe di test più l'avvio."""
+        return CLASSEVAL_CLASS_TIMEOUT_S * len(self.test_for(problem)["test_classes"]) + 10.0
+
+    def budget_s(self, n_samples: int) -> float:
+        most = max((len(t["test_classes"]) for t in self.tests.values()), default=1)
+        per_sample = self.exec_cfg.compile_timeout_s + CLASSEVAL_CLASS_TIMEOUT_S * most + 10
+        return n_samples * (per_sample + 5) + INVOCATION_MARGIN_S
+
+    def job(
+        self, problem: Problem, samples: list[SampleToRun]
+    ) -> tuple[dict[str, Any], dict[str, bytes]]:
+        entry = self.test_for(problem)
+        job = self._base_job("program")
+        job.update(
+            {
+                "rule": "syntax_python",
+                "timeout_s": self.class_timeout_s(problem),
+                "compile_cmd": CODENET_COMPILE[Language.PYTHON],
+                "run_cmd": [
+                    "python3",
+                    "../classeval_check.py",
+                    "main",
+                    ",".join(entry["test_classes"]),
+                    str(CLASSEVAL_CLASS_TIMEOUT_S),
+                ],
+                "samples": [
+                    {
+                        "id": str(i),
+                        "program": classeval_program(
+                            s.code, entry["import_statement"], entry["test"]
+                        ),
+                    }
+                    for i, s in enumerate(samples)
+                ],
+            }
+        )
+        return job, {"classeval_check.py": CLASSEVAL_CHECK.read_bytes()}
+
+
 def executor_name(dataset: str) -> str:
     """Executor di un dataset (SPEC §11.3)."""
     names = {
@@ -465,6 +582,7 @@ def executor_name(dataset: str) -> str:
         "mbppplus": "evalplus",
         "humanevalpack": "humanevalpack",
         "codenet": "codenet",
+        "classeval": "classeval",
         "codesearchnet": "syntax",
         "thestack_cpp": "syntax",
     }

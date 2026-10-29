@@ -17,8 +17,11 @@ from bench.domain.errors import ConfigError, DataError
 USES = frozenset({"oracle_mcgmark"})
 
 
-def load_excluded(path: Path) -> dict[str, str]:
+def load_excluded(path: Path, prefix: str = "codenet/p") -> dict[str, str]:
     """``problem_key`` → uso, dal file versionato.
+
+    ``prefix`` è l'inizio atteso delle chiavi (``classeval/ClassEval_`` per le classi escluse
+    di ClassEval, stesso formato del file).
 
     Raises:
         ConfigError: se il file è malformato, un uso è sconosciuto o una chiave è ripetuta.
@@ -30,7 +33,7 @@ def load_excluded(path: Path) -> dict[str, str]:
     result: dict[str, str] = {}
     for entry in entries:
         key, use = entry.get("problem_key"), entry.get("use")
-        if not isinstance(key, str) or not key.startswith("codenet/p"):
+        if not isinstance(key, str) or not key.startswith(prefix):
             raise ConfigError(f"{path}: invalid problem_key {key!r}")
         if use not in USES:
             raise ConfigError(f"{path}: unknown use {use!r} for {key}")
@@ -42,12 +45,14 @@ def load_excluded(path: Path) -> dict[str, str]:
     return result
 
 
-def check_not_excluded(problem_keys: Iterable[str], excluded: dict[str, str]) -> None:
-    """Da chiamare nella selezione della M9.
+def check_not_excluded(
+    problem_keys: Iterable[str], excluded: dict[str, str], what: str = "CodeNet"
+) -> None:
+    """Da chiamare nella selezione della M9 e nel loader di ClassEval (M13).
 
     Raises:
         DataError: se un problema selezionato è escluso.
     """
     clash = sorted(set(problem_keys) & set(excluded))
     if clash:
-        raise DataError(f"excluded CodeNet problems selected: {clash}")
+        raise DataError(f"excluded {what} problems selected: {clash}")

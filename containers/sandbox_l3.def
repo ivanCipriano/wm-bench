@@ -1,0 +1,69 @@
+# Immagine della sandbox del Livello 3 (ADR-016). Build: bash scripts/build_sandbox.sh l3.
+# È l'immagine di L1/L2 (containers/sandbox.def, che resta invariata: i suoi risultati non
+# cambiano) con in più le dipendenze dei test di ClassEval (third_party/ClassEval/requirements.txt,
+# solo i pacchetti importati dalle classi e dai test, versioni con ruote per Python 3.11) e i dati
+# di NLTK usati da ClassEval_52 (punkt, wordnet, averaged_perceptron_tagger), che nella sandbox
+# senza rete non si possono scaricare.
+Bootstrap: docker
+From: python:3.11-slim-trixie
+
+%files
+    containers/runner/wmb_runner.py /opt/wmb/wmb_runner.py
+
+%post
+    set -eu
+    export DEBIAN_FRONTEND=noninteractive
+    # openjdk su immagini slim: senza questa cartella la configurazione del pacchetto fallisce.
+    mkdir -p /usr/share/man/man1
+    apt-get update
+    apt-get install -y --no-install-recommends \
+        g++ make libssl-dev libboost-dev openjdk-21-jdk-headless nodejs npm ca-certificates
+    rm -rf /var/lib/apt/lists/*
+    npm install -g js-md5@0.8.3
+    pip install --no-cache-dir evalplus==0.3.1
+    # Dipendenze dei test di ClassEval (L3): numpy (30, 51, 57, 59, 93), pandas (28), gensim (44, 93),
+    # beautifulsoup4 (44), python-docx (34), openpyxl (38), pillow (45), nltk (52), reportlab e
+    # PyPDF2 (69).
+    pip install --no-cache-dir numpy==1.26.4 scipy==1.11.4 pandas==1.5.3 gensim==4.3.2 \
+        beautifulsoup4==4.12.3 python-docx==1.1.2 openpyxl==3.0.10 pillow==9.5.0 nltk==3.8.1 \
+        reportlab==4.0.4 PyPDF2==3.0.1
+    python3 -m nltk.downloader -d /usr/share/nltk_data punkt wordnet omw-1.4 averaged_perceptron_tagger
+    chmod -R a+rX /usr/share/nltk_data
+    chmod 0755 /opt/wmb /opt/wmb/wmb_runner.py
+    python3 - <<'PYEOF'
+import hashlib, json, platform, subprocess
+def out(cmd):
+    p = subprocess.run(cmd, capture_output=True, text=True)
+    return (p.stdout + p.stderr).strip().splitlines()[0]
+freeze = subprocess.run(["pip", "freeze"], capture_output=True, text=True).stdout
+versions = {
+    "image": "wm-bench sandbox 1 + L3 (ClassEval)",
+    "debian": open("/etc/debian_version").read().strip(),
+    "python": platform.python_version(),
+    "gcc": out(["g++", "--version"]),
+    "javac": out(["javac", "-version"]),
+    "java": out(["java", "-version"]),
+    "node": out(["node", "--version"]),
+    "js-md5": json.load(open("/usr/local/lib/node_modules/js-md5/package.json"))["version"],
+    "evalplus": subprocess.run(["pip", "show", "evalplus"], capture_output=True, text=True).stdout.split("Version: ")[1].split()[0],
+    "classeval_packages": ",".join(sorted(l for l in freeze.splitlines() if l.split("==")[0].lower() in {"numpy", "scipy", "pandas", "gensim", "beautifulsoup4", "python-docx", "openpyxl", "pillow", "nltk", "reportlab", "pypdf2"})),
+    "pip_freeze_sha256": hashlib.sha256(freeze.encode()).hexdigest(),
+}
+json.dump(versions, open("/opt/wmb/versions.json", "w"), indent=2, sort_keys=True)
+open("/opt/wmb/pip_freeze.txt", "w").write(freeze)
+print(json.dumps(versions, indent=2))
+PYEOF
+    chmod 0644 /opt/wmb/versions.json /opt/wmb/pip_freeze.txt
+
+%environment
+    export LC_ALL=C.UTF-8
+    export PYTHONDONTWRITEBYTECODE=1
+    export NODE_PATH=/usr/local/lib/node_modules
+    export HF_HUB_OFFLINE=1
+    export HF_DATASETS_OFFLINE=1
+
+%labels
+    wm-bench.sandbox.version 1-l3
+
+%help
+    Sandbox di wm-bench per L3: python3 /opt/wmb/wmb_runner.py /work/job.json

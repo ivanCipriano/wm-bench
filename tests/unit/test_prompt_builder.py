@@ -95,6 +95,8 @@ def test_hashes_cover_system_and_templates(cfg: ExperimentConfig) -> None:
         "codenet_java.j2",
         "codenet_cpp.j2",
         "codenet_javascript.j2",
+        # Livello 3 (in attesa di approvazione dopo il pilota, M13)
+        "classeval_python.j2",
     }
     assert hashes["system.txt"] == cfg.prompt.system_prompt_sha256
 
