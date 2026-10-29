@@ -137,7 +137,10 @@ delle §2–4, con l'AUROC 1,000 e questa causa):
 `scripts/submit_m12.sh acw_format acw` (dopo i due); report in `check_m12.py acw --report`.
 
 **Per la tesi** (decisione dell'utente): con la chiave congelata ACW è riconoscibile
-dall'indentazione (regola 45), e lo stesso tratto lo rende fragile alla riformattazione.
+dall'indentazione (regola 45), e lo stesso tratto lo rende fragile alla riformattazione. Le regole
+di formattazione non servono a riconoscere i marcati ma a escludere il codice umano: senza di esse
+l'ordinamento resta (AUROC 0,95) ma nessuna soglia rispetta l'1% di FPR (aggiunta approvata
+dall'utente il 29 ottobre 2026).
 
 **Esito** (`M12_acw_format.txt`; Qwen / DeepSeek, Python, L1 test; k1 ha 30 regole, fra cui 44 e
 45):
