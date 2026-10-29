@@ -1,0 +1,106 @@
+##### acw attacks T3.1 on L1 test
+attack              2/2    COMPLETE
+execute             2/2    COMPLETE
+detect              2/2    COMPLETE
+metrics             2/2    COMPLETE
+k2_threshold        2/2    COMPLETE
+k2_freeze           1/1    COMPLETE
+k2_neg_test         2/2    COMPLETE
+k2_detect           2/2    COMPLETE
+k2_metrics          2/2    COMPLETE
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python
+  status {'UNCHANGED': 2159, 'APPLIED': 517}  changed 0.193199  1-CodeBLEU 0.030908 (changed only 0.159978)
+  detail means {"n_applicable": 1.079304}
+  tools {}
+  tpr_at_fpr 0.9944  unchanged_fraction 0.8068  auroc 0.9997  pass_at_1 0.7511  delta_pass_at_1_pp 1.3453  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.1932  tool_error_fraction 0.0000  codebleu_distance 0.0309
+  fractions UNCHANGED 0.8068  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 517): passed 331  not compiling 0  compiling but failing 186  {'PASSED': 331, 'FAILED': 178, 'TIMEOUT': 8}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.9768 (n=517)
+  pass@1 failures 666/2676: entry point renamed 0, missing 0, other 666; entry lost in 0/517 APPLIED (0.0000)
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python
+  status {'UNCHANGED': 2179, 'APPLIED': 497}  changed 0.185725  1-CodeBLEU 0.037744 (changed only 0.203225)
+  detail means {"n_applicable": 1.114688}
+  tools {}
+  tpr_at_fpr 0.9899  unchanged_fraction 0.8143  auroc 0.9995  pass_at_1 0.6861  delta_pass_at_1_pp 1.3827  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.1857  tool_error_fraction 0.0000  codebleu_distance 0.0377
+  fractions UNCHANGED 0.8143  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 497): passed 266  not compiling 0  compiling but failing 231  {'PASSED': 266, 'FAILED': 228, 'TIMEOUT': 3}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.9457 (n=497)
+  pass@1 failures 840/2676: entry point renamed 0, missing 0, other 840; entry lost in 0/497 APPLIED (0.0000)
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python
+  remark_only_k1                     0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2                     0.0056 [0.0015; 0.0120] n=2676
+  remark_both                        0.9944 [0.9888; 0.9985] n=2676
+  remark_none                        0.0000 [0.0000; 0.0000] n=2676
+  tpr_at_fpr_k2                      1.0000 [1.0000; 1.0000] n=2676
+  auroc_k2                           1.0000 [1.0000; 1.0000] n=3604
+  fpr_human_test_k1                  0.0000 [0.0000; 0.0040] n=928
+  fpr_human_test_k2                  0.0000 [0.0000; 0.0040] n=928
+  threshold_k1                       1.0000  n=1
+  threshold_k2                       1.0000  n=1
+  unchanged_fraction                 0.8068 [0.7914; 0.8213] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.0000 [0.0000; 0.0014] n=2676
+  acw_rule_overlap                   21.0000  n=30
+  acw_overlap_fraction|0             1.0000 [0.9986; 1.0000] n=2676
+  remark_only_k1|overlap=0           0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2|overlap=0           0.0056 [0.0011; 0.0116] n=2676
+  remark_both|overlap=0              0.9944 [0.9888; 0.9985] n=2676
+  remark_none|overlap=0              0.0000 [0.0000; 0.0000] n=2676
+  acw_overlap_fraction|1             0.0000 [0.0000; 0.0014] n=2676
+  remark_only_k1|overlap=1           nan  n=0
+  remark_only_k2|overlap=1           nan  n=0
+  remark_both|overlap=1              nan  n=0
+  remark_none|overlap=1              nan  n=0
+  acw_overlap_fraction|2             0.0000 [0.0000; 0.0014] n=2676
+  remark_only_k1|overlap=2           nan  n=0
+  remark_only_k2|overlap=2           nan  n=0
+  remark_both|overlap=2              nan  n=0
+  remark_none|overlap=2              nan  n=0
+  acw_overlap_fraction|3+            0.0000 [0.0000; 0.0014] n=2676
+  remark_only_k1|overlap=3+          nan  n=0
+  remark_only_k2|overlap=3+          nan  n=0
+  remark_both|overlap=3+             nan  n=0
+  remark_none|overlap=3+             nan  n=0
+  THRESHOLDS k1 1.0000  k2 1.0000  k2/k1 1.000
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python
+  remark_only_k1                     0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2                     0.0101 [0.0026; 0.0202] n=2676
+  remark_both                        0.9899 [0.9809; 0.9974] n=2676
+  remark_none                        0.0000 [0.0000; 0.0000] n=2676
+  tpr_at_fpr_k2                      1.0000 [1.0000; 1.0000] n=2676
+  auroc_k2                           1.0000 [1.0000; 1.0000] n=3604
+  fpr_human_test_k1                  0.0000 [0.0000; 0.0040] n=928
+  fpr_human_test_k2                  0.0000 [0.0000; 0.0040] n=928
+  threshold_k1                       1.0000  n=1
+  threshold_k2                       1.0000  n=1
+  unchanged_fraction                 0.8143 [0.7991; 0.8286] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.0000 [0.0000; 0.0014] n=2676
+  acw_rule_overlap                   21.0000  n=30
+  acw_overlap_fraction|0             1.0000 [0.9986; 1.0000] n=2676
+  remark_only_k1|overlap=0           0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2|overlap=0           0.0101 [0.0026; 0.0194] n=2676
+  remark_both|overlap=0              0.9899 [0.9806; 0.9978] n=2676
+  remark_none|overlap=0              0.0000 [0.0000; 0.0000] n=2676
+  acw_overlap_fraction|1             0.0000 [0.0000; 0.0014] n=2676
+  remark_only_k1|overlap=1           nan  n=0
+  remark_only_k2|overlap=1           nan  n=0
+  remark_both|overlap=1              nan  n=0
+  remark_none|overlap=1              nan  n=0
+  acw_overlap_fraction|2             0.0000 [0.0000; 0.0014] n=2676
+  remark_only_k1|overlap=2           nan  n=0
+  remark_only_k2|overlap=2           nan  n=0
+  remark_both|overlap=2              nan  n=0
+  remark_none|overlap=2              nan  n=0
+  acw_overlap_fraction|3+            0.0000 [0.0000; 0.0014] n=2676
+  remark_only_k1|overlap=3+          nan  n=0
+  remark_only_k2|overlap=3+          nan  n=0
+  remark_both|overlap=3+             nan  n=0
+  remark_none|overlap=3+             nan  n=0
+  THRESHOLDS k1 1.0000  k2 1.0000  k2/k1 1.000
