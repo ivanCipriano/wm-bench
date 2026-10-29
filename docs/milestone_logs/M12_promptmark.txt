@@ -1,0 +1,43 @@
+##### promptmark M12 on L1 test
+perplexity      4/4    COMPLETE
+logreg          2/2    COMPLETE
+unixcoder       2/2    COMPLETE
+metrics         2/2    COMPLETE
+
+##### promptmark qwen25_coder_7b python (config a9253bfc9fbf)
+  empty_fraction_marked                    0.0004 [0.0001; 0.0021] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.5962 [0.5751; 0.6160] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8321 [0.8168; 0.8472] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.2360 [-0.2551; -0.2167] n=446 (cluster_bootstrap)
+  delta_nll_mean                           -0.1320 [-0.1680; -0.0997] n=446 (cluster_bootstrap)
+  delta_nll_median                         -0.0499 [-0.0760; -0.0203] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           -1.0373 [-1.2939; -0.7817] n=446 (cluster_bootstrap)
+  delta_ppl_median                         -0.2038 [-0.3541; -0.0988] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.7555 [0.7360; 0.7762] n=5351 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.7636 [0.7372; 0.7901] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          0.7981 [0.7763; 0.8180] n=5351 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    0.8037 [0.7801; 0.8273] n=5 (mean_pm_sd_folds)
+  empty_gap: 0.0004
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.777, 0.755, 0.802, 0.733, 0.751]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [0.811, 0.817, 0.83, 0.771, 0.789]
+
+##### promptmark deepseek_coder_6p7b python (config a9253bfc9fbf)
+  empty_fraction_marked                    0.0004 [0.0001; 0.0021] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.6565 [0.6355; 0.6766] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8437 [0.8286; 0.8589] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.1872 [-0.2056; -0.1692] n=446 (cluster_bootstrap)
+  delta_nll_mean                           -0.2025 [-0.2423; -0.1642] n=446 (cluster_bootstrap)
+  delta_nll_median                         -0.0544 [-0.0979; -0.0371] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           -1.9884 [-2.4207; -1.5622] n=446 (cluster_bootstrap)
+  delta_ppl_median                         -0.2643 [-0.3702; -0.1421] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.7156 [0.6899; 0.7380] n=5351 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.7172 [0.7008; 0.7336] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          0.7310 [0.7081; 0.7541] n=5351 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    0.7358 [0.7281; 0.7435] n=5 (mean_pm_sd_folds)
+  empty_gap: 0.0004
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.69, 0.717, 0.73, 0.719, 0.73]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [0.725, 0.731, 0.741, 0.743, 0.739]
+
+empty-fraction gaps > 2 points: none
