@@ -45,7 +45,9 @@ def main() -> int:
     parser.add_argument("--report", action="store_true")
     args = parser.parse_args()
     method = args.method
-    cfg = load_experiment(["paths=cluster", f"methods=[{method}]"])
+    cfg = load_experiment(
+        ["paths=cluster", "stage=metrics_imperceptibility", f"methods=[{method}]"]
+    )
     store = ArtifactStore(cfg.paths.artifacts)
     record = load_freeze(store, method)
     if record is None:
