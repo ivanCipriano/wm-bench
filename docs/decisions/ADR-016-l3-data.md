@@ -102,8 +102,14 @@ scheletro: 54/54 e 48/57 dei campioni non troncati); la risposta ideale supera 1
 da Pass@1). Decisione dell'utente: 2.048 token solo per ClassEval (D40) e nuovo pilota sulle stesse
 10 classi.
 
-**Secondo pilota** (2.048 token, `M13_classeval_pilot_2048.txt`): _da completare; il troncamento
-deve scendere sotto il 5%, altrimenti ci si ferma._
+**Secondo pilota** (2.048 token, `M13_classeval_pilot_2048.txt`): **0/120 risposte troncate**
+(regola rispettata); token nuovi al più 1.255 (Qwen) e 1.066 (DeepSeek). Stessi semi: i campioni
+che prima non erano troncati sono identici; le risposte prima troncate ora si chiudono (ClassEval_42
+con Qwen da SYNTAX_ERROR a FAILED, ClassEval_21 con DeepSeek). Campioni che passano i test 35%
+(Qwen) e 45% (DeepSeek), classi con almeno un campione corretto 5/10 e 6/10. Canoniche che passano
+in ogni ripetizione **92/94**: ClassEval_69 passa con la correzione delle classi di test senza test;
+falliscono sempre 17 e 48; 58 questa volta passa 3/3 ma dipende dal caso (1/3 nel primo pilota) e
+resta esclusa da Pass@1 (D41). Via libera alla generazione di ClassEval.
 
 ## 2. CodeSearchNet e The Stack C++
 
