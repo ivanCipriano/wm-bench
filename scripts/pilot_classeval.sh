@@ -6,10 +6,11 @@
 #
 # Due job: generazione su gpuq (10 classi, Qwen e DeepSeek, 6 campioni ciascuno), poi test su defq
 # con l'immagine sandbox_l3 (parte solo se il primo è riuscito). A job finiti:
-#   python scripts/pilot_classeval.py report | tee docs/milestone_logs/M13_classeval_pilot.txt
+#   python scripts/pilot_classeval.py report | tee docs/milestone_logs/M13_classeval_pilot_2048.txt
 # (file nuovo: non riscrivere un log già committato; se esiste, usare un altro nome)
 # Con "bash scripts/pilot_classeval.sh execute" rilancia solo i test (generazione già fatta).
-# Scrive solo in $WMB/tmp/classeval_pilot/; log in $WMB/logs/pilot_classeval_<job>.log.
+# Scrive solo in $WMB/tmp/classeval_pilot_<max_new_tokens>/ (2.048 con D40; il primo pilota, a
+# 1.024 token, è in $WMB/tmp/classeval_pilot/); log in $WMB/logs/pilot_classeval_<job>.log.
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WMB="${WMB:-/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench}"

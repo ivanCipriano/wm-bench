@@ -13,7 +13,10 @@ contiene il token di fine sequenza entro il limite. Il report dà, per modello e
 risposte troncate, i campioni e le classi che passano i test e l'esito delle canoniche.
 
 **Regola fissata dall'utente prima del pilota:** se più del 5% delle risposte è troncato ci si
-ferma e si propone una soluzione prima del lancio. Scrive solo in ``$WMB/tmp/classeval_pilot/``.
+ferma e si propone una soluzione prima del lancio. Il primo pilota (1.024 token) l'ha superata
+(7,5%): da allora ClassEval ha il decoding ``classeval`` con 2.048 token (D40) e il pilota si ripete
+sulle stesse classi. Scrive solo in ``$WMB/tmp/classeval_pilot_<max_new_tokens>/`` (il primo
+pilota è in ``$WMB/tmp/classeval_pilot/``).
 """
 
 from __future__ import annotations
@@ -63,7 +66,7 @@ def _eos_ids(generator: HFTextGenerator) -> set[int]:
 def generate(cfg: Any, out: Path) -> None:
     import torch
 
-    decoding = decoding_for(cfg, "L3")
+    decoding = decoding_for(cfg, "L3", "classeval")
     prompts = PromptBuilder.from_config(cfg.prompt)
     extractor = FencedCodeExtractor()
     problems = _problems(cfg)
@@ -128,7 +131,7 @@ def execute(cfg: Any, out: Path) -> None:
     data = json.loads((out / "generate.json").read_text(encoding="utf-8"))
     cfg = l3_config(cfg)
     sandbox = make_sandbox(cfg.execution)
-    root = sandbox.workdir_root(cfg.paths.tmp / "classeval_pilot")
+    root = sandbox.workdir_root(out)
     root.mkdir(parents=True, exist_ok=True)
     executor = ClassEvalExecutor(cfg, sandbox, Language.PYTHON, root)
     results: dict[str, dict[str, Any]] = {}
@@ -242,7 +245,8 @@ def main() -> int:
     args = parser.parse_args()
     stage = {"generate": "generate_baseline", "execute": "execute", "report": "metrics"}[args.mode]
     cfg = load_experiment(["paths=cluster", f"stage={stage}"])
-    out = cfg.paths.tmp / "classeval_pilot"
+    tokens = decoding_for(cfg, "L3", "classeval").max_new_tokens
+    out = cfg.paths.tmp / f"classeval_pilot_{tokens}"
     out.mkdir(parents=True, exist_ok=True)
     if args.mode == "generate":
         generate(cfg, out)

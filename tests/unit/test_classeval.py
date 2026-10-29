@@ -158,3 +158,37 @@ def test_canonical_of_a_stdlib_class_passes(loader: ClassEvalLoader, tmp_path: P
     )
     result = _check(tmp_path, program, ",".join(entry["test_classes"]))
     assert result.returncode == 0, result.stderr[-500:]
+
+
+def test_test_classes_without_tests_are_dropped(loader: ClassEvalLoader) -> None:
+    """ClassEval_69: ``TestPDFHandler`` ha solo ``setUpClass``/``tearDownClass`` (ADR-016)."""
+    listed = next(r for r in loader.all_rows if r["task_id"] == "ClassEval_69")["test_classes"]
+    kept = loader.tests()["ClassEval_69"]["test_classes"]
+    assert "TestPDFHandler" in listed and "TestPDFHandler" not in kept and len(kept) == 3
+    tests = loader.tests()
+    listed_by_task = {r["task_id"]: [c.strip() for c in r["test_classes"]] for r in loader.all_rows}
+    changed = [t for t, names in listed_by_task.items() if names != tests[t]["test_classes"]]
+    assert changed == ["ClassEval_69"]
+
+
+def test_pass1_exclusions_filter_only_executions(cfg: ExperimentConfig) -> None:
+    """D41: 17, 48 e 58 fuori da Pass@1 e ΔPass@1 (le esecuzioni lette da ``metrics``)."""
+    import pandas as pd
+
+    from bench.pipeline.facade import BenchmarkFacade
+    from bench.pipeline.stage import Cell, StageContext
+    from bench.pipeline.stages.metrics import MetricsStage
+    from bench.store.refs import ArtifactRef
+
+    stage = MetricsStage(cfg)
+    assert set(stage.pass1_excluded()) == {
+        "classeval/ClassEval_17", "classeval/ClassEval_48", "classeval/ClassEval_58",
+    }  # fmt: skip
+    facade = BenchmarkFacade(cfg)
+    ref = ArtifactRef.of("executions", "executions/x.parquet")
+    table = pd.DataFrame({"problem_key": ["classeval/ClassEval_17", "classeval/ClassEval_0"],
+                          "status": ["FAILED", "PASSED"]})  # fmt: skip
+    ctx = StageContext(facade.cfg, facade.store, facade.provenance, "test", Cell())
+    manifest = ctx.make_manifest(ref, n_rows_in=None, n_rows_out=None, n_rows_expected=None)
+    facade.store.write_table(ref, table, manifest)
+    assert stage._read_exec(ctx, ref)["problem_key"].tolist() == ["classeval/ClassEval_0"]

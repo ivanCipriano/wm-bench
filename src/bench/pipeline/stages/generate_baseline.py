@@ -11,11 +11,12 @@ inizia con un'impronta della configurazione: se la configurazione cambia, si rip
 
 from __future__ import annotations
 
+import gc
 import logging
 import statistics
 import time
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, ClassVar
 
@@ -51,9 +52,44 @@ def baseline_ref(model_id: str, level: str, language: str, split: str) -> Artifa
     return ArtifactRef.of("baseline", f"baseline/{model_id}/{level}_{language}_{split}.parquet")
 
 
-def decoding_for(cfg: ExperimentConfig, level: str) -> DecodingConfig:
-    """Decoding del livello: ``level1`` per L1, ``level234`` per gli altri (SPEC §2.1)."""
+def release_backend() -> None:
+    """Libera la memoria della GPU fra due backend della stessa cella (nessun effetto senza)."""
+    gc.collect()
+    try:
+        import torch
+    except ImportError:  # pragma: no cover - torch c'è sempre in bench-core
+        return
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+
+# Dataset con un decoding proprio (fuori da L1): ClassEval con 2.048 token nuovi (D40).
+DATASET_DECODING: dict[str, str] = {"classeval": "classeval"}
+
+
+def decoding_for(cfg: ExperimentConfig, level: str, dataset: str | None = None) -> DecodingConfig:
+    """Decoding del livello: ``level1`` per L1, ``level234`` per gli altri (SPEC §2.1).
+
+    Con ``dataset``, i dataset di ``DATASET_DECODING`` hanno il loro (D40: ClassEval).
+
+    Raises:
+        ConfigError: se il decoding del dataset non è configurato.
+    """
+    if Level(level) is not Level.L1 and dataset in DATASET_DECODING:
+        key = DATASET_DECODING[str(dataset)]
+        if key not in cfg.decoding:
+            raise ConfigError(f"decoding '{key}' for dataset {dataset} is not configured")
+        return cfg.decoding[key]
     return cfg.decoding["level1" if Level(level) is Level.L1 else "level234"]
+
+
+def decoding_overrides(
+    cfg: ExperimentConfig, level: str, problems: Sequence[Problem]
+) -> dict[str, DecodingConfig]:
+    """Dataset dei problemi con un decoding diverso da quello del livello (D40)."""
+    default = decoding_for(cfg, level)
+    found = {p.dataset: decoding_for(cfg, level, p.dataset) for p in problems}
+    return {d: dec for d, dec in sorted(found.items()) if dec != default}
 
 
 @STAGES.register("generate_baseline")
@@ -105,12 +141,16 @@ class GenerateBaselineStage(Stage):
         problems = [Problem.model_validate(row) for row in table.to_dict(orient="records")]
         problems.sort(key=lambda p: p.problem_key)
 
+        overrides = decoding_overrides(cfg, level, problems)
+        by_dataset = {d: dec.model_dump(mode="json") for d, dec in overrides.items()}
         fingerprint = sha256_json(
             {
                 "model": model.model_dump(mode="json"),
                 "decoding": decoding.model_dump(mode="json"),
                 "prompts": prompts.prompt_hashes(),
                 "global_seed": cfg.global_seed,
+                # solo con dataset dal decoding proprio (D40): le impronte di L1/L2 non cambiano
+                **({"decoding_by_dataset": by_dataset} if by_dataset else {}),
             }
         )
         partial = (
@@ -130,14 +170,21 @@ class GenerateBaselineStage(Stage):
             len(todo),
         )
 
-        if todo:
-            backend = BACKEND_FACTORY(model, decoding)
+        # Un backend per decoding (D40: ClassEval con 2.048 token nella cella L3 Python).
+        groups: dict[str | None, list[Problem]] = {}
+        for problem in todo:
+            groups.setdefault(problem.dataset if problem.dataset in overrides else None, [])
+            groups[problem.dataset if problem.dataset in overrides else None].append(problem)
+        for dataset, group in sorted(groups.items(), key=lambda kv: kv[0] or ""):
+            release_backend()  # il modello del gruppo precedente esce dalla GPU
+            group_decoding = decoding if dataset is None else overrides[dataset]
+            backend = BACKEND_FACTORY(model, group_decoding)
             generator = HFBaselineGenerator(
-                model, decoding, prompts=prompts, global_seed=cfg.global_seed, backend=backend
+                model, group_decoding, prompts=prompts, global_seed=cfg.global_seed, backend=backend
             )
             info = backend.info()
             append_jsonl(partial, {"info": info})
-            for problem in todo:
+            for problem in group:
                 start = time.perf_counter()
                 samples = generator.generate_problem(problem)
                 elapsed = time.perf_counter() - start
@@ -148,7 +195,8 @@ class GenerateBaselineStage(Stage):
                 }
                 append_jsonl(partial, record)
                 done[problem.problem_key] = record
-        self._write(ctx, cell, problems, done, decoding, prompts, info, partial)
+            del backend, generator
+        self._write(ctx, cell, problems, done, decoding, prompts, info, partial, by_dataset)
 
     @staticmethod
     def _load_partial(
@@ -185,6 +233,7 @@ class GenerateBaselineStage(Stage):
         prompts: PromptBuilder,
         info: dict[str, Any],
         partial: Path,
+        decoding_by_dataset: dict[str, Any] | None = None,
     ) -> None:
         samples = [
             CodeSample.model_validate(s) for p in problems for s in done[p.problem_key]["samples"]
@@ -206,6 +255,7 @@ class GenerateBaselineStage(Stage):
             "prompt_hashes": prompts.prompt_hashes(),
             "system_prompt_sha256": prompts.system_prompt_sha256,
             "decoding": decoding.model_dump(mode="json"),
+            **({"decoding_by_dataset": decoding_by_dataset} if decoding_by_dataset else {}),
             "generation": info,
             "seconds_per_problem": {
                 "mean": round(statistics.fmean(elapsed), 3) if elapsed else None,

@@ -242,3 +242,48 @@ def test_acw_hparams_and_post_hoc_embedding(cfg: ExperimentConfig, tmp_path: Pat
     assert [s.parent_id for s in run.samples] == [p.sample_id for p in parents]
     assert all(s.source == "llm_watermarked" and s.method == "acw" for s in run.samples)
     assert len({s.sample_id for s in run.samples}) == 3 and len(run.metrics) == 3
+
+
+class RecordingEcho(EchoClient):
+    """``EchoClient`` che tiene ogni richiesta e i suoi item."""
+
+    def run(self, env_name: str, method: str, request: Any, items: Any, source: Any = None,
+            secrets: Any = ()) -> WorkerRun:  # fmt: skip
+        self.calls: list[tuple[Any, list[Any]]] = getattr(self, "calls", [])
+        self.calls.append((request, list(items)))
+        return super().run(env_name, method, request, items, source, secrets)
+
+
+def test_embed_groups_problems_by_dataset_decoding(cfg: ExperimentConfig, tmp_path: Path) -> None:
+    """D40: i problemi di ClassEval vanno al worker in un'invocazione con il loro decoding."""
+    client = RecordingEcho(
+        envs={"test": Path(sys.executable)}, shims_root=REPO_ROOT / "shims", timeout_s=60,
+        extra_pythonpath=[REPO_ROOT / "packages" / "bench-contracts"],
+    )  # fmt: skip
+    a = StoneAdapter(cfg.methods_catalog["stone"], cfg, client)
+    model = cfg.models_catalog["qwen25_coder_7b"]
+    classeval = _problem("classeval/ClassEval_0", Language.PYTHON).model_copy(
+        update={"dataset": "classeval", "entry_point": "A"}
+    )
+    problems = [classeval, _problem("humaneval/0", Language.PYTHON)]
+    builder = PromptBuilder.from_config(cfg.prompt)
+    decoding = {"num_return_sequences": 2, "max_new_tokens": 1024}
+    long = {"num_return_sequences": 2, "max_new_tokens": 2048}
+    run = a.embed_from_prompts(
+        problems, a.default_hparams(), model, "k1", decoding, 2, builder, tmp_path, "cpu",
+        decoding_by_dataset={"classeval": long},
+    )  # fmt: skip
+    calls = [
+        (r.decoding["max_new_tokens"], [it.item_id for it in items]) for r, items in client.calls
+    ]
+    assert calls == [(1024, ["humaneval/0"]), (2048, ["classeval/ClassEval_0"])]
+    assert Path(client.calls[1][0].output_path).parent == tmp_path / "decoding_classeval"
+    assert [s.problem_key for s in run.samples] == [
+        p.problem_key for p in problems for _ in range(2)
+    ]
+    assert run.request is not None and run.request["decoding_by_dataset"] == {"classeval": long}
+    assert run.request["decoding"]["max_new_tokens"] == 1024
+    # Senza dataset dal decoding proprio la richiesta è quella di sempre (hash invariati).
+    plain = a.embed_from_prompts(problems[1:], a.default_hparams(), model, "k1", decoding, 2,
+                                 builder, tmp_path / "plain", "cpu")  # fmt: skip
+    assert plain.request is not None and "decoding_by_dataset" not in plain.request

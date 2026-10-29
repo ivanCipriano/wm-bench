@@ -15,9 +15,13 @@ tutte di test. Per ogni classe:
 
 from __future__ import annotations
 
+import ast
 import json
 from functools import cached_property
+from pathlib import Path
 from typing import Any, ClassVar
+
+import yaml
 
 from bench.data.codenet_exclusions import check_not_excluded, load_excluded
 from bench.data.loaders.base import (
@@ -28,7 +32,7 @@ from bench.data.loaders.base import (
     unique_keys,
 )
 from bench.domain.enums import Language, Level
-from bench.domain.errors import DataError
+from bench.domain.errors import ConfigError, DataError
 from bench.domain.models import CodeSample, Problem
 from bench.lang.line_counter import count_code_lines
 from bench.registry import LOADERS
@@ -41,6 +45,40 @@ KEY_PREFIX = "classeval/ClassEval_"
 def classeval_key(task_id: str) -> str:
     """``problem_key`` di una classe (``ClassEval_7`` → ``classeval/ClassEval_7``)."""
     return f"classeval/{task_id}"
+
+
+def load_pass1_excluded(path: Path) -> dict[str, str]:
+    """Classi escluse da Pass@1 e ΔPass@1 (D41), ``problem_key`` → motivo.
+
+    Raises:
+        ConfigError: se il file è malformato, una chiave non è di ClassEval o è ripetuta.
+    """
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    entries = data.get("excluded")
+    if not isinstance(entries, list):
+        raise ConfigError(f"{path}: 'excluded' must be a list")
+    result: dict[str, str] = {}
+    for entry in entries:
+        key, reason = entry.get("problem_key"), entry.get("reason")
+        if not isinstance(key, str) or not key.startswith(KEY_PREFIX) or key in result:
+            raise ConfigError(f"{path}: invalid or duplicate problem_key {key!r}")
+        if not reason:
+            raise ConfigError(f"{path}: missing reason for {key}")
+        result[key] = str(reason)
+    return result
+
+
+def test_methods(test_code: str) -> dict[str, int]:
+    """Classi del codice di test → numero di metodi ``test*`` (per le classi di soli appoggi)."""
+    tree = ast.parse(test_code)
+    return {
+        node.name: sum(
+            isinstance(f, ast.FunctionDef | ast.AsyncFunctionDef) and f.name.startswith("test")
+            for f in node.body
+        )
+        for node in tree.body
+        if isinstance(node, ast.ClassDef)
+    }
 
 
 @LOADERS.register("classeval")
@@ -86,17 +124,23 @@ class ClassEvalLoader(DatasetLoader):
     def tests(self) -> dict[str, dict[str, Any]]:
         """``task_id`` → test, classi di test e import (per l'executor ``classeval``).
 
-        I nomi delle classi di test sono senza spazi agli estremi: ClassEval_97 ha
-        ``" Words2NumbersTestMain"``, che con ``getattr`` non si trova (ADR-016).
+        Due correzioni del dataset, uguali per tutti i metodi (ADR-016): i nomi delle classi di
+        test sono senza spazi agli estremi (ClassEval_97 ha ``" Words2NumbersTestMain"``, che con
+        ``getattr`` non si trova) e si tolgono le classi elencate che non contengono test
+        (ClassEval_69: ``TestPDFHandler`` ha solo ``setUpClass`` e ``tearDownClass``, e con 0 test
+        l'harness la conta come errore, quindi la classe non si potrebbe mai risolvere).
         """
-        return {
-            str(r["task_id"]): {
-                "test": normalize_newlines(str(r["test"])),
-                "test_classes": [str(c).strip() for c in r["test_classes"]],
+        out: dict[str, dict[str, Any]] = {}
+        for r in self.all_rows:
+            test = normalize_newlines(str(r["test"]))
+            counts = test_methods(test)
+            names = [str(c).strip() for c in r["test_classes"]]
+            out[str(r["task_id"])] = {
+                "test": test,
+                "test_classes": [c for c in names if counts.get(c, 1) > 0],
                 "import_statement": [str(s) for s in r["import_statement"]],
             }
-            for r in self.all_rows
-        }
+        return out
 
     def load_problems(self, language: Language) -> list[Problem]:
         lang = self._check_language(language)

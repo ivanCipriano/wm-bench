@@ -36,6 +36,22 @@ logger = logging.getLogger(__name__)
 KEY_MODULUS = 2**31
 
 
+def merge_runs(runs: Sequence[WorkerRun]) -> WorkerRun:
+    """Un'unica ``WorkerRun`` da più invocazioni (gruppi di decoding, D40); una sola: identica."""
+    if len(runs) == 1:
+        return runs[0]
+    extra: dict[str, Any] = {}
+    for run in runs:
+        extra.update(run.extra)
+    return WorkerRun(
+        results=[r for run in runs for r in run.results],
+        missing=sum(run.missing for run in runs),
+        attempts=sum(run.attempts for run in runs),
+        log_path=runs[0].log_path,
+        extra=extra,
+    )
+
+
 @dataclass(frozen=True)
 class EmbedRun:
     """Campioni marcati di una chiamata ``embed_from_prompts`` e diagnostica del worker."""
@@ -240,6 +256,7 @@ class PromptEmbedder(MethodAdapter):
         device: str = "cuda:0",
         extractor: CodeExtractor | None = None,
         watermark: bool = True,
+        decoding_by_dataset: dict[str, dict[str, Any]] | None = None,
     ) -> EmbedRun:
         """N campioni marcati per problema, con codice estratto (regola unica D4).
 
@@ -247,6 +264,10 @@ class PromptEmbedder(MethodAdapter):
         Con ``watermark=False`` (solo metodi con ``twin_baseline``) il worker genera la baseline
         gemella: stessa pipeline del metodo con il watermark disattivato (``hparams.watermark``),
         campioni ``llm_baseline`` con ``method`` valorizzato.
+
+        ``decoding_by_dataset`` dà il decoding dei dataset che non usano quello della cella (D40:
+        ClassEval con 2.048 token): i loro problemi vanno al worker in un'invocazione a parte, con
+        la sua cartella ``run_dir/decoding_<dataset>`` (ripresa), e i risultati si uniscono.
         """
         if not watermark and not self.twin_baseline:
             raise ConfigError(f"{self.name} has no twin baseline")
@@ -260,10 +281,17 @@ class PromptEmbedder(MethodAdapter):
         results: dict[tuple[str, int], WorkerResult] = {}
         worker_run: WorkerRun | None = None
         request_dict: dict[str, Any] | None = None
-        if supported:
-            item_decoding = dict(decoding)
+        overrides = decoding_by_dataset or {}
+        groups: dict[str | None, list[Problem]] = {}
+        for p in supported:
+            groups.setdefault(p.dataset if p.dataset in overrides else None, []).append(p)
+        runs: list[WorkerRun] = []
+        for dataset, group in sorted(groups.items(), key=lambda kv: kv[0] or ""):
+            item_decoding = dict(decoding if dataset is None else overrides[dataset])
             if self.one_sample_per_item:
                 item_decoding["num_return_sequences"] = 1
+            group_dir = run_dir if dataset is None else run_dir / f"decoding_{dataset}"
+            group_dir.mkdir(parents=True, exist_ok=True)
             request = self.build_request(
                 WorkerOp.EMBED,
                 model,
@@ -271,15 +299,20 @@ class PromptEmbedder(MethodAdapter):
                 key_id,
                 item_decoding,
                 prompts.system_prompt,
-                run_dir,
+                group_dir,
                 device,
             )
             if native != request.hparams:  # gemella o parametri del livello
                 request = dataclasses.replace(request, hparams=native)
-            request_dict = request.to_dict()
-            items = self._embed_items(supported, model, prompts, n, seed_of)
-            worker_run = self.run_worker(request, items)
+            if request_dict is None or dataset is None:
+                request_dict = request.to_dict()
+            items = self._embed_items(group, model, prompts, n, seed_of)
+            runs.append(self.run_worker(request, items))
+        if runs:
+            worker_run = merge_runs(runs)
             results = self._index_results(worker_run)
+            if overrides and request_dict is not None:
+                request_dict = {**request_dict, "decoding_by_dataset": dict(overrides)}
         samples, metrics = self.samples_from_results(
             problems, results, hp, model, key_id, n, extractor, watermark
         )

@@ -44,6 +44,7 @@ import pandas as pd
 
 from bench.config.resources import ResourceClass
 from bench.config.schema import ExperimentConfig
+from bench.data.loaders.classeval import load_pass1_excluded
 from bench.domain.errors import ConfigError
 from bench.domain.models import MetricValue, ThresholdSet
 from bench.hpo.freeze import data_sha256, load_freeze
@@ -157,6 +158,22 @@ class MetricsStage(Stage):
         if self.config is None:
             raise ConfigError("metrics needs the experiment configuration")
         return self.config
+
+    def pass1_excluded(self) -> dict[str, str]:
+        """Problemi esclusi da Pass@1 e ΔPass@1 (D41: classi di ClassEval che non possono passare
+        nella sandbox o dipendono dal caso), ``problem_key`` → motivo."""
+        spec = self._cfg().datasets.get("classeval")
+        if spec is None or "pass1_excluded" not in spec.files:
+            return {}
+        return load_pass1_excluded(spec.file("pass1_excluded"))
+
+    def _read_exec(self, ctx: StageContext, ref: ArtifactRef) -> pd.DataFrame:
+        """Esecuzioni senza i problemi esclusi da Pass@1 (D41); le altre misure non cambiano."""
+        table = ctx.store.read_table(ref)
+        excluded = self.pass1_excluded()
+        if not excluded or table.empty:
+            return table
+        return table[~table["problem_key"].isin(excluded)].reset_index(drop=True)
 
     def adapter(self, method: str) -> Any:
         if method not in self._adapters:
@@ -372,18 +389,18 @@ class MetricsStage(Stage):
         self._secondary_metrics(cell, add, applicable, neg_human, thresholds)
 
         # --- preservazione funzionale
-        marked_exec = ctx.store.read_table(refs["exec_marked"])
+        marked_exec = self._read_exec(ctx, refs["exec_marked"])
         reference = "exec_twin" if self._twin(method) else "exec_baseline"
-        self._pass_metrics(add, boot, marked_exec, ctx.store.read_table(refs[reference]), "")
+        self._pass_metrics(add, boot, marked_exec, self._read_exec(ctx, refs[reference]), "")
         if self._twin(method):
             self._pass_metrics(
-                add, boot, marked_exec, ctx.store.read_table(refs["exec_baseline"]), "_baseline",
+                add, boot, marked_exec, self._read_exec(ctx, refs["exec_baseline"]), "_baseline",
                 only_delta=True,
             )  # fmt: skip
         if method == "acw":
             self._conditional_preservation(
                 add, ctx.store.read_table(refs["watermarked"]), marked_exec,
-                ctx.store.read_table(refs["exec_baseline"]),
+                self._read_exec(ctx, refs["exec_baseline"]),
             )  # fmt: skip
         if self._multibit(method):
             self._capacity(add, boot, applicable)
@@ -475,11 +492,11 @@ class MetricsStage(Stage):
         )
         self._secondary_metrics(cell, add, attacked, neg_human, thresholds)
         # --- preservazione funzionale
-        attacked_exec = ctx.store.read_table(refs["exec_attacked"])
+        attacked_exec = self._read_exec(ctx, refs["exec_attacked"])
         reference = "exec_twin" if self._twin(method) else "exec_baseline"
-        self._pass_metrics(add, boot, attacked_exec, ctx.store.read_table(refs[reference]), "")
+        self._pass_metrics(add, boot, attacked_exec, self._read_exec(ctx, refs[reference]), "")
         self._pass_metrics(
-            add, boot, attacked_exec, ctx.store.read_table(refs["exec_marked"]), "_vs_marked",
+            add, boot, attacked_exec, self._read_exec(ctx, refs["exec_marked"]), "_vs_marked",
             only_delta=True,
         )  # fmt: skip
         # --- intensità dell'attacco
@@ -625,6 +642,10 @@ class MetricsStage(Stage):
             # PromptMark: ciclo di correttezza attivo nella cella (D27; None per gli altri metodi).
             "correctness_loop": self._correctness_loop(ctx, cell),
             "not_applicable": not_applicable,
+            # D41: problemi della cella esclusi da Pass@1 e ΔPass@1, con il motivo
+            "pass1_excluded": self.pass1_excluded()
+            if (cell.level, cell.language) == ("L3", "python")
+            else {},
             "metrics": {r.name: r.value for r in rows},
         }
         manifest = ctx.make_manifest(

@@ -11,6 +11,7 @@ defaults:
   - execution: default
   - decoding@decoding.level1: level1
   - decoding@decoding.level234: level234
+  - decoding@decoding.classeval: classeval
   - model@models_catalog.qwen25_coder_7b: qwen25_coder_7b
   - model@models_catalog.deepseek_coder_6p7b: deepseek_coder_6p7b
   - model@models_catalog.llama31_8b_attacker: llama31_8b_attacker

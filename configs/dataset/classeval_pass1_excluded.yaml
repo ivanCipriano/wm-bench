@@ -1,0 +1,12 @@
+# Classi ClassEval escluse dal calcolo di Pass@1 e ΔPass@1 (D41, decisione dell'utente del
+# 29 ottobre 2026), per tutti i metodi; restano per rilevazione e impercettibilità. Sono le
+# canoniche che non passano nella sandbox (M13_classeval_pilot.txt, 3 ripetizioni): stessa regola
+# di CodeNet, dove si tengono solo i problemi le cui canoniche passano. Pass@1 di ClassEval è quindi
+# su 91 classi.
+excluded:
+- problem_key: classeval/ClassEval_17
+  reason: "CalendarTestGetUpcomingEvents dipende dalla data corrente: la canonica fallisce 3/3"
+- problem_key: classeval/ClassEval_48
+  reason: "IpUtilTestGetHostname risolve un nome host: la sandbox non ha rete, la canonica fallisce 3/3"
+- problem_key: classeval/ClassEval_58
+  reason: "MinesweeperGameTestGenerateMineSweeperMap dipende da una mappa casuale: la canonica passa 1/3"

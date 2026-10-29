@@ -46,7 +46,12 @@ from bench.hpo.grid import GridPoint, resolve
 from bench.methods.base import EMBED_COLUMNS, CodeEmbedder, MethodAdapter, PromptEmbedder
 from bench.methods.worker_client import WorkerClient
 from bench.pipeline.stage import Cell, Stage, StageContext
-from bench.pipeline.stages.generate_baseline import baseline_ref, decoding_for, problems_ref
+from bench.pipeline.stages.generate_baseline import (
+    baseline_ref,
+    decoding_for,
+    decoding_overrides,
+    problems_ref,
+)
 from bench.registry import METHODS, STAGES
 from bench.store.hashing import sha256_json
 from bench.store.refs import ArtifactRef
@@ -234,6 +239,10 @@ class WatermarkStage(Stage):
             / f"{level}_{language}_{split}"
         )
         request_decoding = {**neutral_settings(decoding), "torch_dtype": model.dtype}
+        by_dataset = {  # D40: ClassEval con 2.048 token
+            d: {**neutral_settings(dec), "torch_dtype": model.dtype}
+            for d, dec in decoding_overrides(cfg, level, problems).items()
+        }
         supported = adapter.supports(language)
         logger.info(
             "%s: %d problems, method %s %s (config %s)",
@@ -261,6 +270,7 @@ class WatermarkStage(Stage):
                 prompts,
                 run_dir,
                 watermark=self.watermark,
+                decoding_by_dataset=by_dataset or None,
             )
         introspect = adapter.introspect() if supported else {}
         self._write(

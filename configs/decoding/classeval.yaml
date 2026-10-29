@@ -1,0 +1,8 @@
+# Decoding di ClassEval (L3): come level234 ma con 2.048 token nuovi (D40, decisione dell'utente
+# del 29 ottobre 2026): con 1.024 il pilota troncava il 7,5% delle risposte, perché i modelli
+# riscrivono la classe con le docstring dello scheletro (M13_classeval_pilot.txt,
+# M13_classeval_length.txt). Uguale per la baseline e per tutti i metodi.
+temperature: 0.2
+top_p: 0.95
+max_new_tokens: 2048
+n: 6

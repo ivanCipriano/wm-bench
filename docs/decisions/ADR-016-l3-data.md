@@ -33,8 +33,12 @@ Return the complete class, including the given imports, in a single ```python co
 {{ prompt }}```
 ```
 
-Decoding `level234` (6 campioni, 1.024 token nuovi), system prompt ed estrazione del codice
-uguali agli altri livelli (D4).
+Decoding `classeval` (D40): come `level234` (6 campioni, temperatura 0,2, top-p 0,95) ma con
+**2.048** token nuovi, uguale per la baseline e per tutti i metodi; system prompt ed estrazione del
+codice uguali agli altri livelli (D4). Nella cella L3 Python (ClassEval e CodeSearchNet) la
+baseline usa un backend per decoding e i metodi un'invocazione del worker per gruppo
+(`decoding_overrides`, `embed_from_prompts(..., decoding_by_dataset=...)`), senza cambiare il
+protocollo dei worker; per L1 e L2 richieste, impronte e manifest restano identici.
 
 **Executor `classeval`** (`bench/execution/executors.py`, `bench/execution/classeval_check.py`):
 segue `classeval_evaluation/test_pipeline.py`:
@@ -48,9 +52,21 @@ segue `classeval_evaluation/test_pipeline.py`:
   modulo non si importa; SYNTAX_ERROR da `py_compile`;
 - l'estrazione del codice è quella del benchmark (D4), non `extract_code` di ClassEval.
 
-**Correzione del dataset:** ClassEval_97 elenca la classe di test `" Words2NumbersTestMain"` con uno
-spazio iniziale, che `getattr` non trova (anche l'harness originale la conta come errore): il loader
-toglie gli spazi agli estremi dei nomi delle classi di test.
+**Correzioni del dataset** (uguali per tutti i metodi, decisione dell'utente del 29 ottobre 2026
+per la seconda):
+
+- ClassEval_97 elenca la classe di test `" Words2NumbersTestMain"` con uno spazio iniziale, che
+  `getattr` non trova (anche l'harness originale la conta come errore): il loader toglie gli spazi
+  agli estremi dei nomi delle classi di test;
+- ClassEval_69 elenca `TestPDFHandler`, che ha solo `setUpClass` e `tearDownClass` (appoggio per le
+  altre classi): con 0 test l'harness la conta come errore, quindi la classe non si potrebbe mai
+  risolvere, nemmeno con la canonica. Il loader toglie le classi di test senza metodi `test*`
+  (`test_methods`); è l'unica classe di ClassEval toccata da questa regola.
+
+**Esclusioni da Pass@1** (D41): ClassEval_17 (data corrente), 48 (rete) e 58 (mappa casuale) restano
+per rilevazione e impercettibilità ma non entrano in Pass@1, ΔPass@1 e nella preservazione
+condizionata di ACW (`configs/dataset/classeval_pass1_excluded.yaml`, letto da `metrics`): Pass@1
+di ClassEval è su 91 classi.
 
 **Immagine `sandbox_l3`** (`containers/sandbox_l3.def`, `bash scripts/build_sandbox.sh l3`): è
 l'immagine di L1/L2 con in più i pacchetti importati dalle classi e dai test di ClassEval (versioni
@@ -75,7 +91,19 @@ capire); 58 (mappa casuale di Minesweeper) è fallita in una prova su due. Vanno
 sandbox con 3 ripetizioni: le canoniche che non passano diventano anomalie documentate
 (`execution.anomalies`, criterio di M4).
 
-**Esito del pilota:** _da completare con `M13_classeval_pilot.txt`._
+**Primo pilota** (`M13_classeval_pilot.txt`, 1.024 token): troncato il **7,5%** delle risposte
+(Qwen 6/60, tutte su ClassEval_42; DeepSeek 3/60, su ClassEval_21), sopra la soglia del 5%: ci si è
+fermati. Estrazione riuscita al 100%; campioni che passano i test 35% (Qwen) e 45% (DeepSeek);
+canoniche che passano in ogni ripetizione 90/94 (17, 48, 58, 69). La diagnosi
+(`M13_classeval_length.txt`, tokenizer dei due modelli) conferma che le risposte troncate sono
+classi lunghe ancora in scrittura, non ripetizioni (i modelli riscrivono le docstring dello
+scheletro: 54/54 e 48/57 dei campioni non troncati); la risposta ideale supera 1.024 token in 18
+(Qwen) e 36 (DeepSeek) classi su 94 e 2.048 solo in ClassEval_17 con DeepSeek (2.051 token, esclusa
+da Pass@1). Decisione dell'utente: 2.048 token solo per ClassEval (D40) e nuovo pilota sulle stesse
+10 classi.
+
+**Secondo pilota** (2.048 token, `M13_classeval_pilot_2048.txt`): _da completare; il troncamento
+deve scendere sotto il 5%, altrimenti ci si ferma._
 
 ## 2. CodeSearchNet e The Stack C++
 
