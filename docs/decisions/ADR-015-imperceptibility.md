@@ -43,7 +43,10 @@ punti.
   `delta_ppl_index`: media per problema delle differenze per coppia); per ACW quello esatto con il
   campione d'origine (`delta_nll_exact`, `delta_ppl_exact`). Per ACW, senza campioni vuoti, la
   differenza delle medie per problema coincide con la media delle differenze esatte: cambia solo
-  l'intervallo (test `test_acw_difference_of_means_equals_mean_of_exact_differences`).
+  l'intervallo (test `test_acw_difference_of_means_equals_mean_of_exact_differences`). Lo stesso
+  vale per l'accoppiamento per indice di STONE (6 coppie per problema, senza vuoti): nei risultati
+  `delta_nll_index` = `delta_nll_mean` a 4 decimali in tutte le celle (`M12_stone.txt`); la
+  secondaria per indice di ΔNLL/ΔPPL non aggiunge informazione, quella di CodeBLEU sì.
 
 ## 3. CodeBLEU (fase `metrics_imperceptibility`, CPU)
 
