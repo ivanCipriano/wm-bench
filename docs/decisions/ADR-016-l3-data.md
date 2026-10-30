@@ -234,6 +234,27 @@ The Stack, tutte di test.
   dell'executor `syntax` (`g++ -fsyntax-only`, `javac`) fallirà spesso anche per codice corretto.
   Per I6 Pass@1 non si riporta; lo stato `syntax` resta informativo.
 
+## 2bis. Canoniche e baseline di L3 (`M13_l3_baseline.txt`, 30 ottobre 2026)
+
+Tutti i passi completi (dati, canoniche con 3 ripetizioni, baseline dei 2 modelli × 4 linguaggi,
+esecuzione). Valori Qwen / DeepSeek.
+
+| | canoniche | baseline |
+|---|---|---|
+| ClassEval, Pass@1 su 91 classi (D41) | **1,000** (falliscono solo 17 e 48, escluse) | **0,344 / 0,300** (su 94: 0,333 / 0,291) |
+| CodeSearchNet Python, tree-sitter / `py_compile` | 1,000 / 0,988 | 0,974 / 0,974 e 0,983 / 0,972 |
+| CodeSearchNet Java, tree-sitter / `javac` | 1,000 / 0,034 | 0,980 / 0,111 e 0,950 / 0,141 |
+| The Stack C++, tree-sitter / `g++ -fsyntax-only` | 1,000 / 0,008 | 0,976 / 0,063 e 0,958 / 0,060 |
+| CodeSearchNet JavaScript, tree-sitter / `node --check` | 1,000 / 0,988 | 0,986 / 0,972 e 0,983 / 0,970 |
+
+- Estrazione del codice riuscita fra il 99,9% e il 100% delle risposte; ClassEval con 2.048 token
+  senza estrazioni fallite.
+- Le canoniche confermano la gerarchia delle misure: `javac` e `g++` rifiutano il 97–99% delle
+  funzioni umane, staccate dal loro progetto (solo informazione); `py_compile` e `node --check`
+  rifiutano l'1,2% delle funzioni umane (6 funzioni per linguaggio, 3 ripetizioni) che tree-sitter
+  accetta, verosimilmente codice per versioni diverse del linguaggio (per esempio Python 2): per
+  questo restano controlli aggiuntivi, da leggere come differenza fra marcati e baseline.
+
 ## 3. Tests4Py (L4)
 
 Dopo tutto L3; criteri di non fattibilità fissati in `cluster_info.md` §8.7.
