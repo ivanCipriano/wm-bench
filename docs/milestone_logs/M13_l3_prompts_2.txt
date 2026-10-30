@@ -1,0 +1,470 @@
+##### L3 split: {"classeval/test": 94, "csn/test": 1500, "thestack/test": 500}
+
+##### python: problems {'codesearchnet': 500, 'classeval': 94}, negatives {'codesearchnet': 22173, 'classeval': 94}
+  loc_to_generate: {"classeval": {"n": 94, "mean": 25.0957, "pstdev": 13.2006}, "codesearchnet": {"n": 500, "mean": 13.554, "pstdev": 16.2188}}
+  codesearchnet:
+    prompt_funnel: {"rows": 22176, "dropped": {"empty_body": 1, "no_doc_in_code": 25, "parse_error": 3}, "doc_kind": {"docstring": 22147}, "candidates": 22147, "python_dedented": 1166}
+    negative_source: {"rows": 22176, "candidates": 22173, "dropped_parse_error": 3, "whole_equals_code_fraction": 1.0, "python_dedented": 1165}
+    d39_l1_integration_test: 0
+    d39_excluded_from_prompt_pool: 0
+    d39_excluded_from_negatives: 0
+    prompt_sampling: {"pool": {"n": 22147, "mean": 13.7024, "pstdev": 17.8842}, "selected_loc": {"n": 500, "mean": 13.554, "pstdev": 16.2188}, "moved_between_bins": 0}
+
+  ----- codesearchnet python csn/python/945885d7e8d0b712 (entry_point get_checkpoint_content, loc_to_generate 8)
+  [user message]
+    | Complete the following Python function.
+    | Implement the body of the function following its docstring. Keep exactly the function name and signature given in the code.
+    | Return the complete function in a single ```python code block.
+    | 
+    | ```python
+    | def get_checkpoint_content(self, checkpoint_id, path):
+    |         """Get the content of a checkpoint."""
+    | ```
+
+  [human function]
+    | def get_checkpoint_content(self, checkpoint_id, path):
+    |         """Get the content of a checkpoint."""
+    |         with self.engine.begin() as db:
+    |             return get_remote_checkpoint(
+    |                 db,
+    |                 self.user_id,
+    |                 path,
+    |                 checkpoint_id,
+    |                 self.crypto.decrypt,
+    |             )['content']
+
+  ----- codesearchnet python csn/python/c7d1c46008af1194 (entry_point _prepare_args, loc_to_generate 51)
+  [user message]
+    | Complete the following Python function.
+    | Implement the body of the function following its docstring. Keep exactly the function name and signature given in the code.
+    | Return the complete function in a single ```python code block.
+    | 
+    | ```python
+    | def _prepare_args(target_log_prob_fn,
+    |                   volatility_fn,
+    |                   state,
+    |                   step_size,
+    |                   target_log_prob=None,
+    |                   grads_target_log_prob=None,
+    |                   volatility=None,
+    |                   grads_volatility_fn=None,
+    |                   diffusion_drift=None,
+    |                   parallel_iterations=10):
+    |   """Helper which processes input args to meet list-like assumptions."""
+    | ```
+
+  [human function]
+    | def _prepare_args(target_log_prob_fn,
+    |                   volatility_fn,
+    |                   state,
+    |                   step_size,
+    |                   target_log_prob=None,
+    |                   grads_target_log_prob=None,
+    |                   volatility=None,
+    |                   grads_volatility_fn=None,
+    |                   diffusion_drift=None,
+    |                   parallel_iterations=10):
+    |   """Helper which processes input args to meet list-like assumptions."""
+    |   state_parts = list(state) if mcmc_util.is_list_like(state) else [state]
+    | 
+    |   [
+    |       target_log_prob,
+    |       grads_target_log_prob,
+    |   ] = mcmc_util.maybe_call_fn_and_grads(
+    |       target_log_prob_fn,
+    |       state_parts,
+    |       target_log_prob,
+    |       grads_target_log_prob)
+    |   [
+    |       volatility_parts,
+    |       grads_volatility,
+    |   ] = _maybe_call_volatility_fn_and_grads(
+    |       volatility_fn,
+    |       state_parts,
+    |       volatility,
+    |       grads_volatility_fn,
+    |       distribution_util.prefer_static_shape(target_log_prob),
+    |       parallel_iterations)
+    | 
+    |   step_sizes = (list(step_size) if mcmc_util.is_list_like(step_size)
+    |                 else [step_size])
+    |   step_sizes = [
+    |       tf.convert_to_tensor(
+    |           value=s, name='step_size', dtype=target_log_prob.dtype)
+    |       for s in step_sizes
+    |   ]
+    |   if len(step_sizes) == 1:
+    |     step_sizes *= len(state_parts)
+    |   if len(state_parts) != len(step_sizes):
+    |     raise ValueError('There should be exactly one `step_size` or it should '
+    |                      'have same length as `current_state`.')
+    | 
+    |   if diffusion_drift is None:
+    |     diffusion_drift_parts = _get_drift(step_sizes, volatility_parts,
+    |                                        grads_volatility,
+    |                                        grads_target_log_prob)
+    |   else:
+    |     diffusion_drift_parts = (list(diffusion_drift)
+    |                              if mcmc_util.is_list_like(diffusion_drift)
+    |                              else [diffusion_drift])
+    |     if len(state_parts) != len(diffusion_drift):
+    |       raise ValueError('There should be exactly one `diffusion_drift` or it '
+    |                        'should have same length as list-like `current_state`.')
+    | 
+    |   return [
+    |       state_parts,
+    |       step_sizes,
+    |       target_log_prob,
+    |       grads_target_log_prob,
+    |       volatility_parts,
+    |       grads_volatility,
+    |       diffusion_drift_parts,
+    |   ]
+
+##### java: problems {'codesearchnet': 500}, negatives {'codesearchnet': 26093}
+  loc_to_generate: {"codesearchnet": {"n": 500, "mean": 13.544, "pstdev": 18.4658}}
+  codesearchnet:
+    prompt_funnel: {"rows": 26909, "dropped": {"parse_error": 28}, "doc_kind": {"built": 26881}, "candidates": 26881, "python_dedented": 0}
+    negative_source: {"rows": 26909, "candidates": 26881, "dropped_parse_error": 28, "whole_equals_code_fraction": 1.0, "python_dedented": 0}
+    d39_l1_integration_test: 788
+    d39_excluded_from_prompt_pool: 788
+    d39_excluded_from_negatives: 788
+    prompt_sampling: {"pool": {"n": 26093, "mean": 14.0643, "pstdev": 21.7148}, "selected_loc": {"n": 500, "mean": 13.544, "pstdev": 18.4658}, "moved_between_bins": 0}
+
+  ----- codesearchnet java csn/java/211cd60b3e4cf35c (entry_point getNextSiblingElement, loc_to_generate 17)
+  [user message]
+    | Complete the following Java method.
+    | Implement the body of the method following its documentation comment. Keep exactly the method name and signature given in the code.
+    | Return the complete method in a single ```java code block.
+    | 
+    | ```java
+    | /**
+    |  * Returns this node's next <b>element</b>.
+    |  */
+    | public Node getNextSiblingElement() {
+    | ```
+
+  [human function]
+    | public Node getNextSiblingElement() {
+    | 		parentNode.initChildElementNodes();
+    | 		if (siblingElementIndex == -1) {
+    | 			int max = parentNode.getChildNodesCount();
+    | 			for (int i = siblingIndex; i < max; i++) {
+    | 				Node sibling = parentNode.childNodes.get(i);
+    | 				if (sibling.getNodeType() == NodeType.ELEMENT) {
+    | 					return sibling;
+    | 				}
+    | 			}
+    | 			return null;
+    | 		}
+    | 		int index = siblingElementIndex + 1;
+    | 		if (index >= parentNode.childElementNodesCount) {
+    | 			return null;
+    | 		}
+    | 		return parentNode.childElementNodes[index];
+    | 	}
+
+  ----- codesearchnet java csn/java/9f3f5f1d7b99aa58 (entry_point loadProperties, loc_to_generate 28)
+  [user message]
+    | Complete the following Java method.
+    | Implement the body of the method following its documentation comment. Keep exactly the method name and signature given in the code.
+    | Return the complete method in a single ```java code block.
+    | 
+    | ```java
+    | /**
+    |  * Loads properties from a file.
+    |  * @param filename property file loaded from class path or file system
+    |  * @return loaded properties, null if nothing could be loaded plus error messages to standard error if exceptions are caught
+    |  */
+    | protected final Properties loadProperties(String filename) {
+    | ```
+
+  [human function]
+    | protected final Properties loadProperties(String filename){
+    | 		Properties ret = new Properties();
+    | 
+    | 		URL url = null;
+    | 		File f = new File(filename.toString());
+    | 		if(f.exists()){
+    | 			try{
+    | 				url = f.toURI().toURL();
+    | 			}
+    | 			catch(Exception ignore){}
+    | 		}
+    | 		else{
+    | 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    | 			url = loader.getResource(filename);
+    | 			if(url==null){
+    | 				loader = Gen_RunScripts.class.getClassLoader();
+    | 				url = loader.getResource(filename);
+    | 			}
+    | 		}
+    | 
+    | 		try{
+    | 			ret.load(url.openStream());
+    | 		}
+    | 		catch (IOException e){
+    | 			System.err.println(this.getAppName() + ": cannot load property file <" + filename + ">, IO exception\n--><" + e + ">");
+    | 		}
+    | 		catch (Exception e){
+    | 			System.err.println(this.getAppName() + ": cannot load property file <" + filename + ">, general exception\n--><" + e + ">");
+    | 		}
+    | 		return ret;
+    | 	}
+
+##### javascript: problems {'codesearchnet': 500}, negatives {'codesearchnet': 5674}
+  loc_to_generate: {"codesearchnet": {"n": 500, "mean": 21.898, "pstdev": 42.9317}}
+  codesearchnet:
+    prompt_funnel: {"rows": 6483, "dropped": {"no_name": 2042, "parse_error": 21}, "doc_kind": {"built": 4420}, "candidates": 4420, "python_dedented": 0}
+    negative_source: {"rows": 6483, "candidates": 6462, "dropped_parse_error": 21, "whole_equals_code_fraction": 1.0, "python_dedented": 0}
+    d39_l1_integration_test: 788
+    d39_excluded_from_prompt_pool: 546
+    d39_excluded_from_negatives: 788
+    prompt_sampling: {"pool": {"n": 3874, "mean": 24.5147, "pstdev": 100.6815}, "selected_loc": {"n": 500, "mean": 21.898, "pstdev": 42.9317}, "moved_between_bins": 0}
+
+  ----- codesearchnet javascript csn/javascript/e643eecea6094fda (entry_point bind, loc_to_generate 9)
+  [user message]
+    | Complete the following JavaScript function.
+    | Implement the body of the function following its documentation comment. Keep exactly the function name and signature given in the code.
+    | Return the complete function in a single ```javascript code block.
+    | 
+    | ```javascript
+    | /**
+    |  * @file fn.js
+    |  * @module fn
+    |  *
+    |  * Bind (a.k.a proxy or Context). A simple method for changing the context of a function
+    |  * It also stores a unique id on the function so it can be easily removed from events.
+    |  *
+    |  * @param {Mixed} context
+    |  * The object to bind as scope.
+    |  *
+    |  * @param {Function} fn
+    |  * The function to be bound to a scope.
+    |  *
+    |  * @param {number} [uid]
+    |  * An optional unique ID for the function to be set
+    |  *
+    |  * @return {Function}
+    |  * The new function that will be bound into the context given
+    |  */
+    | function bind(context, fn, uid) {
+    | ```
+
+  [human function]
+    | function bind(context, fn, uid) {
+    |   // Make sure the function has a unique ID
+    |   if (!fn.guid) {
+    |     fn.guid = newGUID();
+    |   }
+    | 
+    |   // Create the new function that changes the context
+    |   var bound = function bound() {
+    |     return fn.apply(context, arguments);
+    |   };
+    | 
+    |   // Allow for the ability to individualize this function
+    |   // Needed in the case where multiple objects might share the same prototype
+    |   // IF both items add an event listener with the same function, then you try to remove just one
+    |   // it will remove both because they both have the same guid.
+    |   // when using this, you need to use the bind method when you remove the listener as well.
+    |   // currently used in text tracks
+    |   bound.guid = uid ? uid + '_' + fn.guid : fn.guid;
+    | 
+    |   return bound;
+    | }
+
+  ----- codesearchnet javascript csn/javascript/2e4c902553461eb5 (entry_point SchemaFunction, loc_to_generate 10)
+  [user message]
+    | Complete the following JavaScript function.
+    | Implement the body of the function following its documentation comment. Keep exactly the function name and signature given in the code.
+    | Return the complete function in a single ```javascript code block.
+    | 
+    | ```javascript
+    | /**
+    |  * Creates a new SchemaFunction.
+    |  * @classdesc Describes a CQL function.
+    |  * @alias module:metadata~SchemaFunction
+    |  * @constructor
+    |  */
+    | function SchemaFunction() {
+    | ```
+
+  [human function]
+    | function SchemaFunction() {
+    |   /**
+    |    * Name of the cql function.
+    |    * @type {String}
+    |    */
+    |   this.name = null;
+    |   /**
+    |    * Name of the keyspace where the cql function is declared.
+    |    */
+    |   this.keyspaceName = null;
+    |   /**
+    |    * Signature of the function.
+    |    * @type {Array.<String>}
+    |    */
+    |   this.signature = null;
+    |   /**
+    |    * List of the function argument names.
+    |    * @type {Array.<String>}
+    |    */
+    |   this.argumentNames = null;
+    |   /**
+    |    * List of the function argument types.
+    |    * @type {Array.<{code, info}>}
+    |    */
+    |   this.argumentTypes = null;
+    |   /**
+    |    * Body of the function.
+    |    * @type {String}
+    |    */
+    |   this.body = null;
+    |   /**
+    |    * Determines if the function is called when the input is null.
+    |    * @type {Boolean}
+    |    */
+    |   this.calledOnNullInput = null;
+    |   /**
+    |    * Name of the programming language, for example: java, javascript, ...
+    |    * @type {String}
+    |    */
+    |   this.language = null;
+    |   /**
+    |    * Type of the return value.
+    |    * @type {{code: number, info: (Object|Array|null)}}
+    |    */
+    |   this.returnType = null;
+    | }
+
+##### cpp: problems {'thestack_cpp': 500}, negatives {'thestack_cpp': 10000}
+  loc_to_generate: {"thestack_cpp": {"n": 500, "mean": 16.362, "pstdev": 21.7351}}
+  thestack_cpp:
+    bucket: "l3_test"
+    files_in_bucket: 45794
+    functions: 462756
+    prompt_filters: {"doc_code": 3440, "doc_directive": 281, "doc_generated": 3462, "doc_length": 4444, "doc_license": 30, "doc_non_english": 11851, "empty_body": 2229, "generated_or_minified": 2217, "kept": 30630, "no_doc": 366842, "no_name": 4938, "parse_error": 32392}
+    doc_kind: {"doxygen": 12601, "plain": 18029}
+    prompt_candidates: 30630
+    negative_candidates: 430364
+    prompt_sampling: {"pool": {"n": 30630, "mean": 17.4659, "pstdev": 38.9854}, "selected_loc": {"n": 500, "mean": 16.362, "pstdev": 21.7351}, "moved_between_bins": 0}
+
+  ----- thestack_cpp cpp thestack/77747c673c7933a20c4fda6c9aa59bbfdd92b9ab:60 (entry_point 
+triangulate, loc_to_generate 33)
+  [user message]
+    | Complete the following C++ function.
+    | Implement the body of the function following its documentation comment. Keep exactly the function name and signature given in the code.
+    | Return the complete function in a single ```cpp code block.
+    | 
+    | ```cpp
+    | ////////////////////////////////////////////////////////////////////
+    | //     Function: Triangulator3::triangulate
+    | //       Access: Published
+    | //  Description: Does the work of triangulating the specified polygon.
+    | //               After this call, you may retrieve the new triangles
+    | //               one at a time by iterating through
+    | //               get_triangle_v0/1/2().
+    | ////////////////////////////////////////////////////////////////////
+    | void Triangulator3::
+    | triangulate() {
+    | ```
+
+  [human function]
+    | ////////////////////////////////////////////////////////////////////
+    | //     Function: Triangulator3::triangulate
+    | //       Access: Published
+    | //  Description: Does the work of triangulating the specified polygon.
+    | //               After this call, you may retrieve the new triangles
+    | //               one at a time by iterating through
+    | //               get_triangle_v0/1/2().
+    | ////////////////////////////////////////////////////////////////////
+    | void Triangulator3::
+    | triangulate() {
+    |   _result.clear();
+    | 
+    |   if (_polygon.size() < 3) {
+    |     // Degenerate case.
+    |     return;
+    |   }
+    | 
+    |   // First, determine the polygon normal.
+    |   LNormald normal = LNormald::zero();
+    | 
+    |   // Project the polygon into each of the three major planes and
+    |   // calculate the area of each 2-d projection.  This becomes the
+    |   // polygon normal.  This works because the ratio between these
+    |   // different areas corresponds to the angle at which the polygon is
+    |   // tilted toward each plane.
+    |   size_t num_verts = _polygon.size();
+    |   for (size_t i = 0; i < num_verts; i++) {
+    |     int i0 = _polygon[i];
+    |     int i1 = _polygon[(i + 1) % num_verts];;;;
+    |     nassertv(i0 >= 0 && i0 < (int)_vertices3.size() &&
+    |              i1 >= 0 && i1 < (int)_vertices3.size());
+    |     const LPoint3d &p0 = _vertices3[i0];
+    |     const LPoint3d &p1 = _vertices3[i1];
+    |     normal[0] += p0[1] * p1[2] - p0[2] * p1[1];
+    |     normal[1] += p0[2] * p1[0] - p0[0] * p1[2];
+    |     normal[2] += p0[0] * p1[1] - p0[1] * p1[0];
+    |   }
+    | 
+    |   if (!normal.normalize()) {
+    |     // The polygon is degenerate: it has zero area in each plane.  In
+    |     // this case, the triangulation result produces no triangles
+    |     // anyway.
+    |     return;
+    |   }
+    | 
+    |   _plane = LPlaned(normal, _vertices3[0]);
+    | 
+    |   // Now determine the matrix to project each of the vertices into
+    |   // this 2-d plane.
+    |   LMatrix4d mat;
+    |   heads_up(mat, _vertices3[1] - _vertices3[2], normal, CS_zup_right);
+    |   mat.set_row(3, _vertices3[0]);
+    |   mat.invert_in_place();
+    | 
+    |   _vertices.clear();
+    |   for (size_t i = 0; i < _vertices3.size(); i++) {
+    |     LPoint3d p = _vertices3[i] * mat;
+    |     _vertices.push_back(LPoint2d(p[0], p[1]));
+    |   }
+    |   Triangulator::triangulate();
+    | }
+
+  ----- thestack_cpp cpp thestack/d44dd6ff0b87f02ee76dd3f3e5dd216c25885b61:495 (entry_point xITransformSkip, loc_to_generate 12)
+  [user message]
+    | Complete the following C++ function.
+    | Implement the body of the function following its documentation comment. Keep exactly the function name and signature given in the code.
+    | Return the complete function in a single ```cpp code block.
+    | 
+    | ```cpp
+    | /** Wrapper function between HM interface and core NxN transform skipping
+    |  */
+    | void TrQuant::xITransformSkip(const CCoeffBuf     &pCoeff,
+    |                                     PelBuf        &pResidual,
+    |                               const TransformUnit &tu,
+    |                               const ComponentID   &compID) {
+    | ```
+
+  [human function]
+    | /** Wrapper function between HM interface and core NxN transform skipping
+    |  */
+    | void TrQuant::xITransformSkip(const CCoeffBuf     &pCoeff,
+    |                                     PelBuf        &pResidual,
+    |                               const TransformUnit &tu,
+    |                               const ComponentID   &compID)
+    | {
+    |   const CompArea &area  = tu.blocks[compID];
+    |   const int width       = area.width;
+    |   const int height      = area.height;
+    |   
+    |   for( int y = 0; y < height; y++ )
+    |   {
+    |     for( int x = 0; x < width; x++ )
+    |     {
+    |       pResidual.at( x, y ) = Pel( pCoeff.at( x, y ) );
+    |     }
+    |   }
+    | }

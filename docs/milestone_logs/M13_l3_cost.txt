@@ -1,0 +1,27 @@
+##### L3 test: problemi e negativi umani
+  python     problemi {'classeval': 94, 'codesearchnet': 500}, negativi 22267
+  java       problemi {'codesearchnet': 500}, negativi 26093
+  javascript problemi {'codesearchnet': 500}, negativi 5674
+  cpp        problemi {'thestack_cpp': 500}, negativi 10000
+
+##### baseline L3 (GPU) ed esecuzione (CPU), per modello
+  qwen25_coder_7b python: 4.0 s/problema L2 -> baseline 0.7 h – 0.8 h; esecuzione 0.12 s/campione -> 0.1 h
+  qwen25_coder_7b java: 5.2 s/problema L2 -> baseline 0.7 h; esecuzione 0.06 s/campione -> 0.0 h
+  qwen25_coder_7b javascript: 4.7 s/problema L2 -> baseline 0.7 h; esecuzione 0.13 s/campione -> 0.1 h
+  qwen25_coder_7b cpp: 5.2 s/problema L2 -> baseline 0.7 h; esecuzione 0.17 s/campione -> 0.1 h
+  deepseek_coder_6p7b python: 5.0 s/problema L2 -> baseline 0.8 h – 1.0 h; esecuzione 0.09 s/campione -> 0.1 h
+  deepseek_coder_6p7b java: 7.8 s/problema L2 -> baseline 1.1 h; esecuzione 0.11 s/campione -> 0.1 h
+  deepseek_coder_6p7b javascript: 6.7 s/problema L2 -> baseline 0.9 h; esecuzione 0.10 s/campione -> 0.1 h
+  deepseek_coder_6p7b cpp: 6.9 s/problema L2 -> baseline 1.0 h; esecuzione 0.23 s/campione -> 0.2 h
+  TOTALE baseline 6.6 h – 6.8 h GPU; esecuzione 0.9 h CPU; canoniche (3 ripetizioni) 0.2 h CPU
+
+##### SWEET su L3 (GPU; non congelato: costi della configurazione media dello sweep)
+  qwen25_coder_7b python: generazione 33.0 s/problema -> 5.4 h – 6.3 h; rilevazione 2.259 s/campione x 29395 (positives 3564, neg_llm 3564, neg_human 22267) -> 18.4 h
+  qwen25_coder_7b java: generazione 44.2 s/problema -> 6.1 h; rilevazione 16.409 s/campione x 32093 (positives 3000, neg_llm 3000, neg_human 26093) -> 146.3 h
+  qwen25_coder_7b javascript: generazione 24.9 s/problema -> 3.5 h; rilevazione 5.262 s/campione x 11674 (positives 3000, neg_llm 3000, neg_human 5674) -> 17.1 h
+  qwen25_coder_7b cpp: generazione 37.3 s/problema -> 5.2 h; rilevazione 8.195 s/campione x 16000 (positives 3000, neg_llm 3000, neg_human 10000) -> 36.4 h
+  deepseek_coder_6p7b python: generazione 5.2 s/problema -> 0.9 h – 1.0 h; rilevazione 0.121 s/campione x 29395 (positives 3564, neg_llm 3564, neg_human 22267) -> 1.0 h
+  deepseek_coder_6p7b java: generazione 8.5 s/problema -> 1.2 h; rilevazione 0.270 s/campione x 32093 (positives 3000, neg_llm 3000, neg_human 26093) -> 2.4 h
+  deepseek_coder_6p7b javascript: generazione 6.9 s/problema -> 1.0 h; rilevazione 0.264 s/campione x 11674 (positives 3000, neg_llm 3000, neg_human 5674) -> 0.9 h
+  deepseek_coder_6p7b cpp: generazione 7.5 s/problema -> 1.0 h; rilevazione 0.191 s/campione x 16000 (positives 3000, neg_llm 3000, neg_human 10000) -> 0.8 h
+  TOTALE SWEET L3: generazione 24.3 h – 25.3 h GPU; rilevazione 223.3 h GPU
