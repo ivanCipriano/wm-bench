@@ -1,0 +1,15 @@
+# Deviazioni da segnalare nelle tabelle del report (M14; docs/deviations.md). Campi opzionali:
+# methods, levels, attacks (vuoti = tutti). Si aggiornano quando si registra una deviazione nuova.
+annotations:
+- {deviation: D9, note: "accoppiamento baseline/marcato approssimato (ΔPass@1)"}
+- {deviation: D16, methods: [stone], note: "punteggio principale di STONE z_nonsyntax"}
+- {deviation: D20, methods: [mcgmark], note: "riferimento di fpr_llm e ΔPass@1: baseline gemella"}
+- {deviation: D23, methods: [promptmark], levels: [L1], note: "ciclo di correttezza sui soli esempi del prompt"}
+- {deviation: D27, methods: [promptmark], levels: [L2, L3], note: "ciclo di correttezza spento"}
+- {deviation: D31, methods: [sweet], note: "estensione locale della griglia oltre δ = 4"}
+- {deviation: D33, attacks: [T2.2], note: "prompt di attacco v2 approvati"}
+- {deviation: D34, attacks: [T2.2], note: "controllo negativo sulla baseline riscritta"}
+- {deviation: D38, methods: [acw], note: "misure al netto della formattazione (impercettibilità)"}
+- {deviation: D39, levels: [L3], note: "negativi di CodeSearchNet senza le funzioni già usate in L1"}
+- {deviation: D40, levels: [L3], note: "ClassEval con 2.048 token nuovi"}
+- {deviation: D41, levels: [L3], note: "ClassEval 17, 48, 58 fuori da Pass@1 (91 classi)"}
