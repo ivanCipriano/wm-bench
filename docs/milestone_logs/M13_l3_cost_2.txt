@@ -1,0 +1,55 @@
+##### L3 test: problemi e negativi umani
+  python     problemi {'classeval': 94, 'codesearchnet': 500}, negativi 22267
+  java       problemi {'codesearchnet': 500}, negativi 26093
+  javascript problemi {'codesearchnet': 500}, negativi 5674
+  cpp        problemi {'thestack_cpp': 500}, negativi 10000
+
+##### baseline L3 (GPU) ed esecuzione (CPU), per modello
+  qwen25_coder_7b python: 4.0 s/problema L2 -> baseline 0.7 h – 0.8 h; esecuzione 0.12 s/campione -> 0.1 h
+  qwen25_coder_7b java: 5.2 s/problema L2 -> baseline 0.7 h; esecuzione 0.06 s/campione -> 0.0 h
+  qwen25_coder_7b javascript: 4.7 s/problema L2 -> baseline 0.7 h; esecuzione 0.13 s/campione -> 0.1 h
+  qwen25_coder_7b cpp: 5.2 s/problema L2 -> baseline 0.7 h; esecuzione 0.17 s/campione -> 0.1 h
+  deepseek_coder_6p7b python: 5.0 s/problema L2 -> baseline 0.8 h – 1.0 h; esecuzione 0.09 s/campione -> 0.1 h
+  deepseek_coder_6p7b java: 7.8 s/problema L2 -> baseline 1.1 h; esecuzione 0.11 s/campione -> 0.1 h
+  deepseek_coder_6p7b javascript: 6.7 s/problema L2 -> baseline 0.9 h; esecuzione 0.10 s/campione -> 0.1 h
+  deepseek_coder_6p7b cpp: 6.9 s/problema L2 -> baseline 1.0 h; esecuzione 0.23 s/campione -> 0.2 h
+  TOTALE baseline 6.6 h – 6.8 h GPU; esecuzione 0.9 h CPU; canoniche (3 ripetizioni) 0.2 h CPU
+
+##### SWEET su L3 (GPU; non congelato: costi della configurazione media dello sweep)
+  qwen25_coder_7b python: generazione 33.0 s/problema -> 5.4 h – 6.3 h; rilevazione 2.259 s/campione x 29395 (positives 3564, neg_llm 3564, neg_human 22267) -> 18.4 h; con i tempi di L1 dev 2.504 s/campione -> 20.4 h
+  qwen25_coder_7b java: generazione 44.2 s/problema -> 6.1 h; rilevazione 16.409 s/campione x 32093 (positives 3000, neg_llm 3000, neg_human 26093) -> 146.3 h; con i tempi di L1 dev 2.589 s/campione -> 23.1 h
+  qwen25_coder_7b javascript: generazione 24.9 s/problema -> 3.5 h; rilevazione 5.262 s/campione x 11674 (positives 3000, neg_llm 3000, neg_human 5674) -> 17.1 h; con i tempi di L1 dev 1.269 s/campione -> 4.1 h
+  qwen25_coder_7b cpp: generazione 37.3 s/problema -> 5.2 h; rilevazione 8.195 s/campione x 16000 (positives 3000, neg_llm 3000, neg_human 10000) -> 36.4 h; con i tempi di L1 dev 1.981 s/campione -> 8.8 h
+  deepseek_coder_6p7b python: generazione 5.2 s/problema -> 0.9 h – 1.0 h; rilevazione 0.121 s/campione x 29395 (positives 3564, neg_llm 3564, neg_human 22267) -> 1.0 h; con i tempi di L1 dev 0.065 s/campione -> 0.5 h
+  deepseek_coder_6p7b java: generazione 8.5 s/problema -> 1.2 h; rilevazione 0.270 s/campione x 32093 (positives 3000, neg_llm 3000, neg_human 26093) -> 2.4 h; con i tempi di L1 dev 0.055 s/campione -> 0.5 h
+  deepseek_coder_6p7b javascript: generazione 6.9 s/problema -> 1.0 h; rilevazione 0.264 s/campione x 11674 (positives 3000, neg_llm 3000, neg_human 5674) -> 0.9 h; con i tempi di L1 dev 0.056 s/campione -> 0.2 h
+  deepseek_coder_6p7b cpp: generazione 7.5 s/problema -> 1.0 h; rilevazione 0.191 s/campione x 16000 (positives 3000, neg_llm 3000, neg_human 10000) -> 0.8 h; con i tempi di L1 dev 0.057 s/campione -> 0.3 h
+  TOTALE SWEET L3: generazione 24.3 h – 25.3 h GPU; rilevazione 57.9 h (tempi di L1) – 223.3 h (tempi di L2) GPU
+
+##### SWEET: s per problema o campione fra le configurazioni (min / mediana / max, n)
+  qwen25_coder_7b python generazione L2 dev: 10.267 / 32.995 / 50.138 (61)
+  qwen25_coder_7b java generazione L2 dev: 12.960 / 44.245 / 61.029 (61)
+  qwen25_coder_7b javascript generazione L2 dev: 10.931 / 24.851 / 35.135 (61)
+  qwen25_coder_7b cpp generazione L2 dev: 11.660 / 37.296 / 55.271 (61)
+  qwen25_coder_7b python rilevazione L1 dev: 0.273 / 2.504 / 10.105 (61)
+  qwen25_coder_7b java rilevazione L1 dev: 0.697 / 2.589 / 7.067 (61)
+  qwen25_coder_7b javascript rilevazione L1 dev: 0.196 / 1.269 / 4.833 (61)
+  qwen25_coder_7b cpp rilevazione L1 dev: 0.232 / 1.981 / 7.109 (61)
+  qwen25_coder_7b python rilevazione L2 dev: 0.244 / 2.259 / 6.860 (61)
+  qwen25_coder_7b java rilevazione L2 dev: 1.016 / 16.409 / 29.274 (61)
+  qwen25_coder_7b javascript rilevazione L2 dev: 0.691 / 5.262 / 20.810 (61)
+  qwen25_coder_7b cpp rilevazione L2 dev: 0.782 / 8.195 / 20.388 (61)
+  qwen25_coder_7b worker.log: []
+  deepseek_coder_6p7b python generazione L2 dev: 4.526 / 5.214 / 11.266 (61)
+  deepseek_coder_6p7b java generazione L2 dev: 7.622 / 8.457 / 11.597 (61)
+  deepseek_coder_6p7b javascript generazione L2 dev: 6.316 / 6.934 / 9.484 (61)
+  deepseek_coder_6p7b cpp generazione L2 dev: 6.853 / 7.520 / 11.501 (61)
+  deepseek_coder_6p7b python rilevazione L1 dev: 0.062 / 0.065 / 0.085 (61)
+  deepseek_coder_6p7b java rilevazione L1 dev: 0.053 / 0.055 / 0.082 (61)
+  deepseek_coder_6p7b javascript rilevazione L1 dev: 0.053 / 0.056 / 0.106 (61)
+  deepseek_coder_6p7b cpp rilevazione L1 dev: 0.055 / 0.057 / 0.114 (61)
+  deepseek_coder_6p7b python rilevazione L2 dev: 0.119 / 0.121 / 0.174 (61)
+  deepseek_coder_6p7b java rilevazione L2 dev: 0.266 / 0.270 / 0.423 (61)
+  deepseek_coder_6p7b javascript rilevazione L2 dev: 0.259 / 0.264 / 0.433 (61)
+  deepseek_coder_6p7b cpp rilevazione L2 dev: 0.188 / 0.191 / 0.293 (61)
+  deepseek_coder_6p7b worker.log: []
