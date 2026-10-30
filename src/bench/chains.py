@@ -596,8 +596,10 @@ class Chains:
     """
 
     def __init__(self, steps: Sequence[Step], done: DoneCheck, slurm: Slurm, state_dir: Path,
-                 extra: Sequence[str] = (), with_acw: bool = False) -> None:  # fmt: skip
+                 extra: Sequence[str] = (), with_acw: bool = False,
+                 skip: Callable[[Step], bool] | None = None) -> None:  # fmt: skip
         self.steps = list(steps)
+        self.skip = skip
         self.by_key = {s.key: s for s in steps}
         self.done = done
         self.slurm = slurm
@@ -611,7 +613,9 @@ class Chains:
 
     def is_done(self, step: Step, state: dict[str, StepState]) -> bool | None:
         if step.key not in self._done:
-            if step.once:
+            if self.skip is not None and self.skip(step):  # smoke test: passi già "fatti"
+                self._done[step.key] = True
+            elif step.once:
                 st = state.get(step.key)
                 self._done[step.key] = bool(st and st.succeeded)
             else:

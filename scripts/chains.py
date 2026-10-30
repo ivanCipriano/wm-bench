@@ -61,12 +61,12 @@ def make(args: argparse.Namespace) -> Chains:
     steps, base, state_dir, extra = setup(args.smoke)
     real_done = artifact_done(base)
 
-    def done(step: Step) -> bool | None:
-        if args.smoke and step.key.startswith(SMOKE_SKIP):
-            return True
-        return real_done(step)
+    def skip(step: Step) -> bool:
+        # anche i passi ``once`` (tune con force): il congelamento finto c'è già
+        return bool(args.smoke and step.key.startswith(SMOKE_SKIP))
 
-    return Chains(steps, done, RealSlurm(), state_dir, extra, with_acw=args.with_acw)
+    return Chains(steps, real_done, RealSlurm(), state_dir, extra, with_acw=args.with_acw,
+                  skip=skip)  # fmt: skip
 
 
 def print_reports(reports: list[Report], verbose: bool = True) -> None:

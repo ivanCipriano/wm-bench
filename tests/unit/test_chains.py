@@ -152,3 +152,12 @@ def test_artifact_done_on_an_empty_store(local_root: Path) -> None:
     assert done(base) is False
     watermark = next(s for s in test_phase("stone", "L3", WMB) if s.key.endswith("/watermark"))
     assert done(watermark) is None  # STONE non congelato in uno store vuoto: non pianificabile
+
+
+def test_skip_also_covers_once_steps(tmp_path: Path) -> None:
+    """Smoke test: i passi saltati (anche ``once``, come tune) sono finiti e non si inviano."""
+    slurm = FakeSlurm()
+    chains = Chains(STEPS, lambda s: False, slurm, tmp_path, skip=lambda s: s.key == "c/t")
+    reports = {r.key: r.status for r in chains.run("ivan")}
+    assert reports["c/t"] == "DONE"
+    assert "c/t" not in [k for k, *_ in slurm.submitted]
