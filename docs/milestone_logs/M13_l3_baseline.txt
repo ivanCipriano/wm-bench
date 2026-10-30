@@ -1,0 +1,34 @@
+##### Livello 3 (ClassEval, CodeSearchNet, The Stack C++), test
+data          9/9    COMPLETE
+canonical     4/4    COMPLETE
+baseline      8/8    COMPLETE
+execute       8/8    COMPLETE
+
+##### esiti per dataset (ClassEval: Pass@1 senza le 3 classi di D41; CodeSearchNet e The Stack: tree-sitter, compilazione informativa)
+canonical  python                           classeval      n=  282  Pass@1 1.000 (91 classi), 0.979 (94)  {'PASSED': 276, 'FAILED': 6}
+canonical  python                           codesearchnet  n= 1500  tree-sitter valid 1.000  compile ok (informativo) 0.988  {'PASSED': 1482, 'SYNTAX_ERROR': 18}
+canonical  java                             codesearchnet  n= 1500  tree-sitter valid 1.000  compile ok (informativo) 0.034  {'COMPILE_ERROR': 1449, 'PASSED': 51}
+canonical  cpp                              thestack_cpp   n= 1500  tree-sitter valid 1.000  compile ok (informativo) 0.008  {'COMPILE_ERROR': 1488, 'PASSED': 12}
+canonical  javascript                       codesearchnet  n= 1500  tree-sitter valid 1.000  compile ok (informativo) 0.988  {'PASSED': 1482, 'SYNTAX_ERROR': 18}
+execute    qwen25_coder_7b python           classeval      n=  564  Pass@1 0.344 (91 classi), 0.333 (94)  {'FAILED': 361, 'PASSED': 188, 'RUNTIME_ERROR': 6, 'TIMEOUT': 6, 'SYNTAX_ERROR': 3}
+execute    qwen25_coder_7b python           codesearchnet  n= 3000  tree-sitter valid 0.974  compile ok (informativo) 0.974  {'PASSED': 2922, 'SYNTAX_ERROR': 78}
+execute    deepseek_coder_6p7b python       classeval      n=  564  Pass@1 0.300 (91 classi), 0.291 (94)  {'FAILED': 384, 'PASSED': 164, 'TIMEOUT': 9, 'RUNTIME_ERROR': 6, 'SYNTAX_ERROR': 1}
+execute    deepseek_coder_6p7b python       codesearchnet  n= 3000  tree-sitter valid 0.983  compile ok (informativo) 0.972  {'PASSED': 2915, 'SYNTAX_ERROR': 82, 'EXTRACTION_FAILED': 3}
+execute    qwen25_coder_7b java             codesearchnet  n= 3000  tree-sitter valid 0.980  compile ok (informativo) 0.111  {'COMPILE_ERROR': 2609, 'PASSED': 332, 'SYNTAX_ERROR': 59}
+execute    deepseek_coder_6p7b java         codesearchnet  n= 3000  tree-sitter valid 0.950  compile ok (informativo) 0.141  {'COMPILE_ERROR': 2428, 'PASSED': 422, 'SYNTAX_ERROR': 150}
+execute    qwen25_coder_7b cpp              thestack_cpp   n= 3000  tree-sitter valid 0.976  compile ok (informativo) 0.063  {'COMPILE_ERROR': 2738, 'PASSED': 190, 'SYNTAX_ERROR': 72}
+execute    deepseek_coder_6p7b cpp          thestack_cpp   n= 3000  tree-sitter valid 0.958  compile ok (informativo) 0.060  {'COMPILE_ERROR': 2694, 'PASSED': 180, 'SYNTAX_ERROR': 123, 'EXTRACTION_FAILED': 3}
+execute    qwen25_coder_7b javascript       codesearchnet  n= 3000  tree-sitter valid 0.986  compile ok (informativo) 0.972  {'PASSED': 2916, 'SYNTAX_ERROR': 84}
+execute    deepseek_coder_6p7b javascript   codesearchnet  n= 3000  tree-sitter valid 0.983  compile ok (informativo) 0.970  {'PASSED': 2911, 'SYNTAX_ERROR': 89}
+
+##### baseline: estrazioni riuscite per dataset
+  qwen25_coder_7b python           classeval      n=  564  extraction_ok 1.000
+  qwen25_coder_7b python           codesearchnet  n= 3000  extraction_ok 1.000
+  deepseek_coder_6p7b python       classeval      n=  564  extraction_ok 1.000
+  deepseek_coder_6p7b python       codesearchnet  n= 3000  extraction_ok 0.999
+  qwen25_coder_7b java             codesearchnet  n= 3000  extraction_ok 1.000
+  deepseek_coder_6p7b java         codesearchnet  n= 3000  extraction_ok 1.000
+  qwen25_coder_7b cpp              thestack_cpp   n= 3000  extraction_ok 1.000
+  deepseek_coder_6p7b cpp          thestack_cpp   n= 3000  extraction_ok 0.999
+  qwen25_coder_7b javascript       codesearchnet  n= 3000  extraction_ok 1.000
+  deepseek_coder_6p7b javascript   codesearchnet  n= 3000  extraction_ok 1.000
