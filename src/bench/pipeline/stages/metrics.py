@@ -19,6 +19,12 @@ metodo. Output ``metrics/<metodo>/<modello>/<cfg>/<L>_<lang>_<parte>.parquet``, 
 - ``conditional_preservation`` (solo ACW): P(corretto dopo | corretto prima), Wilson;
 - capacità (solo MCGMark): ``message_accuracy``, ``bit_accuracy``, ``embedding_success_rate``.
 
+**Livello 3** (ADR-016): Pass@1, ΔPass@1 e preservazione condizionata solo su ClassEval (91 classi,
+D41); per CodeSearchNet e The Stack ``tree_sitter_valid`` (principale), ``syntax_check``
+(``py_compile``, ``node --check``) o ``compile_info`` (``javac``, ``g++``, solo informazione), con
+baseline e differenza; TPR, FPR e AUROC anche per dataset (``<metrica>|<dataset>``) e, nel
+manifest, i dataset con ``contamination_risk`` (I6).
+
 **Celle con attacco** (M10, ADR-012; ``Cell.attack_id``): stessa soglia congelata della cella senza
 attacco; output ``<cartella>/attacked/<attacco>/<params_hash>/<metodo>/...``. Metriche:
 ``tpr_at_fpr`` e ``auroc`` sugli attaccati (con i punteggi secondari), ``pass_at_1`` degli
@@ -128,6 +134,27 @@ def _attack_info(cell: Cell) -> dict[str, str]:
     if not cell.attack_id:
         return {}
     return {"attack_id": cell.attack_id, "attack_params_hash": str(cell.attack_params_hash)}
+
+
+# Dataset di L3 con test (Pass@1); gli altri sono senza test e con contaminazione (I6, ADR-016).
+TESTED_L3 = frozenset({"classeval"})
+CONTAMINATED_L3 = frozenset({"codesearchnet", "thestack_cpp"})
+TREE_SITTER_ERROR = "tree-sitter: ERROR node"
+
+
+def _ts_valid(table: pd.DataFrame) -> pd.DataFrame:
+    """Esecuzioni con ``status`` = ``PASSED`` se il codice è valido per tree-sitter (né estrazione
+    fallita né ``SYNTAX_ERROR`` del controllo tree-sitter dell'executor ``syntax``)."""
+    invalid = [
+        status == "EXTRACTION_FAILED" or str(tail or "").startswith(TREE_SITTER_ERROR)
+        for status, tail in zip(table["status"], table["stderr_tail"], strict=True)
+    ]
+    return table.assign(status=["FAILED" if bad else "PASSED" for bad in invalid])
+
+
+def _compiled(table: pd.DataFrame) -> pd.DataFrame:
+    """Esecuzioni così come sono: ``PASSED`` = supera anche il controllo del compilatore."""
+    return table
 
 
 @STAGES.register("metrics")
@@ -388,23 +415,98 @@ class MetricsStage(Stage):
         # --- punteggi secondari (varianti del paper): soglia propria, stessi positivi e negativi
         self._secondary_metrics(cell, add, applicable, neg_human, thresholds)
 
+        if level == "L3":  # TPR, FPR e AUROC anche per dataset, con il flag I6 (ADR-016)
+            self._per_dataset(cell, add, applicable, neg_human, tau)
+
         # --- preservazione funzionale
         marked_exec = self._read_exec(ctx, refs["exec_marked"])
         reference = "exec_twin" if self._twin(method) else "exec_baseline"
-        self._pass_metrics(add, boot, marked_exec, self._read_exec(ctx, refs[reference]), "")
+        if level == "L3":
+            marked_exec = self._l3_functional(ctx, cell, refs, add, boot, marked_exec, reference)
+        self._pass_metrics(add, boot, marked_exec, self._l3_exec(ctx, refs[reference], level), "")
         if self._twin(method):
             self._pass_metrics(
-                add, boot, marked_exec, self._read_exec(ctx, refs["exec_baseline"]), "_baseline",
-                only_delta=True,
+                add, boot, marked_exec, self._l3_exec(ctx, refs["exec_baseline"], level),
+                "_baseline", only_delta=True,
             )  # fmt: skip
         if method == "acw":
             self._conditional_preservation(
                 add, ctx.store.read_table(refs["watermarked"]), marked_exec,
-                self._read_exec(ctx, refs["exec_baseline"]),
+                self._l3_exec(ctx, refs["exec_baseline"], level),
             )  # fmt: skip
         if self._multibit(method):
             self._capacity(add, boot, applicable)
         self._write(ctx, cell, rows, cfg_hash, thresholds, not_applicable=False)
+
+    # ------------------------------------------------------------------ Livello 3 (ADR-016)
+    def _l3_exec(self, ctx: StageContext, ref: ArtifactRef, level: str) -> pd.DataFrame:
+        """Esecuzioni per Pass@1: in L3 solo ClassEval (CodeSearchNet e The Stack non hanno test,
+        I6), senza le 3 classi di D41; negli altri livelli come ``_read_exec``."""
+        table = self._read_exec(ctx, ref)
+        if level != "L3":
+            return table
+        return table[table["dataset"].isin(TESTED_L3)].reset_index(drop=True)
+
+    def _l3_functional(
+        self,
+        ctx: StageContext,
+        cell: Cell,
+        refs: dict[str, ArtifactRef],
+        add: Callable[..., None],
+        boot: Callable[[str], ClusterBootstrap],
+        marked_exec: pd.DataFrame,
+        reference: str,
+    ) -> pd.DataFrame:
+        """Validità del codice di CodeSearchNet e The Stack (decisioni dell'utente del 29 e 30
+        ottobre 2026): ``tree_sitter_valid`` (principale, tutti i linguaggi), ``syntax_check``
+        (``py_compile``/``node --check``, controllo aggiuntivo affidabile) o ``compile_info``
+        (``javac``/``g++ -fsyntax-only``, solo informazione), ognuna con baseline e differenza.
+        Restituisce le esecuzioni di ClassEval, le sole che entrano in Pass@1."""
+        language = str(cell.language)
+        untested_marked = marked_exec[~marked_exec["dataset"].isin(TESTED_L3)]
+        untested_ref = self._read_exec(ctx, refs[reference])
+        untested_ref = untested_ref[~untested_ref["dataset"].isin(TESTED_L3)]
+        if not untested_marked.empty:
+            reliable = language in ("python", "javascript")
+            compile_name = "syntax_check" if reliable else "compile_info"
+            for measure, view in (("tree_sitter_valid", _ts_valid), (compile_name, _compiled)):
+                self._pass_metrics(
+                    add, boot, view(untested_marked), view(untested_ref), "", measure=measure
+                )
+        return marked_exec[marked_exec["dataset"].isin(TESTED_L3)].reset_index(drop=True)
+
+    def _per_dataset(
+        self,
+        cell: Cell,
+        add: Callable[..., None],
+        positives: pd.DataFrame,
+        neg_human: pd.DataFrame,
+        tau: float,
+    ) -> None:
+        """``tpr_at_fpr|<dataset>``, ``fpr_human|<dataset>`` e ``auroc|<dataset>`` (I6: il report
+        segna i dataset con ``contamination_risk``)."""
+        cfg = self._cfg()
+        n_boot = cfg.detection.n_bootstrap
+        for dataset in sorted(set(positives["dataset"])):
+            pos = positives[positives["dataset"] == dataset]
+            neg = neg_human[neg_human["dataset"] == dataset]
+            table = pos.assign(hit=_detected(pos, tau).astype(float))
+            name = f"tpr_at_fpr|{dataset}"
+            seed = bootstrap_seed(cfg.global_seed, name, cell.key())
+            add(name, float(table["hit"].mean()), ratio_interval(table, "hit", seed, n_boot),
+                "cluster_bootstrap", len(table))  # fmt: skip
+            if neg.empty:
+                continue
+            k = int(_detected(neg, tau).sum())
+            add(f"fpr_human|{dataset}", k / len(neg), clopper_pearson(k, len(neg)),
+                "clopper_pearson", len(neg))  # fmt: skip
+            scores = pos.assign(score=_scores(pos, with_embed=True))
+            neg_scores = _scores(neg)
+            name = f"auroc|{dataset}"
+            seed = bootstrap_seed(cfg.global_seed, name, cell.key())
+            add(name, auroc(scores["score"].to_numpy(dtype=float), neg_scores),
+                auroc_interval(scores, neg_scores, seed, n_boot),
+                "cluster_bootstrap+negative_resampling", len(scores) + len(neg_scores))  # fmt: skip
 
     def _secondary_metrics(
         self,
@@ -539,21 +641,24 @@ class MetricsStage(Stage):
         baseline: pd.DataFrame,
         suffix: str,
         only_delta: bool = False,
+        measure: str = "pass_at_1",
     ) -> None:
+        """``<misura>``, ``<misura>_baseline`` e ``delta_<misura>_pp<suffisso>`` (riferimento -
+        marcato, accoppiato per problema); ``measure`` = frazione di campioni ``PASSED``."""
         p_marked, per_marked = pass_at_1(marked)
         p_base, per_base = pass_at_1(baseline)
         if not only_delta:
             add(
-                "pass_at_1",
+                measure,
                 p_marked,
-                boot("pass_at_1").mean_interval(per_marked),
+                boot(measure).mean_interval(per_marked),
                 "cluster_bootstrap",
                 len(per_marked),
             )
             add(
-                "pass_at_1_baseline",
+                f"{measure}_baseline",
                 p_base,
-                boot("pass_at_1_baseline").mean_interval(per_base),
+                boot(f"{measure}_baseline").mean_interval(per_base),
                 "cluster_bootstrap",
                 len(per_base),
             )
@@ -562,7 +667,7 @@ class MetricsStage(Stage):
         b = (baseline["status"] == "PASSED").astype(float).groupby(baseline["problem_key"]).mean()
         common = m.index.intersection(b.index)
         diff = (b[common].to_numpy(dtype=float) - m[common].to_numpy(dtype=float)) * 100.0
-        name = f"delta_pass_at_1_pp{suffix}"
+        name = f"delta_{measure}_pp{suffix}"
         add(
             name,
             float(diff.mean()) if diff.size else math.nan,
@@ -646,6 +751,8 @@ class MetricsStage(Stage):
             "pass1_excluded": self.pass1_excluded()
             if (cell.level, cell.language) == ("L3", "python")
             else {},
+            # I6: dataset della cella senza test e con rischio di contaminazione (ADR-016)
+            "contamination_risk": sorted(CONTAMINATED_L3) if cell.level == "L3" else [],
             "metrics": {r.name: r.value for r in rows},
         }
         manifest = ctx.make_manifest(
