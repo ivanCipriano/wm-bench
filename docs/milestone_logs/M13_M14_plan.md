@@ -28,28 +28,34 @@ Decisioni dell'utente già date (30 ottobre 2026): validità del codice (tree-si
 Stato: `[ ]` da fare, `[~]` in corso, `[x]` fatto (con il commit).
 
 ### Fase 0
-- [x] Verifiche delle fasi su L3
-- [ ] Risposte dell'utente alle domande della fase 0
+- [x] Verifiche delle fasi su L3 (`187cdb6`)
+- [x] Risposte dell'utente (30 ottobre 2026): L2 test per tutti; D27 esteso a L3; avanzamento con
+  uno script da rilanciare e un ciclo in tmux; divisione Ivan/Simone; rilevazione sempre su gpuq e
+  generazione anche su aiq, GPU nel manifest; Tests4Py sui 5 progetti più piccoli, solo pilota;
+  report in `$WMB/report/` e `report/`; smoke test di SWEET con congelamento finto su dati di
+  sviluppo, scritture solo nella cartella dello smoke test
 
 ### Fase 1: M13
-- [ ] Metriche di L3 (Pass@1 e ΔPass@1 su ClassEval, 91 classi; validità per CodeSearchNet e The Stack; TPR e AUROC per dataset con il flag I6; preservazione condizionata di ACW solo su ClassEval)
-- [ ] Ciclo di correttezza di PromptMark su L3 (secondo la risposta)
-- [ ] Lancio dei metodi su L3 (watermark, gemella di MCGMark, detect, execute con l'immagine L3, metrics), stato e report, stima dei costi
-- [ ] Fase 0 su L2 test (secondo la risposta)
-- [ ] T2.4 in k (attacco, griglia, lancio, curva)
-- [ ] Tests4Py: preparazione dei 5 progetti con la misura dei criteri di fattibilità
+- [x] Hardware (nodo, partizione, GPU) nel manifest; rilevazione sempre su gpuq; D27 esteso a L3 (`7fc63ae`)
+- [x] Metriche di L3 (`0ea4f6a`)
+- [x] `--after-ok` in `bench submit`, `WMB_WRITE_ROOT` (`8634d1b`)
+- [x] T2.4 in k (`T2.4k`, `649732d`)
+- [x] Script principale delle catene (`bench/chains.py`, `scripts/chains.py`: metodi su L2 test e L3 con gemella e immagine L3, T2.4k, baseline; stato; ciclo per tmux) (`3d8c67f`, `22bbc5c`)
+- [x] Pilota di Tests4Py (`bf333e9`, `1869224`)
+- [ ] Stima dei costi complessiva (fase 3, dopo lo smoke test)
 
 ### Fase 1: SWEET
-- [ ] Pilota dei tempi
-- [ ] Catena: estensione D31 → scelta su L1+L2 → congelamento → fase 0 sul test → T1–T4 (con D34) → M12 → L3
+- [x] Pilota dei tempi su gpuq e aiq (`265c4b1`)
+- [x] Catena: D31 (L1 e L2 dev) → calibrate → tune (`force`) → freeze → fase 0 su L1 test → T1–T4 con D34 → T3.1 → M12 → L2 test e L3 (in `bench/chains.py`)
 
 ### Fase 1: M14
-- [ ] Comando unico del report: tabelle CSV e LaTeX, figure (ROC, TPR contro intensità, curva in k), efficienza (patch 0003 di MCGMark e speed-up), esclusioni I6, annotazioni delle deviazioni
+- [x] Report dai soli artefatti (`bench/report.py`, `scripts/report.py`, `configs/report/annotations.yaml`) (`53eb043`)
 
 ### Fase 2
-- [ ] Smoke test in una cartella separata, comando di lancio e di lettura dell'esito
+- [x] Smoke test: `scripts/smoke_seed.py`, `scripts/smoke_test.sh` (`fe7b7ce`, `22bbc5c`)
+- [ ] Lancio dello smoke test sul cluster ed esito
 
 ### Fase 3
 - [ ] Stima complessiva (ore GPU e CPU per metodo e livello, giorni reali)
-- [ ] Script principale con dipendenze SLURM, riprendibile, divisione fra i due utenti
-- [ ] Comando di stato per catena
+- [x] Script principale con dipendenze SLURM, riprendibile, divisione fra i due utenti (`scripts/chains.py`)
+- [x] Comando di stato per catena (`python scripts/chains.py status`)
