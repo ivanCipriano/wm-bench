@@ -103,10 +103,36 @@ def lock(state_dir: Path, owner: str):  # type: ignore[no-untyped-def]
         path.unlink(missing_ok=True)
 
 
+def failed_logs(chains: Chains, reports: list[Report], lines: int = 15) -> None:
+    """Ultime righe dei log (submitit) dei job dei passi falliti."""
+    from bench.chains import load_state
+
+    states = {}
+    for owner in OWNERS:
+        states.update(load_state(chains.state_path(owner)))
+    base = load_experiment([*setup(chains.state_dir.parent.name == "smoke")[1],
+                            "stage=selftest"]).paths.artifacts  # fmt: skip
+    for r in reports:
+        if r.status != "FAILED":
+            continue
+        st = states.get(r.key)
+        jobs = [j for h in (st.history if st else []) for j in h.get("submitted", [])][-2:]
+        stage = chains.by_key[r.key].stage
+        for job in jobs:
+            for log in sorted((Path(base) / "_slurm" / stage / job).glob("*_log.err")):
+                tail = log.read_text(encoding="utf-8", errors="replace").splitlines()[-lines:]
+                sys.stdout.write(f"\n----- {r.key} job {job}: {log}\n")
+                sys.stdout.write("\n".join(tail) + "\n")
+
+
 def run_once(args: argparse.Namespace) -> list[Report]:
     chains = make(args)
-    with lock(chains.state_dir, args.owner):
-        return chains.run(args.owner, dry_run=args.dry_run)
+    owners = OWNERS if args.owner == "all" else (args.owner,)
+    reports: list[Report] = []
+    for owner in owners:  # "all": un solo account per tutte le catene (smoke test)
+        with lock(chains.state_dir, owner):
+            reports += chains.run(owner, dry_run=args.dry_run)
+    return reports
 
 
 def loop(args: argparse.Namespace) -> int:
@@ -145,7 +171,8 @@ def loop(args: argparse.Namespace) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("command", choices=["status", "run", "loop"])
-    parser.add_argument("--owner", choices=OWNERS)
+    parser.add_argument("--owner", choices=[*OWNERS, "all"])
+    parser.add_argument("--logs", action="store_true", help="status: log tails of failed steps")
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--with-acw", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -153,7 +180,11 @@ def main() -> int:
     parser.add_argument("--brief", action="store_true", help="status: one line per chain")
     args = parser.parse_args()
     if args.command == "status":
-        print_reports(make(args).status(), verbose=not args.brief)
+        chains = make(args)
+        reports = chains.status()
+        print_reports(reports, verbose=not args.brief)
+        if args.logs:
+            failed_logs(chains, reports)
         return 0
     if args.owner is None:
         parser.error(f"{args.command} needs --owner")
