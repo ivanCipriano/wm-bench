@@ -394,6 +394,37 @@ Log: `M11_attacks_t3_1_stone.txt` (report), `M11_t3_1_diag_stone.txt` (tempo e u
   più alto che in T2.2 (7,9% e 33,2% contro 1,7% e 1,8%), ma la causa non è stata misurata e può
   essere diversa: MCGMark per costruzione salta gli identificatori quando inserisce i bit.
 
+### 3.6 Esiti: MCGMark, ACW, PromptMark (L1 test, Python)
+
+Log: `M11_attacks_t3_1_mcgmark.txt`, `M11_attacks_t3_1_acw.txt`, `M11_attacks_t3_1_promptmark.txt`.
+Valori Qwen / DeepSeek.
+
+| | MCGMark | ACW | PromptMark |
+|---|---|---|---|
+| campioni cambiati dalla ri-marcatura | 95,7% / 95,3% | 19,3% / 18,6% | 14,8% / 71,9% |
+| TPR con k1 dopo T3.1 | 0,3% / 0,15% | 99,4% / 99,0% | 2,5% / 3,6% |
+| TPR con k2 | 9,7% / 5,1% | 100% / 100% | 2,3% / 4,8% |
+| nessuna delle due chiavi | 90,3% / 94,9% | 0% / 0% | 95,8% / 92,4% |
+| ΔPass@1 contro i marcati (pp) | 12,1 / 16,5 | 0,0 / 0,0 | 4,9 / 30,1 |
+| funzione d'ingresso persa sugli `APPLIED` | 7,9% / 33,2% | 0% / 0% | 38,7% / 56,2% |
+| FPR di test con k2 | 0,11% / 0% | 0% / 0% | 0,65% / 0,65% |
+
+- **MCGMark:** la ri-marcatura toglie k1 quasi del tutto (0,3% / 0,15%), ma anche k2 si rileva poco
+  (9,7% / 5,1%) perché la rilevazione fallisce (`FAILED`) sull'89–94% dei campioni riscritti; costo
+  funzionale alto (Pass@1 12–16,5 punti sotto i marcati). Soglie di k1 e k2 uguali (10, il punteggio
+  del messaggio).
+- **ACW: ri-marcatura inefficace.** k1 sopravvive sul 99% dei campioni (81% `UNCHANGED`): 21 delle
+  30 regole di k2 sono anche in k1 e sono idempotenti sul codice già marcato, quindi solo le regole
+  di k2 assenti da k1 cambiano il campione; per questo tutte le categorie per sovrapposizione cadono
+  nella classe 0. Nessun costo funzionale.
+- **PromptMark:** già senza attacco il TPR è basso (2,5% Qwen, 4,6% DeepSeek; AUROC 0,65 e 0,60,
+  `M10_test_promptmark.txt`; con i modelli da 7B PromptMark non inserisce il watermark, TODO 19):
+  dopo T3.1 TPR e AUROC con k1 restano quasi uguali (2,5% / 3,6%, AUROC 0,65 / 0,59) e con k2 sono
+  dello stesso ordine (2,3% / 4,8%), quindi T3.1 non dice nulla sulla rimozione. Con Qwen la
+  riscrittura lascia identico l'85% dei campioni; con DeepSeek cambia il 72% e ΔPass@1 contro i
+  marcati è 30 punti, soprattutto per la funzione d'ingresso rinominata (1.082 campioni, 56% degli
+  `APPLIED`), lo stesso fenomeno di STONE e MCGMark con DeepSeek (§3.5).
+
 ## 4. T4.1 minificazione e T4.2 bundling
 
 Decisioni dell'utente del 28 ottobre 2026. Codice in `src/bench/attacks/t4/minify.py`, griglie in
