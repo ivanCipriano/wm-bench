@@ -75,6 +75,11 @@ def _submit(args: Sequence[str]) -> int:
         default="",
         help="SLURM job IDs (separated by ':') to wait for before starting (afterany)",
     )
+    parser.add_argument(
+        "--after-ok",
+        action="store_true",
+        help="with --after: start only if those jobs end successfully (afterok, not afterany)",
+    )
     parser.add_argument("overrides", nargs="*", help="Hydra overrides; stage=<name> is required")
     ns = parser.parse_args(list(args))
 
@@ -96,6 +101,7 @@ def _submit(args: Sequence[str]) -> int:
             share=share,
             sub=sub,
             after=[j for j in ns.after.split(":") if j],
+            after_ok=ns.after_ok,
         )
     except BenchError as exc:
         sys.stderr.write(f"bench submit: {exc}\n")

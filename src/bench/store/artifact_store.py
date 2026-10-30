@@ -28,7 +28,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 from pydantic import BaseModel
 
-from bench.domain.errors import MissingInputError
+from bench.domain.errors import ConfigError, MissingInputError
 from bench.store.hashing import sha256_file
 from bench.store.manifest import Manifest
 from bench.store.refs import ArtifactRef
@@ -36,6 +36,10 @@ from bench.store.refs import ArtifactRef
 logger = logging.getLogger(__name__)
 
 M = TypeVar("M", bound=BaseModel)
+
+# Cartella fuori dalla quale non si scrive (smoke test, scripts/chains.py --smoke);
+# vuota: nessun limite.
+WRITE_ROOT_ENV = "WMB_WRITE_ROOT"
 
 
 def _fsync_dir(directory: Path) -> None:
@@ -115,10 +119,26 @@ class ArtifactStore:
         return self.path_of(ref)
 
     # ------------------------------------------------------------------ scrittura
+    def _check_write(self, path: Path) -> None:
+        ArtifactStore._check_write_static(path)
+
+    @staticmethod
+    def _check_write_static(path: Path) -> None:
+        """Con ``WMB_WRITE_ROOT`` (smoke test) si scrive solo sotto quella cartella.
+
+        Raises:
+            ConfigError: se ``path`` è fuori da ``WMB_WRITE_ROOT`` (gli artefatti veri non si
+                toccano: decisione dell'utente del 30 ottobre 2026).
+        """
+        allowed = os.environ.get(WRITE_ROOT_ENV, "").strip()
+        if allowed and not Path(path).resolve().is_relative_to(Path(allowed).resolve()):
+            raise ConfigError(f"refusing to write {path}: outside {WRITE_ROOT_ENV}={allowed}")
+
     def _atomic_write(
         self, ref: ArtifactRef, writer: Callable[[Path], None], manifest: Manifest
     ) -> Manifest:
         data_path = self.path_of(ref)
+        self._check_write(data_path)
         manifest_path = self.manifest_of(ref)
         data_path.parent.mkdir(parents=True, exist_ok=True)
         manifest_path.unlink(missing_ok=True)
@@ -162,6 +182,7 @@ class ArtifactStore:
 
     @staticmethod
     def _write_text_atomic(path: Path, text: str) -> None:
+        ArtifactStore._check_write_static(path)
         tmp = path.with_name(f".{path.name}.tmp-{uuid.uuid4().hex}")
         try:
             with open(tmp, "w", encoding="utf-8", newline="\n") as handle:

@@ -33,6 +33,7 @@ from bench.config.schema import ClusterProfile, ExperimentConfig, ResourceRules
 from bench.domain.errors import ConfigError
 from bench.pipeline.stage import Cell, CellPlanner
 from bench.registry import STAGES
+from bench.store.artifact_store import WRITE_ROOT_ENV
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +62,8 @@ def job_environment(cfg: ExperimentConfig) -> dict[str, str]:
         "HF_DATASETS_OFFLINE": "1",
         "TOKENIZERS_PARALLELISM": "false",
         "PYTHONHASHSEED": "0",
+        # smoke test: lo store dei job si rifiuta di scrivere fuori dalla cartella dello smoke test
+        **({WRITE_ROOT_ENV: os.environ[WRITE_ROOT_ENV]} if os.environ.get(WRITE_ROOT_ENV) else {}),
     }
 
 
@@ -117,6 +120,7 @@ def executor_parameters(
     stage: str,
     after: str | None = None,
     name: str | None = None,
+    after_mode: str = "afterany",
 ) -> dict[str, Any]:
     """Parametri di ``submitit.AutoExecutor.update_parameters`` per un profilo.
 
@@ -124,7 +128,8 @@ def executor_parameters(
         cfg: configurazione validata.
         profile: profilo SLURM.
         stage: nome della fase (per il nome del job).
-        after: job da attendere prima di partire (``--dependency=afterany``).
+        after: job da attendere prima di partire (``--dependency=<after_mode>``).
+        after_mode: ``afterany`` (default) o ``afterok`` (solo se quei job finiscono bene).
         name: nome del job (default ``wmb-<fase>``).
     """
     if profile.kind != "slurm" or profile.timeout_min is None:
@@ -152,7 +157,7 @@ def executor_parameters(
     if profile.gres:
         params["slurm_gres"] = profile.gres
     if after:
-        params["slurm_dependency"] = f"afterany:{after}"
+        params["slurm_dependency"] = f"{after_mode}:{after}"
     # Nodi da evitare (es. un nodo GPU guasto: "No CUDA GPUs are available"), lista SLURM
     # come ``gnode13`` o ``gnode[12-13]``.
     exclude = os.environ.get(EXCLUDE_ENV, "").strip()
@@ -411,6 +416,7 @@ def submit(
     share: tuple[int, int] = (1, 1),
     sub: tuple[int, int] = (1, 1),
     after: Sequence[str] = (),
+    after_ok: bool = False,
 ) -> list[SubmittedJob]:
     """Invia ``n_jobs`` job sequenziali per profilo, con celle disgiunte.
 
@@ -457,9 +463,14 @@ def submit(
             mine = split_into_lanes(mine, sub_weights, sub[1], keep_empty=True)[sub[0] - 1]
         weights = [all_weights[group.cells.index(c)] for c in mine]
         wait_for = ":".join(previous) or None
+        # ``after_ok`` vale per i job esterni (catene, scripts/chains.py); fra i gruppi della fase
+        # resta ``afterany``.
+        mode = "afterok" if after_ok and previous == list(after) else "afterany"
         current: list[str] = []
         for lane in split_into_lanes(mine, weights, n_jobs):
-            params = executor_parameters(cfg, group.profile, stage, after=wait_for, name=name)
+            params = executor_parameters(
+                cfg, group.profile, stage, after=wait_for, name=name, after_mode=mode
+            )
             cells = [c.key() for c in lane]
             if dry_run:
                 jobs.append(SubmittedJob("dry-run", group.profile.name, cells, params))

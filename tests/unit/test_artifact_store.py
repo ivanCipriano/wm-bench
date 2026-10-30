@@ -163,3 +163,20 @@ def test_mark_superseded_keeps_data(store: ArtifactStore, df: pd.DataFrame) -> N
     assert store.verify(REF)
     with pytest.raises(MissingInputError):
         store.mark_superseded(ArtifactRef.of("baseline", "baseline/x/none.parquet"), {})
+
+
+def test_write_root_guard(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Con WMB_WRITE_ROOT lo store scrive solo sotto quella cartella (smoke test)."""
+    import pandas as pd
+
+    from bench.domain.errors import ConfigError
+    from bench.store.artifact_store import WRITE_ROOT_ENV, ArtifactStore
+    from bench.store.manifest import Manifest
+    from bench.store.refs import ArtifactRef
+
+    ref = ArtifactRef.of("x", "x/t.parquet")
+    manifest = Manifest.model_construct()
+    monkeypatch.setenv(WRITE_ROOT_ENV, str(tmp_path / "smoke"))
+    with pytest.raises(ConfigError, match="outside"):
+        ArtifactStore(tmp_path / "real").write_table(ref, pd.DataFrame({"a": [1]}), manifest)
+    assert not (tmp_path / "real" / "x").exists()
