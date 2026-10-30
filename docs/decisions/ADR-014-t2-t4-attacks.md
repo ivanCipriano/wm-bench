@@ -210,9 +210,8 @@ Fissata ora, prima di vedere i dati (TODO 32 in `docs/cluster_info.md`):
 - ClassEval: resta la classe con i soli k metodi scelti;
 - prima del lancio, stima dei costi della curva.
 
-Due punti da confermare con l'utente prima dell'implementazione (lettura letterale provvisoria:
-contano come le altre funzioni): se `main` dei programmi CodeNet e `__init__` delle classi di
-ClassEval rientrano fra le funzioni estraibili.
+**Deciso dall'utente il 30 ottobre 2026:** `main` dei programmi CodeNet e `__init__` delle classi di
+ClassEval si contano come tutte le altre funzioni, senza trattamenti speciali.
 
 ## 3. T3.1 ri-marcatura con una chiave diversa
 

@@ -186,6 +186,12 @@ e 1.165 negativi di CodeSearchNet Python su circa 22.000 (5%) cambiano; conteggi
 delle righe ed esempi dell'anteprima restano identici. Nota: tree-sitter
 accetta l'indentazione iniziale senza nodi ERROR; il problema lo vede solo `py_compile`.
 
+**Gerarchia delle misure di validità** (decisione dell'utente del 30 ottobre 2026, che completa
+quella del 29): la validità con tree-sitter è la **misura principale in tutti i linguaggi**;
+`py_compile` (Python) e `node --check` (JavaScript) si riportano come **controlli aggiuntivi
+affidabili**, perché verificano solo la sintassi; `javac` e `g++ -fsyntax-only` **solo come
+informazione**, perché falliscono su codice staccato dal progetto.
+
 **Misura funzionale di CodeSearchNet e The Stack** (decisione dell'utente del 29 ottobre 2026): la
 misura di riferimento è la **validità sintattica con tree-sitter** (`tree_sitter_valid`: nessun
 nodo ERROR, con gli involucri delle funzioni isolate di ADR-004, Python dopo `dedent`); l'executor
