@@ -1,0 +1,11 @@
+##### SWEET timing pilot: qwen25_coder_7b, java, L2 dev
+
+## aiq (NVIDIA H100 80GB HBM3, node ainode01)
+  generation: 5 problems, 30 samples, wall 145.7 s, worker 130.3 s -> 26.1 s/problem
+  detection: 50 samples, wall 241.9 s, worker 227.9 s -> 4.558 s/sample
+
+## gpuq (NVIDIA A100-SXM4-80GB, node gnode10)
+  generation: 5 problems, 30 samples, wall 140.4 s, worker 102.1 s -> 20.4 s/problem
+  detection: 50 samples, wall 294.8 s, worker 218.6 s -> 4.372 s/sample
+
+reference (M13_l3_cost_2.txt, sweep medians): generation 44.2 s/problem, detection 16.409 s/sample (L2 dev java); minima 12.960 and 1.016
