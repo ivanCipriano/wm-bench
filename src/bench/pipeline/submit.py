@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Any
 
 from bench.config.resources import ResourceClass, ResourcePolicy
-from bench.config.schema import ClusterProfile, ExperimentConfig
+from bench.config.schema import ClusterProfile, ExperimentConfig, ResourceRules
 from bench.domain.errors import ConfigError
 from bench.pipeline.stage import Cell, CellPlanner
 from bench.registry import STAGES
@@ -40,6 +40,9 @@ logger = logging.getLogger(__name__)
 MAX_REQUEUES = 30
 _SQUEUE_FIELDS = 4
 EXCLUDE_ENV = "WMB_EXCLUDE_NODES"  # nodi SLURM da escludere (--exclude), opzionale
+# GPU dei job GPU di un lancio (opzionale): a100 = gpuq (default), h100 = aiq (cluster_info §4).
+GPU_ENV = "WMB_GPU"
+GPU_PROFILES = {"a100": "slurm_gpu", "h100": "slurm_gpu_h100"}
 
 
 def job_environment(cfg: ExperimentConfig) -> dict[str, str]:
@@ -65,6 +68,24 @@ class JobGroup:
     cells: list[Cell] = field(default_factory=list)
 
 
+def gpu_rules(cfg: ExperimentConfig) -> ResourceRules:
+    """Regole delle risorse con il profilo GPU scelto da ``WMB_GPU`` (``a100`` o ``h100``).
+
+    Una cella va tutta su un tipo di GPU: con lo stesso seme A100 e H100 non danno campioni
+    identici (calcoli in bf16), e i tempi non si confrontano fra i due tipi.
+
+    Raises:
+        ConfigError: se il valore di ``WMB_GPU`` non è fra quelli previsti.
+    """
+    choice = os.environ.get(GPU_ENV, "").strip().lower()
+    if not choice:
+        return cfg.resources
+    if choice not in GPU_PROFILES:
+        raise ConfigError(f"{GPU_ENV}={choice!r}: expected one of {sorted(GPU_PROFILES)}")
+    profiles = {**cfg.resources.profiles, "GPU_NVIDIA": GPU_PROFILES[choice]}
+    return cfg.resources.model_copy(update={"profiles": profiles})
+
+
 def plan_submission(
     cfg: ExperimentConfig, stage: str, profiles: dict[str, ClusterProfile]
 ) -> list[JobGroup]:
@@ -74,7 +95,7 @@ def plan_submission(
         ConfigError: se la fase è ignota o un profilo non è valido.
     """
     stage_cls = STAGES.get(stage)
-    policy = ResourcePolicy(cfg.resources, profiles, cfg.slurm)
+    policy = ResourcePolicy(gpu_rules(cfg), profiles, cfg.slurm)
     groups: dict[ResourceClass, JobGroup] = {}
     for cell in CellPlanner(cfg).cells_for(stage_cls):
         resource = policy.resource_for(stage, method=cell.method, attack=cell.attack_id)

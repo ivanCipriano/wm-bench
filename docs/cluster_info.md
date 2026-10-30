@@ -91,6 +91,7 @@ Installazioni editable negli ambienti (da non rompere: le cartelle in `deps/` no
 | `fatq` | nessuna | fnode[01-05] | **Non utilizzabile** con l'account `did_tesi_nlp_330` salvo verifica contraria: l'account non ha una QoS per `fatq` (vedi sotto) |
 
 - Nodi guasti: il 14 ottobre 2026 tutti i job di `gpuq` finiti su `gnode13` e `gnode14` sono falliti con `RuntimeError: No CUDA GPUs are available` (GPU assegnata ma non visibile). `bench submit` esclude i nodi elencati in `WMB_EXCLUDE_NODES` (`--exclude` di SLURM), es. `export WMB_EXCLUDE_NODES=gnode13,gnode14` prima di lanciare gli script `submit_hpo_*.sh`.
+- Scelta della GPU (decisione dell'utente del 30 ottobre 2026): `WMB_GPU=h100` davanti a uno script di lancio manda su `aiq` (H100) tutti i job GPU di quel lancio; senza, o con `WMB_GPU=a100`, vanno su `gpuq` (A100). I job CPU restano su `defq`. Una cella va tutta su un tipo di GPU (con lo stesso seme A100 e H100 non danno campioni identici) e i tempi si riportano per tipo di GPU.
 - Account da usare: **`did_tesi_nlp_330`**. L'utente ha anche altre associazioni (`did_generative_ai_336`, `did_tesi_di_laurea_437`, `usershpc`) che **non** vanno usate per questo progetto.
 - QoS dell'account (da `sacctmgr -P`): `did_tesi_nlp_330_aiq_qos`, `did_tesi_nlp_330_defq_qos`, `did_tesi_nlp_330_gpuq_qos`, `did_tesi_nlp_330_thinq_qos`, `normal`.
 

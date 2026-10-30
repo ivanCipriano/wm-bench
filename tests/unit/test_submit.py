@@ -32,6 +32,27 @@ def test_generate_baseline_goes_to_gpuq(cfg: ExperimentConfig) -> None:
     assert len(group.cells) == 2 * 4 * 2  # modelli x linguaggi x parti
 
 
+def test_wmb_gpu_moves_gpu_jobs_to_aiq(
+    cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """``WMB_GPU=h100``: i job GPU vanno su aiq (H100); i job CPU restano su defq."""
+    import bench.pipeline.stages  # noqa: F401
+
+    c = rebuild(cfg, levels=["L1"], splits=["dev"])
+    monkeypatch.setenv("WMB_GPU", "h100")
+    (gpu,) = plan_submission(c, "generate_baseline", PROFILES)
+    assert gpu.profile.partition == "aiq" and gpu.profile.qos == "did_tesi_nlp_330_aiq_qos"
+    params = executor_parameters(c, gpu.profile, "generate_baseline")
+    assert params["slurm_partition"] == "aiq" and params["slurm_gres"] == "gpu:1"
+    (cpu,) = plan_submission(c, "execute", PROFILES)
+    assert cpu.profile.partition == "defq"
+    monkeypatch.setenv("WMB_GPU", "a100")
+    assert plan_submission(c, "generate_baseline", PROFILES)[0].profile.partition == "gpuq"
+    monkeypatch.setenv("WMB_GPU", "v100")
+    with pytest.raises(ConfigError, match="WMB_GPU"):
+        plan_submission(c, "generate_baseline", PROFILES)
+
+
 def test_executor_parameters(cfg: ExperimentConfig) -> None:
     params = executor_parameters(cfg, PROFILES["slurm_gpu"], "generate_baseline")
     assert params["slurm_partition"] == "gpuq"
