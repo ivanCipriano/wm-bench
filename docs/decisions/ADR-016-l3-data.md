@@ -180,7 +180,10 @@ l'indentazione comune con `textwrap.dedent`, allo stesso modo per baseline, meto
 (`dedent_python`): nel loader (prompt, canoniche e negativi; conteggio `python_dedented` nel
 manifest), nell'estrazione del codice (`DEDENT_DATASETS`, prima della regola che antepone il prompt)
 e, a difesa, nell'executor `syntax`. Senza, un metodo con tutte le righe indentate dà
-"unexpected indent" a `py_compile` anche se corretto (test `test_l3_syntax.py`). Nota: tree-sitter
+"unexpected indent" a `py_compile` anche se corretto (test `test_l3_syntax.py`). Effetto sui dati
+(`M13_l3_prompts_2.txt`, `prepare_data` rifatto con `FORCE=1`): 1.166 funzioni del pool dei prompt
+e 1.165 negativi di CodeSearchNet Python su circa 22.000 (5%) cambiano; conteggi, statistiche
+delle righe ed esempi dell'anteprima restano identici. Nota: tree-sitter
 accetta l'indentazione iniziale senza nodi ERROR; il problema lo vede solo `py_compile`.
 
 **Misura funzionale di CodeSearchNet e The Stack** (decisione dell'utente del 29 ottobre 2026): la

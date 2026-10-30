@@ -91,6 +91,12 @@ def execution_per_sample(store: ArtifactStore, model: str, lang: str) -> float |
 
 def worker_rate(paths: list[Path], per: str) -> float | None:
     """Mediana fra le configurazioni dei secondi per problema (``per="item"``) o per campione."""
+    rates = worker_rates(paths, per)
+    return statistics.median(rates) if rates else None
+
+
+def worker_rates(paths: list[Path], per: str) -> list[float]:
+    """Secondi per problema o per campione di ciascuna configurazione."""
     rates = []
     for path in paths:
         seconds, items, lines = 0.0, set(), 0
@@ -105,7 +111,7 @@ def worker_rate(paths: list[Path], per: str) -> float | None:
         count = len(items) if per == "item" else lines
         if count:
             rates.append(seconds / count)
-    return statistics.median(rates) if rates else None
+    return rates
 
 
 def main() -> int:
@@ -175,6 +181,13 @@ def sweet_cost(runs: Path, counts: dict[str, Counter[str]], negatives: dict[str,
                     f"*/neg_human/L2_{lang}_dev/results.jsonl")),
                 "sample",
             )  # fmt: skip
+            # Le funzioni di L3 somigliano più a quelle di L1 che ai programmi di CodeNet: la
+            # rilevazione sui negativi di L1 dev dà il limite inferiore.
+            det_l1 = worker_rate(
+                sorted((runs / "detect" / "sweet" / model).glob(
+                    f"*/neg_human/L1_{lang}_dev/results.jsonl")),
+                "sample",
+            )  # fmt: skip
             n_long = counts[lang].get(LONG, 0)
             n_all = sum(counts[lang].values())
             if gen is None or det is None:
@@ -183,15 +196,55 @@ def sweet_cost(runs: Path, counts: dict[str, Counter[str]], negatives: dict[str,
             low, high = gen * n_all, gen * (n_all + n_long)
             subjects = {"positives": N * n_all, "neg_llm": N * n_all, "neg_human": negatives[lang]}
             det_s = det * sum(subjects.values())
+            det_low = (det_l1 if det_l1 is not None else det) * sum(subjects.values())
             sweet["gen_low"] += low
             sweet["gen_high"] += high
             sweet["det"] += det_s
+            sweet["det_low"] += det_low
             parts = ", ".join(f"{k} {v}" for k, v in subjects.items())
             w(f"  {model} {lang}: generazione {gen:.1f} s/problema -> {span(low, high)}; "
               f"rilevazione {det:.3f} s/campione x {sum(subjects.values())} ({parts}) "
-              f"-> {h(det_s)}\n")  # fmt: skip
+              f"-> {h(det_s)}; con i tempi di L1 dev {det_l1 or 0:.3f} s/campione -> "
+              f"{h(det_low)}\n")  # fmt: skip
     w(f"  TOTALE SWEET L3: generazione {span(sweet['gen_low'], sweet['gen_high'])} GPU; "
-      f"rilevazione {h(sweet['det'])} GPU\n")  # fmt: skip
+      f"rilevazione {h(sweet['det_low'])} (tempi di L1) – {h(sweet['det'])} (tempi di L2) "
+      f"GPU\n")  # fmt: skip
+    sweet_diagnosis(runs)
+
+
+def sweet_diagnosis(runs: Path) -> None:
+    """Dispersione dei tempi di SWEET fra le configurazioni dello sweep (per capire la differenza
+    fra i modelli) e righe dei log dei worker di rilevazione che nominano il dispositivo."""
+    w = sys.stdout.write
+    w("\n##### SWEET: s per problema o campione fra le configurazioni (min / mediana / max, n)\n")
+    phases = (
+        ("generazione L2 dev", "watermark/sweet/{m}/*/L2_{lang}_dev/results.jsonl", "item"),
+        (
+            "rilevazione L1 dev",
+            "detect/sweet/{m}/*/neg_human/L1_{lang}_dev/results.jsonl",
+            "sample",
+        ),
+        (
+            "rilevazione L2 dev",
+            "detect/sweet/{m}/*/neg_human/L2_{lang}_dev/results.jsonl",
+            "sample",
+        ),
+    )
+    for model in MODELS:
+        for phase, pattern, per in phases:
+            for lang in LANGUAGES:
+                rates = sorted(
+                    worker_rates(sorted(runs.glob(pattern.format(m=model, lang=lang))), per)
+                )
+                if rates:
+                    w(f"  {model} {lang} {phase}: {rates[0]:.3f} / {statistics.median(rates):.3f}"
+                      f" / {rates[-1]:.3f} ({len(rates)})\n")  # fmt: skip
+        for log in sorted(
+            (runs / "detect" / "sweet" / model).glob("*/neg_human/L2_java_dev/worker.log")
+        )[:1]:
+            lines = log.read_text(encoding="utf-8", errors="replace").splitlines()
+            found = [x for x in lines if any(k in x.lower() for k in ("cuda", "device", "gpu"))]
+            w(f"  {model} worker.log: {found[:3]}\n")
 
 
 if __name__ == "__main__":
