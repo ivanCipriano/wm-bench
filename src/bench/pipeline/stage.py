@@ -2,8 +2,13 @@
 
 from __future__ import annotations
 
+import functools
 import itertools
+import os
 import re
+import shutil
+import socket
+import subprocess
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass, fields, replace
@@ -19,6 +24,30 @@ from bench.store.manifest import Manifest, ProvenanceCollector
 from bench.store.refs import ArtifactRef
 
 _UNSAFE = re.compile(r"[^A-Za-z0-9._=-]+")
+
+
+@functools.lru_cache(maxsize=1)
+def hardware() -> dict[str, str | None]:
+    """Nodo, partizione SLURM e GPU del processo (decisione dell'utente del 30 ottobre 2026: il
+    tipo di GPU va nel manifest di ogni cella, perché A100 e H100 non danno numeri identici)."""
+    gpu = None
+    if os.environ.get("CUDA_VISIBLE_DEVICES") not in (None, "", "-1") and shutil.which(
+        "nvidia-smi"
+    ):
+        try:
+            out = subprocess.run(
+                ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
+                capture_output=True, text=True, timeout=20, check=False,
+            )  # fmt: skip
+            gpu = out.stdout.strip().splitlines()[0] if out.stdout.strip() else None
+        except (OSError, subprocess.SubprocessError):
+            gpu = None
+    return {
+        "node": socket.gethostname(),
+        "slurm_partition": os.environ.get("SLURM_JOB_PARTITION"),
+        "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
+        "gpu": gpu,
+    }
 
 
 @dataclass(frozen=True)
@@ -99,7 +128,7 @@ class StageContext:
             config=config_dump,
             config_sha256=sha256_json(config_dump),
             config_hash=config_hash,
-            extra=dict(extra or {}),
+            extra={"hardware": hardware(), **(extra or {})},
             global_seed=self.config.global_seed,
             provenance=self.provenance.provenance,
             inputs=input_hashes,

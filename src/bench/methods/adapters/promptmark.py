@@ -27,8 +27,10 @@ G_MIN, G_MAX = 8, 18
 CANDIDATES = 18  # pool delle iniziali più frequenti (``top_n`` del codice)
 # Dataset su cui il ciclo di correttezza è spento (``test_list`` vuota, D27): su CodeNet gli
 # esempi del testo coincidono con l'unico caso di I/O di Pass@1 e il codice del metodo esegue solo
-# asserzioni su funzioni.
-NO_CORRECTNESS_LOOP = frozenset({"codenet"})
+# asserzioni su funzioni. Esteso a tutto L3 (decisione dell'utente del 30 ottobre 2026):
+# CodeSearchNet e The Stack non hanno esempi eseguibili, gli esempi di ClassEval sono sequenze con
+# stato e possono coincidere con i test ufficiali.
+NO_CORRECTNESS_LOOP = frozenset({"codenet", "classeval", "codesearchnet", "thestack_cpp"})
 
 
 def replay_selection(

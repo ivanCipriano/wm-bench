@@ -43,6 +43,11 @@ EXCLUDE_ENV = "WMB_EXCLUDE_NODES"  # nodi SLURM da escludere (--exclude), opzion
 # GPU dei job GPU di un lancio (opzionale): a100 = gpuq (default), h100 = aiq (cluster_info §4).
 GPU_ENV = "WMB_GPU"
 GPU_PROFILES = {"a100": "slurm_gpu", "h100": "slurm_gpu_h100"}
+# Rilevazione sempre sulla GPU di calibrazione delle soglie (A100, gpuq), qualunque sia WMB_GPU:
+# in bf16 i punteggi possono variare leggermente fra A100 e H100 (decisione dell'utente del
+# 30 ottobre 2026; la regola è stata chiesta per SWEET e vale per tutti i metodi con rilevazione
+# su GPU, tutti calibrati su gpuq).
+DETECT_STAGES = frozenset({"detect", "detect_k2", "detect_attack_control"})
 
 
 def job_environment(cfg: ExperimentConfig) -> dict[str, str]:
@@ -95,7 +100,8 @@ def plan_submission(
         ConfigError: se la fase è ignota o un profilo non è valido.
     """
     stage_cls = STAGES.get(stage)
-    policy = ResourcePolicy(gpu_rules(cfg), profiles, cfg.slurm)
+    rules = cfg.resources if stage in DETECT_STAGES else gpu_rules(cfg)
+    policy = ResourcePolicy(rules, profiles, cfg.slurm)
     groups: dict[ResourceClass, JobGroup] = {}
     for cell in CellPlanner(cfg).cells_for(stage_cls):
         resource = policy.resource_for(stage, method=cell.method, attack=cell.attack_id)

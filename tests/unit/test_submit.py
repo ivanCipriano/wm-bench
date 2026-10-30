@@ -46,6 +46,10 @@ def test_wmb_gpu_moves_gpu_jobs_to_aiq(
     assert params["slurm_partition"] == "aiq" and params["slurm_gres"] == "gpu:1"
     (cpu,) = plan_submission(c, "execute", PROFILES)
     assert cpu.profile.partition == "defq"
+    # rilevazione: sempre su gpuq (soglie calibrate su A100)
+    sweet = rebuild(c, methods=["sweet"])
+    (det,) = plan_submission(sweet, "detect", PROFILES)
+    assert det.profile.partition == "gpuq"
     monkeypatch.setenv("WMB_GPU", "a100")
     assert plan_submission(c, "generate_baseline", PROFILES)[0].profile.partition == "gpuq"
     monkeypatch.setenv("WMB_GPU", "v100")
