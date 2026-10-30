@@ -59,3 +59,22 @@ Stato: `[ ]` da fare, `[~]` in corso, `[x]` fatto (con il commit).
 - [ ] Stima complessiva (ore GPU e CPU per metodo e livello, giorni reali)
 - [x] Script principale con dipendenze SLURM, riprendibile, divisione fra i due utenti (`scripts/chains.py`)
 - [x] Comando di stato per catena (`python scripts/chains.py status`)
+
+## Esito del pilota dei tempi di SWEET (`M13_sweet_timing.txt`, 30 ottobre 2026)
+
+Qwen, L2 dev Java, configurazione scelta su L1+L2, stesso nodo per tutto il job:
+
+| | A100 (gpuq, gnode10) | H100 (aiq, ainode01) |
+|---|---|---|
+| generazione (s per problema, 6 campioni) | 20,4 | 26,1 |
+| rilevazione (s per campione) | 4,37 | 4,56 |
+
+- Su un nodo fisso i tempi stanno fra il minimo (1,0 s) e la mediana (16,4 s) dello sweep: la
+  dispersione dello sweep veniva in buona parte dalle condizioni dei job (nodi, carico).
+- La lentezza di Qwen rispetto a DeepSeek (0,27 s per campione sugli stessi dati) resta anche su un
+  nodo fisso: è propria di SWEET con Qwen, non un effetto dei nodi.
+- H100 non è più veloce di A100 per SWEET (la generazione è anzi più lenta): `aiq` serve solo
+  quando la coda di `gpuq` è più lunga; la rilevazione resta comunque su `gpuq`.
+- Stima della rilevazione di SWEET con Qwen su L3 (89.162 campioni): al più circa 110 h di GPU con i
+  tempi di L2 Java (programmi lunghi), verosimilmente 30–40 h con funzioni della lunghezza di L3;
+  DeepSeek circa 5 h. Generazione con Qwen circa 12 h. Nessuna riduzione necessaria.
