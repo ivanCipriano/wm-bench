@@ -1,0 +1,8 @@
+# T2.4 in k funzioni (ADR-014 §2.3, TODO 32; decisioni dell'utente del 26 e 30 ottobre 2026): si
+# tengono k funzioni del file estratte con l'RNG dell'attacco e si tolgono le altre (main e __init__
+# comprese come le altre). Solo codice a livello di file con almeno 2 funzioni: ClassEval (L3) e
+# programmi CodeNet di L2 test; gli altri campioni sono NOT_APPLICABLE. k = 1..10 (10 = massimo di
+# funzioni di una classe di ClassEval); con k >= n il campione resta com'è (UNCHANGED).
+attack_id: T2.4k
+space:
+  k: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
