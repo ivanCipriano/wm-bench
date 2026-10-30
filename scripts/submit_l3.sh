@@ -11,7 +11,10 @@
 #
 # Esecuzione con l'immagine sandbox_l3 (bash scripts/build_sandbox.sh l3): test di ClassEval;
 # CodeSearchNet e The Stack: validità con tree-sitter (riferimento) e compilazione (informativa).
-# Anteprima dei prompt: python scripts/preview_l3_prompts.py. Variabile opzionale: JOBS.
+# Anteprima dei prompt: python scripts/preview_l3_prompts.py. Variabili opzionali: JOBS; MODELS
+# per dividere baseline ed esecuzione fra due utenti (ognuno ha i suoi 10 posti), per esempio
+# MODELS=qwen25_coder_7b per uno e MODELS=deepseek_coder_6p7b per l'altro: mai lo stesso modello
+# da due utenti insieme.
 set -euo pipefail
 
 STEP="${1:?usage: submit_l3.sh data|canonical|baseline|execute [--dry-run]}"
@@ -29,6 +32,7 @@ FREE=$((MAX_JOBS - ACTIVE))
 
 DEFAULT_JOBS=$(( FREE > 0 ? FREE : 1 ))
 LEVEL=("levels=[L3]" "splits=[test]")
+if [ -n "${MODELS:-}" ]; then LEVEL+=("models=[$MODELS]"); fi
 IMAGE=("execution.image_sif=$WMB/containers/sandbox_l3.sif"
        "execution.image_dir=$WMB/containers/sandbox_l3_dir")
 case "$STEP" in
