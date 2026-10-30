@@ -597,8 +597,12 @@ class Chains:
 
     def __init__(self, steps: Sequence[Step], done: DoneCheck, slurm: Slurm, state_dir: Path,
                  extra: Sequence[str] = (), with_acw: bool = False,
-                 skip: Callable[[Step], bool] | None = None) -> None:  # fmt: skip
+                 skip: Callable[[Step], bool] | None = None,
+                 runner: str | None = None) -> None:  # fmt: skip
         self.steps = list(steps)
+        # chi lancia (account): ogni account ha il suo file di stato per proprietario, così due
+        # account possono avanzare catene dello stesso proprietario (con --only disgiunti)
+        self.runner = re.sub(r"[^A-Za-z0-9_.-]", "_", runner or os.environ.get("USER", "") or "me")
         self.skip = skip
         self.by_key = {s.key: s for s in steps}
         self.done = done
@@ -607,9 +611,10 @@ class Chains:
         self.extra = tuple(extra)
         self.with_acw = with_acw
         self._done: dict[str, bool | None] = {}
+        self._others: dict[str, StepState] = {}  # stati degli altri account (giro corrente)
 
     def state_path(self, owner: str) -> Path:
-        return self.state_dir / f"state_{owner}.json"
+        return self.state_dir / f"state_{owner}__{self.runner}.json"
 
     def is_done(self, step: Step, state: dict[str, StepState]) -> bool | None:
         if step.key not in self._done:
@@ -622,10 +627,24 @@ class Chains:
                 self._done[step.key] = self.done(step)
         return self._done[step.key]
 
-    def _all_state(self) -> dict[str, StepState]:
+    def _all_state(self, exclude: Path | None = None) -> dict[str, StepState]:
+        """Stati di tutti gli account (``state_*.json``, anche quelli senza account del primo
+        formato), uniti per passo: job e storia di tutti, successo se uno è riuscito."""
         merged: dict[str, StepState] = {}
-        for owner in OWNERS:
-            merged.update(load_state(self.state_path(owner)))
+        for path in sorted(self.state_dir.glob("state_*.json")):
+            if exclude is not None and path == exclude:
+                continue
+            for key, st in load_state(path).items():
+                if key not in merged:
+                    merged[key] = StepState(list(st.jobs), st.gpu, st.attempts, st.succeeded,
+                                            list(st.history))  # fmt: skip
+                    continue
+                m = merged[key]
+                m.jobs += [j for j in st.jobs if j not in m.jobs]
+                m.gpu = m.gpu or st.gpu
+                m.attempts = max(m.attempts, st.attempts)
+                m.succeeded = m.succeeded or st.succeeded
+                m.history += st.history
         return merged
 
     def _refresh(self, step: Step, st: StepState) -> tuple[str, str]:
@@ -651,21 +670,27 @@ class Chains:
         st.jobs = []
         return ("FAILED", ",".join(bad)) if bad else ("ENDED", "")
 
-    def run(self, owner: str, dry_run: bool = False) -> list[Report]:
-        """Un giro: aggiorna lo stato, cancella le attese impossibili, invia i passi pronti."""
+    def run(self, owner: str, dry_run: bool = False, only: Sequence[str] = ()) -> list[Report]:
+        """Un giro: aggiorna lo stato, cancella le attese impossibili, invia i passi pronti.
+
+        ``only``: solo i passi il cui nome inizia con uno dei prefissi (es. ``promptmark/``), per
+        dividere le catene di un proprietario fra due account senza sovrapposizioni.
+        """
         path = self.state_path(owner)
         state = load_state(path)
-        everyone = {**self._all_state(), **state}
+        self._others = self._all_state(exclude=path)
+        everyone = {**self._others, **state}
         free = MAX_JOBS - self.slurm.queued()
         reports: list[Report] = []
         for step in self.steps:
-            if step.owner != owner:
+            if step.owner != owner or (only and not step.key.startswith(tuple(only))):
                 continue
             st = state.setdefault(step.key, StepState())
             reports.append(self._advance(step, st, everyone, free, dry_run))
             if reports[-1].status == "SUBMITTED":
                 free -= len(st.jobs)
-            everyone[step.key] = st
+            if st.jobs or step.key not in everyone:  # i job dell'altro account restano visibili
+                everyone[step.key] = st
         if not dry_run:
             save_state(path, state)
         return reports
@@ -678,6 +703,9 @@ class Chains:
         job_state, info = self._refresh(step, st) if not dry_run else ("NONE", "")
         if job_state == "ACTIVE":
             return Report(step.key, step.owner, "RUNNING", info)
+        other = self._others.get(step.key)
+        if other is not None and other.jobs and self.slurm.active(other.jobs):
+            return Report(step.key, step.owner, "RUNNING", "jobs of another account")
         done = self.is_done(step, everyone)
         if done:
             return Report(step.key, step.owner, "DONE")
@@ -686,10 +714,9 @@ class Chains:
             return Report(step.key, step.owner, "FAILED", f"{st.attempts} attempts; last: {last}")
         wait: list[str] = []
         for need in step.needs:
-            other = self.by_key[need]
-            if self.is_done(other, everyone):
+            if self.is_done(self.by_key[need], everyone):
                 continue
-            jobs = everyone.get(need, StepState()).jobs
+            jobs = list(self.slurm.active(everyone.get(need, StepState()).jobs))
             if not jobs:
                 return Report(step.key, step.owner, "WAITING", f"needs {need}")
             wait += jobs
@@ -703,7 +730,8 @@ class Chains:
             return Report(
                 step.key, step.owner, "READY", f"would submit {min(step.jobs, free)} job(s)"
             )
-        gpu = st.gpu or self._gpu(step)
+        merged = everyone.get(step.key)
+        gpu = st.gpu or (merged.gpu if merged is not None else None) or self._gpu(step)
         jobs = self.slurm.submit(step, min(step.jobs, free), wait, gpu, self.extra)
         st.jobs, st.gpu, st.attempts = jobs, gpu, st.attempts + 1
         st.history.append({"at": _now(), "submitted": jobs, "gpu": gpu, "after": wait})

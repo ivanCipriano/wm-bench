@@ -100,7 +100,7 @@ def test_chain_advances_with_afterok_and_resumes(tmp_path: Path) -> None:
     chains = Chains(STEPS, lambda s: done.get(s.key, False), slurm, tmp_path)
     reports = {r.key: r for r in chains.run("ivan")}
     assert reports["c/a"].status == "SUBMITTED"
-    state = load_state(tmp_path / "state_ivan.json")
+    state = load_state(Chains([], lambda s: False, slurm, tmp_path).state_path("ivan"))
     assert state["c/a"].attempts == 2 and state["c/a"].gpu == "h100"  # stessa GPU al tentativo
     assert "102" not in slurm.jobs
     # tune (once): finito quando un invio termina bene
@@ -134,14 +134,17 @@ def test_max_attempts(tmp_path: Path) -> None:
         slurm.finish(ok=False)
     reports = Chains(STEPS[:1], lambda s: False, slurm, tmp_path).run("ivan")
     assert reports[0].status == "FAILED"
-    assert isinstance(load_state(tmp_path / "state_ivan.json")["c/a"], StepState)
+    assert isinstance(
+        load_state(Chains([], lambda s: False, slurm, tmp_path).state_path("ivan"))["c/a"],
+        StepState,
+    )
 
 
 @pytest.mark.parametrize("owner", ["ivan", "simone"])
 def test_dry_run_submits_nothing(tmp_path: Path, owner: str) -> None:
     slurm = FakeSlurm()
     Chains(STEPS, lambda s: False, slurm, tmp_path).run(owner, dry_run=True)
-    assert slurm.submitted == [] and not (tmp_path / f"state_{owner}.json").exists()
+    assert slurm.submitted == [] and not list(tmp_path.glob("state_*.json"))
 
 
 def test_artifact_done_on_an_empty_store(local_root: Path) -> None:
@@ -161,3 +164,20 @@ def test_skip_also_covers_once_steps(tmp_path: Path) -> None:
     reports = {r.key: r.status for r in chains.run("ivan")}
     assert reports["c/t"] == "DONE"
     assert "c/t" not in [k for k, *_ in slurm.submitted]
+
+
+def test_two_accounts_split_one_owner_without_duplicates(tmp_path: Path) -> None:
+    """Due account sullo stesso proprietario: ognuno ha il suo stato e vede i job dell'altro."""
+    slurm = FakeSlurm()
+    a = Chains(STEPS, lambda s: False, slurm, tmp_path, runner="a")
+    reports = {r.key: r.status for r in a.run("ivan", only=["c/a"])}
+    assert reports == {"c/a": "SUBMITTED"}
+    b = Chains(STEPS, lambda s: False, slurm, tmp_path, runner="b")
+    reports = {r.key: r.status for r in b.run("ivan")}
+    assert reports["c/a"] == "RUNNING"  # job dell'altro account: nessun doppione
+    assert reports["c/b"] == "SUBMITTED"  # afterok sui job di a
+    assert next(x for x in slurm.submitted if x[0] == "c/b")[2] == ("100", "101")
+    assert {p.name for p in tmp_path.glob("state_*.json")} == {
+        "state_ivan__a.json",
+        "state_ivan__b.json",
+    }

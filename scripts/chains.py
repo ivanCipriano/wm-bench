@@ -105,11 +105,8 @@ def lock(state_dir: Path, owner: str):  # type: ignore[no-untyped-def]
 
 def failed_logs(chains: Chains, reports: list[Report], lines: int = 15) -> None:
     """Ultime righe dei log (submitit) dei job dei passi falliti."""
-    from bench.chains import load_state
-
     states = {}
-    for owner in OWNERS:
-        states.update(load_state(chains.state_path(owner)))
+    states.update(chains._all_state())
     base = load_experiment([*setup(chains.state_dir.parent.name == "smoke")[1],
                             "stage=selftest"]).paths.artifacts  # fmt: skip
     for r in reports:
@@ -131,7 +128,7 @@ def run_once(args: argparse.Namespace) -> list[Report]:
     reports: list[Report] = []
     for owner in owners:  # "all": un solo account per tutte le catene (smoke test)
         with lock(chains.state_dir, owner):
-            reports += chains.run(owner, dry_run=args.dry_run)
+            reports += chains.run(owner, dry_run=args.dry_run, only=args.only)
     return reports
 
 
@@ -144,7 +141,7 @@ def loop(args: argparse.Namespace) -> int:
         stamp = datetime.now(UTC).isoformat(timespec="seconds")
         try:
             reports = run_once(args)
-        except (RuntimeError, OSError) as exc:  # un giro fallito non ferma il ciclo
+        except (RuntimeError, OSError, SystemExit) as exc:  # un giro fallito non ferma il ciclo
             with log.open("a", encoding="utf-8") as handle:
                 handle.write(f"{stamp} ERROR {exc}\n")
             time.sleep(args.every)
@@ -173,6 +170,12 @@ def main() -> int:
     parser.add_argument("command", choices=["status", "run", "loop"])
     parser.add_argument("--owner", choices=[*OWNERS, "all"])
     parser.add_argument("--logs", action="store_true", help="status: log tails of failed steps")
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        help="run/loop: only steps whose name starts with this prefix (repeatable)",
+    )
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--with-acw", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
