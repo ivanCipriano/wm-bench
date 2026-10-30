@@ -16,8 +16,9 @@ riportati nel log; ci si ferma al pilota documentato. Procedura, con ``t4p`` (Te
 
 Criteri (fissati prima del pilota, cluster_info §8.7): L4 è **non fattibile** se la preparazione dei
 5 ambienti richiede più di una giornata di lavoro (qui: più di 8 h di durata complessiva di
-checkout e build), se lo spazio supera la quota (``--quota-gb``, da ``lfs quota`` o dall'amministratore), o se
-la suite di un progetto non sta nei limiti dei job SLURM (oltre 9 h, o interrotta al limite).
+checkout e build), se lo spazio supera la quota (``--quota-gb``, da ``lfs quota`` o
+dall'amministratore), o se la suite di un progetto non sta nei limiti dei job SLURM (oltre 9 h, o
+interrotta al limite).
 Stato in ``$WMB/tests4py/pilot.json``; log dei comandi in ``$WMB/tests4py/logs/``.
 """
 
