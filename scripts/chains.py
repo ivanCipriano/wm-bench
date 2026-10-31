@@ -36,7 +36,18 @@ from bench.chains import OWNERS, Chains, RealSlurm, Report, Step, all_steps, art
 from bench.config.builder import load_experiment
 from bench.store.artifact_store import WRITE_ROOT_ENV
 
-SMOKE_SKIP = ("sweet/d31/", "sweet/freeze")  # congelamento finto già nello smoke test
+# Passi che nello smoke test non girano:
+# - prima del congelamento di SWEET: il congelamento finto è già nella cartella dello smoke test;
+# - classificatori avversari (e metriche) della M12: i fold per problema (5) sono impossibili con
+#   i 2 problemi di test per linguaggio dello smoke test; il codice è quello già girato sui dati
+#   veri per gli altri quattro metodi nella M12 (la perplessità invece gira).
+SMOKE_SKIP = (
+    "sweet/d31/",
+    "sweet/freeze",
+    "sweet/M12/logreg",
+    "sweet/M12/unixcoder",
+    "sweet/M12/metrics",
+)
 TERMINAL = {"DONE", "HELD", "FAILED"}
 
 
