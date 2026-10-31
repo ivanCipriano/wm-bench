@@ -73,8 +73,12 @@ def _time(value: str) -> datetime:
 def scan(root: Path) -> list[Measured]:
     """Celle fatte dai manifest (output della stessa cella uniti)."""
     spans: dict[tuple[str, str], list[Any]] = {}
+    seen = 0
     for top in sorted(p for p in root.iterdir() if p.is_dir() and p.name not in SKIP_DIRS):
         for path in top.rglob("*.manifest.json"):
+            seen += 1
+            if seen % 5000 == 0:
+                progress(f"{seen} manifest letti ({top.name})")
             try:
                 m = json.loads(path.read_text(encoding="utf-8"))
             except (OSError, ValueError):
@@ -188,6 +192,12 @@ def missing_cells(step: Step, store: ArtifactStore) -> Iterator[Cell]:
         yield from (replace(c, config_hash=None) for c in CellPlanner(cfg).cells_for(stage_cls))
 
 
+def progress(message: str) -> None:
+    """Avanzamento su stderr (non finisce nel log)."""
+    sys.stderr.write(f"[{datetime.now():%H:%M:%S}] {message}\n")
+    sys.stderr.flush()
+
+
 def h(seconds: float) -> str:
     return f"{seconds / 3600:8.1f}"
 
@@ -201,6 +211,7 @@ def main() -> int:
     w("lettura dei manifest...\n")
     counts = Counts(store)
     rates = Rates(scan(Path(cfg.paths.artifacts)), counts)
+    progress("manifest letti; pianificazione dei passi")
     steps = all_steps(str(cfg.paths.wmb))
     by_key = {s.key: s for s in steps}
 
@@ -209,7 +220,9 @@ def main() -> int:
     table: dict[tuple[str, str, str], float] = defaultdict(float)  # (metodo, livello, risorsa)
     unknown: list[str] = []
     w("\n##### passi che mancano (ore-job, fonte dei tempi)\n")
-    for step in steps:
+    for i, step in enumerate(steps, 1):
+        progress(f"passo {i}/{len(steps)}: {step.key}")
+        sys.stdout.flush()
         gpu = STAGES.get(step.stage).resources is not ResourceClass.CPU
         total, sources, n = 0.0, set(), 0
         for cell in missing_cells(step, store):
