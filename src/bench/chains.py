@@ -506,7 +506,14 @@ class RealSlurm:
         ids = [j for j in job_ids if j]
         if not ids:
             return {}
-        out = _run(["squeue", "-h", "-j", ",".join(ids), "-o", "%i|%T|%r"])
+        try:
+            out = _run(["squeue", "-h", "-j", ",".join(ids), "-o", "%i|%T|%r"])
+        except RuntimeError as exc:
+            # un job finito da tempo esce dalla memoria del controller: con un solo id squeue
+            # risponde "Invalid job id specified" invece di una lista vuota
+            if "Invalid job id" in str(exc):
+                return {}
+            raise
         found: dict[str, tuple[str, str]] = {}
         for line in out.splitlines():
             job, state, reason = [*line.split("|"), "", ""][:3]

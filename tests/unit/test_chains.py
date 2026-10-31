@@ -181,3 +181,14 @@ def test_two_accounts_split_one_owner_without_duplicates(tmp_path: Path) -> None
         "state_ivan__a.json",
         "state_ivan__b.json",
     }
+
+
+def test_purged_job_is_not_active(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Un job uscito dalla memoria di SLURM non è attivo (squeue -j risponde con un errore)."""
+    from bench import chains as mod
+
+    def fake_run(cmd: Sequence[str], env: dict[str, str] | None = None) -> str:
+        raise RuntimeError("squeue: exit 1: slurm_load_jobs error: Invalid job id specified")
+
+    monkeypatch.setattr(mod, "_run", fake_run)
+    assert mod.RealSlurm().active(["808795"]) == {}
