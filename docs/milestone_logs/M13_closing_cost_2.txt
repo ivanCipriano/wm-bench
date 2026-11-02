@@ -1,0 +1,222 @@
+lettura dei manifest...
+
+##### passi che mancano (ore-job, fonte dei tempi)
+  sweet/d31/L1/watermark                   simone  GPU   12 celle      1.6 h  [same level/split]
+  sweet/d31/L1/execute                     simone  CPU   12 celle      0.1 h  [same level/split]
+  sweet/d31/L1/detect                      simone  GPU   12 celle      8.3 h  [same level/split]
+  sweet/d31/L2/watermark                   simone  GPU   12 celle      3.9 h  [same level/split]
+  sweet/d31/L2/execute                     simone  CPU   12 celle      0.2 h  [same level/split]
+  sweet/d31/L2/detect                      simone  GPU   12 celle     15.2 h  [same level/split]
+  sweet/d31/calibrate                      simone  CPU   12 celle   3179.1 h  [cell median]
+  sweet/freeze                             simone  CPU    1 celle      0.0 h  [cell median]
+  sweet/L1/watermark                       simone  GPU    8 celle      5.0 h  [same level]
+  sweet/L1/execute                         simone  CPU    8 celle      0.3 h  [same level]
+  sweet/L1/detect                          simone  GPU    8 celle     26.9 h  [same level]
+  sweet/L1/metrics                         simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L1/T1.1/attack                     simone  CPU    8 celle      0.0 h  [-]
+  sweet/L1/T1.1/execute                    simone  CPU    8 celle      0.0 h  [-]
+  sweet/L1/T1.1/detect                     simone  GPU    8 celle      0.0 h  [-]
+  sweet/L1/T1.1/metrics                    simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L1/T1.2/attack                     simone  CPU    8 celle      0.0 h  [-]
+  sweet/L1/T1.2/execute                    simone  CPU    8 celle      0.0 h  [-]
+  sweet/L1/T1.2/detect                     simone  GPU    8 celle      0.0 h  [-]
+  sweet/L1/T1.2/metrics                    simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L1/T1.3/attack                     simone  CPU   16 celle      0.0 h  [-]
+  sweet/L1/T1.3/execute                    simone  CPU   16 celle      0.0 h  [-]
+  sweet/L1/T1.3/detect                     simone  GPU   16 celle      0.0 h  [-]
+  sweet/L1/T1.3/metrics                    simone  CPU   16 celle      0.0 h  [cell median]
+  sweet/L1/T1.4/attack                     simone  CPU   64 celle      0.0 h  [-]
+  sweet/L1/T1.4/execute                    simone  CPU   64 celle      0.0 h  [-]
+  sweet/L1/T1.4/detect                     simone  GPU   64 celle      0.0 h  [-]
+  sweet/L1/T1.4/metrics                    simone  CPU   64 celle      0.1 h  [cell median]
+  sweet/L1/T1.5/attack                     simone  CPU   24 celle      0.0 h  [-]
+  sweet/L1/T1.5/execute                    simone  CPU   24 celle      0.0 h  [-]
+  sweet/L1/T1.5/detect                     simone  GPU   24 celle      0.0 h  [-]
+  sweet/L1/T1.5/metrics                    simone  CPU   24 celle      0.0 h  [cell median]
+  sweet/L1/T2.1/attack                     simone  CPU   32 celle      0.0 h  [-]
+  sweet/L1/T2.1/execute                    simone  CPU   32 celle      0.0 h  [-]
+  sweet/L1/T2.1/detect                     simone  GPU   32 celle      0.0 h  [-]
+  sweet/L1/T2.1/metrics                    simone  CPU   32 celle      0.0 h  [cell median]
+  sweet/L1/T2.2/attack                     simone  CPU   16 celle      0.0 h  [-]
+  sweet/L1/T2.2/execute                    simone  CPU   16 celle      0.0 h  [-]
+  sweet/L1/T2.2/detect                     simone  GPU   16 celle      0.0 h  [-]
+  sweet/L1/T2.2/metrics                    simone  CPU   16 celle      0.0 h  [cell median]
+  sweet/L1/T2.4/attack                     simone  CPU   16 celle      0.0 h  [-]
+  sweet/L1/T2.4/execute                    simone  CPU   16 celle      0.0 h  [-]
+  sweet/L1/T2.4/detect                     simone  GPU   16 celle      0.0 h  [-]
+  sweet/L1/T2.4/metrics                    simone  CPU   16 celle      0.0 h  [cell median]
+  sweet/L1/T4.1/attack                     simone  CPU    8 celle      0.0 h  [-]
+  sweet/L1/T4.1/execute                    simone  CPU    8 celle      0.0 h  [-]
+  sweet/L1/T4.1/detect                     simone  GPU    8 celle      0.0 h  [-]
+  sweet/L1/T4.1/metrics                    simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L1/T4.2/attack                     simone  CPU    2 celle      0.0 h  [-]
+  sweet/L1/T4.2/execute                    simone  CPU    2 celle      0.0 h  [-]
+  sweet/L1/T4.2/detect                     simone  GPU    2 celle      0.0 h  [-]
+  sweet/L1/T4.2/metrics                    simone  CPU    2 celle      0.0 h  [cell median]
+  sweet/L1/T2.2/control_detect             simone  GPU    8 celle      0.0 h  [-]
+  sweet/L1/T2.2/control_metrics            simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L1/T3.1/k2_detect_dev              simone  GPU   16 celle      0.0 h  [-]
+  sweet/L1/T3.1/k2_calibrate               simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L1/T3.1/k2_freeze                  simone  CPU    1 celle      0.0 h  [cell median]
+  sweet/L1/T3.1/k2_detect_test             simone  GPU    8 celle      0.0 h  [-]
+  sweet/L1/T3.1/attack                     simone  CPU    8 celle      0.0 h  [-]
+  sweet/L1/T3.1/execute                    simone  CPU    8 celle      0.0 h  [-]
+  sweet/L1/T3.1/detect                     simone  GPU    8 celle      0.0 h  [-]
+  sweet/L1/T3.1/k2_detect                  simone  GPU    8 celle      0.0 h  [-]
+  sweet/L1/T3.1/metrics                    simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L1/T3.1/k2_metrics                 simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/M12/perplexity                     simone  GPU   16 celle      0.1 h  [same level/split]
+  sweet/M12/logreg                         simone  CPU    8 celle      0.0 h  [-]
+  sweet/M12/unixcoder                      simone  GPU    8 celle      0.0 h  [-]
+  sweet/M12/metrics                        simone  CPU    8 celle      0.1 h  [cell median]
+  sweet/L2/watermark                       simone  GPU    8 celle      9.5 h  [same level]
+  sweet/L2/execute                         simone  CPU    8 celle      0.5 h  [same level]
+  sweet/L2/detect                          simone  GPU    8 celle     37.3 h  [same level]
+  sweet/L2/metrics                         simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L3/watermark                       simone  GPU    8 celle     16.2 h  [any]
+  sweet/L3/execute                         simone  CPU    8 celle      0.7 h  [any]
+  sweet/L3/detect                          simone  GPU    8 celle    128.3 h  [any]
+  sweet/L3/metrics                         simone  CPU    8 celle      0.0 h  [cell median]
+  sweet/L2/T2.4k/attack                    simone  CPU   80 celle      0.0 h  [-]
+  sweet/L2/T2.4k/execute                   simone  CPU   80 celle      0.0 h  [-]
+  sweet/L2/T2.4k/detect                    simone  GPU   80 celle      0.0 h  [-]
+  sweet/L2/T2.4k/metrics                   simone  CPU   80 celle      0.1 h  [cell median]
+  sweet/L3/T2.4k/attack                    simone  CPU   80 celle      0.0 h  [-]
+  sweet/L3/T2.4k/execute                   simone  CPU   80 celle      0.0 h  [-]
+  sweet/L3/T2.4k/detect                    simone  GPU   80 celle      0.0 h  [-]
+  sweet/L3/T2.4k/metrics                   simone  CPU   80 celle      0.1 h  [cell median]
+  promptmark/L2/watermark                  simone  GPU    2 celle      0.0 h  [same level]
+  promptmark/L2/execute                    simone  CPU    2 celle      0.0 h  [same level]
+  promptmark/L2/detect                     simone  GPU    2 celle      0.1 h  [same level]
+  promptmark/L2/metrics                    simone  CPU    2 celle      0.0 h  [cell median]
+  promptmark/L3/watermark                  simone  GPU    2 celle      8.5 h  [L1 test]
+  promptmark/L3/execute                    simone  CPU    2 celle      0.1 h  [L1 test]
+  promptmark/L3/detect                     simone  GPU    2 celle      0.1 h  [L1 test]
+  promptmark/L3/metrics                    simone  CPU    2 celle      0.0 h  [cell median]
+  promptmark/L2/T2.4k/attack               simone  CPU   20 celle      0.0 h  [L1 test]
+  promptmark/L2/T2.4k/execute              simone  CPU   20 celle      0.3 h  [L1 test]
+  promptmark/L2/T2.4k/detect               simone  GPU   20 celle      0.1 h  [L1 test]
+  promptmark/L2/T2.4k/metrics              simone  CPU   20 celle      0.0 h  [cell median]
+  promptmark/L3/T2.4k/attack               simone  CPU   20 celle      0.1 h  [L1 test]
+  promptmark/L3/T2.4k/execute              simone  CPU   20 celle      0.9 h  [L1 test]
+  promptmark/L3/T2.4k/detect               simone  GPU   20 celle      0.4 h  [L1 test]
+  promptmark/L3/T2.4k/metrics              simone  CPU   20 celle      0.0 h  [cell median]
+  stone/L2/watermark                       ivan    GPU    6 celle      3.5 h  [same level]
+  stone/L2/execute                         ivan    CPU    6 celle      0.3 h  [same level]
+  stone/L2/detect                          ivan    GPU    6 celle      3.1 h  [same level]
+  stone/L2/metrics                         ivan    CPU    6 celle      0.0 h  [cell median]
+  stone/L3/watermark                       ivan    GPU    6 celle      5.6 h  [L1 test]
+  stone/L3/execute                         ivan    CPU    6 celle      0.4 h  [L1 test]
+  stone/L3/detect                          ivan    GPU    6 celle      3.6 h  [L1 test]
+  stone/L3/metrics                         ivan    CPU    6 celle      0.0 h  [cell median]
+  stone/L2/T2.4k/attack                    ivan    CPU   60 celle      0.1 h  [L1 test]
+  stone/L2/T2.4k/execute                   ivan    CPU   60 celle      0.8 h  [L1 test]
+  stone/L2/T2.4k/detect                    ivan    GPU   60 celle      1.7 h  [L1 test]
+  stone/L2/T2.4k/metrics                   ivan    CPU   60 celle      0.1 h  [cell median]
+  stone/L3/T2.4k/attack                    ivan    CPU   60 celle      0.3 h  [L1 test]
+  stone/L3/T2.4k/execute                   ivan    CPU   60 celle      2.0 h  [L1 test]
+  stone/L3/T2.4k/detect                    ivan    GPU   60 celle      4.3 h  [L1 test]
+  stone/L3/T2.4k/metrics                   ivan    CPU   60 celle      0.1 h  [cell median]
+  mcgmark/L2/twin                          ivan    GPU    2 celle      2.5 h  [same level]
+  mcgmark/L2/watermark                     ivan    GPU    2 celle      5.3 h  [same level]
+  mcgmark/L2/execute                       ivan    CPU    4 celle      0.2 h  [same level]
+  mcgmark/L2/detect                        ivan    GPU    2 celle      0.3 h  [same level]
+  mcgmark/L2/metrics                       ivan    CPU    2 celle      0.0 h  [cell median]
+  mcgmark/L3/twin                          ivan    GPU    2 celle      4.6 h  [L1 test]
+  mcgmark/L3/watermark                     ivan    GPU    2 celle      9.4 h  [L1 test]
+  mcgmark/L3/execute                       ivan    CPU    4 celle      0.2 h  [L1 test]
+  mcgmark/L3/detect                        ivan    GPU    2 celle      0.4 h  [L1 test]
+  mcgmark/L3/metrics                       ivan    CPU    2 celle      0.0 h  [cell median]
+  mcgmark/L2/T2.4k/attack                  ivan    CPU   20 celle      0.0 h  [L1 test]
+  mcgmark/L2/T2.4k/execute                 ivan    CPU   20 celle      0.2 h  [L1 test]
+  mcgmark/L2/T2.4k/detect                  ivan    GPU   20 celle      0.1 h  [L1 test]
+  mcgmark/L2/T2.4k/metrics                 ivan    CPU   20 celle      0.0 h  [cell median]
+  mcgmark/L3/T2.4k/attack                  ivan    CPU   20 celle      0.1 h  [L1 test]
+  mcgmark/L3/T2.4k/execute                 ivan    CPU   20 celle      0.5 h  [L1 test]
+  mcgmark/L3/T2.4k/detect                  ivan    GPU   20 celle      0.3 h  [L1 test]
+  mcgmark/L3/T2.4k/metrics                 ivan    CPU   20 celle      0.0 h  [cell median]
+  acw/L2/watermark                         ivan    GPU    2 celle      2.9 h  [same level] (HELD: licenza)
+  acw/L2/execute                           ivan    CPU    2 celle      0.1 h  [same level] (HELD: licenza)
+  acw/L2/detect                            ivan    GPU    2 celle     18.0 h  [same level] (HELD: licenza)
+  acw/L2/metrics                           ivan    CPU    2 celle      0.0 h  [cell median] (HELD: licenza)
+  acw/L3/watermark                         ivan    GPU    2 celle     10.2 h  [L1 test] (HELD: licenza)
+  acw/L3/execute                           ivan    CPU    2 celle      0.1 h  [L1 test] (HELD: licenza)
+  acw/L3/detect                            ivan    GPU    2 celle     26.8 h  [L1 test] (HELD: licenza)
+  acw/L3/metrics                           ivan    CPU    2 celle      0.0 h  [cell median] (HELD: licenza)
+  acw/L2/T2.4k/attack                      ivan    CPU   20 celle      0.0 h  [L1 test] (HELD: licenza)
+  acw/L2/T2.4k/execute                     ivan    CPU   20 celle      0.2 h  [L1 test] (HELD: licenza)
+  acw/L2/T2.4k/detect                      ivan    GPU   20 celle     17.0 h  [L1 test] (HELD: licenza)
+  acw/L2/T2.4k/metrics                     ivan    CPU   20 celle      0.0 h  [cell median] (HELD: licenza)
+  acw/L3/T2.4k/attack                      ivan    CPU   20 celle      0.1 h  [L1 test] (HELD: licenza)
+  acw/L3/T2.4k/execute                     ivan    CPU   20 celle      0.6 h  [L1 test] (HELD: licenza)
+  acw/L3/T2.4k/detect                      ivan    GPU   20 celle     50.4 h  [L1 test] (HELD: licenza)
+  acw/L3/T2.4k/metrics                     ivan    CPU   20 celle      0.0 h  [cell median] (HELD: licenza)
+
+##### per metodo e livello (ore-job)
+  metodo       livello       GPU h    CPU h
+  acw          L2 test        37.9      0.4
+  acw          L3 test        87.3      0.8
+  mcgmark      L2 test         8.2      0.4
+  mcgmark      L3 test        14.8      0.8
+  promptmark   L2 test         0.3      0.4
+  promptmark   L3 test         9.0      1.1
+  stone        L2 test         8.4      1.3
+  stone        L3 test        13.6      2.8
+  sweet        -               0.0   3179.1
+  sweet        L1 dev          9.9      0.1
+  sweet        L1 test        32.0      0.7
+  sweet        L2 dev         19.1      0.2
+  sweet        L2 test        46.8      0.6
+  sweet        L3 test       144.5      0.8
+
+##### giorni reali per proprietario (senza attesa in coda)
+  senza ACW su L2 test e L3:
+    ivan    GPU     44.9 h, CPU      5.4 h; 10 posti      5.0 h; cammino critico      3.7 h -> 0.2 giorni
+    simone  GPU    261.6 h, CPU   3183.0 h; 10 posti    344.5 h; cammino critico   3187.4 h -> 132.8 giorni
+  con ACW su L2 test e L3:
+    ivan    GPU    170.1 h, CPU      6.6 h; 10 posti     17.7 h; cammino critico     27.8 h -> 1.2 giorni
+    simone  GPU    261.6 h, CPU   3183.0 h; 10 posti    344.5 h; cammino critico   3187.4 h -> 132.8 giorni
+
+  SWEET (priorità sulle GPU): cammino critico   3187.4 h, GPU    252.3 h
+
+##### celle senza tempi di riferimento (1152; non contate)
+  sweet/L1/T1.1/attack: method=sweet__model_id=qwen25_coder_7b__language=python__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/attack: method=sweet__model_id=qwen25_coder_7b__language=java__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/attack: method=sweet__model_id=qwen25_coder_7b__language=cpp__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/attack: method=sweet__model_id=qwen25_coder_7b__language=javascript__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/attack: method=sweet__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/attack: method=sweet__model_id=deepseek_coder_6p7b__language=java__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/attack: method=sweet__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/attack: method=sweet__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/execute: method=sweet__model_id=qwen25_coder_7b__language=python__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776__source=attacked
+  sweet/L1/T1.1/execute: method=sweet__model_id=qwen25_coder_7b__language=java__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776__source=attacked
+  sweet/L1/T1.1/execute: method=sweet__model_id=qwen25_coder_7b__language=cpp__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776__source=attacked
+  sweet/L1/T1.1/execute: method=sweet__model_id=qwen25_coder_7b__language=javascript__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776__source=attacked
+  sweet/L1/T1.1/execute: method=sweet__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776__source=attacked
+  sweet/L1/T1.1/execute: method=sweet__model_id=deepseek_coder_6p7b__language=java__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776__source=attacked
+  sweet/L1/T1.1/execute: method=sweet__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776__source=attacked
+  sweet/L1/T1.1/execute: method=sweet__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776__source=attacked
+  sweet/L1/T1.1/detect: method=sweet__model_id=qwen25_coder_7b__language=python__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/detect: method=sweet__model_id=qwen25_coder_7b__language=java__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/detect: method=sweet__model_id=qwen25_coder_7b__language=cpp__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/detect: method=sweet__model_id=qwen25_coder_7b__language=javascript__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/detect: method=sweet__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/detect: method=sweet__model_id=deepseek_coder_6p7b__language=java__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/detect: method=sweet__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.1/detect: method=sweet__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=test__attack_id=T1.1__attack_params_hash=64c5926a3776
+  sweet/L1/T1.2/attack: method=sweet__model_id=qwen25_coder_7b__language=python__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84
+  sweet/L1/T1.2/attack: method=sweet__model_id=qwen25_coder_7b__language=java__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84
+  sweet/L1/T1.2/attack: method=sweet__model_id=qwen25_coder_7b__language=cpp__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84
+  sweet/L1/T1.2/attack: method=sweet__model_id=qwen25_coder_7b__language=javascript__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84
+  sweet/L1/T1.2/attack: method=sweet__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84
+  sweet/L1/T1.2/attack: method=sweet__model_id=deepseek_coder_6p7b__language=java__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84
+  sweet/L1/T1.2/attack: method=sweet__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84
+  sweet/L1/T1.2/attack: method=sweet__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84
+  sweet/L1/T1.2/execute: method=sweet__model_id=qwen25_coder_7b__language=python__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84__source=attacked
+  sweet/L1/T1.2/execute: method=sweet__model_id=qwen25_coder_7b__language=java__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84__source=attacked
+  sweet/L1/T1.2/execute: method=sweet__model_id=qwen25_coder_7b__language=cpp__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84__source=attacked
+  sweet/L1/T1.2/execute: method=sweet__model_id=qwen25_coder_7b__language=javascript__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84__source=attacked
+  sweet/L1/T1.2/execute: method=sweet__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84__source=attacked
+  sweet/L1/T1.2/execute: method=sweet__model_id=deepseek_coder_6p7b__language=java__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84__source=attacked
+  sweet/L1/T1.2/execute: method=sweet__model_id=deepseek_coder_6p7b__language=cpp__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84__source=attacked
+  sweet/L1/T1.2/execute: method=sweet__model_id=deepseek_coder_6p7b__language=javascript__level=L1__split=test__attack_id=T1.2__attack_params_hash=099e4625be84__source=attacked
