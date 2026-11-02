@@ -52,6 +52,7 @@ BASE = ["paths=cluster"]
 SKIP_DIRS = {"_runs", "_slurm", "data", "smoke"}
 FLAT = ("metrics", "calibrate", "tune", "freeze")  # fasi brevi: tempo per cella, non per riga
 HUMAN = {"detect", "detect_k2"}  # rilevazione con i negativi umani del livello
+DETECT_LIKE = {"detect", "detect_k2", "detect_attack_control"}
 ATTACK_PROXY = {"T2.4k": "T2.4"}
 LEVELS = ("L1", "L2", "L3")
 
@@ -71,8 +72,12 @@ def _time(value: str) -> datetime:
 
 
 def scan(root: Path) -> list[Measured]:
-    """Celle fatte dai manifest (output della stessa cella uniti)."""
-    spans: dict[tuple[str, str], list[Any]] = {}
+    """Celle fatte dai manifest: output dello stesso giro di una cella (stesso inizio) uniti.
+
+    Una cella può avere output scritti in giri diversi (es. le soglie di calibrate, una per
+    configurazione dello sweep): ogni giro conta a parte, dal suo inizio alla sua ultima fine.
+    """
+    spans: dict[tuple[str, str, str], list[Any]] = {}
     seen = 0
     for top in sorted(p for p in root.iterdir() if p.is_dir() and p.name not in SKIP_DIRS):
         for path in top.rglob("*.manifest.json"):
@@ -85,7 +90,8 @@ def scan(root: Path) -> list[Measured]:
                 continue
             if not m.get("finished_at") or m.get("status") not in (None, "complete"):
                 continue
-            key = (str(m["stage"]), json.dumps(m.get("cell") or {}, sort_keys=True))
+            key = (str(m["stage"]), json.dumps(m.get("cell") or {}, sort_keys=True),
+                   str(m["started_at"]))  # fmt: skip
             start, end = _time(m["started_at"]), _time(m["finished_at"])
             rows = int(m.get("n_rows_out") or 0)
             if key in spans:
@@ -95,7 +101,7 @@ def scan(root: Path) -> list[Measured]:
                 spans[key] = [start, end, rows]
     return [
         Measured(stage, json.loads(cell), (s[1] - s[0]).total_seconds(), s[2])
-        for (stage, cell), s in spans.items()
+        for (stage, cell, _), s in spans.items()
         if s[1] > s[0]
     ]
 
@@ -123,21 +129,43 @@ class Counts:
         return int((table["split"] == split).sum()) if "split" in table.columns else len(table)
 
 
-def _coords(stage: str, cell: dict[str, Any]) -> tuple[Any, ...]:
+def _coords(stage: str, cell: dict[str, Any], method: bool = True) -> tuple[Any, ...]:
+    """Coordinate dei tempi (``method=False``: senza il metodo, per le ricadute)."""
     attack = str(cell.get("attack_id") or "") or None
-    return (stage, cell.get("method"), cell.get("model_id"), cell.get("language"),
-            (ATTACK_PROXY.get(attack, attack) if attack else None), cell.get("source"))  # fmt: skip
+    return (stage, cell.get("method") if method else "*", cell.get("model_id"),
+            cell.get("language"), (ATTACK_PROXY.get(attack, attack) if attack else None),
+            cell.get("source"))  # fmt: skip
+
+
+LEVEL_FILTERS: tuple[tuple[str, Any], ...] = (
+    ("same level/split", lambda c, t: c.get("level") == t.level and c.get("split") == t.split),
+    ("same level", lambda c, t: c.get("level") == t.level),
+    ("L1 test", lambda c, t: c.get("level") == "L1" and c.get("split") == "test"),
+    ("any", lambda c, t: True),
+)
 
 
 class Rates:
-    """Secondi per riga e righe per problema delle celle fatte, con le ricadute."""
+    """Secondi per riga e righe per problema delle celle fatte, con le ricadute.
+
+    Le due grandezze si cercano separatamente, nell'ordine:
+
+    - **secondi per riga**: stesso metodo; per le rilevazioni (dopo un attacco, seconda chiave,
+      controllo) la rilevazione senza attacco dello stesso metodo (il costo è del rilevatore); poi
+      gli altri metodi (attacchi, esecuzione e classificatori non dipendono dal metodo);
+    - **righe per problema**: stesso metodo, poi gli altri metodi (quante varianti produce un
+      attacco non dipende dal metodo).
+    """
 
     def __init__(self, measured: list[Measured], counts: Counts) -> None:
         self.counts = counts
         self.by: dict[tuple[Any, ...], list[Measured]] = defaultdict(list)
         self.flat: dict[str, list[float]] = defaultdict(list)
         for m in measured:
+            if m.rows <= 0:
+                continue
             self.by[_coords(m.stage, m.cell)].append(m)
+            self.by[_coords(m.stage, m.cell, method=False)].append(m)
             self.flat[m.stage].append(m.seconds)
 
     def seconds(self, stage: str, cell: Cell) -> tuple[float, str] | None:
@@ -145,34 +173,49 @@ class Rates:
         if stage.startswith(FLAT):
             values = self.flat.get(stage)
             return (statistics.median(values), "cell median") if values else None
-        refs = self.by.get(_coords(stage, cell.as_dict()), [])
-        for label, keep in (
-            ("same level/split", lambda c: c.get("level") == cell.level
-             and c.get("split") == cell.split),
-            ("same level", lambda c: c.get("level") == cell.level),
-            ("L1 test", lambda c: c.get("level") == "L1" and c.get("split") == "test"),
-            ("any", lambda c: True),
-        ):  # fmt: skip
-            chosen = [m for m in refs if keep(m.cell) and m.rows > 0]
-            estimate = self._estimate(stage, cell, chosen)
-            if estimate is not None:
-                return estimate, label
-        return None
-
-    def _estimate(self, stage: str, cell: Cell, refs: list[Measured]) -> float | None:
-        human = stage in HUMAN and cell.attack_id is None
-        per_row, per_problem = [], []
-        for m in refs:
-            p, h = self.counts.get(m.cell.get("level"), m.cell.get("language"), m.cell.get("split"))
-            if p <= 0:
-                continue
-            per_row.append(m.seconds / m.rows)
-            per_problem.append(max(0, m.rows - (h if human else 0)) / p)
-        if not per_row:
+        target = cell.as_dict()
+        own = self.by.get(_coords(stage, target), [])
+        others = self.by.get(_coords(stage, target, method=False), [])
+        row_sources = [("", own)]
+        if stage in DETECT_LIKE:
+            clean = {**target, "attack_id": None, "source": None}
+            row_sources.append(("detect", self.by.get(_coords("detect", clean), [])))
+        row_sources.append(("other methods", others))
+        per_row = self._first(cell, row_sources, self._per_row)
+        per_problem = self._first(cell, [("", own), ("other methods", others)],
+                                  lambda m: self._per_problem(stage, cell, m))  # fmt: skip
+        if per_row is None or per_problem is None:
             return None
         p, h = self.counts.get(cell.level, cell.language, cell.split)
-        rows = statistics.median(per_problem) * p + (h if human else 0)
-        return statistics.median(per_row) * rows
+        rows = per_problem[0] * p + (h if self._human(stage, cell) else 0)
+        label = per_row[1] if per_row[1] == per_problem[1] else f"{per_row[1]} | {per_problem[1]}"
+        return per_row[0] * rows, label
+
+    def _first(
+        self, cell: Cell, sources: list[tuple[str, list[Measured]]], value: Any
+    ) -> tuple[float, str] | None:
+        """Mediana della prima fonte con valori, con il filtro di livello più stretto."""
+        for name, refs in sources:
+            for label, keep in LEVEL_FILTERS:
+                values = [v for m in refs if keep(m.cell, cell) and (v := value(m)) is not None]
+                if values:
+                    return statistics.median(values), f"{name} {label}".strip()
+        return None
+
+    @staticmethod
+    def _human(stage: str, cell: Cell | dict[str, Any]) -> bool:
+        attack = cell.attack_id if isinstance(cell, Cell) else cell.get("attack_id")
+        return stage in HUMAN and attack is None
+
+    def _per_row(self, m: Measured) -> float | None:
+        p, _ = self.counts.get(m.cell.get("level"), m.cell.get("language"), m.cell.get("split"))
+        return m.seconds / m.rows if p > 0 else None
+
+    def _per_problem(self, stage: str, cell: Cell, m: Measured) -> float | None:
+        p, h = self.counts.get(m.cell.get("level"), m.cell.get("language"), m.cell.get("split"))
+        if p <= 0:
+            return None
+        return max(0, m.rows - (h if self._human(m.stage, m.cell) else 0)) / p
 
 
 def missing_cells(step: Step, store: ArtifactStore) -> Iterator[Cell]:
