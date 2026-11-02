@@ -48,6 +48,9 @@ LANGS = {
 }
 METHOD_OWNER = {"sweet": "simone", "promptmark": "simone", "stone": "ivan", "mcgmark": "ivan",
                 "acw": "ivan"}  # fmt: skip
+# job di rilevazione per passo: la rilevazione di SWEET (con Qwen) è il collo di bottiglia
+# delle catene (stima complessiva, M13_closing_cost_4.txt); al più i posti liberi
+DETECT_JOBS = {"sweet": 8}
 SWEET_ATTACKS = ("T1.1", "T1.2", "T1.3", "T1.4", "T1.5", "T2.1", "T2.2", "T2.4", "T4.1", "T4.2")
 ACTIVE = ("PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "REQUEUED", "RESIZING", "SUSPENDED")
 FAILED = ("FAILED", "TIMEOUT", "CANCELLED", "NODE_FAIL", "OUT_OF_MEMORY", "BOOT_FAIL", "DEADLINE",
@@ -183,7 +186,15 @@ def test_phase(method: str, level: str, wmb: str, after: Sequence[str] = ()) -> 
             needs=marked,
             acw=acw,
         ),  # fmt: skip
-        Step(f"{prefix}/detect", owner, "detect", test, jobs=2, needs=marked, acw=acw),
+        Step(
+            f"{prefix}/detect",
+            owner,
+            "detect",
+            test,
+            jobs=DETECT_JOBS.get(method, 2),
+            needs=marked,
+            acw=acw,
+        ),  # fmt: skip
         Step(
             f"{prefix}/metrics",
             owner,
@@ -225,7 +236,13 @@ def attack_steps(method: str, attack: str, level: str, wmb: str) -> list[Step]:
             acw=acw,
         ),  # fmt: skip
         Step(
-            f"{prefix}/detect", owner, "detect", test, jobs=2, needs=(f"{prefix}/attack",), acw=acw
+            f"{prefix}/detect",
+            owner,
+            "detect",
+            test,
+            jobs=DETECT_JOBS.get(method, 2),
+            needs=(f"{prefix}/attack",),
+            acw=acw,
         ),  # fmt: skip
         Step(
             f"{prefix}/metrics",

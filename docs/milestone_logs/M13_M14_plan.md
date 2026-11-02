@@ -56,7 +56,7 @@ Stato: `[ ]` da fare, `[~]` in corso, `[x]` fatto (con il commit).
 - [x] Lancio dello smoke test sul cluster ed esito (31 ottobre 2026; correzioni `37872b1`, `293f53a`, `e91919e`, `55a3c92`)
 
 ### Fase 3
-- [~] Stima complessiva (ore GPU e CPU per metodo e livello, giorni reali): `scripts/estimate_closing_cost.py`, da lanciare sul cluster
+- [x] Stima complessiva (ore GPU e CPU per metodo e livello, giorni reali): `scripts/estimate_closing_cost.py`, `M13_closing_cost_4.txt`
 - [x] Script principale con dipendenze SLURM, riprendibile, divisione fra i due utenti (`scripts/chains.py`)
 - [x] Comando di stato per catena (`python scripts/chains.py status`)
 
@@ -101,3 +101,28 @@ Problemi trovati e corretti durante lo smoke test:
 | catene di un proprietario divise fra due account: rischio di invii doppi | file di stato per account, controllo dei job attivi degli altri account, `--only` (`293f53a`) |
 | `squeue -j <id>` di un job uscito dalla memoria di SLURM risponde con un errore: il ciclo si fermava a ogni giro | il job conta come non attivo (`e91919e`) |
 | classificatori della M12 di SWEET impossibili con i dati dello smoke test | saltati nello smoke test (`55a3c92`) |
+
+## Stima complessiva (`M13_closing_cost_4.txt`, 2 novembre 2026)
+
+`scripts/estimate_closing_cost.py`: celle senza output delle catene, tempi dai manifest delle celle
+già fatte (stesso metodo; ricadute: rilevazione senza attacco dello stesso metodo, poi gli altri
+metodi). I giri precedenti non valgono: `M13_closing_cost.txt` è vuoto (giro interrotto),
+`M13_closing_cost_2.txt` misurava le celle con output scritti in giri diversi (3.179 h di
+calibrate) e non aveva i tempi degli attacchi di SWEET.
+
+| Chi | Ore GPU | Ore CPU | Giorni (10 posti, senza coda) |
+|---|---|---|---|
+| Ivan senza ACW (STONE, MCGMark su L2 test, L3, T2.4k) | 45 | 5 | 0,2 |
+| Ivan con ACW su L2 test e L3 | 170 | 7 | 1,2 |
+| Simone (SWEET completo, PromptMark su L2 test, L3, T2.4k) | 439 (+ circa 21 per JavaScript) | 30 (+ circa 3) | 2–3 |
+
+- 300 celle senza tempi: gli attacchi di SWEET su JavaScript (nessun altro metodo gira su
+  JavaScript); aggiunte a mano in proporzione agli altri tre linguaggi.
+- SWEET usa i tempi dello sweep (mediana delle configurazioni): per Qwen il pilota a nodo fisso
+  dà tempi più bassi, quindi la rilevazione su L3 (128 h) e T2.4k su L3 (68 h) sono per eccesso;
+  con i tempi del pilota circa 40 h e 25 h.
+- La rilevazione di SWEET sale a 8 job per passo (`DETECT_JOBS`, al più i posti liberi): era il
+  cammino critico (68 h con 2 job).
+- Le celle oltre il limite di 7 h dei job si riprendono da sole (job `Checkpointable`, fino a 30
+  rimesse in coda; ripresa dei worker).
+- Ai giorni va aggiunta l'attesa in coda su gpuq e aiq.
