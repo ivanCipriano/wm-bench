@@ -1,9 +1,18 @@
 # Deviazioni da segnalare nelle tabelle del report (M14; docs/deviations.md). Campi opzionali:
-# methods, levels, attacks (vuoti = tutti). Si aggiornano quando si registra una deviazione nuova.
+# methods, levels, attacks, languages (vuoti = tutti); scope: metrics o imperceptibility (vuoto =
+# entrambe). Si aggiornano quando si registra una deviazione nuova.
 annotations:
+- {deviation: D6, methods: [acw], note: "ACW solo su Python (altri linguaggi NOT_APPLICABLE)"}
 - {deviation: D9, note: "accoppiamento baseline/marcato approssimato (ΔPass@1)"}
 - {deviation: D16, methods: [stone], note: "punteggio principale di STONE z_nonsyntax"}
+- {deviation: D17, methods: [mcgmark], note: "MCGMark solo su Python (altri linguaggi NOT_APPLICABLE)"}
+- {deviation: D19, methods: [sweet], languages: [javascript], note: "SWEET su JavaScript: estensione del perimetro del paper"}
+- {deviation: D22, methods: [promptmark], note: "PromptMark solo su Python (altri linguaggi NOT_APPLICABLE)"}
 - {deviation: D20, methods: [mcgmark], note: "riferimento di fpr_llm e ΔPass@1: baseline gemella"}
+- {deviation: D32, methods: [mcgmark], note: "outlier del paper (patch 0004), selezione rifatta"}
+- {deviation: D35, attacks: [T2.1], note: "regole Ruff equivalenti alle regole Sourcery di ACW"}
+- {deviation: D36, attacks: [T4.2], note: "opzioni di esbuild oltre --bundle"}
+- {deviation: D37, scope: imperceptibility, note: "accoppiamento uguale per tutti i metodi (CodeBLEU, ΔNLL)"}
 - {deviation: D23, methods: [promptmark], levels: [L1], note: "ciclo di correttezza sui soli esempi del prompt"}
 - {deviation: D27, methods: [promptmark], levels: [L2, L3], note: "ciclo di correttezza spento"}
 - {deviation: D31, methods: [sweet], note: "estensione locale della griglia oltre δ = 4"}
