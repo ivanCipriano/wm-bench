@@ -1,0 +1,13 @@
+method,model_id,language,dataset,tpr_at_fpr,auroc,fpr_human,deviations,contamination_risk
+promptmark,deepseek_coder_6p7b,python,classeval,"0.080 [0.032, 0.138]","0.621 [0.539, 0.698]","0.043 [0.012, 0.105]","D9,D22,D27,D39,D40,D41",False
+promptmark,deepseek_coder_6p7b,python,codesearchnet,"0.113 [0.091, 0.138]","0.502 [0.478, 0.529]","0.018 [0.016, 0.020]","D9,D22,D27,D39,D40,D41",True
+promptmark,qwen25_coder_7b,python,classeval,"0.064 [0.023, 0.110]","0.636 [0.562, 0.714]","0.043 [0.012, 0.105]","D9,D22,D27,D39,D40,D41",False
+promptmark,qwen25_coder_7b,python,codesearchnet,"0.041 [0.026, 0.057]","0.492 [0.466, 0.517]","0.018 [0.016, 0.020]","D9,D22,D27,D39,D40,D41",True
+stone,deepseek_coder_6p7b,cpp,thestack_cpp,"0.075 [0.061, 0.092]","0.773 [0.754, 0.790]","0.003 [0.002, 0.004]","D9,D16,D39,D40,D41",True
+stone,deepseek_coder_6p7b,java,codesearchnet,"0.021 [0.013, 0.029]","0.662 [0.638, 0.683]","0.002 [0.002, 0.003]","D9,D16,D39,D40,D41",True
+stone,deepseek_coder_6p7b,python,classeval,"0.188 [0.126, 0.255]","0.573 [0.492, 0.652]","0.096 [0.045, 0.174]","D9,D16,D39,D40,D41",False
+stone,deepseek_coder_6p7b,python,codesearchnet,"0.020 [0.012, 0.030]","0.596 [0.573, 0.617]","0.013 [0.011, 0.014]","D9,D16,D39,D40,D41",True
+stone,qwen25_coder_7b,cpp,thestack_cpp,"0.179 [0.152, 0.205]","0.839 [0.820, 0.859]","0.003 [0.002, 0.004]","D9,D16,D39,D40,D41",True
+stone,qwen25_coder_7b,java,codesearchnet,"0.301 [0.268, 0.335]","0.888 [0.874, 0.901]","0.006 [0.005, 0.007]","D9,D16,D39,D40,D41",True
+stone,qwen25_coder_7b,python,classeval,"0.016 [0.002, 0.037]","0.519 [0.443, 0.598]","0.000 [0.000, 0.038]","D9,D16,D39,D40,D41",False
+stone,qwen25_coder_7b,python,codesearchnet,"0.087 [0.066, 0.108]","0.772 [0.754, 0.789]","0.014 [0.012, 0.015]","D9,D16,D39,D40,D41",True

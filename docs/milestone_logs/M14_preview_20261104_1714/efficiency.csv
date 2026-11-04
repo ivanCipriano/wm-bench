@@ -1,0 +1,86 @@
+method,model_id,level,language,phase,gpu,samples,seconds_per_sample
+sweet,qwen25_coder_7b,L1,python,generation,NVIDIA H100 80GB HBM3,2676,1.9305881587885894
+sweet,qwen25_coder_7b,L1,python,detection,NVIDIA A100-SXM4-80GB,2676,0.9831747298472755
+sweet,qwen25_coder_7b,L2,python,generation,NVIDIA H100 80GB HBM3,1200,1.9958344734541569
+sweet,qwen25_coder_7b,L1,java,generation,NVIDIA H100 80GB HBM3,840,4.520109242207505
+sweet,qwen25_coder_7b,L1,java,detection,NVIDIA A100-SXM4-80GB,840,2.106001550152654
+sweet,qwen25_coder_7b,L2,java,generation,NVIDIA H100 80GB HBM3,1200,4.264734089475438
+sweet,qwen25_coder_7b,L1,cpp,generation,NVIDIA H100 80GB HBM3,840,1.2609154781576126
+sweet,qwen25_coder_7b,L1,cpp,detection,NVIDIA A100-SXM4-80GB,840,1.152768587477372
+sweet,qwen25_coder_7b,L2,cpp,generation,NVIDIA H100 80GB HBM3,1200,2.8542350675049266
+sweet,qwen25_coder_7b,L1,javascript,generation,NVIDIA H100 80GB HBM3,840,1.4426394427860345
+sweet,qwen25_coder_7b,L1,javascript,detection,NVIDIA A100-SXM4-80GB,840,1.010634775531833
+sweet,qwen25_coder_7b,L2,javascript,generation,NVIDIA H100 80GB HBM3,1200,1.9870024920068636
+sweet,deepseek_coder_6p7b,L1,python,generation,NVIDIA H100 80GB HBM3,2676,0.4911524330571039
+sweet,deepseek_coder_6p7b,L1,python,detection,NVIDIA A100-SXM4-80GB,2676,0.06345161289531426
+sweet,deepseek_coder_6p7b,L2,python,generation,NVIDIA H100 80GB HBM3,1200,1.6467483084101688
+sweet,deepseek_coder_6p7b,L1,java,generation,NVIDIA H100 80GB HBM3,840,0.5648514973997553
+sweet,deepseek_coder_6p7b,L1,java,detection,NVIDIA A100-SXM4-80GB,840,0.09078971522339131
+sweet,deepseek_coder_6p7b,L2,java,generation,NVIDIA H100 80GB HBM3,1200,1.5879069491452522
+sweet,deepseek_coder_6p7b,L1,cpp,generation,NVIDIA H100 80GB HBM3,840,0.5295451250331963
+sweet,deepseek_coder_6p7b,L1,cpp,detection,NVIDIA A100-SXM4-80GB,840,0.12463298184752819
+sweet,deepseek_coder_6p7b,L2,cpp,generation,NVIDIA H100 80GB HBM3,1200,1.4077375371901668
+sweet,deepseek_coder_6p7b,L1,javascript,generation,NVIDIA H100 80GB HBM3,840,0.39840758442767754
+sweet,deepseek_coder_6p7b,L1,javascript,detection,NVIDIA A100-SXM4-80GB,840,0.08478124233605784
+sweet,deepseek_coder_6p7b,L2,javascript,generation,n/d,570,0.7113572972524392
+acw,qwen25_coder_7b,L1,python,generation,n/d,2676,5.143703378475527
+acw,qwen25_coder_7b,L1,python,detection,n/d,2676,5.056167328280909
+acw,deepseek_coder_6p7b,L1,python,generation,n/d,2676,5.1436636179413835
+acw,deepseek_coder_6p7b,L1,python,detection,n/d,2676,4.975541152260066
+stone,qwen25_coder_7b,L1,python,generation,n/d,2676,0.570425317582436
+stone,qwen25_coder_7b,L1,python,detection,n/d,2676,0.04567328341570105
+stone,qwen25_coder_7b,L2,python,generation,NVIDIA H100 80GB HBM3,1200,0.5622120331169586
+stone,qwen25_coder_7b,L2,python,detection,NVIDIA A100-SXM4-80GB,1200,0.060376905476587125
+stone,qwen25_coder_7b,L3,python,generation,NVIDIA H100 80GB HBM3,3000,0.6588252975599197
+stone,qwen25_coder_7b,L3,python,detection,NVIDIA A100-SXM4-80GB,3564,0.11087319277892034
+stone,qwen25_coder_7b,L1,java,generation,n/d,840,1.1459346472945369
+stone,qwen25_coder_7b,L1,java,detection,n/d,840,0.10580873678208307
+stone,qwen25_coder_7b,L2,java,generation,NVIDIA H100 80GB HBM3,1200,0.7953877264789009
+stone,qwen25_coder_7b,L2,java,detection,NVIDIA A100-SXM4-80GB,1200,0.08919334838986591
+stone,qwen25_coder_7b,L3,java,generation,NVIDIA H100 80GB HBM3,3000,1.041040923668073
+stone,qwen25_coder_7b,L3,java,detection,NVIDIA A100-SXM4-80GB,3000,0.0965616328616549
+stone,qwen25_coder_7b,L1,cpp,generation,n/d,840,0.5888627361253984
+stone,qwen25_coder_7b,L1,cpp,detection,n/d,840,0.07491122409451886
+stone,qwen25_coder_7b,L2,cpp,generation,NVIDIA H100 80GB HBM3,1200,0.8101205616859568
+stone,qwen25_coder_7b,L2,cpp,detection,NVIDIA A100-SXM4-80GB,1200,0.08190120501691127
+stone,qwen25_coder_7b,L3,cpp,generation,NVIDIA H100 80GB HBM3,3000,0.8324002016990769
+stone,qwen25_coder_7b,L3,cpp,detection,NVIDIA A100-SXM4-80GB,3000,0.07342050186276902
+stone,deepseek_coder_6p7b,L1,python,generation,n/d,2676,0.4301453706054846
+stone,deepseek_coder_6p7b,L1,python,detection,n/d,2676,0.02832835001989493
+stone,deepseek_coder_6p7b,L2,python,generation,NVIDIA H100 80GB HBM3,1200,0.6388172050394738
+stone,deepseek_coder_6p7b,L2,python,detection,NVIDIA A100-SXM4-80GB,1200,0.05197227220021887
+stone,deepseek_coder_6p7b,L3,python,generation,NVIDIA H100 80GB HBM3,3000,0.6276481292351785
+stone,deepseek_coder_6p7b,L3,python,detection,NVIDIA A100-SXM4-80GB,3564,0.07646032064665052
+stone,deepseek_coder_6p7b,L1,java,generation,n/d,840,1.1834313238082586
+stone,deepseek_coder_6p7b,L1,java,detection,n/d,840,0.07878157484727645
+stone,deepseek_coder_6p7b,L2,java,generation,NVIDIA H100 80GB HBM3,1200,1.407039279799593
+stone,deepseek_coder_6p7b,L2,java,detection,NVIDIA A100-SXM4-80GB,1200,0.10175589314982063
+stone,deepseek_coder_6p7b,L3,java,generation,NVIDIA H100 80GB HBM3,3000,1.03221973995213
+stone,deepseek_coder_6p7b,L3,java,detection,NVIDIA A100-SXM4-80GB,3000,0.07012748190983742
+stone,deepseek_coder_6p7b,L1,cpp,generation,n/d,840,2.1973608319168023
+stone,deepseek_coder_6p7b,L1,cpp,detection,n/d,840,0.12049947941434636
+stone,deepseek_coder_6p7b,L2,cpp,generation,NVIDIA H100 80GB HBM3,1200,2.6454854008070336
+stone,deepseek_coder_6p7b,L2,cpp,detection,NVIDIA A100-SXM4-80GB,1200,0.09101983557169054
+stone,deepseek_coder_6p7b,L3,cpp,generation,NVIDIA H100 80GB HBM3,3000,2.0289036802232006
+stone,deepseek_coder_6p7b,L3,cpp,detection,NVIDIA A100-SXM4-80GB,3000,0.05866676569716461
+promptmark,qwen25_coder_7b,L1,python,generation,n/d,2676,33.5865991707987
+promptmark,qwen25_coder_7b,L1,python,detection,n/d,2676,0.0031863997102821572
+promptmark,qwen25_coder_7b,L2,python,generation,NVIDIA A100-SXM4-80GB,1200,35.70302069077656
+promptmark,qwen25_coder_7b,L2,python,detection,defq,1200,0.0039572928461711855
+promptmark,qwen25_coder_7b,L3,python,generation,NVIDIA H100 80GB HBM3,3000,23.348551522968027
+promptmark,qwen25_coder_7b,L3,python,detection,defq,3564,0.003454262596778739
+promptmark,deepseek_coder_6p7b,L1,python,generation,n/d,2676,33.219454200314416
+promptmark,deepseek_coder_6p7b,L1,python,detection,n/d,2676,0.002978814446973936
+promptmark,deepseek_coder_6p7b,L2,python,generation,NVIDIA A100-SXM4-80GB,1200,32.82281679318325
+promptmark,deepseek_coder_6p7b,L2,python,detection,defq,1200,0.0037616809969767927
+promptmark,deepseek_coder_6p7b,L3,python,generation,NVIDIA H100 80GB HBM3,3000,20.017913676449407
+promptmark,deepseek_coder_6p7b,L3,python,detection,defq,3564,0.0035173711351272636
+mcgmark,qwen25_coder_7b,L1,python,generation,n/d,2676,4.207375366622787
+mcgmark,qwen25_coder_7b,L1,python,detection,n/d,2676,0.02611709481113213
+mcgmark,qwen25_coder_7b,L2,python,generation,NVIDIA H100 80GB HBM3,1200,4.639719350455174
+mcgmark,qwen25_coder_7b,L2,python,detection,NVIDIA A100-SXM4-80GB,1200,0.020591980202201134
+mcgmark,qwen25_coder_7b,L3,python,generation,n/d,3000,4.798531899686592
+mcgmark,deepseek_coder_6p7b,L1,python,generation,n/d,2676,4.239235351990887
+mcgmark,deepseek_coder_6p7b,L1,python,detection,n/d,2676,0.008547503467418132
+mcgmark,deepseek_coder_6p7b,L2,python,generation,NVIDIA H100 80GB HBM3,1200,5.90869612907758
+mcgmark,deepseek_coder_6p7b,L2,python,detection,NVIDIA A100-SXM4-80GB,1200,0.014148010221591296
