@@ -192,3 +192,13 @@ def test_purged_job_is_not_active(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(mod, "_run", fake_run)
     assert mod.RealSlurm().active(["808795"]) == {}
+
+
+def test_status_without_flag_shows_acw_jobs_already_sent(tmp_path: Path) -> None:
+    """`status` senza --with-acw: HELD solo per i passi di ACW mai partiti."""
+    slurm = FakeSlurm()
+    steps = [Step("x/acw", "ivan", "watermark", (), acw=True),
+             Step("y/acw", "ivan", "watermark", (), acw=True)]  # fmt: skip
+    Chains(steps[:1], lambda s: False, slurm, tmp_path, with_acw=True).run("ivan")
+    statuses = {r.key: r.status for r in Chains(steps, lambda s: False, slurm, tmp_path).status()}
+    assert statuses == {"x/acw": "PENDING", "y/acw": "HELD"}

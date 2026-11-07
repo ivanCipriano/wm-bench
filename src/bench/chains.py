@@ -775,7 +775,10 @@ class Chains:
         for step in self.steps:
             st = everyone.get(step.key, StepState())
             active = self.slurm.active(st.jobs) if st.jobs else {}
-            if step.acw and not self.with_acw and not self.is_done(step, everyone):
+            # HELD solo se il passo non è mai partito: inviato da un ciclo con --with-acw, il suo
+            # stato vero (in coda, in esecuzione, fallito) si vede anche da `status` senza opzione
+            never_sent = not st.jobs and not st.history
+            if step.acw and not self.with_acw and never_sent and not self.is_done(step, everyone):
                 reports.append(Report(step.key, step.owner, "HELD", "needs --with-acw"))
             elif active:
                 states = sorted({s for s, _ in active.values()})
