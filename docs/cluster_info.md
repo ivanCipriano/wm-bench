@@ -248,7 +248,7 @@ Project_CodeNet/
 
 - ClassEval: submodule `third_party/ClassEval` (aggiunto in Milestone 0).
 - Tests4Py: rinviato alla Milestone 13 (Livello 4 provvisorio).
-- **Criteri di fattibilità del pilota Tests4Py** (decisione dell'utente del 29 ottobre 2026, fissati prima di iniziare il pilota): il pilota sui 5 progetti parte solo dopo che tutto L3 è completo. L4 si dichiara **non fattibile**, riportando i numeri raccolti fino a quel punto, se si verifica anche una sola di queste condizioni:
+- **Criteri di fattibilità del pilota Tests4Py** (decisione dell'utente del 29 ottobre 2026, fissati prima di iniziare il pilota): il pilota sui 5 progetti parte solo dopo che tutto L3 è completo (aggiornamento dell'utente dell'8 novembre 2026: parte con il solo ACW su L3 ancora in corso, perché il pilota non usa i metodi e non dipende da L3; lo lancia Simone). L4 si dichiara **non fattibile**, riportando i numeri raccolti fino a quel punto, se si verifica anche una sola di queste condizioni:
   1. preparare gli ambienti dei 5 progetti richiede più di **una giornata di lavoro**;
   2. lo spazio occupato (ambienti, sorgenti dei progetti, cache) supera la **quota disponibile** su `$WMB`;
   3. la suite di test di almeno un progetto non sta nei **limiti dei job SLURM** (§4: 9 h su `defq`, 7 h su `gpuq`/`aiq`).
