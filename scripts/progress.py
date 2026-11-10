@@ -2,6 +2,7 @@
 
 Uso (con bench-core, nodo di login, nessun job; legge soltanto):
     python scripts/progress.py                         # esecuzioni toccate nelle ultime 24 ore
+    python scripts/progress.py --method acw --stage watermark   # con un filtro: di qualunque data
     python scripts/progress.py --method acw --stage watermark
     python scripts/progress.py --hours 0 --incomplete  # tutte quelle non finite, di qualunque data
 
@@ -72,10 +73,14 @@ def main() -> int:
     parser.add_argument("--stage", default="", help="es. watermark, detect, attack")
     parser.add_argument("--method", default="", help="es. acw, sweet")
     parser.add_argument(
-        "--hours", type=float, default=24.0, help="solo le scritte nelle ultime N ore (0: tutte)"
+        "--hours",
+        type=float,
+        default=None,
+        help="solo le scritte nelle ultime N ore (0: tutte; default 24, 0 con --stage/--method)",
     )
     parser.add_argument("--incomplete", action="store_true", help="solo quelle non finite")
     args = parser.parse_args()
+    hours = args.hours if args.hours is not None else (0 if args.stage or args.method else 24)
     cfg = load_experiment(["paths=cluster", "stage=selftest"])
     runs = Path(cfg.paths.artifacts) / "_runs"
     base = runs / args.stage if args.stage else runs
@@ -88,7 +93,7 @@ def main() -> int:
             continue
         results = run / "results.jsonl"
         stamp = (results if results.is_file() else items).stat().st_mtime
-        if args.hours and now - stamp > args.hours * 3600:
+        if hours and now - stamp > hours * 3600:
             continue
         n_exp = expected(items)
         n_done, sec = done(results)
