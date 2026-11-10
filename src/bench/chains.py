@@ -794,6 +794,27 @@ class Chains:
                 reports.append(Report(step.key, step.owner, "TODO"))
         return reports
 
+    def reset(self, owner: str, prefixes: Sequence[str], reason: str) -> list[str]:
+        """Azzera i tentativi dei passi del proprietario che iniziano con uno dei prefissi, dopo
+        aver tolto la causa dei fallimenti (es. token scaduto); la storia resta, con una riga
+        ``reset``. Rifiuta i passi con job ancora attivi.
+
+        Raises:
+            RuntimeError: se un passo scelto ha job attivi.
+        """
+        path = self.state_path(owner)
+        state = load_state(path)
+        chosen = [k for k in state if k.startswith(tuple(prefixes))]
+        busy = [k for k in chosen if state[k].jobs and self.slurm.active(state[k].jobs)]
+        if busy:
+            raise RuntimeError(f"steps with active jobs, not reset: {busy}")
+        for key in chosen:
+            st = state[key]
+            st.history.append({"at": _now(), "reset": {"attempts": st.attempts, "reason": reason}})
+            st.attempts, st.jobs = 0, []
+        save_state(path, state)
+        return chosen
+
 
 def _now() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")

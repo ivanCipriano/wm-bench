@@ -4,6 +4,7 @@ Uso (con bench-core, nodo di login; ognuno lancia solo i propri passi):
     python scripts/chains.py status                      # stato di tutte le catene (nessun invio)
     python scripts/chains.py run --owner ivan [--dry-run] [--with-acw]
     python scripts/chains.py loop --owner ivan [--with-acw]   # in tmux: un giro ogni 30 minuti
+    python scripts/chains.py reset --owner ivan --only acw/L3/ --reason "..."   # dopo 3 fallimenti
 
 ``run`` fa un giro: aggiorna lo stato dei job, cancella le attese impossibili
 (``DependencyNeverSatisfied``) e invia i passi pronti fino ai posti liberi (10 meno i job in coda),
@@ -17,6 +18,9 @@ Con ``--smoke`` lavora nella cartella separata ``$WMB/smoke/`` (artefatti, stati
 per passo) preparata da ``scripts/smoke_seed.py``: lo store dei job ha ``WMB_WRITE_ROOT`` e si
 ferma con un errore se prova a scrivere fuori. Nello smoke test i passi di SWEET prima del
 congelamento non girano: il congelamento finto è nella cartella dello smoke test.
+``reset`` azzera i tentativi dei passi scelti (``--only``, obbligatorio) dopo che la causa dei
+fallimenti è stata tolta (es. token di Sourcery rinnovato): la storia resta nello stato, con il
+motivo.
 Nodi guasti: ``export WMB_EXCLUDE_NODES=gnode13,gnode14`` prima del comando.
 """
 
@@ -178,7 +182,7 @@ def loop(args: argparse.Namespace) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("command", choices=["status", "run", "loop"])
+    parser.add_argument("command", choices=["status", "run", "loop", "reset"])
     parser.add_argument("--owner", choices=[*OWNERS, "all"])
     parser.add_argument("--logs", action="store_true", help="status: log tails of failed steps")
     parser.add_argument(
@@ -192,6 +196,7 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--every", type=int, default=1800)
     parser.add_argument("--brief", action="store_true", help="status: one line per chain")
+    parser.add_argument("--reason", default="", help="reset: why the attempts are reset")
     args = parser.parse_args()
     if args.command == "status":
         chains = make(args)
@@ -202,6 +207,14 @@ def main() -> int:
         return 0
     if args.owner is None:
         parser.error(f"{args.command} needs --owner")
+    if args.command == "reset":
+        if not args.only or not args.reason or args.owner == "all":
+            parser.error("reset needs --owner <name>, at least one --only prefix and --reason")
+        chains = make(args)
+        with lock(chains.state_dir, args.owner):
+            reset = chains.reset(args.owner, args.only, args.reason)
+        sys.stdout.write("reset: " + (", ".join(reset) or "no step matched") + "\n")
+        return 0
     if args.command == "run":
         print_reports(run_once(args))
         return 0

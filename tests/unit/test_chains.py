@@ -202,3 +202,21 @@ def test_status_without_flag_shows_acw_jobs_already_sent(tmp_path: Path) -> None
     Chains(steps[:1], lambda s: False, slurm, tmp_path, with_acw=True).run("ivan")
     statuses = {r.key: r.status for r in Chains(steps, lambda s: False, slurm, tmp_path).status()}
     assert statuses == {"x/acw": "PENDING", "y/acw": "HELD"}
+
+
+def test_reset_after_three_failures(tmp_path: Path) -> None:
+    """Dopo 3 fallimenti il passo è fermo; ``reset`` azzera i tentativi e lascia la storia."""
+    slurm = FakeSlurm()
+    steps = STEPS[:1]
+    for _ in range(3):
+        Chains(steps, lambda s: False, slurm, tmp_path).run("ivan")
+        slurm.finish(ok=False)
+    chains = Chains(steps, lambda s: False, slurm, tmp_path)
+    assert chains.run("ivan")[0].status == "FAILED"
+    assert chains.reset("ivan", ["c/"], "token renewed") == ["c/a"]
+    st = load_state(chains.state_path("ivan"))["c/a"]
+    assert st.attempts == 0 and st.history[-1]["reset"]["attempts"] == 3
+    assert Chains(steps, lambda s: False, slurm, tmp_path).status()[0].status == "TODO"
+    assert Chains(steps, lambda s: False, slurm, tmp_path).run("ivan")[0].status == "SUBMITTED"
+    with pytest.raises(RuntimeError, match="active"):  # job attivi: niente reset
+        Chains(steps, lambda s: False, slurm, tmp_path).reset("ivan", ["c/"], "x")
