@@ -18,6 +18,7 @@ annotations:
 - {deviation: D31, methods: [sweet], note: "estensione locale della griglia oltre δ = 4"}
 - {deviation: D33, attacks: [T2.2], note: "prompt di attacco v2 approvati"}
 - {deviation: D34, attacks: [T2.2], note: "controllo negativo sulla baseline riscritta"}
+- {deviation: D42, methods: [acw], levels: [L3], note: "limite di tempo di Sourcery: campioni oltre il limite FAILED"}
 - {deviation: D38, methods: [acw], note: "misure al netto della formattazione (impercettibilità)"}
 - {deviation: D39, levels: [L3], note: "negativi di CodeSearchNet senza le funzioni già usate in L1"}
 - {deviation: D40, levels: [L3], note: "ClassEval con 2.048 token nuovi"}

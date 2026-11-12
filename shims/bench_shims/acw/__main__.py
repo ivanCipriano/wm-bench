@@ -27,6 +27,12 @@ shim) e un controllo su un file canarino: il codice ignora gli errori di Sourcer
 login o rete le regole 1-35 non si applicherebbero in silenzio. Il canarino si ripete **dopo ogni
 lotto**: se il token scade a metà lavoro il lotto non si scrive e il worker si ferma
 (``FatalShimError``, exit code 2); con un token nuovo un nuovo invio riprende dagli item scritti.
+
+**Limite di tempo** (D42): su alcuni codici molto lunghi Sourcery impiega più di mezz'ora per
+chiamata e un lotto non finirebbe mai. Ogni lotto gira in un processo figlio (gruppo di processi
+proprio, cartella di lavoro propria) con ``BATCH_TIMEOUT_S``; se scade, il gruppo (Sourcery
+compreso) si uccide e il lotto si rifà **campione per campione** con ``ITEM_TIMEOUT_S``. Un campione
+che sfora anche da solo è ``FAILED`` con errore ``sourcery timeout`` (``extra.sourcery_timeout``).
 """
 
 from __future__ import annotations
@@ -35,12 +41,16 @@ import concurrent.futures
 import contextlib
 import hashlib
 import io
+import multiprocessing
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
-from typing import Any, List, Sequence
+import time
+import traceback
+from typing import Any, Callable, Dict, List, Sequence, Tuple
 
 from bench_contracts import WorkerItem, WorkerRequest, WorkerResult
 from bench_contracts.enums import DetectStatus, EmbedStatus
@@ -53,6 +63,11 @@ THREADS = 5  # thread delle regole proprie (``batch`` del codice, default 5)
 # Applicazioni in parallelo dentro un lotto (job CPU con 16 core, configs/cluster/slurm_cpu.yaml).
 # Costante: il worker riceve un ambiente ripulito (worker_client.PASSTHROUGH).
 RULE_WORKERS = 8
+# Limiti di tempo (D42): un lotto normale di 50 campioni richiede 1-2 minuti.
+BATCH_TIMEOUT_S = 20 * 60
+ITEM_TIMEOUT_S = 10 * 60
+STALE_S = 6 * 3600  # cartelle di lavoro lasciate da worker uccisi (limite del worker: 5 h)
+TIMEOUT_ERROR = "sourcery timeout"
 SOURCERY_RULES = range(1, 36)
 # File canarino per il controllo di partenza: casi tipici di tre regole Sourcery (la 11 ha
 # modificato codice anche nell'oracle); basta che uno cambi. ``remove-unnecessary-else`` (1) non
@@ -68,6 +83,50 @@ CANARIES = {
         "        total += item\n    return total\n"
     ),
 }
+
+
+def run_with_timeout(func: Callable[[], Any], timeout_s: float) -> Tuple[bool, Any]:
+    """Esegue ``func`` in un processo figlio (fork) con un gruppo di processi proprio.
+
+    Restituisce ``(True, risultato)`` o ``(False, None)`` se il tempo scade: in quel caso il gruppo
+    intero (anche i processi di Sourcery lanciati dalla shell) riceve ``SIGKILL``.
+
+    Raises:
+        RuntimeError: se ``func`` solleva un'eccezione nel figlio (con il traceback).
+    """
+    ctx = multiprocessing.get_context("fork")
+    parent, child = ctx.Pipe(duplex=False)
+
+    def target() -> None:
+        os.setpgrp()
+        try:
+            child.send((True, func()))
+        except BaseException:  # il genitore rilancia con il traceback
+            child.send((False, traceback.format_exc()))
+        finally:
+            child.close()
+            os._exit(0)
+
+    proc = ctx.Process(target=target)
+    proc.start()
+    child.close()
+    try:
+        if parent.poll(timeout_s):
+            ok, value = parent.recv()
+            proc.join()
+            if not ok:
+                raise RuntimeError(f"batch failed in child process:\n{value}")
+            return True, value
+        return False, None
+    except EOFError:  # figlio morto senza risposta
+        proc.join()
+        raise RuntimeError(f"child process died (exit {proc.exitcode})") from None
+    finally:
+        if proc.is_alive():
+            with contextlib.suppress(ProcessLookupError):
+                os.killpg(proc.pid, signal.SIGKILL)
+            proc.join()
+        parent.close()
 
 
 def file_hash(path: str) -> str:
@@ -91,6 +150,7 @@ class AcwShim(ShimBase):
         run_dir = os.path.dirname(os.path.abspath(request.output_path))
         self.workdir = os.path.join(run_dir, "acw_work")
         os.makedirs(self.workdir, exist_ok=True)
+        self._clean_stale()
         os.chdir(self.workdir)  # il codice scrive qui i file .sourcery_temp_*.yaml
         # Il codice chiama ``sourcery`` e ``autopep8`` dalla shell: gli eseguibili stanno nella
         # cartella dell'interprete dell'ambiente ``acw``, che il PATH ripulito non contiene.
@@ -111,6 +171,70 @@ class AcwShim(ShimBase):
         self._login()
         if self.uses_sourcery:
             self._canary()
+
+    def _clean_stale(self) -> None:
+        """Toglie le cartelle di lavoro lasciate da worker uccisi (più vecchie di ``STALE_S``)."""
+        now = time.time()
+        for name in os.listdir(self.workdir):
+            path = os.path.join(self.workdir, name)
+            if os.path.isdir(path) and now - os.path.getmtime(path) > STALE_S:
+                shutil.rmtree(path, ignore_errors=True)
+
+    # ------------------------------------------------------------------ limite di tempo
+    def _guarded(
+        self,
+        items: List[WorkerItem],
+        core: Callable[[List[WorkerItem]], Tuple[List[WorkerResult], int]],
+        timeout_result: Callable[[WorkerItem, Dict[str, Any]], WorkerResult],
+    ) -> Tuple[List[WorkerResult], int]:
+        """Lotto con il limite di tempo; se scade, campione per campione (D42)."""
+        ok, value = self._in_child(lambda: core(items), BATCH_TIMEOUT_S)
+        if ok:
+            return value
+        outputs: List[WorkerResult] = []
+        calls = 0
+        for item in items:
+            ok, value = self._in_child(lambda item=item: core([item]), ITEM_TIMEOUT_S)
+            if ok:
+                out, c = value
+                calls += c
+                for r in out:
+                    r.extra["batch_timeout_fallback"] = True
+                outputs += out
+            else:
+                extra = {
+                    "n_rules": len(self.rules),
+                    "rules": self.rules,
+                    "sourcery_timeout": True,
+                    "batch_timeout_fallback": True,
+                    "timeout_s": ITEM_TIMEOUT_S,
+                }
+                outputs.append(timeout_result(item, extra))
+        return outputs, calls
+
+    def _in_child(self, func: Callable[[], Any], timeout_s: float) -> Tuple[bool, Any]:
+        """``run_with_timeout`` con una cartella di lavoro propria, tolta alla fine."""
+        base = tempfile.mkdtemp(prefix="attempt_", dir=self.workdir)
+        workdir = self.workdir
+
+        def run() -> Any:
+            self.workdir = base  # solo nel figlio: le copie dei lotti finiscono qui
+            return func()
+
+        try:
+            return run_with_timeout(run, timeout_s)
+        finally:
+            self.workdir = workdir
+            shutil.rmtree(base, ignore_errors=True)
+
+    @staticmethod
+    def _add_calls(results: List[WorkerResult], calls: int, extra_calls: int) -> None:
+        """Chiamate a Sourcery del lotto (canarino compreso) negli ``extra``."""
+        total = calls + extra_calls
+        for r in results:
+            if "sourcery_calls_batch" in r.extra:
+                r.extra["sourcery_calls_batch"] = total
+                r.extra["sourcery_calls_per_sample"] = total / len(results)
 
     # ------------------------------------------------------------------ Sourcery
     def _login(self) -> None:
@@ -205,12 +329,19 @@ class AcwShim(ShimBase):
 
     # ------------------------------------------------------------------ inserimento
     def embed_batch(self, items: List[WorkerItem]) -> List[List[WorkerResult]]:
+        def on_timeout(item: WorkerItem, extra: Dict[str, Any]) -> WorkerResult:
+            return self.result(item, EmbedStatus.FAILED, error=TIMEOUT_ERROR, extra=extra)
+
+        results, calls = self._guarded(items, self._embed_core, on_timeout)
+        self._add_calls(results, calls, self._check_sourcery())  # prima di scrivere il lotto
+        return [[r] for r in results]
+
+    def _embed_core(self, items: List[WorkerItem]) -> Tuple[List[WorkerResult], int]:
         folder, names = self._batch_dir(items)
         try:
             changed, work, calls = self._per_rule(folder, names, "embed")
             modified = self._changed(folder, work, names)
-            calls += self._check_sourcery()  # prima di scrivere il lotto
-            outputs: List[List[WorkerResult]] = []
+            outputs: List[WorkerResult] = []
             for i, (item, name) in enumerate(zip(items, names)):
                 applicable = [r for r in self.rules if changed[r][i]]
                 extra = {
@@ -232,20 +363,27 @@ class AcwShim(ShimBase):
                     with open(os.path.join(work, name), encoding="utf-8", newline="") as handle:
                         code = handle.read()
                     result = self.result(item, EmbedStatus.OK, code=code, extra=extra)
-                outputs.append([result])
+                outputs.append(result)
             shutil.rmtree(work, ignore_errors=True)
-            return outputs
+            return outputs, calls
         finally:
             shutil.rmtree(folder, ignore_errors=True)
 
     # ------------------------------------------------------------------ rilevazione
     def detect_batch(self, items: List[WorkerItem]) -> List[WorkerResult]:
+        def on_timeout(item: WorkerItem, extra: Dict[str, Any]) -> WorkerResult:
+            return self.result(item, DetectStatus.FAILED, error=TIMEOUT_ERROR, extra=extra)
+
+        results, calls = self._guarded(items, self._detect_core, on_timeout)
+        self._add_calls(results, calls, self._check_sourcery())  # prima di scrivere il lotto
+        return results
+
+    def _detect_core(self, items: List[WorkerItem]) -> Tuple[List[WorkerResult], int]:
         folder, names = self._batch_dir(items)
         try:
             changed, joint, calls = self._per_rule(folder, names, "joint")
             joint_changed = self._changed(folder, joint, names)
             shutil.rmtree(joint, ignore_errors=True)
-            calls += self._check_sourcery()  # prima di scrivere il lotto
             results: List[WorkerResult] = []
             for i, item in enumerate(items):
                 unchanged = {str(r): not changed[r][i] for r in self.rules}
@@ -273,7 +411,7 @@ class AcwShim(ShimBase):
                         extra=extra,
                     )
                 )
-            return results
+            return results, calls
         finally:
             shutil.rmtree(folder, ignore_errors=True)
 
