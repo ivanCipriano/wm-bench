@@ -22,3 +22,6 @@
 [submodule "third_party/lm-watermarking"]
 	path = third_party/lm-watermarking
 	url = https://github.com/jwkirchenbauer/lm-watermarking
+[submodule "third_party/multimark"]
+	path = third_party/multimark
+	url = https://github.com/ivanCipriano/MultiMark
