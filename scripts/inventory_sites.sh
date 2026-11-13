@@ -64,7 +64,16 @@ if [ -n "${WMB_EXCLUDE_NODES:-}" ]; then
     EXCLUDE=(--exclude "$WMB_EXCLUDE_NODES")
 fi
 
-JOB="$WMB/logs/inventory_sites.sbatch"
+# Script del job con nome proprio: due lanci di fila non si sovrascrivono il file.
+JOB="$(mktemp "$WMB/logs/inventory_sites_sbatch_XXXXXX")"
+# Un job dell'inventario già in coda o in esecuzione scrive negli stessi ingressi: il nuovo
+# parte solo dopo (i due job 818687 e 818688 del 13 novembre 2026 erano partiti insieme).
+PREV="$(squeue -h -u "$USER" -n wmb-inventory-sites -o %i 2>/dev/null | paste -sd: -)"
+DEP=()
+if [ -n "$PREV" ]; then
+    DEP=(--dependency "afterany:$PREV")
+    echo "waiting for running inventory job(s): $PREV"
+fi
 {
     cat <<SBATCH
 #!/bin/bash -l
@@ -92,6 +101,7 @@ SBATCH
 } > "$JOB"
 
 ID=$(sbatch --parsable -p defq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_defq_qos \
-    -c 4 --mem 16G -t 60 ${EXCLUDE[@]+"${EXCLUDE[@]}"} --job-name wmb-inventory-sites \
+    -c 4 --mem 16G -t 60 ${EXCLUDE[@]+"${EXCLUDE[@]}"} ${DEP[@]+"${DEP[@]}"} \
+    --job-name wmb-inventory-sites \
     -o "$WMB/logs/inventory_sites_%j.log" "$JOB")
 echo "job $ID (defq): log $WMB/logs/inventory_sites_$ID.log -> $LOG"

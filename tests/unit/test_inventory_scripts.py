@@ -180,6 +180,25 @@ def test_export_end_to_end_on_tiny_l1(
         export.export(facade.cfg, store, out, [MODEL], ["L9_nothing"])
 
 
+def test_main_builds_the_configuration(
+    local_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """``main`` compone la configurazione come sul cluster (``stage`` obbligatorio, job 818687)."""
+    calls: list[tuple[Any, ...]] = []
+
+    def fake_export(cfg: Any, store: Any, out_dir: Path, models: list[str], only: Any) -> dict:  # type: ignore[type-arg]
+        calls.append((cfg.stage, cfg.paths.artifacts, out_dir, models, only))
+        return {}
+
+    monkeypatch.setattr(export, "export", fake_export)
+    out = tmp_path / "inputs"
+    assert export.main(["--out-dir", str(out), "paths=local"]) == 0
+    stage, artifacts, out_dir, models, only = calls[0]
+    assert stage == "execute" and artifacts == local_root / "artifacts"
+    assert out_dir == out and models == ["qwen25_coder_7b", "deepseek_coder_6p7b"]
+    assert only is None
+
+
 # ---------------------------------------------------------------- inventory_sites
 
 

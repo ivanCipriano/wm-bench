@@ -215,7 +215,7 @@ def write_if_new(path: Path, data: bytes) -> str:
             return "unchanged"
         raise InventoryError(f"{path} exists with different content: move it away and rerun")
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.tmp")
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")  # un nome per processo
     with tmp.open("wb") as fh:
         fh.write(data)
         fh.flush()

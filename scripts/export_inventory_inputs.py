@@ -191,7 +191,7 @@ def write_if_new(path: Path, data: bytes) -> str:
         )
     ArtifactStore._check_write_static(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.tmp")
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")  # un nome per processo
     with tmp.open("wb") as fh:
         fh.write(data)
         fh.flush()
@@ -295,7 +295,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--groups", nargs="+", help="only these groups (default: all)")
     parser.add_argument("overrides", nargs="*", help="Hydra overrides (e.g. paths=local)")
     args = parser.parse_args(argv)
-    cfg = load_experiment(args.overrides)
+    # ``stage`` è obbligatorio nella configurazione: si usa ``execute``, di cui lo script riusa
+    # gli executor. Gli override da riga di comando vengono dopo e prevalgono (es. paths=local).
+    cfg = load_experiment(["paths=cluster", "stage=execute", *args.overrides])
     store = ArtifactStore(Path(cfg.paths.artifacts))
     out_dir = args.out_dir or default_out_dir(cfg)
     try:
