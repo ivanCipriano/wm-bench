@@ -17,8 +17,10 @@ Uscite, in ``--out-dir``:
   rinominato ``loc_bench``) seguiti dalle colonne di ``inventory_code`` (``parse_ok``, ``error``,
   ``n_sites_total``, ``n_sites_<canale>``, ``n_vars``, ``n_functions``, ``loc``, ...);
 - ``--summary`` (testo, di solito ``<out-dir>/summary.<variante>.txt``) e ``--summary-json``:
-  riepilogo di ogni gruppo, poi per dataset (se il gruppo ne ha più di uno) e, con
-  ``--loc-bands``, per fascia di ``loc_bench``.
+  riepilogo di ogni gruppo, poi per dataset (se il gruppo ne ha più di uno), per fascia di
+  ``loc_bench`` (``LOC_BANDS``: 1–5, 6–10, 11–20, 21–40, 41+) e per fascia di ``n_sites_total``
+  (``SITE_BANDS``, come PIPELINE §5.6: 1–7, 8–12, 13–19, 20–31, 32–55, 56+). I campioni fuori da
+  ogni fascia (0 righe, 0 siti) si contano a parte.
 
 ``<variante>`` riassume le opzioni (``canonical-kind_guards-on_params-off`` per la base di
 multimark). Come le altre fasi, un file d'uscita che esiste già con lo stesso contenuto non si
@@ -56,6 +58,17 @@ INPUT_FIELDS = (
     "split",
 )
 LOC_FIELD = "loc_bench"
+# Fasce chiuse [low, high] (decisione dell'utente del 13 novembre 2026); None = senza limite.
+LOC_BANDS: tuple[tuple[int, int | None], ...] = ((1, 5), (6, 10), (11, 20), (21, 40), (41, None))
+# Fasce di siti di PIPELINE_metodo.md §5.6 (confini 13, 20, 32 della tabella di §3.10.3).
+SITE_BANDS: tuple[tuple[int, int | None], ...] = (
+    (1, 7),
+    (8, 12),
+    (13, 19),
+    (20, 31),
+    (32, 55),
+    (56, None),
+)
 
 
 class InventoryError(RuntimeError):
@@ -140,34 +153,45 @@ def inventory_rows(
     return rows
 
 
-def parse_bands(text: str | None) -> list[tuple[int, int | None]]:
-    """Fasce di righe da confini crescenti: ``"10,20"`` → [0, 10), [10, 20), [20, ∞)."""
-    if not text:
-        return []
-    edges = [int(x) for x in text.split(",") if x.strip()]
-    if any(edges[i + 1] <= edges[i] for i in range(len(edges) - 1)) or any(e <= 0 for e in edges):
-        raise InventoryError(f"--loc-bands must be positive and increasing: {text}")
-    lows = [0, *edges]
-    highs: list[int | None] = [*edges, None]
-    return [(lows[i], highs[i]) for i in range(len(lows))]
+def in_band(value: int, band: tuple[int, int | None]) -> bool:
+    """``value`` nella fascia chiusa ``[low, high]`` (``high = None``: senza limite)."""
+    low, high = band
+    return value >= low and (high is None or value <= high)
 
 
-def band_label(low: int, high: int | None) -> str:
-    return f"loc {low}+" if high is None else f"loc {low}-{high - 1}"
+def band_label(field: str, band: tuple[int, int | None]) -> str:
+    low, high = band
+    return f"{field} {low}+" if high is None else f"{field} {low}-{high}"
 
 
-def strata(
-    rows: Sequence[dict[str, Any]], bands: Sequence[tuple[int, int | None]]
-) -> list[tuple[str, list[dict[str, Any]]]]:
-    """Sottoinsiemi riassunti oltre al gruppo intero: per dataset (se più di uno), per fascia."""
+def strata(rows: Sequence[dict[str, Any]]) -> list[tuple[str, list[dict[str, Any]]]]:
+    """Sottoinsiemi riassunti oltre al gruppo intero: per dataset (se più di uno), per fascia di
+    ``loc_bench`` (``LOC_BANDS``) e per fascia di ``n_sites_total`` (``SITE_BANDS``, solo i
+    campioni analizzati). Fasce chiuse, decise dall'utente il 13 novembre 2026."""
     out: list[tuple[str, list[dict[str, Any]]]] = []
     datasets = sorted({str(r["dataset"]) for r in rows})
     if len(datasets) > 1:
         out.extend((f"dataset={d}", [r for r in rows if r["dataset"] == d]) for d in datasets)
-    for low, high in bands:
-        sel = [r for r in rows if r[LOC_FIELD] >= low and (high is None or r[LOC_FIELD] < high)]
-        out.append((band_label(low, high), sel))
+    for band in LOC_BANDS:
+        out.append((band_label("loc", band), [r for r in rows if in_band(r[LOC_FIELD], band)]))
+    parsed = [r for r in rows if r.get("parse_ok")]
+    for band in SITE_BANDS:
+        sel = [r for r in parsed if in_band(r["n_sites_total"], band)]
+        out.append((band_label("n_sites_total", band), sel))
     return out
+
+
+def outside_bands(rows: Sequence[dict[str, Any]]) -> tuple[int, int]:
+    """Campioni fuori da tutte le fasce: ``loc_bench`` = 0 e ``n_sites_total`` = 0 (analizzati).
+
+    Non entrano in nessuna fascia ma si contano nel riepilogo (nessun campione sparisce in
+    silenzio); i campioni non analizzabili sono già nel conteggio ``parse_errors``."""
+    loc_out = sum(1 for r in rows if not any(in_band(r[LOC_FIELD], b) for b in LOC_BANDS))
+    parsed = [r for r in rows if r.get("parse_ok")]
+    sites_out = sum(
+        1 for r in parsed if not any(in_band(r["n_sites_total"], b) for b in SITE_BANDS)
+    )
+    return loc_out, sites_out
 
 
 def csv_bytes(rows: Sequence[dict[str, Any]], columns: Sequence[str]) -> bytes:
@@ -210,7 +234,6 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--canonical", default="kind", help="canonical forms: kind (base) or paper")
     p.add_argument("--no-guards", action="store_true", help="drop semantic channel conditions")
     p.add_argument("--include-params", action="store_true", help="count parameters as names")
-    p.add_argument("--loc-bands", help="comma-separated loc band edges (e.g. 10,20,40)")
     return p
 
 
@@ -224,12 +247,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             "include_params": args.include_params,
         }
         variant = variant_name(args.canonical, not args.no_guards, args.include_params)
-        bands = parse_bands(args.loc_bands)
         columns = [*INPUT_FIELDS, LOC_FIELD, "parse_ok", "error", *inventory.STAT_COLUMNS]
         commit = source_commit(args.library.resolve())
         text = [
             f"multimark source commit: {commit}",
-            f"options: {variant}" + (f" loc_bands={args.loc_bands}" if bands else ""),
+            f"options: {variant}",
+            "loc bands: " + ", ".join(band_label("loc", b) for b in LOC_BANDS),
+            "site bands: " + ", ".join(band_label("n_sites_total", b) for b in SITE_BANDS),
             "",
         ]
         summary_json: dict[str, Any] = {"source_commit": commit, "options": options, "groups": {}}
@@ -246,17 +270,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             input_sha = hashlib.sha256(path.read_bytes()).hexdigest()
             loc_mismatch = sum(1 for r in rows if r.get("parse_ok") and r["loc"] != r[LOC_FIELD])
+            loc_out, sites_out = outside_bands(rows)
             group: dict[str, Any] = {
                 "input_sha256": input_sha,
                 "loc_mismatch": loc_mismatch,
+                "outside_loc_bands": loc_out,
+                "outside_site_bands": sites_out,
                 "summary": inventory.summarize(rows),
                 "strata": {},
             }
             text.append(inventory.format_summary(group["summary"], path.stem))
             text.append(f"input sha256: {input_sha}")
             text.append(f"rows with library loc != bench loc: {loc_mismatch}")
+            text.append(f"rows outside loc bands (loc_bench = 0): {loc_out}")
+            text.append(f"parsed rows outside site bands (n_sites_total = 0): {sites_out}")
             text.append("")
-            for label, sel in strata(rows, bands):
+            for label, sel in strata(rows):
                 summary = inventory.summarize(sel)
                 group["strata"][label] = summary
                 text.append(inventory.format_summary(summary, f"{path.stem} [{label}]"))

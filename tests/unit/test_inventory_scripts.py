@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import importlib.util
+import itertools
 import json
 import sys
 from pathlib import Path
@@ -201,13 +202,40 @@ def _input(path: Path, codes: list[tuple[str, str]]) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def test_variant_names_and_bands() -> None:
+def test_variant_names() -> None:
     assert inv.variant_name("kind", True, False) == "canonical-kind_guards-on_params-off"
     assert inv.variant_name("paper", False, True) == "canonical-paper_guards-off_params-on"
-    assert inv.parse_bands("10,20") == [(0, 10), (10, 20), (20, None)]
-    assert inv.parse_bands(None) == []
-    with pytest.raises(inv.InventoryError):
-        inv.parse_bands("20,10")
+
+
+def test_bands_are_the_decided_ones_closed_and_contiguous() -> None:
+    assert inv.LOC_BANDS == ((1, 5), (6, 10), (11, 20), (21, 40), (41, None))
+    assert inv.SITE_BANDS == ((1, 7), (8, 12), (13, 19), (20, 31), (32, 55), (56, None))
+    for bands in (inv.LOC_BANDS, inv.SITE_BANDS):
+        for (_, high), (low, _) in itertools.pairwise(bands):
+            assert low == high + 1  # nessun buco e nessuna sovrapposizione
+        for value in range(1, 200):  # ogni valore positivo sta in esattamente una fascia
+            assert sum(inv.in_band(value, b) for b in bands) == 1
+        assert not any(inv.in_band(0, b) for b in bands)
+    assert inv.band_label("loc", (41, None)) == "loc 41+"
+    assert inv.band_label("n_sites_total", (13, 19)) == "n_sites_total 13-19"
+
+
+def test_strata_and_rows_outside_bands() -> None:
+    def row(dataset: str, loc: int, sites: int | None) -> dict[str, Any]:
+        parsed = sites is not None
+        return {"dataset": dataset, "loc_bench": loc, "parse_ok": parsed, "n_sites_total": sites}
+
+    rows = [row("a", 5, 7), row("a", 6, 8), row("b", 0, 0), row("b", 41, None)]
+    got = dict(inv.strata(rows))
+    assert [r["loc_bench"] for r in got["dataset=a"]] == [5, 6]
+    assert [r["loc_bench"] for r in got["loc 1-5"]] == [5]
+    assert [r["loc_bench"] for r in got["loc 6-10"]] == [6]
+    assert [r["loc_bench"] for r in got["loc 41+"]] == [41]
+    assert [r["n_sites_total"] for r in got["n_sites_total 1-7"]] == [7]
+    assert [r["n_sites_total"] for r in got["n_sites_total 8-12"]] == [8]
+    assert got["n_sites_total 56+"] == []
+    # loc 0 e 0 siti: fuori da ogni fascia, contati; il campione non analizzato non è un sito 0.
+    assert inv.outside_bands(rows) == (1, 1)
 
 
 @needs_library
@@ -221,7 +249,6 @@ def test_inventory_calls_the_library_and_refuses_to_overwrite(tmp_path: Path) ->
     argv = [
         "--input", str(inputs), "--out-dir", str(out), "--library", str(LIBRARY),
         "--summary", str(summary), "--summary-json", str(tmp_path / "s.json"),
-        "--loc-bands", "5",
     ]  # fmt: skip
     assert inv.main(argv) == 0
 
@@ -239,7 +266,13 @@ def test_inventory_calls_the_library_and_refuses_to_overwrite(tmp_path: Path) ->
     text = summary.read_text(encoding="utf-8")
     assert "Inventory L1_dev_canonical\n" in text
     assert "Inventory L1_dev_canonical [dataset=mbppplus]" in text
-    assert "Inventory L1_dev_canonical [loc 0-4]" in text
+    assert "loc bands: loc 1-5, loc 6-10, loc 11-20, loc 21-40, loc 41+\n" in text
+    assert "Inventory L1_dev_canonical [loc 1-5]" in text
+    assert "Inventory L1_dev_canonical [n_sites_total 1-7]" in text
+    assert "rows outside loc bands (loc_bench = 0): 0" in text
+    groups = json.loads((tmp_path / "s.json").read_text(encoding="utf-8"))["groups"]
+    assert groups["L1_dev_canonical"]["strata"]["loc 1-5"]["n_samples"] == 2
+    assert groups["L1_dev_bad"]["outside_site_bands"] == 0  # non analizzato: non conta
     assert "parse_errors=1" in text  # il campione non analizzabile è contato a parte
     data = json.loads((tmp_path / "s.json").read_text(encoding="utf-8"))
     assert data["options"] == {"canonical": "kind", "guards": True, "include_params": False}
