@@ -58,6 +58,9 @@ INPUT_FIELDS = (
     "split",
 )
 LOC_FIELD = "loc_bench"
+# Campi facoltativi dell'ingresso, copiati nella tabella e riassunti a parte se presenti (``role``
+# del pool CodeNet): i gruppi che non li hanno producono le stesse uscite di prima.
+OPTIONAL_FIELDS = ("role",)
 # Fasce chiuse [low, high] (decisione dell'utente del 13 novembre 2026); None = senza limite.
 LOC_BANDS: tuple[tuple[int, int | None], ...] = ((1, 5), (6, 10), (11, 20), (21, 40), (41, None))
 # Fasce di siti di PIPELINE_metodo.md §5.6 (confini 13, 20, 32 della tabella di §3.10.3).
@@ -147,6 +150,7 @@ def inventory_rows(
     rows = []
     for rec in records:
         row: dict[str, Any] = {k: rec[k] for k in INPUT_FIELDS}
+        row.update({k: rec[k] for k in OPTIONAL_FIELDS if k in rec})
         row[LOC_FIELD] = rec["loc"]
         row.update(inventory.inventory_code(rec["code"], **options))
         rows.append(row)
@@ -172,6 +176,9 @@ def strata(rows: Sequence[dict[str, Any]]) -> list[tuple[str, list[dict[str, Any
     datasets = sorted({str(r["dataset"]) for r in rows})
     if len(datasets) > 1:
         out.extend((f"dataset={d}", [r for r in rows if r["dataset"] == d]) for d in datasets)
+    for field in OPTIONAL_FIELDS:
+        values = sorted({str(r[field]) for r in rows if field in r})
+        out.extend((f"{field}={v}", [r for r in rows if str(r.get(field)) == v]) for v in values)
     for band in LOC_BANDS:
         out.append((band_label("loc", band), [r for r in rows if in_band(r[LOC_FIELD], band)]))
     parsed = [r for r in rows if r.get("parse_ok")]
@@ -261,7 +268,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             records = read_records(path)
             rows = inventory_rows(inventory, records, options)
             out = args.out_dir / f"{path.stem}.{variant}.csv"
-            outcome = write_if_new(out, csv_bytes(rows, columns))
+            extra = [f for f in OPTIONAL_FIELDS if any(f in r for r in rows)]
+            head = [*INPUT_FIELDS, *extra]
+            outcome = write_if_new(out, csv_bytes(rows, [*head, *columns[len(INPUT_FIELDS) :]]))
             print(
                 f"[{'SKIP' if outcome == 'unchanged' else 'OK'}] {path.stem}: "
                 f"{len(rows)} rows -> {out}",

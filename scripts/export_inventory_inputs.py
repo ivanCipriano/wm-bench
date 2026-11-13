@@ -19,6 +19,15 @@ Gruppi (file ``<gruppo>.jsonl`` in ``--out-dir``):
 | ``L2_dev_canonical`` | canoniche di L2 Python dev (CodeNet) |
 | ``L2_dev_baseline_<modello>`` | baseline di L2 Python dev, per modello |
 | ``L3_classeval_canonical`` | canoniche di ClassEval (L3; tutte le classi, qualunque split) |
+| ``L2_codenet_pool`` | solo con ``--groups``: sottomissioni umane CodeNet Python estratte in M9, |
+| | tranne i negativi di test (per la selezione di verifica di ``mcss``, PIPELINE §4.4) |
+
+Il pool (decisione dell'utente del 13 novembre 2026) prende tutti i file Python estratti sotto
+``datasets.codenet.dirs.data`` (problemi candidati della M9, circa 10 sottomissioni ciascuno) ed
+esclude i negativi di test: per ruolo nella selezione (``codenet_selected.yaml`` con lo split del
+problema) e per codice uguale a un negativo di test di ``data/negatives/*.parquet``. Ogni riga ha
+in più ``role`` (``canonical_dev``, ``canonical_test``, ``negative_dev``, ``unselected``); il
+manifest del gruppo riporta i conteggi delle esclusioni.
 
 Ogni riga: ``sample_id``, ``code``, ``dataset``, ``problem_key``, ``language``, ``source``
 (``canonical``/``baseline``), ``model_id`` e ``sample_index`` (``null`` per le canoniche),
@@ -52,7 +61,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from bench.config.builder import load_experiment
+from bench.data.codenet import LANG_NAMES
+from bench.data.loaders.base import normalize_newlines
 from bench.domain.enums import Language, Source
 from bench.domain.ids import sample_id
 from bench.domain.models import Problem
@@ -78,6 +91,7 @@ ROW_FIELDS = (
     "split",
     "loc",
 )
+OPTIONAL_FIELDS = ("role",)  # solo nel pool CodeNet
 MANIFEST_SUFFIX = ".manifest.json"  # <gruppo>.jsonl.manifest.json
 
 
@@ -97,8 +111,12 @@ class Group:
     model_id: str | None = None
 
 
+POOL_GROUP = Group("L2_codenet_pool", "L2", "codenet_pool", None, dataset="codenet")
+POOL_EXCLUDED_ROLES = frozenset({"negative_test"})
+
+
 def groups_for(models: Iterable[str]) -> list[Group]:
-    """Gruppi da esportare, in ordine fisso."""
+    """Gruppi di default, in ordine fisso (il pool CodeNet si chiede con ``--groups``)."""
     models = list(models)
     out = [Group("L1_dev_canonical", "L1", "canonical", "dev")]
     out += [Group(f"L1_dev_baseline_{m}", "L1", "baseline", "dev", model_id=m) for m in models]
@@ -108,9 +126,16 @@ def groups_for(models: Iterable[str]) -> list[Group]:
     return out
 
 
-def _sort_key(row: dict[str, Any]) -> tuple[str, str, int]:
+def _sort_key(row: dict[str, Any]) -> tuple[str, str, int, str]:
+    # ``sample_id`` solo come ultimo criterio: decide fra le sottomissioni dello stesso problema
+    # del pool CodeNet e non cambia l'ordine degli altri gruppi (problem_key e indice unici).
     index = row["sample_index"]
-    return str(row["dataset"]), str(row["problem_key"]), -1 if index is None else int(index)
+    return (
+        str(row["dataset"]),
+        str(row["problem_key"]),
+        -1 if index is None else int(index),
+        str(row["sample_id"]),
+    )
 
 
 def canonical_rows(
@@ -165,9 +190,124 @@ def baseline_rows(records: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(rows, key=_sort_key)
 
 
+def submission_roles(
+    selection: dict[str, Any], splits: dict[str, str | None]
+) -> dict[tuple[str, str], str]:
+    """Ruolo delle sottomissioni Python della selezione L2 (``codenet_selected.yaml``).
+
+    ``(pid, submission_id)`` → ``canonical_<split>`` o ``negative_<split>``; le sottomissioni
+    estratte che non compaiono qui sono ``unselected`` (problemi candidati non scelti o
+    sottomissioni di riserva per la deduplicazione).
+    """
+    roles: dict[tuple[str, str], str] = {}
+    for entry in selection.get("problems", []):
+        key = str(entry["problem_key"])
+        pid = key.split("/", 1)[1]
+        split = splits.get(key) or "none"
+        subs = entry["submissions"]["python"]
+        roles[(pid, str(subs["canonical"]["submission_id"]))] = f"canonical_{split}"
+        for sub in subs["negatives"]:
+            roles[(pid, str(sub["submission_id"]))] = f"negative_{split}"
+    return roles
+
+
+def pool_rows(
+    files: Iterable[Path],
+    roles: dict[tuple[str, str], str],
+    splits: dict[str, str | None],
+    test_negative_codes: set[str],
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    """Righe del pool CodeNet Python: sottomissioni umane estratte, tranne i negativi di test.
+
+    ``files`` sono ``<data>/<pid>/Python/<submission_id>.<ext>``. Un file si esclude se è un
+    negativo di test della selezione (ruolo ``negative_test``) **o** se il suo codice coincide
+    con quello di un negativo di test di qualsiasi tabella (stessa lettura del loader, fine riga
+    normalizzati): così restano fuori anche i duplicati esatti. Il codice si legge come
+    ``CodeNetLoader._code``.
+
+    Returns:
+        righe ordinate e conteggi (``files``, ``excluded_role``, ``excluded_code``, ``kept`` e
+        ``role=<ruolo>`` per le righe tenute).
+    """
+    rows: list[dict[str, Any]] = []
+    stats: dict[str, int] = {"files": 0, "excluded_role": 0, "excluded_code": 0}
+    for path in files:
+        stats["files"] += 1
+        pid, sub_id = path.parent.parent.name, path.stem
+        role = roles.get((pid, sub_id), "unselected")
+        code = normalize_newlines(path.read_text(encoding="utf-8", errors="replace"))
+        if role in POOL_EXCLUDED_ROLES:
+            stats["excluded_role"] += 1
+            continue
+        if code in test_negative_codes:
+            stats["excluded_code"] += 1
+            continue
+        key = f"codenet/{pid}"
+        rows.append(
+            {
+                "sample_id": f"{key}/python/{sub_id}",
+                "code": code,
+                "dataset": "codenet",
+                "problem_key": key,
+                "language": LANGUAGE,
+                "source": POOL_GROUP.source,
+                "model_id": None,
+                "sample_index": None,
+                "split": splits.get(key),
+                "loc": count_code_lines(code, Language.PYTHON),
+                "role": role,
+            }
+        )
+        stats[f"role={role}"] = stats.get(f"role={role}", 0) + 1
+    stats["kept"] = len(rows)
+    return sorted(rows, key=_sort_key), dict(sorted(stats.items()))
+
+
+def _pool(
+    cfg: Any, store: ArtifactStore
+) -> tuple[list[dict[str, Any]], dict[str, Any], ArtifactRef]:
+    """Pool CodeNet dal disco, con ruoli, split e negativi di test letti dagli artefatti."""
+    spec = cfg.datasets["codenet"]
+    selection = yaml.safe_load(spec.file("selected").read_text(encoding="utf-8")) or {}
+    ref = problems_ref("L2", LANGUAGE)
+    problems = store.read_table(ref)
+    splits = {
+        str(k): (None if v is None else str(v))
+        for k, v in zip(problems["problem_key"], problems["split"], strict=True)
+    }
+    test_codes: set[str] = set()
+    tables: dict[str, str | None] = {}
+    for path in sorted((store.root / "data" / "negatives").glob("*.parquet")):
+        nref = ArtifactRef.of("negatives", f"data/negatives/{path.name}")
+        if not store.exists(nref):
+            continue
+        table = store.read_table(nref)
+        test = table[(table["split"] == "test") & (table["language"] == LANGUAGE)]
+        test_codes.update(str(c) for c in test["code"])
+        tables[nref.path.as_posix()] = _input_sha(store, nref)
+    files = sorted(Path(spec.dirs["data"]).glob(f"*/{LANG_NAMES[Language.PYTHON]}/*"))
+    rows, stats = pool_rows(
+        (f for f in files if f.is_file()), submission_roles(selection, splits), splits, test_codes
+    )
+    extra = {
+        "stats": stats,
+        "negative_tables": tables,
+        "test_negative_codes": len(test_codes),
+        "global_seed": int(cfg.global_seed),  # per l'ordine della selezione di verifica di mcss
+    }
+    return rows, extra, ref
+
+
 def jsonl_bytes(rows: Iterable[dict[str, Any]]) -> bytes:
-    """Contenuto JSONL deterministico (chiavi nell'ordine di ``ROW_FIELDS``)."""
-    lines = [json.dumps({k: row[k] for k in ROW_FIELDS}, ensure_ascii=False) for row in rows]
+    """Contenuto JSONL deterministico (chiavi nell'ordine di ``ROW_FIELDS``, poi i campi
+    facoltativi di ``OPTIONAL_FIELDS`` se la riga li ha, come ``role`` del pool CodeNet)."""
+    lines = [
+        json.dumps(
+            {k: row[k] for k in (*ROW_FIELDS, *(f for f in OPTIONAL_FIELDS if f in row))},
+            ensure_ascii=False,
+        )
+        for row in rows
+    ]
     return "".join(line + "\n" for line in lines).encode("utf-8")
 
 
@@ -242,15 +382,19 @@ def export(
     groups = groups_for(models)
     if only is not None:
         wanted = set(only)
-        unknown = sorted(wanted - {g.name for g in groups})
+        known = [*groups, POOL_GROUP]
+        unknown = sorted(wanted - {g.name for g in known})
         if unknown:
-            raise ExportError(f"unknown groups {unknown}; known: {[g.name for g in groups]}")
-        groups = [g for g in groups if g.name in wanted]
+            raise ExportError(f"unknown groups {unknown}; known: {[g.name for g in known]}")
+        groups = [g for g in known if g.name in wanted]
     stage = ExecuteStage(cfg)
     sandbox = LocalSandbox()  # le canoniche non eseguono nulla: nessun container
     manifests: dict[str, dict[str, Any]] = {}
     for group in groups:
-        if group.source == "canonical":
+        pool_extra: dict[str, Any] | None = None
+        if group is POOL_GROUP:
+            rows, pool_extra, ref = _pool(cfg, store)
+        elif group.source == "canonical":
             ref = problems_ref(group.level, LANGUAGE)
             problems = _problems(store, group)
             cell = Cell(source="canonical", level=group.level, language=LANGUAGE)
@@ -274,6 +418,8 @@ def export(
             "rows": len(rows),
             "sha256": hashlib.sha256(data).hexdigest(),
         }
+        if pool_extra is not None:
+            manifest["pool"] = pool_extra
         manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
         outcome = write_if_new(path, data)
         write_if_new(path.with_name(path.name + MANIFEST_SUFFIX), manifest_bytes)
