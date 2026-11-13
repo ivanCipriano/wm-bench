@@ -1,0 +1,33 @@
+# Ambiente dei metodi post-hoc della tesi (mcss, multimark); creato da Ivan sul cluster con
+# `conda env create -f environment-posthoc.yml -p <prefisso>/posthoc`.
+#
+# Contenuto fissato da third_party/multimark/PIPELINE_metodo.md §2 (P0): versioni uguali a
+# bench-core dove il pacchetto esiste in entrambi (environment-bench-core.yml e
+# requirements-bench-core.lock). Nessun altro pacchetto.
+#
+# Dopo la creazione, dalla radice del repository (nodo di login, serve PyPI):
+#   bash scripts/install_contracts.sh posthoc      # pip install --no-deps -e packages/bench-contracts
+#   <prefisso>/posthoc/bin/python -m pip check
+#   <prefisso>/posthoc/bin/python -m pip freeze > requirements-posthoc.lock
+# Il pacchetto multimark NON si installa qui: i worker e scripts/inventory_sites.py lo importano
+# da build/patched/multimark (copia del submodule fatta da scripts/apply_patches.sh multimark).
+name: posthoc
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      # scrittura dei siti e rinomina con gli scope (multimark, P1)
+      - libcst==1.5.0
+      # parsing (versioni del lockfile di bench-core, ADR-005)
+      - tree-sitter==0.22.3
+      - tree-sitter-python==0.21.0
+      - numpy==1.26.4
+      # proponente neurale dei nomi (P3); torch solo CUDA come gli altri ambienti
+      - torch==2.4.1
+      - transformers==4.46.3
+      - accelerate==1.1.1
+      - safetensors==0.8.0
+      - tokenizers==0.20.3
