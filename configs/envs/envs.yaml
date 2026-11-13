@@ -1,5 +1,5 @@
 # @package _global_
-# Interpreti Python dei 6 ambienti (cluster_info §1 e §3).
+# Interpreti Python dei 7 ambienti (cluster_info §1 e §3; posthoc: PIPELINE_metodo.md di multimark, P0).
 # Le chiavi sono i nomi reali degli ambienti e coincidono con il campo `env` di configs/method/*.yaml.
 envs:
   bench-core:    {python: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/bench-core/bin/python}
@@ -8,3 +8,6 @@ envs:
   stone:         {python: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/stone/bin/python}
   promptmark:    {python: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/promptmark/bin/python}
   mcgmark:       {python: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/mcgmark/bin/python}
+# Metodi post-hoc della tesi (mcss, multimark): environment-posthoc.yml.
+# TODO(ivan): confermare il percorso dopo `conda env create -f environment-posthoc.yml -p ...`.
+  posthoc:       {python: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/miniforge3/envs/posthoc/bin/python}

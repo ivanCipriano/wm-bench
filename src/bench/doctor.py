@@ -194,7 +194,7 @@ def _parse_json_line(text: str) -> dict[str, object] | None:
 
 
 class EnvironmentsCheck(DoctorCheck):
-    """Interpreti dei 6 ambienti e import di ``bench_contracts`` (cluster_info §3)."""
+    """Interpreti dei 7 ambienti e import di ``bench_contracts`` (cluster_info §3)."""
 
     category = "environments"
 

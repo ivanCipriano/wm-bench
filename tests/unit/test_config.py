@@ -19,7 +19,15 @@ def test_real_config_is_valid(cfg: ExperimentConfig, local_root: Path) -> None:
     assert cfg.global_seed == 20261001
     assert set(cfg.methods) == KNOWN_METHODS
     assert set(cfg.methods_catalog) == KNOWN_METHODS
-    assert set(cfg.envs) == {"bench-core", "sweet", "acw", "stone", "promptmark", "mcgmark"}
+    assert set(cfg.envs) == {
+        "bench-core",
+        "sweet",
+        "acw",
+        "stone",
+        "promptmark",
+        "mcgmark",
+        "posthoc",
+    }
     assert len(cfg.models_catalog) == 5
     assert cfg.decoding["level1"].max_new_tokens == 512
     assert cfg.decoding["level234"].max_new_tokens == 1024

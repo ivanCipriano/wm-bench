@@ -87,7 +87,7 @@ def _probe(
 def test_environments_missing_interpreters(cfg: ExperimentConfig) -> None:
     cfg = rebuild(cfg, envs={k: {"python": f"/nonexistent/{k}/python"} for k in cfg.envs})
     results = EnvironmentsCheck().run(_ctx(cfg))
-    assert len(results) == 6
+    assert len(results) == 7
     assert all(r.status is Status.FAIL and "not found" in r.detail for r in results)
 
 
