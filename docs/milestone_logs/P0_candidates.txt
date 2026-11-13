@@ -1,0 +1,417 @@
+# P0 candidates of multimark (scripts/inventory_sites.sh candidates; python -m multimark.cli.candidates)
+# date 2026-11-13T15:49:02+01:00, host tnode01, wm-bench 53781933860de0ac2ab4896262bd9c439e0436fb, multimark fe44298dd6628f7d98ec3e174c54cf89da16d763
+# inputs: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/inputs (<gruppo>.jsonl.manifest.json): --input L1_dev_baseline_deepseek_coder_6p7b=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/inputs/L1_dev_baseline_deepseek_coder_6p7b.jsonl --input L1_dev_baseline_qwen25_coder_7b=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/inputs/L1_dev_baseline_qwen25_coder_7b.jsonl --input L1_dev_canonical=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/inputs/L1_dev_canonical.jsonl --input L2_dev_baseline_deepseek_coder_6p7b=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/inputs/L2_dev_baseline_deepseek_coder_6p7b.jsonl --input L2_dev_baseline_qwen25_coder_7b=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/inputs/L2_dev_baseline_qwen25_coder_7b.jsonl --input L2_dev_canonical=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/inputs/L2_dev_canonical.jsonl --input L3_classeval_canonical=/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/inputs/L3_classeval_canonical.jsonl
+# estimate groups: L1_dev_baseline_deepseek_coder_6p7b L1_dev_baseline_qwen25_coder_7b L1_dev_canonical
+# outputs: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/candidates/{summary,samples}_818766.*
+
+== group L1_dev_baseline_deepseek_coder_6p7b: samples=576 parsed=576
+  pattern         form     total      mean   frac>=1  est.  form
+a else_return     f0          40    0.0694    0.0677   *   if c: return X / else: return Y
+a else_return     f1          10    0.0174    0.0174   *   if c: return X / return Y (senza else)
+b range_len       f0           8    0.0139    0.0139   *   for i in range(len(a)) con a[i] nel corpo
+b range_len       f1           0    0.0000    0.0000   *   for i, x in enumerate(a)
+c square          f0           9    0.0156    0.0156   *   x * x (x puro)
+c square          f1          11    0.0191    0.0191   *   x ** 2
+d not_eq          f0           0    0.0000    0.0000   *   not a == b
+d not_eq          f1          48    0.0833    0.0764   *   a != b
+e len_test        f0           0    0.0000    0.0000   *   len(a) == 0 / len(a) > 0, != 0, >= 1
+e len_test        f1          40    0.0694    0.0521       a / not a in una condizione
+f slice_bound     f0           0    0.0000    0.0000   *   a[0:n] / a[i:len(a)]
+f slice_bound     f1          71    0.1233    0.0660   *   a[:n] / a[i:]
+g str_method      f0          91    0.1580    0.1059       s.split(...), s.join(...), s.strip(...) ecc.
+g str_method      f1           0    0.0000    0.0000   *   str.split(s, ...) ecc.
+h bool_return     f0           6    0.0104    0.0104   *   if c: return True / else: return False
+h bool_return     f1           0    0.0000    0.0000   *   return bool(c)
+h bool_return     f2          40    0.0694    0.0625       return <Compare|BoolOp|not>
+i elif            f0          56    0.0972    0.0660       elif / else: if (stesso ast)
+j nested_if       f0           1    0.0017    0.0017   *   if a: if b: (senza else)
+j nested_if       f1          14    0.0243    0.0191   *   if a and b: (senza else)
+k range_zero      f0           9    0.0156    0.0156   *   range(0, n)
+k range_zero      f1          67    0.1163    0.0955   *   range(n)
+l or_eq           f0           2    0.0035    0.0035   *   a == b or a == c
+l or_eq           f1           2    0.0035    0.0035   *   a in (b, c)
+m identity_comp   f0           0    0.0000    0.0000   *   [x for x in a]
+m identity_comp   f1           6    0.0104    0.0104   *   list(a)
+n sorted_rev      f0           0    0.0000    0.0000   *   sorted(a)[::-1]
+n sorted_rev      f1           6    0.0104    0.0104   *   sorted(a, reverse=True)
+o str_build       f0           5    0.0087    0.0087   *   f-string
+o str_build       f1           0    0.0000    0.0000   *   '...'.format(...)
+o str_build       f2           0    0.0000    0.0000   *   concatenazione + con str()
+p bool_cmp        f0           3    0.0052    0.0052       a == True / a == False / a is True / a is False
+p bool_cmp        f1          40    0.0694    0.0521       a / not a in una condizione (= e.f1)
+q while_break     f0           0    0.0000    0.0000   *   while True: con un solo if ...: break in testa
+q while_break     f1           6    0.0104    0.0104   *   while not cond:
+r const_pow       f0           0    0.0000    0.0000       c1 ** c2 fra costanti numeriche (10**3)
+s get_none        f0           0    0.0000    0.0000   *   d.get(k, None)
+s get_none        f1           0    0.0000    0.0000   *   d.get(k)
+t return_none     f0          11    0.0191    0.0191   *   return None
+t return_none     f1           0    0.0000    0.0000   *   return
+u aug_inc         f0           0    0.0000    0.0000       x = x ± c
+u aug_inc         f1          60    0.1042    0.0816       x ±= c
+v max_ternary     f0           8    0.0139    0.0122   *   max(a, b)
+v max_ternary     f1           0    0.0000    0.0000   *   a if a > b else b
+w empty_str       f0           0    0.0000    0.0000       s == ""
+w empty_str       f1          40    0.0694    0.0521       not s / s in una condizione (= e.f1)
+w empty_str       f2           0    0.0000    0.0000       len(s) == 0 (sottoinsieme di e.f0)
+
+== group L1_dev_baseline_qwen25_coder_7b: samples=576 parsed=576
+  pattern         form     total      mean   frac>=1  est.  form
+a else_return     f0          22    0.0382    0.0382   *   if c: return X / else: return Y
+a else_return     f1          14    0.0243    0.0243   *   if c: return X / return Y (senza else)
+b range_len       f0          12    0.0208    0.0208   *   for i in range(len(a)) con a[i] nel corpo
+b range_len       f1           6    0.0104    0.0104   *   for i, x in enumerate(a)
+c square          f0          16    0.0278    0.0278   *   x * x (x puro)
+c square          f1           7    0.0122    0.0122   *   x ** 2
+d not_eq          f0           0    0.0000    0.0000   *   not a == b
+d not_eq          f1          56    0.0972    0.0799   *   a != b
+e len_test        f0           0    0.0000    0.0000   *   len(a) == 0 / len(a) > 0, != 0, >= 1
+e len_test        f1          24    0.0417    0.0312       a / not a in una condizione
+f slice_bound     f0           6    0.0104    0.0104   *   a[0:n] / a[i:len(a)]
+f slice_bound     f1          34    0.0590    0.0347   *   a[:n] / a[i:]
+g str_method      f0          78    0.1354    0.0833       s.split(...), s.join(...), s.strip(...) ecc.
+g str_method      f1           1    0.0017    0.0017   *   str.split(s, ...) ecc.
+h bool_return     f0           7    0.0122    0.0122   *   if c: return True / else: return False
+h bool_return     f1           5    0.0087    0.0087   *   return bool(c)
+h bool_return     f2          36    0.0625    0.0521       return <Compare|BoolOp|not>
+i elif            f0          48    0.0833    0.0712       elif / else: if (stesso ast)
+j nested_if       f0           0    0.0000    0.0000   *   if a: if b: (senza else)
+j nested_if       f1          44    0.0764    0.0417   *   if a and b: (senza else)
+k range_zero      f0           0    0.0000    0.0000   *   range(0, n)
+k range_zero      f1          63    0.1094    0.0990   *   range(n)
+l or_eq           f0           5    0.0087    0.0087   *   a == b or a == c
+l or_eq           f1           1    0.0017    0.0017   *   a in (b, c)
+m identity_comp   f0           0    0.0000    0.0000   *   [x for x in a]
+m identity_comp   f1           0    0.0000    0.0000   *   list(a)
+n sorted_rev      f0           0    0.0000    0.0000   *   sorted(a)[::-1]
+n sorted_rev      f1           2    0.0035    0.0035   *   sorted(a, reverse=True)
+o str_build       f0           1    0.0017    0.0017   *   f-string
+o str_build       f1           0    0.0000    0.0000   *   '...'.format(...)
+o str_build       f2           0    0.0000    0.0000   *   concatenazione + con str()
+p bool_cmp        f0           0    0.0000    0.0000       a == True / a == False / a is True / a is False
+p bool_cmp        f1          24    0.0417    0.0312       a / not a in una condizione (= e.f1)
+q while_break     f0           0    0.0000    0.0000   *   while True: con un solo if ...: break in testa
+q while_break     f1           3    0.0052    0.0052   *   while not cond:
+r const_pow       f0           0    0.0000    0.0000       c1 ** c2 fra costanti numeriche (10**3)
+s get_none        f0           0    0.0000    0.0000   *   d.get(k, None)
+s get_none        f1           0    0.0000    0.0000   *   d.get(k)
+t return_none     f0          12    0.0208    0.0208   *   return None
+t return_none     f1           0    0.0000    0.0000   *   return
+u aug_inc         f0           0    0.0000    0.0000       x = x ± c
+u aug_inc         f1         108    0.1875    0.1354       x ±= c
+v max_ternary     f0           1    0.0017    0.0017   *   max(a, b)
+v max_ternary     f1           0    0.0000    0.0000   *   a if a > b else b
+w empty_str       f0           0    0.0000    0.0000       s == ""
+w empty_str       f1          24    0.0417    0.0312       not s / s in una condizione (= e.f1)
+w empty_str       f2           0    0.0000    0.0000       len(s) == 0 (sottoinsieme di e.f0)
+
+== group L1_dev_canonical: samples=96 parsed=96
+  pattern         form     total      mean   frac>=1  est.  form
+a else_return     f0           2    0.0208    0.0208   *   if c: return X / else: return Y
+a else_return     f1           2    0.0208    0.0208   *   if c: return X / return Y (senza else)
+b range_len       f0           0    0.0000    0.0000   *   for i in range(len(a)) con a[i] nel corpo
+b range_len       f1           2    0.0208    0.0208   *   for i, x in enumerate(a)
+c square          f0           1    0.0104    0.0104   *   x * x (x puro)
+c square          f1           2    0.0208    0.0208   *   x ** 2
+d not_eq          f0           0    0.0000    0.0000   *   not a == b
+d not_eq          f1           6    0.0625    0.0625   *   a != b
+e len_test        f0           1    0.0104    0.0104   *   len(a) == 0 / len(a) > 0, != 0, >= 1
+e len_test        f1           2    0.0208    0.0208       a / not a in una condizione
+f slice_bound     f0           3    0.0312    0.0104   *   a[0:n] / a[i:len(a)]
+f slice_bound     f1          10    0.1042    0.0729   *   a[:n] / a[i:]
+g str_method      f0          14    0.1458    0.0833       s.split(...), s.join(...), s.strip(...) ecc.
+g str_method      f1           0    0.0000    0.0000   *   str.split(s, ...) ecc.
+h bool_return     f0           0    0.0000    0.0000   *   if c: return True / else: return False
+h bool_return     f1           0    0.0000    0.0000   *   return bool(c)
+h bool_return     f2          11    0.1146    0.0938       return <Compare|BoolOp|not>
+i elif            f0           8    0.0833    0.0521       elif / else: if (stesso ast)
+j nested_if       f0           0    0.0000    0.0000   *   if a: if b: (senza else)
+j nested_if       f1           0    0.0000    0.0000   *   if a and b: (senza else)
+k range_zero      f0           2    0.0208    0.0208   *   range(0, n)
+k range_zero      f1           7    0.0729    0.0417   *   range(n)
+l or_eq           f0           1    0.0104    0.0104   *   a == b or a == c
+l or_eq           f1           0    0.0000    0.0000   *   a in (b, c)
+m identity_comp   f0           0    0.0000    0.0000   *   [x for x in a]
+m identity_comp   f1           7    0.0729    0.0625   *   list(a)
+n sorted_rev      f0           0    0.0000    0.0000   *   sorted(a)[::-1]
+n sorted_rev      f1           1    0.0104    0.0104   *   sorted(a, reverse=True)
+o str_build       f0           0    0.0000    0.0000   *   f-string
+o str_build       f1           0    0.0000    0.0000   *   '...'.format(...)
+o str_build       f2           0    0.0000    0.0000   *   concatenazione + con str()
+p bool_cmp        f0           0    0.0000    0.0000       a == True / a == False / a is True / a is False
+p bool_cmp        f1           2    0.0208    0.0208       a / not a in una condizione (= e.f1)
+q while_break     f0           0    0.0000    0.0000   *   while True: con un solo if ...: break in testa
+q while_break     f1           0    0.0000    0.0000   *   while not cond:
+r const_pow       f0           0    0.0000    0.0000       c1 ** c2 fra costanti numeriche (10**3)
+s get_none        f0           0    0.0000    0.0000   *   d.get(k, None)
+s get_none        f1           0    0.0000    0.0000   *   d.get(k)
+t return_none     f0           2    0.0208    0.0208   *   return None
+t return_none     f1           0    0.0000    0.0000   *   return
+u aug_inc         f0           3    0.0312    0.0208       x = x ± c
+u aug_inc         f1           6    0.0625    0.0521       x ±= c
+v max_ternary     f0           2    0.0208    0.0104   *   max(a, b)
+v max_ternary     f1           0    0.0000    0.0000   *   a if a > b else b
+w empty_str       f0           0    0.0000    0.0000       s == ""
+w empty_str       f1           2    0.0208    0.0208       not s / s in una condizione (= e.f1)
+w empty_str       f2           1    0.0104    0.0104       len(s) == 0 (sottoinsieme di e.f0)
+
+== group L2_dev_baseline_deepseek_coder_6p7b: samples=300 parsed=300
+  pattern         form     total      mean   frac>=1  est.  form
+a else_return     f0           0    0.0000    0.0000   *   if c: return X / else: return Y
+a else_return     f1           0    0.0000    0.0000   *   if c: return X / return Y (senza else)
+b range_len       f0           5    0.0167    0.0167   *   for i in range(len(a)) con a[i] nel corpo
+b range_len       f1           0    0.0000    0.0000   *   for i, x in enumerate(a)
+c square          f0           6    0.0200    0.0200   *   x * x (x puro)
+c square          f1           6    0.0200    0.0200   *   x ** 2
+d not_eq          f0           0    0.0000    0.0000   *   not a == b
+d not_eq          f1          26    0.0867    0.0533   *   a != b
+e len_test        f0           1    0.0033    0.0033   *   len(a) == 0 / len(a) > 0, != 0, >= 1
+e len_test        f1          35    0.1167    0.0733       a / not a in una condizione
+f slice_bound     f0           3    0.0100    0.0100   *   a[0:n] / a[i:len(a)]
+f slice_bound     f1          25    0.0833    0.0567   *   a[:n] / a[i:]
+g str_method      f0         388    1.2933    0.7800       s.split(...), s.join(...), s.strip(...) ecc.
+g str_method      f1           0    0.0000    0.0000   *   str.split(s, ...) ecc.
+h bool_return     f0           0    0.0000    0.0000   *   if c: return True / else: return False
+h bool_return     f1           0    0.0000    0.0000   *   return bool(c)
+h bool_return     f2           3    0.0100    0.0100       return <Compare|BoolOp|not>
+i elif            f0         115    0.3833    0.1367       elif / else: if (stesso ast)
+j nested_if       f0           2    0.0067    0.0067   *   if a: if b: (senza else)
+j nested_if       f1          40    0.1333    0.1233   *   if a and b: (senza else)
+k range_zero      f0           0    0.0000    0.0000   *   range(0, n)
+k range_zero      f1         199    0.6633    0.4133   *   range(n)
+l or_eq           f0           0    0.0000    0.0000   *   a == b or a == c
+l or_eq           f1           0    0.0000    0.0000   *   a in (b, c)
+m identity_comp   f0           0    0.0000    0.0000   *   [x for x in a]
+m identity_comp   f1         102    0.3400    0.2933   *   list(a)
+n sorted_rev      f0           0    0.0000    0.0000   *   sorted(a)[::-1]
+n sorted_rev      f1           0    0.0000    0.0000   *   sorted(a, reverse=True)
+o str_build       f0           6    0.0200    0.0200   *   f-string
+o str_build       f1           0    0.0000    0.0000   *   '...'.format(...)
+o str_build       f2           0    0.0000    0.0000   *   concatenazione + con str()
+p bool_cmp        f0           0    0.0000    0.0000       a == True / a == False / a is True / a is False
+p bool_cmp        f1          35    0.1167    0.0733       a / not a in una condizione (= e.f1)
+q while_break     f0           0    0.0000    0.0000   *   while True: con un solo if ...: break in testa
+q while_break     f1           3    0.0100    0.0100   *   while not cond:
+r const_pow       f0           0    0.0000    0.0000       c1 ** c2 fra costanti numeriche (10**3)
+s get_none        f0           0    0.0000    0.0000   *   d.get(k, None)
+s get_none        f1           0    0.0000    0.0000   *   d.get(k)
+t return_none     f0           0    0.0000    0.0000   *   return None
+t return_none     f1           5    0.0167    0.0167   *   return
+u aug_inc         f0           0    0.0000    0.0000       x = x ± c
+u aug_inc         f1         118    0.3933    0.2767       x ±= c
+v max_ternary     f0          17    0.0567    0.0567   *   max(a, b)
+v max_ternary     f1           0    0.0000    0.0000   *   a if a > b else b
+w empty_str       f0           4    0.0133    0.0133       s == ""
+w empty_str       f1          35    0.1167    0.0733       not s / s in una condizione (= e.f1)
+w empty_str       f2           1    0.0033    0.0033       len(s) == 0 (sottoinsieme di e.f0)
+
+== group L2_dev_baseline_qwen25_coder_7b: samples=300 parsed=299
+  pattern         form     total      mean   frac>=1  est.  form
+a else_return     f0           0    0.0000    0.0000   *   if c: return X / else: return Y
+a else_return     f1           1    0.0033    0.0033   *   if c: return X / return Y (senza else)
+b range_len       f0           0    0.0000    0.0000   *   for i in range(len(a)) con a[i] nel corpo
+b range_len       f1           0    0.0000    0.0000   *   for i, x in enumerate(a)
+c square          f0           0    0.0000    0.0000   *   x * x (x puro)
+c square          f1           6    0.0201    0.0201   *   x ** 2
+d not_eq          f0           0    0.0000    0.0000   *   not a == b
+d not_eq          f1          12    0.0401    0.0401   *   a != b
+e len_test        f0           0    0.0000    0.0000   *   len(a) == 0 / len(a) > 0, != 0, >= 1
+e len_test        f1          11    0.0368    0.0301       a / not a in una condizione
+f slice_bound     f0           0    0.0000    0.0000   *   a[0:n] / a[i:len(a)]
+f slice_bound     f1          77    0.2575    0.2241   *   a[:n] / a[i:]
+g str_method      f0         279    0.9331    0.8495       s.split(...), s.join(...), s.strip(...) ecc.
+g str_method      f1           0    0.0000    0.0000   *   str.split(s, ...) ecc.
+h bool_return     f0           0    0.0000    0.0000   *   if c: return True / else: return False
+h bool_return     f1           0    0.0000    0.0000   *   return bool(c)
+h bool_return     f2           6    0.0201    0.0201       return <Compare|BoolOp|not>
+i elif            f0         103    0.3445    0.1706       elif / else: if (stesso ast)
+j nested_if       f0           2    0.0067    0.0067   *   if a: if b: (senza else)
+j nested_if       f1          25    0.0836    0.0836   *   if a and b: (senza else)
+k range_zero      f0           0    0.0000    0.0000   *   range(0, n)
+k range_zero      f1         162    0.5418    0.3177   *   range(n)
+l or_eq           f0           0    0.0000    0.0000   *   a == b or a == c
+l or_eq           f1           0    0.0000    0.0000   *   a in (b, c)
+m identity_comp   f0           3    0.0100    0.0100   *   [x for x in a]
+m identity_comp   f1          87    0.2910    0.2375   *   list(a)
+n sorted_rev      f0           0    0.0000    0.0000   *   sorted(a)[::-1]
+n sorted_rev      f1           0    0.0000    0.0000   *   sorted(a, reverse=True)
+o str_build       f0           6    0.0201    0.0201   *   f-string
+o str_build       f1           0    0.0000    0.0000   *   '...'.format(...)
+o str_build       f2           2    0.0067    0.0067   *   concatenazione + con str()
+p bool_cmp        f0           0    0.0000    0.0000       a == True / a == False / a is True / a is False
+p bool_cmp        f1          11    0.0368    0.0301       a / not a in una condizione (= e.f1)
+q while_break     f0           0    0.0000    0.0000   *   while True: con un solo if ...: break in testa
+q while_break     f1           2    0.0067    0.0067   *   while not cond:
+r const_pow       f0           3    0.0100    0.0100       c1 ** c2 fra costanti numeriche (10**3)
+s get_none        f0           0    0.0000    0.0000   *   d.get(k, None)
+s get_none        f1           0    0.0000    0.0000   *   d.get(k)
+t return_none     f0           0    0.0000    0.0000   *   return None
+t return_none     f1           8    0.0268    0.0234   *   return
+u aug_inc         f0           0    0.0000    0.0000       x = x ± c
+u aug_inc         f1         183    0.6120    0.2876       x ±= c
+v max_ternary     f0          23    0.0769    0.0635   *   max(a, b)
+v max_ternary     f1           0    0.0000    0.0000   *   a if a > b else b
+w empty_str       f0           0    0.0000    0.0000       s == ""
+w empty_str       f1          11    0.0368    0.0301       not s / s in una condizione (= e.f1)
+w empty_str       f2           0    0.0000    0.0000       len(s) == 0 (sottoinsieme di e.f0)
+
+== group L2_dev_canonical: samples=50 parsed=50
+  pattern         form     total      mean   frac>=1  est.  form
+a else_return     f0           1    0.0200    0.0200   *   if c: return X / else: return Y
+a else_return     f1           0    0.0000    0.0000   *   if c: return X / return Y (senza else)
+b range_len       f0           2    0.0400    0.0400   *   for i in range(len(a)) con a[i] nel corpo
+b range_len       f1           0    0.0000    0.0000   *   for i, x in enumerate(a)
+c square          f0           2    0.0400    0.0400   *   x * x (x puro)
+c square          f1           0    0.0000    0.0000   *   x ** 2
+d not_eq          f0           0    0.0000    0.0000   *   not a == b
+d not_eq          f1           4    0.0800    0.0600   *   a != b
+e len_test        f0           3    0.0600    0.0400   *   len(a) == 0 / len(a) > 0, != 0, >= 1
+e len_test        f1           7    0.1400    0.1000       a / not a in una condizione
+f slice_bound     f0           0    0.0000    0.0000   *   a[0:n] / a[i:len(a)]
+f slice_bound     f1           5    0.1000    0.0800   *   a[:n] / a[i:]
+g str_method      f0          48    0.9600    0.7000       s.split(...), s.join(...), s.strip(...) ecc.
+g str_method      f1           0    0.0000    0.0000   *   str.split(s, ...) ecc.
+h bool_return     f0           1    0.0200    0.0200   *   if c: return True / else: return False
+h bool_return     f1           0    0.0000    0.0000   *   return bool(c)
+h bool_return     f2           0    0.0000    0.0000       return <Compare|BoolOp|not>
+i elif            f0          11    0.2200    0.1000       elif / else: if (stesso ast)
+j nested_if       f0           0    0.0000    0.0000   *   if a: if b: (senza else)
+j nested_if       f1           5    0.1000    0.0400   *   if a and b: (senza else)
+k range_zero      f0           1    0.0200    0.0200   *   range(0, n)
+k range_zero      f1          29    0.5800    0.4000   *   range(n)
+l or_eq           f0           0    0.0000    0.0000   *   a == b or a == c
+l or_eq           f1           0    0.0000    0.0000   *   a in (b, c)
+m identity_comp   f0           0    0.0000    0.0000   *   [x for x in a]
+m identity_comp   f1          18    0.3600    0.3000   *   list(a)
+n sorted_rev      f0           0    0.0000    0.0000   *   sorted(a)[::-1]
+n sorted_rev      f1           0    0.0000    0.0000   *   sorted(a, reverse=True)
+o str_build       f0           1    0.0200    0.0200   *   f-string
+o str_build       f1           0    0.0000    0.0000   *   '...'.format(...)
+o str_build       f2           0    0.0000    0.0000   *   concatenazione + con str()
+p bool_cmp        f0           1    0.0200    0.0200       a == True / a == False / a is True / a is False
+p bool_cmp        f1           7    0.1400    0.1000       a / not a in una condizione (= e.f1)
+q while_break     f0           0    0.0000    0.0000   *   while True: con un solo if ...: break in testa
+q while_break     f1           1    0.0200    0.0200   *   while not cond:
+r const_pow       f0           5    0.1000    0.0200       c1 ** c2 fra costanti numeriche (10**3)
+s get_none        f0           0    0.0000    0.0000   *   d.get(k, None)
+s get_none        f1           0    0.0000    0.0000   *   d.get(k)
+t return_none     f0           0    0.0000    0.0000   *   return None
+t return_none     f1           0    0.0000    0.0000   *   return
+u aug_inc         f0           0    0.0000    0.0000       x = x ± c
+u aug_inc         f1          29    0.5800    0.3200       x ±= c
+v max_ternary     f0           4    0.0800    0.0600   *   max(a, b)
+v max_ternary     f1           0    0.0000    0.0000   *   a if a > b else b
+w empty_str       f0           0    0.0000    0.0000       s == ""
+w empty_str       f1           7    0.1400    0.1000       not s / s in una condizione (= e.f1)
+w empty_str       f2           2    0.0400    0.0400       len(s) == 0 (sottoinsieme di e.f0)
+
+== group L3_classeval_canonical: samples=94 parsed=94
+  pattern         form     total      mean   frac>=1  est.  form
+a else_return     f0          22    0.2340    0.1596   *   if c: return X / else: return Y
+a else_return     f1          22    0.2340    0.1489   *   if c: return X / return Y (senza else)
+b range_len       f0           6    0.0638    0.0426   *   for i in range(len(a)) con a[i] nel corpo
+b range_len       f1           8    0.0851    0.0426   *   for i, x in enumerate(a)
+c square          f0           2    0.0213    0.0106   *   x * x (x puro)
+c square          f1          18    0.1915    0.0638   *   x ** 2
+d not_eq          f0           0    0.0000    0.0000   *   not a == b
+d not_eq          f1          46    0.4894    0.2340   *   a != b
+e len_test        f0           8    0.0851    0.0532   *   len(a) == 0 / len(a) > 0, != 0, >= 1
+e len_test        f1          49    0.5213    0.2660       a / not a in una condizione
+f slice_bound     f0           1    0.0106    0.0106   *   a[0:n] / a[i:len(a)]
+f slice_bound     f1          15    0.1596    0.0957   *   a[:n] / a[i:]
+g str_method      f0          87    0.9255    0.3298       s.split(...), s.join(...), s.strip(...) ecc.
+g str_method      f1           0    0.0000    0.0000   *   str.split(s, ...) ecc.
+h bool_return     f0           4    0.0426    0.0319   *   if c: return True / else: return False
+h bool_return     f1           0    0.0000    0.0000   *   return bool(c)
+h bool_return     f2           5    0.0532    0.0426       return <Compare|BoolOp|not>
+i elif            f0          40    0.4255    0.1809       elif / else: if (stesso ast)
+j nested_if       f0          12    0.1277    0.0319   *   if a: if b: (senza else)
+j nested_if       f1          25    0.2660    0.1383   *   if a and b: (senza else)
+k range_zero      f0           0    0.0000    0.0000   *   range(0, n)
+k range_zero      f1          54    0.5745    0.2128   *   range(n)
+l or_eq           f0           5    0.0532    0.0426   *   a == b or a == c
+l or_eq           f1           4    0.0426    0.0319   *   a in (b, c)
+m identity_comp   f0           0    0.0000    0.0000   *   [x for x in a]
+m identity_comp   f1          10    0.1064    0.0638   *   list(a)
+n sorted_rev      f0           0    0.0000    0.0000   *   sorted(a)[::-1]
+n sorted_rev      f1           1    0.0106    0.0106   *   sorted(a, reverse=True)
+o str_build       f0          31    0.3298    0.0851   *   f-string
+o str_build       f1           3    0.0319    0.0213   *   '...'.format(...)
+o str_build       f2           1    0.0106    0.0106   *   concatenazione + con str()
+p bool_cmp        f0           3    0.0319    0.0319       a == True / a == False / a is True / a is False
+p bool_cmp        f1          49    0.5213    0.2660       a / not a in una condizione (= e.f1)
+q while_break     f0           0    0.0000    0.0000   *   while True: con un solo if ...: break in testa
+q while_break     f1           0    0.0000    0.0000   *   while not cond:
+r const_pow       f0           0    0.0000    0.0000       c1 ** c2 fra costanti numeriche (10**3)
+s get_none        f0           0    0.0000    0.0000   *   d.get(k, None)
+s get_none        f1           1    0.0106    0.0106   *   d.get(k)
+t return_none     f0          21    0.2234    0.1383   *   return None
+t return_none     f1           2    0.0213    0.0213   *   return
+u aug_inc         f0           1    0.0106    0.0106       x = x ± c
+u aug_inc         f1          34    0.3617    0.1596       x ±= c
+v max_ternary     f0           2    0.0213    0.0106   *   max(a, b)
+v max_ternary     f1           0    0.0000    0.0000   *   a if a > b else b
+w empty_str       f0           1    0.0106    0.0106       s == ""
+w empty_str       f1          49    0.5213    0.2660       not s / s in una condizione (= e.f1)
+w empty_str       f2           8    0.0851    0.0532       len(s) == 0 (sottoinsieme di e.f0)
+
+Estimate: ranking on groups L1_dev_baseline_deepseek_coder_6p7b, L1_dev_baseline_qwen25_coder_7b, L1_dev_canonical; k in (3, 5, 8); prudent/all_forms are upper bounds (overlaps counted twice); no_overlap assigns each node to at most one site
+ranking prudent: range_zero (148), slice_bound (124), not_eq (110), else_return (90), nested_if (59), square (46), range_len (28), return_none (25), bool_return (18), identity_comp (13), or_eq (11), max_ternary (11), sorted_rev (9), while_break (9), str_build (6), len_test (1), str_method (1), get_none (0)
+-- estimate prudent, group L1_dev_baseline_deepseek_coder_6p7b
+  k     frac>=8    frac>=13  patterns
+  0      0.0382      0.0000  (current sites)
+  3      0.0486      0.0035  range_zero, slice_bound, not_eq
+  5      0.0590      0.0052  range_zero, slice_bound, not_eq, else_return, nested_if
+  8      0.0590      0.0052  range_zero, slice_bound, not_eq, else_return, nested_if, square, range_len, return_none
+-- estimate prudent, group L1_dev_baseline_qwen25_coder_7b
+  k     frac>=8    frac>=13  patterns
+  0      0.0764      0.0000  (current sites)
+  3      0.0868      0.0000  range_zero, slice_bound, not_eq
+  5      0.0990      0.0104  range_zero, slice_bound, not_eq, else_return, nested_if
+  8      0.1042      0.0104  range_zero, slice_bound, not_eq, else_return, nested_if, square, range_len, return_none
+-- estimate prudent, group L1_dev_canonical
+  k     frac>=8    frac>=13  patterns
+  0      0.0312      0.0000  (current sites)
+  3      0.0417      0.0000  range_zero, slice_bound, not_eq
+  5      0.0417      0.0000  range_zero, slice_bound, not_eq, else_return, nested_if
+  8      0.0417      0.0000  range_zero, slice_bound, not_eq, else_return, nested_if, square, range_len, return_none
+
+ranking all_forms: str_method (184), range_zero (148), slice_bound (124), not_eq (110), bool_return (105), else_return (90), len_test (67), nested_if (59), square (46), range_len (28), return_none (25), identity_comp (13), or_eq (11), max_ternary (11), sorted_rev (9), while_break (9), str_build (6), bool_cmp (3), get_none (0), empty_str (0)
+-- estimate all_forms, group L1_dev_baseline_deepseek_coder_6p7b
+  k     frac>=8    frac>=13  patterns
+  0      0.0382      0.0000  (current sites)
+  3      0.0434      0.0017  str_method, range_zero, slice_bound
+  5      0.0556      0.0035  str_method, range_zero, slice_bound, not_eq, bool_return
+  8      0.0712      0.0069  str_method, range_zero, slice_bound, not_eq, bool_return, else_return, len_test, nested_if
+-- estimate all_forms, group L1_dev_baseline_qwen25_coder_7b
+  k     frac>=8    frac>=13  patterns
+  0      0.0764      0.0000  (current sites)
+  3      0.0851      0.0035  str_method, range_zero, slice_bound
+  5      0.0868      0.0035  str_method, range_zero, slice_bound, not_eq, bool_return
+  8      0.1094      0.0139  str_method, range_zero, slice_bound, not_eq, bool_return, else_return, len_test, nested_if
+-- estimate all_forms, group L1_dev_canonical
+  k     frac>=8    frac>=13  patterns
+  0      0.0312      0.0000  (current sites)
+  3      0.0417      0.0000  str_method, range_zero, slice_bound
+  5      0.0625      0.0000  str_method, range_zero, slice_bound, not_eq, bool_return
+  8      0.0729      0.0000  str_method, range_zero, slice_bound, not_eq, bool_return, else_return, len_test, nested_if
+
+ranking no_overlap: range_zero (148), slice_bound (124), else_return (90), nested_if (59), square (46), range_len (28), return_none (25), bool_return (18), identity_comp (13), max_ternary (11), sorted_rev (9), while_break (9), not_eq (6), str_build (6), or_eq (3), str_method (1), len_test (0), get_none (0)
+-- estimate no_overlap, group L1_dev_baseline_deepseek_coder_6p7b
+  k     frac>=8    frac>=13  patterns
+  0      0.0382      0.0000  (current sites)
+  3      0.0434      0.0035  range_zero, slice_bound, else_return
+  5      0.0538      0.0035  range_zero, slice_bound, else_return, nested_if, square
+  8      0.0538      0.0035  range_zero, slice_bound, else_return, nested_if, square, range_len, return_none, bool_return
+-- estimate no_overlap, group L1_dev_baseline_qwen25_coder_7b
+  k     frac>=8    frac>=13  patterns
+  0      0.0764      0.0000  (current sites)
+  3      0.0868      0.0000  range_zero, slice_bound, else_return
+  5      0.1024      0.0017  range_zero, slice_bound, else_return, nested_if, square
+  8      0.1024      0.0017  range_zero, slice_bound, else_return, nested_if, square, range_len, return_none, bool_return
+-- estimate no_overlap, group L1_dev_canonical
+  k     frac>=8    frac>=13  patterns
+  0      0.0312      0.0000  (current sites)
+  3      0.0417      0.0000  range_zero, slice_bound, else_return
+  5      0.0417      0.0000  range_zero, slice_bound, else_return, nested_if, square
+  8      0.0417      0.0000  range_zero, slice_bound, else_return, nested_if, square, range_len, return_none, bool_return
+
