@@ -66,31 +66,33 @@ def _write(root: Path, pid: str, sub: str, code: str) -> Path:
     return path
 
 
-def test_pool_excludes_test_negatives_by_role_and_by_code(tmp_path: Path) -> None:
+def test_pool_excludes_test_negatives_and_canonicals(tmp_path: Path) -> None:
     files = [
-        _write(tmp_path, "p00001", "s1", "print(1)\r\n"),  # canonica di test: resta
+        _write(tmp_path, "p00001", "s1", "print(1)\r\n"),  # canonica di test: esclusa per ruolo
         _write(tmp_path, "p00001", "s2", "print(2)\n"),  # negativo di test: escluso per ruolo
         _write(tmp_path, "p00001", "s3", "print(3)\n"),  # stesso codice di un negativo: escluso
+        _write(tmp_path, "p00009", "s4", "print(1)\n"),  # stesso codice della canonica: escluso
+        _write(tmp_path, "p00002", "s5", "print(5)\r\n"),  # canonica di sviluppo: resta
         _write(tmp_path, "p00002", "s6", "print(6)\n"),  # negativo di sviluppo: resta
         _write(tmp_path, "p00009", "s9", "x = 1\ny = 2\n"),  # problema non scelto: resta
     ]
     roles = export.submission_roles(SELECTION, SPLITS)
     rows, stats = export.pool_rows(files, roles, SPLITS, {"print(2)\n", "print(3)\n"})
     assert [r["sample_id"] for r in rows] == [
-        "codenet/p00001/python/s1",
+        "codenet/p00002/python/s5",
         "codenet/p00002/python/s6",
         "codenet/p00009/python/s9",
     ]
-    assert [r["role"] for r in rows] == ["canonical_test", "negative_dev", "unselected"]
-    assert [r["split"] for r in rows] == ["test", "dev", None]
-    assert rows[0]["code"] == "print(1)\n"  # fine riga normalizzati come nel loader
+    assert [r["role"] for r in rows] == ["canonical_dev", "negative_dev", "unselected"]
+    assert [r["split"] for r in rows] == ["dev", "dev", None]
+    assert rows[0]["code"] == "print(5)\n"  # fine riga normalizzati come nel loader
     assert rows[2]["loc"] == 2 and rows[2]["source"] == "codenet_pool"
     assert stats == {
-        "excluded_code": 1,
-        "excluded_role": 1,
-        "files": 5,
+        "excluded_code": 2,
+        "excluded_role": 2,
+        "files": 7,
         "kept": 3,
-        "role=canonical_test": 1,
+        "role=canonical_dev": 1,
         "role=negative_dev": 1,
         "role=unselected": 1,
     }

@@ -3,8 +3,9 @@
 Decisione dell'utente del 13 novembre 2026 (criteri di accettazione di P2, ``docs/deviations.md``):
 fino a 250 file della fascia **32–39 bit**, cioè ``32 <= n_bits_v1 <= 39`` con il profilo ``mcss``
 (forme ``paper``, parametri inclusi; ``n_bits_v1`` = siti strutturali + 2 · variabili, come la
-fascia D32 del paper). La fonte sono le sottomissioni umane CodeNet Python non usate come negativi
-di test (gruppo ``L2_codenet_pool`` di ``scripts/export_inventory_inputs.py``). Se nella fascia ci
+fascia D32 del paper). La fonte sono le sottomissioni umane CodeNet Python che non sono né negativi
+né canoniche dei problemi di test (gruppo ``L2_codenet_pool`` di
+``scripts/export_inventory_inputs.py``). Se nella fascia ci
 sono meno di 250 file si prendono tutti e il riepilogo ne riporta il numero; se sono di più, si
 prendono i primi 250 nell'ordine ``derive_seed(global_seed, "mcss-selftest", sample_id)``, con
 ``global_seed`` letto dal manifest del pool (scritto da bench-core).

@@ -20,14 +20,16 @@ Gruppi (file ``<gruppo>.jsonl`` in ``--out-dir``):
 | ``L2_dev_baseline_<modello>`` | baseline di L2 Python dev, per modello |
 | ``L3_classeval_canonical`` | canoniche di ClassEval (L3; tutte le classi, qualunque split) |
 | ``L2_codenet_pool`` | solo con ``--groups``: sottomissioni umane CodeNet Python estratte in M9, |
-| | tranne i negativi di test (per la selezione di verifica di ``mcss``, PIPELINE §4.4) |
+| | tranne negativi e canoniche di test (selezione di verifica di ``mcss``, PIPELINE §4.4) |
 
 Il pool (decisione dell'utente del 13 novembre 2026) prende tutti i file Python estratti sotto
 ``datasets.codenet.dirs.data`` (problemi candidati della M9, circa 10 sottomissioni ciascuno) ed
-esclude i negativi di test: per ruolo nella selezione (``codenet_selected.yaml`` con lo split del
-problema) e per codice uguale a un negativo di test di ``data/negatives/*.parquet``. Ogni riga ha
-in più ``role`` (``canonical_dev``, ``canonical_test``, ``negative_dev``, ``unselected``); il
-manifest del gruppo riporta i conteggi delle esclusioni.
+esclude negativi e canoniche dei problemi di test: per ruolo nella selezione
+(``codenet_selected.yaml`` con lo split del problema) e per codice uguale a quello di un file
+escluso o di un negativo di test di ``data/negatives/*.parquet``. Ogni riga ha in più ``role``
+(``canonical_dev``, ``negative_dev``, ``unselected``); il manifest del gruppo riporta i conteggi
+delle esclusioni. Le canoniche di test sono escluse dalla seconda decisione dell'utente del
+13 novembre 2026.
 
 Ogni riga: ``sample_id``, ``code``, ``dataset``, ``problem_key``, ``language``, ``source``
 (``canonical``/``baseline``), ``model_id`` e ``sample_index`` (``null`` per le canoniche),
@@ -112,7 +114,7 @@ class Group:
 
 
 POOL_GROUP = Group("L2_codenet_pool", "L2", "codenet_pool", None, dataset="codenet")
-POOL_EXCLUDED_ROLES = frozenset({"negative_test"})
+POOL_EXCLUDED_ROLES = frozenset({"negative_test", "canonical_test"})
 
 
 def groups_for(models: Iterable[str]) -> list[Group]:
@@ -217,13 +219,13 @@ def pool_rows(
     splits: dict[str, str | None],
     test_negative_codes: set[str],
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    """Righe del pool CodeNet Python: sottomissioni umane estratte, tranne i negativi di test.
+    """Righe del pool CodeNet Python: sottomissioni umane estratte, tranne quelle di test.
 
-    ``files`` sono ``<data>/<pid>/Python/<submission_id>.<ext>``. Un file si esclude se è un
-    negativo di test della selezione (ruolo ``negative_test``) **o** se il suo codice coincide
-    con quello di un negativo di test di qualsiasi tabella (stessa lettura del loader, fine riga
-    normalizzati): così restano fuori anche i duplicati esatti. Il codice si legge come
-    ``CodeNetLoader._code``.
+    ``files`` sono ``<data>/<pid>/Python/<submission_id>.<ext>``. Un file si esclude se nella
+    selezione è un negativo o la canonica di un problema di test (``POOL_EXCLUDED_ROLES``) **o**
+    se il suo codice coincide con quello di un file escluso per ruolo o di un negativo di test di
+    qualsiasi tabella (stessa lettura del loader, fine riga normalizzati): così restano fuori
+    anche i duplicati esatti. Il codice si legge come ``CodeNetLoader._code``.
 
     Returns:
         righe ordinate e conteggi (``files``, ``excluded_role``, ``excluded_code``, ``kept`` e
@@ -231,15 +233,20 @@ def pool_rows(
     """
     rows: list[dict[str, Any]] = []
     stats: dict[str, int] = {"files": 0, "excluded_role": 0, "excluded_code": 0}
+    entries = []
     for path in files:
-        stats["files"] += 1
         pid, sub_id = path.parent.parent.name, path.stem
         role = roles.get((pid, sub_id), "unselected")
         code = normalize_newlines(path.read_text(encoding="utf-8", errors="replace"))
+        entries.append((pid, sub_id, role, code))
+    excluded_codes = set(test_negative_codes)
+    excluded_codes.update(code for _, _, role, code in entries if role in POOL_EXCLUDED_ROLES)
+    for pid, sub_id, role, code in entries:
+        stats["files"] += 1
         if role in POOL_EXCLUDED_ROLES:
             stats["excluded_role"] += 1
             continue
-        if code in test_negative_codes:
+        if code in excluded_codes:
             stats["excluded_code"] += 1
             continue
         key = f"codenet/{pid}"

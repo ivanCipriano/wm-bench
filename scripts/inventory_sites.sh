@@ -15,14 +15,16 @@
 #
 #   LOG=docs/milestone_logs/P0_mcss_selftest.txt bash scripts/inventory_sites.sh selftest
 #       selezione CodeNet della verifica di mcss (PIPELINE §4.4 punto 2, decisione dell'utente del
-#       13 novembre 2026): pool delle sottomissioni umane Python non usate come negativi di test
-#       (export --groups L2_codenet_pool), inventario nei profili base e mcss, poi
+#       13 novembre 2026): pool delle sottomissioni umane Python, tranne negativi e canoniche dei
+#       problemi di test (export --groups L2_codenet_pool), inventario nei profili base e mcss, poi
 #       scripts/select_mcss_selftest.py (fascia 32-39 bit, al più 250 file).
 #
 #   bash scripts/inventory_sites.sh candidates        # LOG di default: P0_candidates.txt
-#       multimark.candidates sugli stessi JSONL dell'inventario. Predisposto soltanto: si ferma
-#       con un errore chiaro finché il modulo non è nel submodule e la sua invocazione non è
-#       stata collegata qui (TODO(ivan), quando la sessione del repository multimark lo consegna).
+#       canali candidati (P0-bis): `python -m multimark.cli.candidates` sugli stessi JSONL
+#       dell'inventario (tutti i gruppi di inputs/: L1 dev canoniche e baseline dei modelli, L2
+#       dev canoniche e baseline, ClassEval), con --estimate-groups sui gruppi L1_dev_*. L'export
+#       si rifà prima (stessi file: [SKIP]). Uscite per job in candidates/ (summary_<job>.txt,
+#       .json e tabella per campione samples_<job>.csv); il riepilogo va in $LOG.
 #
 # $LOG non deve esistere (i log non si sovrascrivono). Uscite in
 # $WMB/artifacts/_runs/diagnostics/inventory/; log del job in $WMB/logs/inventory_sites_<job>.log.
@@ -43,21 +45,6 @@ fi
 
 LIB="$REPO_ROOT/build/patched/multimark"
 LINK="$(git ls-files --stage -- third_party/multimark | awk '$1 == "160000" {print $2}')"
-if [ "$MODE" = candidates ]; then
-    if [ ! -f "$LIB/multimark/candidates.py" ] && [ ! -f "$LIB/multimark/candidates/__init__.py" ]; then
-        echo "multimark.candidates not found in build/patched/multimark (submodule at ${LINK:0:12})." >&2
-        echo "Update third_party/multimark to a commit that contains it, then rerun" >&2
-        echo "bash scripts/apply_patches.sh multimark." >&2
-        exit 1
-    fi
-    # TODO(ivan): collegare qui l'invocazione di multimark.candidates (ingressi: i JSONL di
-    # $WMB/artifacts/_runs/diagnostics/inventory/inputs; uscita: $LOG) quando la sessione del
-    # repository multimark ne fissa l'interfaccia. Finché non è fatto, nessun job parte.
-    echo "multimark.candidates is present but its invocation is not wired yet in this script:" >&2
-    echo "ask Claude Code in the benchmark to connect it (TODO(ivan))." >&2
-    exit 1
-fi
-
 if [ -z "${LOG:-}" ]; then
     echo "LOG is required, e.g. LOG=docs/milestone_logs/P0_inventory.txt" >&2
     exit 2
@@ -77,6 +64,12 @@ if [ ! -f "$LIB/multimark/inventory.py" ] || [ "$(cat "$LIB.source_commit" 2>/de
     echo "build/patched/multimark missing or stale: run bash scripts/apply_patches.sh multimark" >&2
     exit 1
 fi
+if [ "$MODE" = candidates ] && [ ! -f "$LIB/multimark/cli/candidates.py" ]; then
+    echo "multimark.cli.candidates not found in build/patched/multimark (submodule at ${LINK:0:12})." >&2
+    echo "Update third_party/multimark to a commit that contains it, then rerun" >&2
+    echo "bash scripts/apply_patches.sh multimark." >&2
+    exit 1
+fi
 
 variant() {  # $1 = variante -> "FLAGS|NOME"
     case "$1" in
@@ -88,9 +81,14 @@ variant() {  # $1 = variante -> "FLAGS|NOME"
     esac
 }
 
+if [ "$MODE" != inventory ] && [ "$#" -gt 0 ]; then
+    echo "$MODE takes no arguments" >&2
+    exit 2
+fi
 if [ "$MODE" = selftest ]; then
-    if [ "$#" -gt 0 ]; then echo "selftest takes no arguments" >&2; exit 2; fi
     VARIANTS=(base mcss)
+elif [ "$MODE" = candidates ]; then
+    VARIANTS=()
 elif [ "$#" -gt 0 ]; then
     VARIANTS=("$@")
 else
@@ -98,7 +96,7 @@ else
 fi
 FLAGS=()
 NAMES=()
-for v in "${VARIANTS[@]}"; do
+for v in ${VARIANTS[@]+"${VARIANTS[@]}"}; do
     if ! spec="$(variant "$v")"; then
         echo "unknown variant '$v' (base, params, noguards, mcss)" >&2
         exit 2
@@ -149,26 +147,55 @@ cd $REPO_ROOT
 echo "##### inventory_sites $MODE: nodo \$(hostname), commit \$(git rev-parse --short HEAD)"
 $EXPORT
 SBATCH
-    for i in "${!VARIANTS[@]}"; do
-        echo "$POSTHOC_PY scripts/inventory_sites.py --input $INPUT --out-dir $TABLES ${FLAGS[$i]} --summary $SUMMARY.${NAMES[$i]}.txt --summary-json $SUMMARY.${NAMES[$i]}.json"
-    done
-    if [ "$MODE" = selftest ]; then
-        echo "$POSTHOC_PY scripts/select_mcss_selftest.py --pool $POOL --mcss-table $TABLES/L2_codenet_pool.canonical-paper_guards-on_params-on.csv --base-table $TABLES/L2_codenet_pool.canonical-kind_guards-on_params-off.csv --out $OUT/mcss_selftest.jsonl --report $OUT/mcss_selftest_report.txt"
+    if [ "$MODE" = candidates ]; then
+        # Un --input per gruppo esportato (etichetta = nome del gruppo); stima sui gruppi di L1 dev.
+        cat <<SBATCH
+export PYTHONPATH=$LIB
+$POSTHOC_PY -c "import multimark, sys; f = multimark.__file__; sys.exit(0 if f.startswith('$LIB/') else 'multimark imported from ' + f)"
+INPUTS=()
+EST=()
+for f in $INPUT/*.jsonl; do
+    g=\$(basename "\$f" .jsonl)
+    INPUTS+=(--input "\$g=\$f")
+    case "\$g" in L1_dev_*) EST+=("\$g") ;; esac
+done
+if [ "\${#EST[@]}" -lt 3 ]; then echo "expected 3 L1 dev groups in $INPUT, found: \${EST[*]:-none}" >&2; exit 1; fi
+CAND=$OUT/candidates
+mkdir -p "\$CAND"
+$POSTHOC_PY -m multimark.cli.candidates "\${INPUTS[@]}" --estimate-groups "\$(IFS=,; echo "\${EST[*]}")" --id-field sample_id --output "\$CAND/samples_\$SLURM_JOB_ID.csv" --summary "\$CAND/summary_\$SLURM_JOB_ID.txt" --summary-json "\$CAND/summary_\$SLURM_JOB_ID.json"
+{
+  echo "# P0 candidates of multimark (scripts/inventory_sites.sh candidates; python -m multimark.cli.candidates)"
+  echo "# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD), multimark $LINK"
+  echo "# inputs: $INPUT (<gruppo>.jsonl.manifest.json): \${INPUTS[*]}"
+  echo "# estimate groups: \${EST[*]}"
+  echo "# outputs: \$CAND/{summary,samples}_\$SLURM_JOB_ID.*"
+  echo
+  cat "\$CAND/summary_\$SLURM_JOB_ID.txt"
+} > $LOG
+echo "[OK] $LOG"
+SBATCH
+    else
+        for i in "${!VARIANTS[@]}"; do
+            echo "$POSTHOC_PY scripts/inventory_sites.py --input $INPUT --out-dir $TABLES ${FLAGS[$i]} --summary $SUMMARY.${NAMES[$i]}.txt --summary-json $SUMMARY.${NAMES[$i]}.json"
+        done
+        if [ "$MODE" = selftest ]; then
+            echo "$POSTHOC_PY scripts/select_mcss_selftest.py --pool $POOL --mcss-table $TABLES/L2_codenet_pool.canonical-paper_guards-on_params-on.csv --base-table $TABLES/L2_codenet_pool.canonical-kind_guards-on_params-off.csv --out $OUT/mcss_selftest.jsonl --report $OUT/mcss_selftest_report.txt"
+        fi
+        echo "{"
+        echo "  echo \"# P0 $MODE of multimark sites (scripts/inventory_sites.sh $([ "$MODE" = selftest ] && echo selftest || echo "${VARIANTS[*]}"))\""
+        echo "  echo \"# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD)\""
+        echo "  echo \"# inputs: $INPUT (<gruppo>.jsonl.manifest.json)\""
+        if [ "$MODE" = selftest ]; then
+            echo "  echo \"# selection: $OUT/mcss_selftest.jsonl\"; echo"
+            echo "  cat $OUT/mcss_selftest_report.txt"
+        fi
+        for i in "${!VARIANTS[@]}"; do
+            echo "  echo; echo \"######## variant ${VARIANTS[$i]} (${NAMES[$i]})\"; echo"
+            echo "  cat $SUMMARY.${NAMES[$i]}.txt"
+        done
+        echo "} > $LOG"
+        echo "echo \"[OK] $LOG\""
     fi
-    echo "{"
-    echo "  echo \"# P0 $MODE of multimark sites (scripts/inventory_sites.sh $([ "$MODE" = selftest ] && echo selftest || echo "${VARIANTS[*]}"))\""
-    echo "  echo \"# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD)\""
-    echo "  echo \"# inputs: $INPUT (<gruppo>.jsonl.manifest.json)\""
-    if [ "$MODE" = selftest ]; then
-        echo "  echo \"# selection: $OUT/mcss_selftest.jsonl\"; echo"
-        echo "  cat $OUT/mcss_selftest_report.txt"
-    fi
-    for i in "${!VARIANTS[@]}"; do
-        echo "  echo; echo \"######## variant ${VARIANTS[$i]} (${NAMES[$i]})\"; echo"
-        echo "  cat $SUMMARY.${NAMES[$i]}.txt"
-    done
-    echo "} > $LOG"
-    echo "echo \"[OK] $LOG\""
 } > "$JOB"
 
 ID=$(sbatch --parsable -p defq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_defq_qos \
