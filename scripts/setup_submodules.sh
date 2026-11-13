@@ -12,6 +12,8 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
 # percorso  commit atteso
+# third_party/multimark (libreria della tesi) si aggiorna a ogni fase: il commit qui sotto va
+# cambiato nello stesso commit `[P<n>] submodule: multimark → <commit>` (PIPELINE_metodo.md §10).
 EXPECTED="
 third_party/sweet-watermark            853b47eb064c180beebd383302d09491fc98a565
 third_party/ACW                        2236dc304478a31fe7cc7cc393527375024428db
@@ -21,6 +23,7 @@ third_party/MCGMT                      eefa27b68747f5027c3121abcc506f3488eae990
 third_party/bigcode-evaluation-harness 8fc5bae6479c4fbbb28c3f8b644f6a15b3f3b5bd
 third_party/ClassEval                  eaeac44d0d5dcd8a95feec50726d66fedc73a98f
 third_party/lm-watermarking            82922516930c02f8aa322765defdb5863d07a00e
+third_party/multimark                  a69bae80754b269cab5989da7de8f0645739d7ac
 "
 
 echo "[setup_submodules] sync + update --init"

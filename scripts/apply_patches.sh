@@ -11,14 +11,19 @@
 # solo documentazione (gli ambienti sono già installati) e NON vengono applicate.
 #
 # Uso:
-#   bash scripts/apply_patches.sh                 # tutti e cinque i metodi
+#   bash scripts/apply_patches.sh                 # tutti i metodi (i cinque più multimark)
+#   bash scripts/apply_patches.sh multimark       # libreria di mcss e multimark (zero patch)
 #   bash scripts/apply_patches.sh stone mcgmark   # solo alcuni
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-ALL_METHODS=(sweet acw stone promptmark mcgmark)
+ALL_METHODS=(sweet acw stone promptmark mcgmark multimark)
+# Metodi senza patch per scelta (patches/<metodo>/README.md lo dichiara): nessun avviso.
+# multimark è la libreria dei metodi mcss e multimark (PIPELINE_metodo.md §0.4): una sola copia,
+# build/patched/multimark, usata da entrambi.
+NO_PATCH_METHODS=" multimark "
 
 submodule_of() {
     case "$1" in
@@ -27,6 +32,7 @@ submodule_of() {
         stone)      echo third_party/STONE-watermarking ;;
         promptmark) echo third_party/PromptMark ;;
         mcgmark)    echo third_party/MCGMT ;;
+        multimark)  echo third_party/multimark ;;
         *)          return 1 ;;
     esac
 }
@@ -75,7 +81,7 @@ for method in "${methods[@]}"; do
         find "patches/$method" -maxdepth 1 -type f -name '[0-9][0-9][0-9][0-9]-*.patch' 2>/dev/null \
             | LC_ALL=C sort
     )
-    if [ "${#patch_files[@]}" -eq 0 ]; then
+    if [ "${#patch_files[@]}" -eq 0 ] && [[ "$NO_PATCH_METHODS" != *" $method "* ]]; then
         echo "[WARN] $method: no patches in patches/$method/" >&2
     fi
     for patch in "${patch_files[@]}"; do
