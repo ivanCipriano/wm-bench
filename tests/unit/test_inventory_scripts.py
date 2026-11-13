@@ -1,0 +1,276 @@
+"""Inventario dei siti di P0: ``export_inventory_inputs.py`` e ``inventory_sites.py`` (scripts/).
+
+``inventory_sites.py`` si prova con la libreria del submodule ``third_party/multimark`` (stesso
+contenuto della copia ``build/patched/multimark``, zero patch).
+"""
+
+from __future__ import annotations
+
+import csv
+import importlib.util
+import json
+import sys
+from pathlib import Path
+from types import ModuleType
+from typing import Any
+
+import pytest
+
+from bench.domain.enums import Language, Level, Split
+from bench.domain.models import Problem
+from bench.pipeline.facade import BenchmarkFacade
+from bench.pipeline.stages.evalplus_groundtruth import groundtruth_ref, load_groundtruth
+from bench.pipeline.stages.generate_baseline import baseline_ref, problems_ref
+from tests.conftest import REPO_ROOT
+from tests.unit.test_execute import facade  # noqa: F401  (fixture: L1 piccolo con baseline)
+from tests.unit.test_generate_baseline import MODEL
+
+LIBRARY = REPO_ROOT / "third_party" / "multimark"
+
+
+def _load(name: str) -> ModuleType:
+    spec = importlib.util.spec_from_file_location(
+        f"wmb_{name}", REPO_ROOT / "scripts" / f"{name}.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+export = _load("export_inventory_inputs")
+inv = _load("inventory_sites")
+
+needs_library = pytest.mark.skipif(
+    not (LIBRARY / "multimark" / "inventory.py").is_file(),
+    reason="third_party/multimark not initialised",
+)
+
+CODE_A = (
+    "def f(xs):\n    total = 0\n    for x in xs:\n        total = total + 1\n    return total\n"
+)
+CODE_B = "def g(alpha, beta):\n    if alpha < 3:\n        return []\n    return beta\n"
+
+
+def _problem(key: str, dataset: str = "humanevalplus") -> Problem:
+    return Problem(
+        problem_key=key,
+        dataset=dataset,
+        level=Level.L1,
+        language=Language.PYTHON,
+        split=Split.DEV,
+        prompt_text="",
+        entry_point="f",
+        canonical_solution="x",
+        test_ref=key,
+        contamination_risk=False,
+        loc_to_generate=None,
+    )
+
+
+# ---------------------------------------------------------------- export_inventory_inputs
+
+
+def test_groups_cover_the_requested_datasets() -> None:
+    names = [g.name for g in export.groups_for(["m1", "m2"])]
+    assert names == [
+        "L1_dev_canonical",
+        "L1_dev_baseline_m1",
+        "L1_dev_baseline_m2",
+        "L2_dev_canonical",
+        "L2_dev_baseline_m1",
+        "L2_dev_baseline_m2",
+        "L3_classeval_canonical",
+    ]
+    classeval = export.groups_for([])[-1]
+    assert (classeval.level, classeval.split, classeval.dataset) == ("L3", None, "classeval")
+
+
+def test_canonical_rows_use_the_executor_code_and_are_sorted() -> None:
+    problems = [_problem("p2", "mbppplus"), _problem("p1"), _problem("p0", "mbppplus")]
+    codes = {"p0": CODE_A, "p1": CODE_B, "p2": CODE_A + "\n# c\n"}
+    rows = export.canonical_rows(problems, lambda p: codes[p.problem_key])
+    assert [(r["dataset"], r["problem_key"]) for r in rows] == [
+        ("humanevalplus", "p1"),
+        ("mbppplus", "p0"),
+        ("mbppplus", "p2"),
+    ]
+    first = rows[0]
+    assert first["code"] == CODE_B
+    assert first["source"] == "canonical"
+    assert first["model_id"] is None and first["sample_index"] is None
+    assert first["split"] == "dev" and first["language"] == "python"
+    assert first["loc"] == 4
+    assert tuple(first) == export.ROW_FIELDS
+
+
+def test_baseline_rows_keep_sample_fields() -> None:
+    records = [
+        {
+            "sample_id": f"s{i}",
+            "code": code,
+            "dataset": "codenet",
+            "problem_key": "p",
+            "language": "python",
+            "model_id": "m",
+            "sample_index": i,
+            "split": "dev",
+        }
+        for i, code in [(1, CODE_B), (0, CODE_A)]
+    ]
+    rows = export.baseline_rows(records)
+    assert [r["sample_index"] for r in rows] == [0, 1]
+    assert rows[0]["source"] == "baseline" and rows[0]["model_id"] == "m"
+    assert rows[0]["loc"] == 5
+
+
+def test_jsonl_is_deterministic_and_write_skips_identical(tmp_path: Path) -> None:
+    rows = export.canonical_rows([_problem("p1")], lambda p: CODE_A)
+    data = export.jsonl_bytes(rows)
+    assert data == export.jsonl_bytes(list(rows))
+    assert data.endswith(b"\n") and b"\r" not in data
+    path = tmp_path / "out" / "g.jsonl"
+    assert export.write_if_new(path, data) == "written"
+    assert export.write_if_new(path, data) == "unchanged"
+    with pytest.raises(export.ExportError):
+        export.write_if_new(path, data + b"{}\n")
+    assert path.read_bytes() == data  # il file esistente non si tocca
+
+
+def test_export_end_to_end_on_tiny_l1(
+    facade: BenchmarkFacade,  # noqa: F811
+    tmp_path: Path,
+) -> None:
+    facade.run_stage("evalplus_groundtruth")
+    store = facade.store
+    groups = ["L1_dev_canonical", f"L1_dev_baseline_{MODEL}"]
+    out = tmp_path / "inputs"
+    manifests = export.export(facade.cfg, store, out, [MODEL], groups)
+    assert sorted(manifests) == sorted(groups)
+
+    problems = store.read_table(problems_ref("L1", "python"))
+    dev = problems[problems["split"] == "dev"]
+    gt = load_groundtruth(store.read_table(groundtruth_ref()))
+    lines = (out / "L1_dev_canonical.jsonl").read_text(encoding="utf-8").splitlines()
+    canonical = [json.loads(x) for x in lines]
+    assert len(canonical) == len(dev) > 0
+    for row in canonical:  # il codice è quello dell'executor (ground truth di EvalPlus)
+        test_ref = dev.loc[dev["problem_key"] == row["problem_key"], "test_ref"].item()
+        assert row["code"] == gt[test_ref]["canonical_program"]
+        assert row["split"] == "dev" and row["source"] == "canonical"
+
+    baseline = store.read_table(baseline_ref(MODEL, "L1", "python", "dev"))
+    lines = (out / f"L1_dev_baseline_{MODEL}.jsonl").read_text(encoding="utf-8").splitlines()
+    rows = [json.loads(x) for x in lines]
+    assert sorted(r["sample_id"] for r in rows) == sorted(baseline["sample_id"])
+    assert {r["model_id"] for r in rows} == {MODEL}
+    manifest = json.loads(
+        (out / f"L1_dev_baseline_{MODEL}.jsonl.manifest.json").read_text(encoding="utf-8")
+    )
+    assert manifest["input"]["path"] == f"baseline/{MODEL}/L1_python_dev.parquet"
+    assert manifest["input"]["sha256"] is not None and manifest["rows"] == len(rows)
+
+    # Seconda esportazione: stessi file (nessuna riscrittura); gruppo sconosciuto: errore.
+    before = {p.name: p.read_bytes() for p in out.iterdir()}
+    assert export.export(facade.cfg, store, out, [MODEL], groups) == manifests
+    assert {p.name: p.read_bytes() for p in out.iterdir()} == before
+    with pytest.raises(export.ExportError, match="unknown groups"):
+        export.export(facade.cfg, store, out, [MODEL], ["L9_nothing"])
+
+
+# ---------------------------------------------------------------- inventory_sites
+
+
+def _input(path: Path, codes: list[tuple[str, str]]) -> None:
+    lines = []
+    for i, (dataset, code) in enumerate(codes):
+        rec: dict[str, Any] = {
+            "sample_id": f"s{i}",
+            "code": code,
+            "dataset": dataset,
+            "problem_key": f"p{i}",
+            "language": "python",
+            "source": "canonical",
+            "model_id": None,
+            "sample_index": None,
+            "split": "dev",
+            "loc": 4,
+        }
+        lines.append(json.dumps(rec))
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def test_variant_names_and_bands() -> None:
+    assert inv.variant_name("kind", True, False) == "canonical-kind_guards-on_params-off"
+    assert inv.variant_name("paper", False, True) == "canonical-paper_guards-off_params-on"
+    assert inv.parse_bands("10,20") == [(0, 10), (10, 20), (20, None)]
+    assert inv.parse_bands(None) == []
+    with pytest.raises(inv.InventoryError):
+        inv.parse_bands("20,10")
+
+
+@needs_library
+def test_inventory_calls_the_library_and_refuses_to_overwrite(tmp_path: Path) -> None:
+    inputs = tmp_path / "inputs"
+    inputs.mkdir()
+    _input(inputs / "L1_dev_canonical.jsonl", [("humanevalplus", CODE_A), ("mbppplus", CODE_B)])
+    _input(inputs / "L1_dev_bad.jsonl", [("humanevalplus", "def (:\n")])
+    out = tmp_path / "tables"
+    summary = tmp_path / "summary.txt"
+    argv = [
+        "--input", str(inputs), "--out-dir", str(out), "--library", str(LIBRARY),
+        "--summary", str(summary), "--summary-json", str(tmp_path / "s.json"),
+        "--loc-bands", "5",
+    ]  # fmt: skip
+    assert inv.main(argv) == 0
+
+    from multimark.inventory import inventory_code  # importato da LIBRARY
+
+    table = out / "L1_dev_canonical.canonical-kind_guards-on_params-off.csv"
+    with table.open(encoding="utf-8", newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    assert [r["dataset"] for r in rows] == ["humanevalplus", "mbppplus"]
+    assert "code" not in rows[0] and rows[0]["loc_bench"] == "4"
+    expected = inventory_code(CODE_A)
+    assert int(rows[0]["n_sites_total"]) == expected["n_sites_total"]
+    assert int(rows[0]["loc"]) == expected["loc"]
+
+    text = summary.read_text(encoding="utf-8")
+    assert "Inventory L1_dev_canonical\n" in text
+    assert "Inventory L1_dev_canonical [dataset=mbppplus]" in text
+    assert "Inventory L1_dev_canonical [loc 0-4]" in text
+    assert "parse_errors=1" in text  # il campione non analizzabile è contato a parte
+    data = json.loads((tmp_path / "s.json").read_text(encoding="utf-8"))
+    assert data["options"] == {"canonical": "kind", "guards": True, "include_params": False}
+    assert data["groups"]["L1_dev_canonical"]["summary"]["n_parsed"] == 2
+
+    # Stesso ingresso: nessuna riscrittura; ingresso diverso: rifiuto, file intatti.
+    assert inv.main(argv) == 0
+    before = table.read_bytes()
+    _input(inputs / "L1_dev_canonical.jsonl", [("humanevalplus", CODE_B)])
+    assert inv.main(argv) == 1
+    assert table.read_bytes() == before
+
+
+@needs_library
+def test_include_params_changes_only_the_names_channel(tmp_path: Path) -> None:
+    inputs = tmp_path / "in.jsonl"
+    _input(inputs, [("humanevalplus", CODE_B)])
+    base = ["--input", str(inputs), "--out-dir", str(tmp_path), "--library", str(LIBRARY)]
+    assert inv.main(base) == 0
+    assert inv.main([*base, "--include-params"]) == 0
+
+    def read(variant: str) -> dict[str, str]:
+        with (tmp_path / f"in.{variant}.csv").open(encoding="utf-8", newline="") as fh:
+            return next(csv.DictReader(fh))
+
+    off = read("canonical-kind_guards-on_params-off")
+    on = read("canonical-kind_guards-on_params-on")
+    assert int(on["n_vars"]) > int(off["n_vars"])
+    assert on["n_sites_structural"] == off["n_sites_structural"]
+
+
+def test_missing_library_is_reported(tmp_path: Path) -> None:
+    with pytest.raises(inv.InventoryError, match="apply_patches.sh multimark"):
+        inv.import_library(tmp_path)
