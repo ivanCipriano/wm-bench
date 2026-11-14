@@ -1,0 +1,1673 @@
+# selftest of multimark sites (scripts/inventory_sites.sh selftest)
+# date 2026-11-14T10:58:01+01:00, host tnode01, wm-bench d232a973e53205e8eae4fc3898365917d65885b5, multimark 1712e38db3374eb44e2d870f00c547258811f066
+# tables: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool_tables/1712e38db337
+# inputs: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool/L2_codenet_pool.jsonl (<gruppo>.jsonl.manifest.json)
+# selection: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/mcss_selftest_1712e38db337.jsonl
+
+MCSS self-test selection (PIPELINE_metodo.md v1.2 §4.4 point 2)
+mcss profile: canonical paper, params on, module-level variables on, channels mcss8
+order: derive_seed(20261001, 'mcss-selftest', sample_id); max 250 files, minimum 100
+
+pool files: 5449 (test canonicals and negatives already excluded by the export)
+excluded split == test: 800
+excluded same identical_problem_clusters cluster as a test problem: 39
+excluded parse errors: 0
+eligible files: 4610 (problems: 461)
+eligible files with n_bits_v1 >= 32: 81
+eligible files in 32-39: 51
+band used: n_bits_v1 >= 32 (widened: fewer than 100 files in 32-39)
+candidates: 81 (problems: 50)
+one submission per problem: no
+selected: 81
+distinct problems among selected: 50
+WARNING: fewer than 100 files: §4.4 point 2 asks whether more CodeNet Python submissions of development problems can be extracted
+
+selected by role: canonical_dev=1, negative_dev=1, unselected=79
+
+mcss profile on selected files (Table 3 of MCSS, band 32-39 bit):
+  mean n_bits_v1 (criterion): 44.59 vs 34.6 (+28.9%): FAIL (±10%)
+  mean variables:             13.57 vs 11.9 (+14.0%)
+  mean structural sites:      17.46 vs 10.9 (+60.2%)
+  mean module variables:      6.65
+
+multimark base profile on the same files (canonical kind, params off, extended):
+  mean n_sites_total:    24.78
+  files with n_sites_total >= 32: 18
+  files with n_sites_total >= 13: 69
+
+selected sample_id:
+  codenet/p00012/python/s056290696
+  codenet/p00012/python/s074741759
+  codenet/p00012/python/s083674776
+  codenet/p00012/python/s305490001
+  codenet/p00012/python/s903089408
+  codenet/p00017/python/s107432085
+  codenet/p00021/python/s765945442
+  codenet/p02263/python/s743733526
+  codenet/p02274/python/s565224763
+  codenet/p02534/python/s360163617
+  codenet/p02548/python/s548149436
+  codenet/p02556/python/s179979425
+  codenet/p02573/python/s400380587
+  codenet/p02577/python/s368199419
+  codenet/p02580/python/s315734289
+  codenet/p02580/python/s493592446
+  codenet/p02595/python/s971076099
+  codenet/p02618/python/s081411471
+  codenet/p02618/python/s123349639
+  codenet/p02618/python/s224984814
+  codenet/p02618/python/s444946118
+  codenet/p02618/python/s818825641
+  codenet/p02618/python/s947280195
+  codenet/p02618/python/s975286444
+  codenet/p02623/python/s454605852
+  codenet/p02684/python/s923067379
+  codenet/p02720/python/s068063317
+  codenet/p02720/python/s452541838
+  codenet/p02760/python/s173533893
+  codenet/p02792/python/s065121335
+  codenet/p02792/python/s693411548
+  codenet/p02803/python/s435830129
+  codenet/p02831/python/s649989656
+  codenet/p02831/python/s668648148
+  codenet/p02837/python/s099611698
+  codenet/p02837/python/s327760578
+  codenet/p02853/python/s425708630
+  codenet/p03011/python/s218849718
+  codenet/p03017/python/s691721692
+  codenet/p03053/python/s119391701
+  codenet/p03053/python/s814268999
+  codenet/p03081/python/s352842424
+  codenet/p03081/python/s560001812
+  codenet/p03081/python/s633191728
+  codenet/p03088/python/s372431442
+  codenet/p03088/python/s685332923
+  codenet/p03088/python/s993098286
+  codenet/p03108/python/s061282229
+  codenet/p03150/python/s730807246
+  codenet/p03151/python/s238001471
+  codenet/p03163/python/s725348186
+  codenet/p03165/python/s444443166
+  codenet/p03165/python/s569524957
+  codenet/p03173/python/s257162796
+  codenet/p03196/python/s861579613
+  codenet/p03212/python/s191342119
+  codenet/p03213/python/s122725804
+  codenet/p03213/python/s413514371
+  codenet/p03213/python/s634756092
+  codenet/p03213/python/s676317109
+  codenet/p03213/python/s917489067
+  codenet/p03244/python/s665907690
+  codenet/p03263/python/s455413405
+  codenet/p03273/python/s904681490
+  codenet/p03282/python/s104345529
+  codenet/p03290/python/s174491869
+  codenet/p03290/python/s249584634
+  codenet/p03290/python/s947309983
+  codenet/p03303/python/s655563282
+  codenet/p03409/python/s256685291
+  codenet/p03409/python/s555557761
+  codenet/p03409/python/s901828209
+  codenet/p03435/python/s931084829
+  codenet/p03472/python/s742241927
+  codenet/p03545/python/s397208635
+  codenet/p03545/python/s701975943
+  codenet/p03599/python/s525562171
+  codenet/p03599/python/s995938877
+  codenet/p03672/python/s771533113
+  codenet/p03731/python/s290046052
+  codenet/p03836/python/s627054670
+
+######## variant base (canonical-kind_guards-on_params-off)
+
+multimark source commit: 1712e38db3374eb44e2d870f00c547258811f066
+options: canonical-kind_guards-on_params-off, channels=extended
+loc bands: loc 1-5, loc 6-10, loc 11-20, loc 21-40, loc 41+
+site bands: n_sites_total 1-7, n_sites_total 8-12, n_sites_total 13-19, n_sites_total 20-31, n_sites_total 32-55, n_sites_total 56+
+
+Inventory L2_codenet_pool
+=========================
+samples=5449 parsed=5449 parse_errors=0
+frac n_sites_total >= 32: 0.0048
+frac n_sites_total >= 20: 0.0191
+frac n_sites_total >= 13: 0.0617
+frac with duplicate fids: 0.0015
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  4.284     3.000     1.000     6.000
+n_sites_structural             3.918     3.000     1.000     5.000
+n_vars                         0.366     0.000     0.000     0.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                      4.650     3.000     1.000     6.000
+n_sites_aug_assign             0.396     0.000     0.000     0.000
+n_sites_compare_dir            0.398     0.000     0.000     0.000
+n_sites_equality_dir           0.904     0.000     0.000     1.000
+n_sites_list_comp              0.128     0.000     0.000     0.000
+n_sites_ternary                0.021     0.000     0.000     0.000
+n_sites_operand_order          0.643     0.000     0.000     1.000
+n_sites_empty_coll             0.237     0.000     0.000     0.000
+n_sites_none_check             0.007     0.000     0.000     0.000
+n_sites_range_zero             0.845     0.000     0.000     1.000
+n_sites_slice_lower            0.070     0.000     0.000     0.000
+n_sites_else_return            0.133     0.000     0.000     0.000
+n_sites_nested_if              0.073     0.000     0.000     0.000
+n_sites_square                 0.039     0.000     0.000     0.000
+n_sites_return_none            0.025     0.000     0.000     0.000
+n_functions                    0.506     0.000     0.000     0.000
+n_duplicate_fids               0.004     0.000     0.000     0.000
+loc                           12.786    10.000     6.000    16.000
+
+total sites by channel:
+  aug_assign            2158
+  compare_dir           2170
+  equality_dir          4925
+  list_comp              695
+  ternary                113
+  operand_order         3505
+  empty_coll            1290
+  none_check              39
+  range_zero            4603
+  slice_lower            382
+  else_return            724
+  nested_if              398
+  square                 212
+  return_none            134
+  names                 1995
+
+input sha256: 9fad8312aab8f2188cc8652cb879022b5ed1ad1f3419960e7fdbf9fa81d9c825
+rows with library loc != bench loc: 0
+rows outside loc bands (loc_bench = 0): 0
+parsed rows outside site bands (n_sites_total = 0): 987
+
+Inventory L2_codenet_pool [role=canonical_dev]
+==============================================
+samples=50 parsed=50 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0400
+frac n_sites_total >= 13: 0.1000
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  4.460     2.000     1.000     5.750
+n_sites_structural             4.060     2.000     1.000     5.000
+n_vars                         0.400     0.000     0.000     0.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                      4.860     2.000     1.000     6.500
+n_sites_aug_assign             0.600     0.000     0.000     1.000
+n_sites_compare_dir            0.460     0.000     0.000     0.000
+n_sites_equality_dir           1.180     1.000     0.000     1.000
+n_sites_list_comp              0.060     0.000     0.000     0.000
+n_sites_ternary                0.060     0.000     0.000     0.000
+n_sites_operand_order          0.600     0.000     0.000     0.000
+n_sites_empty_coll             0.200     0.000     0.000     0.000
+n_sites_none_check             0.000     0.000     0.000     0.000
+n_sites_range_zero             0.600     0.000     0.000     1.000
+n_sites_slice_lower            0.040     0.000     0.000     0.000
+n_sites_else_return            0.160     0.000     0.000     0.000
+n_sites_nested_if              0.100     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.400     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           12.220     9.500     6.250    14.750
+
+total sites by channel:
+  aug_assign              30
+  compare_dir             23
+  equality_dir            59
+  list_comp                3
+  ternary                  3
+  operand_order           30
+  empty_coll              10
+  none_check               0
+  range_zero              30
+  slice_lower              2
+  else_return              8
+  nested_if                5
+  square                   0
+  return_none              0
+  names                   20
+
+Inventory L2_codenet_pool [role=negative_dev]
+=============================================
+samples=250 parsed=250 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0200
+frac n_sites_total >= 13: 0.0920
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  4.700     3.000     1.000     7.000
+n_sites_structural             4.328     3.000     1.000     6.000
+n_vars                         0.372     0.000     0.000     0.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                      5.072     3.000     1.000     7.000
+n_sites_aug_assign             0.608     0.000     0.000     1.000
+n_sites_compare_dir            0.604     0.000     0.000     1.000
+n_sites_equality_dir           1.088     1.000     0.000     1.750
+n_sites_list_comp              0.052     0.000     0.000     0.000
+n_sites_ternary                0.020     0.000     0.000     0.000
+n_sites_operand_order          0.580     0.000     0.000     1.000
+n_sites_empty_coll             0.232     0.000     0.000     0.000
+n_sites_none_check             0.004     0.000     0.000     0.000
+n_sites_range_zero             0.840     0.000     0.000     1.000
+n_sites_slice_lower            0.048     0.000     0.000     0.000
+n_sites_else_return            0.104     0.000     0.000     0.000
+n_sites_nested_if              0.084     0.000     0.000     0.000
+n_sites_square                 0.024     0.000     0.000     0.000
+n_sites_return_none            0.040     0.000     0.000     0.000
+n_functions                    0.508     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           12.852    10.500     6.000    17.000
+
+total sites by channel:
+  aug_assign             152
+  compare_dir            151
+  equality_dir           272
+  list_comp               13
+  ternary                  5
+  operand_order          145
+  empty_coll              58
+  none_check               1
+  range_zero             210
+  slice_lower             12
+  else_return             26
+  nested_if               21
+  square                   6
+  return_none             10
+  names                   93
+
+Inventory L2_codenet_pool [role=unselected]
+===========================================
+samples=5149 parsed=5149 parse_errors=0
+frac n_sites_total >= 32: 0.0050
+frac n_sites_total >= 20: 0.0188
+frac n_sites_total >= 13: 0.0598
+frac with duplicate fids: 0.0016
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  4.262     3.000     1.000     6.000
+n_sites_structural             3.896     3.000     1.000     5.000
+n_vars                         0.366     0.000     0.000     0.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                      4.628     3.000     1.000     6.000
+n_sites_aug_assign             0.384     0.000     0.000     0.000
+n_sites_compare_dir            0.388     0.000     0.000     0.000
+n_sites_equality_dir           0.892     0.000     0.000     1.000
+n_sites_list_comp              0.132     0.000     0.000     0.000
+n_sites_ternary                0.020     0.000     0.000     0.000
+n_sites_operand_order          0.647     0.000     0.000     1.000
+n_sites_empty_coll             0.237     0.000     0.000     0.000
+n_sites_none_check             0.007     0.000     0.000     0.000
+n_sites_range_zero             0.847     0.000     0.000     1.000
+n_sites_slice_lower            0.071     0.000     0.000     0.000
+n_sites_else_return            0.134     0.000     0.000     0.000
+n_sites_nested_if              0.072     0.000     0.000     0.000
+n_sites_square                 0.040     0.000     0.000     0.000
+n_sites_return_none            0.024     0.000     0.000     0.000
+n_functions                    0.507     0.000     0.000     0.000
+n_duplicate_fids               0.004     0.000     0.000     0.000
+loc                           12.788    10.000     6.000    16.000
+
+total sites by channel:
+  aug_assign            1976
+  compare_dir           1996
+  equality_dir          4594
+  list_comp              679
+  ternary                105
+  operand_order         3330
+  empty_coll            1222
+  none_check              38
+  range_zero            4363
+  slice_lower            368
+  else_return            690
+  nested_if              372
+  square                 206
+  return_none            124
+  names                 1882
+
+Inventory L2_codenet_pool [loc 1-5]
+===================================
+samples=1284 parsed=1284 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 0.0000
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  0.721     0.000     0.000     1.000
+n_sites_structural             0.721     0.000     0.000     1.000
+n_vars                         0.000     0.000     0.000     0.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                      0.721     0.000     0.000     1.000
+n_sites_aug_assign             0.009     0.000     0.000     0.000
+n_sites_compare_dir            0.106     0.000     0.000     0.000
+n_sites_equality_dir           0.246     0.000     0.000     0.000
+n_sites_list_comp              0.040     0.000     0.000     0.000
+n_sites_ternary                0.004     0.000     0.000     0.000
+n_sites_operand_order          0.150     0.000     0.000     0.000
+n_sites_empty_coll             0.002     0.000     0.000     0.000
+n_sites_none_check             0.000     0.000     0.000     0.000
+n_sites_range_zero             0.086     0.000     0.000     0.000
+n_sites_slice_lower            0.043     0.000     0.000     0.000
+n_sites_else_return            0.005     0.000     0.000     0.000
+n_sites_nested_if              0.004     0.000     0.000     0.000
+n_sites_square                 0.028     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.021     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                            3.355     3.000     2.000     5.000
+
+total sites by channel:
+  aug_assign              12
+  compare_dir            136
+  equality_dir           316
+  list_comp               51
+  ternary                  5
+  operand_order          192
+  empty_coll               2
+  none_check               0
+  range_zero             110
+  slice_lower             55
+  else_return              6
+  nested_if                5
+  square                  36
+  return_none              0
+  names                    0
+
+Inventory L2_codenet_pool [loc 6-10]
+====================================
+samples=1619 parsed=1619 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 0.0012
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  2.353     2.000     1.000     3.000
+n_sites_structural             2.298     2.000     1.000     3.000
+n_vars                         0.054     0.000     0.000     0.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                      2.407     2.000     1.000     3.000
+n_sites_aug_assign             0.214     0.000     0.000     0.000
+n_sites_compare_dir            0.225     0.000     0.000     0.000
+n_sites_equality_dir           0.534     0.000     0.000     1.000
+n_sites_list_comp              0.080     0.000     0.000     0.000
+n_sites_ternary                0.025     0.000     0.000     0.000
+n_sites_operand_order          0.460     0.000     0.000     1.000
+n_sites_empty_coll             0.072     0.000     0.000     0.000
+n_sites_none_check             0.001     0.000     0.000     0.000
+n_sites_range_zero             0.494     0.000     0.000     1.000
+n_sites_slice_lower            0.065     0.000     0.000     0.000
+n_sites_else_return            0.046     0.000     0.000     0.000
+n_sites_nested_if              0.046     0.000     0.000     0.000
+n_sites_square                 0.035     0.000     0.000     0.000
+n_sites_return_none            0.001     0.000     0.000     0.000
+n_functions                    0.102     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                            7.905     8.000     7.000     9.000
+
+total sites by channel:
+  aug_assign             346
+  compare_dir            364
+  equality_dir           865
+  list_comp              130
+  ternary                 40
+  operand_order          745
+  empty_coll             116
+  none_check               1
+  range_zero             799
+  slice_lower            106
+  else_return             75
+  nested_if               75
+  square                  57
+  return_none              2
+  names                   88
+
+Inventory L2_codenet_pool [loc 11-20]
+=====================================
+samples=1702 parsed=1702 parse_errors=0
+frac n_sites_total >= 32: 0.0006
+frac n_sites_total >= 20: 0.0029
+frac n_sites_total >= 13: 0.0264
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  5.053     4.000     3.000     7.000
+n_sites_structural             4.748     4.000     3.000     6.000
+n_vars                         0.305     0.000     0.000     0.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                      5.358     5.000     3.000     7.000
+n_sites_aug_assign             0.536     0.000     0.000     1.000
+n_sites_compare_dir            0.461     0.000     0.000     1.000
+n_sites_equality_dir           1.083     1.000     0.000     2.000
+n_sites_list_comp              0.155     0.000     0.000     0.000
+n_sites_ternary                0.021     0.000     0.000     0.000
+n_sites_operand_order          0.771     0.000     0.000     1.000
+n_sites_empty_coll             0.275     0.000     0.000     0.000
+n_sites_none_check             0.003     0.000     0.000     0.000
+n_sites_range_zero             1.081     1.000     0.000     2.000
+n_sites_slice_lower            0.080     0.000     0.000     0.000
+n_sites_else_return            0.158     0.000     0.000     0.000
+n_sites_nested_if              0.070     0.000     0.000     0.000
+n_sites_square                 0.038     0.000     0.000     0.000
+n_sites_return_none            0.018     0.000     0.000     0.000
+n_functions                    0.364     0.000     0.000     1.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           14.569    14.000    12.000    17.000
+
+total sites by channel:
+  aug_assign             912
+  compare_dir            784
+  equality_dir          1843
+  list_comp              263
+  ternary                 35
+  operand_order         1312
+  empty_coll             468
+  none_check               5
+  range_zero            1840
+  slice_lower            137
+  else_return            269
+  nested_if              119
+  square                  64
+  return_none             30
+  names                  519
+
+Inventory L2_codenet_pool [loc 21-40]
+=====================================
+samples=713 parsed=713 parse_errors=0
+frac n_sites_total >= 32: 0.0070
+frac n_sites_total >= 20: 0.0533
+frac n_sites_total >= 13: 0.2595
+frac with duplicate fids: 0.0014
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  9.864     9.000     6.000    13.000
+n_sites_structural             8.748     8.000     5.000    11.000
+n_vars                         1.116     0.000     0.000     2.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                     10.980    10.000     6.000    14.000
+n_sites_aug_assign             0.903     0.000     0.000     1.000
+n_sites_compare_dir            0.886     0.000     0.000     1.000
+n_sites_equality_dir           1.940     1.000     0.000     3.000
+n_sites_list_comp              0.258     0.000     0.000     0.000
+n_sites_ternary                0.029     0.000     0.000     0.000
+n_sites_operand_order          1.292     0.000     0.000     2.000
+n_sites_empty_coll             0.755     0.000     0.000     1.000
+n_sites_none_check             0.018     0.000     0.000     0.000
+n_sites_range_zero             1.928     1.000     0.000     3.000
+n_sites_slice_lower            0.095     0.000     0.000     0.000
+n_sites_else_return            0.318     0.000     0.000     1.000
+n_sites_nested_if              0.215     0.000     0.000     0.000
+n_sites_square                 0.045     0.000     0.000     0.000
+n_sites_return_none            0.065     0.000     0.000     0.000
+n_functions                    1.397     1.000     0.000     2.000
+n_duplicate_fids               0.001     0.000     0.000     0.000
+loc                           27.107    26.000    23.000    30.000
+
+total sites by channel:
+  aug_assign             644
+  compare_dir            632
+  equality_dir          1383
+  list_comp              184
+  ternary                 21
+  operand_order          921
+  empty_coll             538
+  none_check              13
+  range_zero            1375
+  slice_lower             68
+  else_return            227
+  nested_if              153
+  square                  32
+  return_none             46
+  names                  796
+
+Inventory L2_codenet_pool [loc 41+]
+===================================
+samples=131 parsed=131 parse_errors=0
+frac n_sites_total >= 32: 0.1527
+frac n_sites_total >= 20: 0.4656
+frac n_sites_total >= 13: 0.7939
+frac with duplicate fids: 0.0534
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                 22.710    18.000    14.000    26.500
+n_sites_structural            18.191    16.000    10.000    22.000
+n_vars                         4.519     3.000     0.000     6.500
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                     27.229    22.000    16.500    31.000
+n_sites_aug_assign             1.863     1.000     0.000     3.000
+n_sites_compare_dir            1.939     1.000     0.000     3.000
+n_sites_equality_dir           3.954     2.000     1.000     5.000
+n_sites_list_comp              0.511     0.000     0.000     1.000
+n_sites_ternary                0.092     0.000     0.000     0.000
+n_sites_operand_order          2.557     2.000     0.000     3.500
+n_sites_empty_coll             1.267     1.000     0.000     2.000
+n_sites_none_check             0.153     0.000     0.000     0.000
+n_sites_range_zero             3.656     3.000     1.000     5.000
+n_sites_slice_lower            0.122     0.000     0.000     0.000
+n_sites_else_return            1.122     1.000     0.000     2.000
+n_sites_nested_if              0.351     0.000     0.000     0.000
+n_sites_square                 0.176     0.000     0.000     0.000
+n_sites_return_none            0.427     0.000     0.000     0.000
+n_functions                    7.229     4.000     1.000    11.000
+n_duplicate_fids               0.160     0.000     0.000     0.000
+loc                           64.420    53.000    46.000    64.500
+
+total sites by channel:
+  aug_assign             244
+  compare_dir            254
+  equality_dir           518
+  list_comp               67
+  ternary                 12
+  operand_order          335
+  empty_coll             166
+  none_check              20
+  range_zero             479
+  slice_lower             16
+  else_return            147
+  nested_if               46
+  square                  23
+  return_none             56
+  names                  592
+
+Inventory L2_codenet_pool [n_sites_total 1-7]
+=============================================
+samples=3529 parsed=3529 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 0.0000
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  3.105     3.000     2.000     4.000
+n_sites_structural             2.974     3.000     2.000     4.000
+n_vars                         0.131     0.000     0.000     0.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                      3.236     3.000     2.000     5.000
+n_sites_aug_assign             0.300     0.000     0.000     0.000
+n_sites_compare_dir            0.309     0.000     0.000     0.000
+n_sites_equality_dir           0.715     0.000     0.000     1.000
+n_sites_list_comp              0.104     0.000     0.000     0.000
+n_sites_ternary                0.022     0.000     0.000     0.000
+n_sites_operand_order          0.459     0.000     0.000     1.000
+n_sites_empty_coll             0.165     0.000     0.000     0.000
+n_sites_none_check             0.002     0.000     0.000     0.000
+n_sites_range_zero             0.658     0.000     0.000     1.000
+n_sites_slice_lower            0.076     0.000     0.000     0.000
+n_sites_else_return            0.086     0.000     0.000     0.000
+n_sites_nested_if              0.038     0.000     0.000     0.000
+n_sites_square                 0.035     0.000     0.000     0.000
+n_sites_return_none            0.005     0.000     0.000     0.000
+n_functions                    0.304     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           10.856    10.000     7.000    14.000
+
+total sites by channel:
+  aug_assign            1059
+  compare_dir           1090
+  equality_dir          2523
+  list_comp              367
+  ternary                 79
+  operand_order         1620
+  empty_coll             582
+  none_check               8
+  range_zero            2323
+  slice_lower            269
+  else_return            302
+  nested_if              134
+  square                 123
+  return_none             18
+  names                  461
+
+Inventory L2_codenet_pool [n_sites_total 8-12]
+==============================================
+samples=597 parsed=597 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 0.0000
+frac with duplicate fids: 0.0000
+most frequent structural channel: range_zero
+most frequent channel (names included): range_zero
+
+column                          mean    median       p25       p75
+n_sites_total                  9.595     9.000     8.000    11.000
+n_sites_structural             8.620     9.000     8.000    10.000
+n_vars                         0.975     0.000     0.000     2.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                     10.570    10.000     9.000    12.000
+n_sites_aug_assign             0.913     0.000     0.000     2.000
+n_sites_compare_dir            0.817     0.000     0.000     1.000
+n_sites_equality_dir           1.779     1.000     1.000     3.000
+n_sites_list_comp              0.268     0.000     0.000     0.000
+n_sites_ternary                0.035     0.000     0.000     0.000
+n_sites_operand_order          1.425     1.000     0.000     2.000
+n_sites_empty_coll             0.601     0.000     0.000     1.000
+n_sites_none_check             0.022     0.000     0.000     0.000
+n_sites_range_zero             2.003     2.000     1.000     3.000
+n_sites_slice_lower            0.116     0.000     0.000     0.000
+n_sites_else_return            0.325     0.000     0.000     1.000
+n_sites_nested_if              0.157     0.000     0.000     0.000
+n_sites_square                 0.082     0.000     0.000     0.000
+n_sites_return_none            0.075     0.000     0.000     0.000
+n_functions                    1.003     0.000     0.000     1.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           22.283    21.000    17.000    26.000
+
+total sites by channel:
+  aug_assign             545
+  compare_dir            488
+  equality_dir          1062
+  list_comp              160
+  ternary                 21
+  operand_order          851
+  empty_coll             359
+  none_check              13
+  range_zero            1196
+  slice_lower             69
+  else_return            194
+  nested_if               94
+  square                  49
+  return_none             45
+  names                  582
+
+Inventory L2_codenet_pool [n_sites_total 13-19]
+===============================================
+samples=232 parsed=232 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 1.0000
+frac with duplicate fids: 0.0216
+most frequent structural channel: range_zero
+most frequent channel (names included): range_zero
+
+column                          mean    median       p25       p75
+n_sites_total                 15.293    15.000    14.000    17.000
+n_sites_structural            13.276    14.000    12.000    15.000
+n_vars                         2.017     0.000     0.000     4.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                     17.310    17.000    14.000    19.000
+n_sites_aug_assign             1.177     0.000     0.000     2.000
+n_sites_compare_dir            1.319     1.000     0.000     2.000
+n_sites_equality_dir           2.875     2.000     1.000     4.000
+n_sites_list_comp              0.453     0.000     0.000     1.000
+n_sites_ternary                0.013     0.000     0.000     0.000
+n_sites_operand_order          2.448     2.000     0.000     4.000
+n_sites_empty_coll             0.892     0.000     0.000     1.000
+n_sites_none_check             0.047     0.000     0.000     0.000
+n_sites_range_zero             2.914     3.000     1.000     5.000
+n_sites_slice_lower            0.147     0.000     0.000     0.000
+n_sites_else_return            0.431     0.000     0.000     1.000
+n_sites_nested_if              0.319     0.000     0.000     0.000
+n_sites_square                 0.073     0.000     0.000     0.000
+n_sites_return_none            0.168     0.000     0.000     0.000
+n_functions                    2.250     1.000     0.000     2.000
+n_duplicate_fids               0.052     0.000     0.000     0.000
+loc                           31.815    29.000    22.000    37.250
+
+total sites by channel:
+  aug_assign             273
+  compare_dir            306
+  equality_dir           667
+  list_comp              105
+  ternary                  3
+  operand_order          568
+  empty_coll             207
+  none_check              11
+  range_zero             676
+  slice_lower             34
+  else_return            100
+  nested_if               74
+  square                  17
+  return_none             39
+  names                  468
+
+Inventory L2_codenet_pool [n_sites_total 20-31]
+===============================================
+samples=78 parsed=78 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 1.0000
+frac n_sites_total >= 13: 1.0000
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                 23.910    23.000    21.000    26.000
+n_sites_structural            20.705    21.000    18.000    23.000
+n_vars                         3.205     3.000     0.000     5.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                     27.115    27.000    23.000    31.000
+n_sites_aug_assign             2.667     2.000     0.000     4.000
+n_sites_compare_dir            2.256     2.000     0.000     3.000
+n_sites_equality_dir           4.282     3.000     1.000     6.000
+n_sites_list_comp              0.513     0.000     0.000     1.000
+n_sites_ternary                0.090     0.000     0.000     0.000
+n_sites_operand_order          4.038     2.000     0.250     6.750
+n_sites_empty_coll             1.154     1.000     0.000     1.750
+n_sites_none_check             0.026     0.000     0.000     0.000
+n_sites_range_zero             3.577     3.000     1.000     5.000
+n_sites_slice_lower            0.115     0.000     0.000     0.000
+n_sites_else_return            0.923     0.500     0.000     1.750
+n_sites_nested_if              0.705     0.000     0.000     1.000
+n_sites_square                 0.077     0.000     0.000     0.000
+n_sites_return_none            0.282     0.000     0.000     0.000
+n_functions                    3.244     1.000     0.000     3.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           45.218    42.000    32.250    55.750
+
+total sites by channel:
+  aug_assign             208
+  compare_dir            176
+  equality_dir           334
+  list_comp               40
+  ternary                  7
+  operand_order          315
+  empty_coll              90
+  none_check               2
+  range_zero             279
+  slice_lower              9
+  else_return             72
+  nested_if               55
+  square                   6
+  return_none             22
+  names                  250
+
+Inventory L2_codenet_pool [n_sites_total 32-55]
+===============================================
+samples=17 parsed=17 parse_errors=0
+frac n_sites_total >= 32: 1.0000
+frac n_sites_total >= 20: 1.0000
+frac n_sites_total >= 13: 1.0000
+frac with duplicate fids: 0.0588
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                 38.000    37.000    34.000    42.000
+n_sites_structural            32.235    32.000    28.000    36.000
+n_vars                         5.765     6.000     0.000    11.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                     43.765    42.000    36.000    48.000
+n_sites_aug_assign             2.765     1.000     1.000     5.000
+n_sites_compare_dir            3.353     2.000     0.000     4.000
+n_sites_equality_dir           8.471     6.000     3.000    10.000
+n_sites_list_comp              0.824     0.000     0.000     1.000
+n_sites_ternary                0.000     0.000     0.000     0.000
+n_sites_operand_order          6.588     4.000     2.000     8.000
+n_sites_empty_coll             1.706     1.000     0.000     3.000
+n_sites_none_check             0.118     0.000     0.000     0.000
+n_sites_range_zero             4.824     5.000     3.000     7.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            1.176     1.000     1.000     2.000
+n_sites_nested_if              1.824     1.000     0.000     3.000
+n_sites_square                 0.235     0.000     0.000     0.000
+n_sites_return_none            0.353     0.000     0.000     0.000
+n_functions                    5.706     2.000     0.000    10.000
+n_duplicate_fids               0.059     0.000     0.000     0.000
+loc                           66.765    60.000    40.000    70.000
+
+total sites by channel:
+  aug_assign              47
+  compare_dir             57
+  equality_dir           144
+  list_comp               14
+  ternary                  0
+  operand_order          112
+  empty_coll              29
+  none_check               2
+  range_zero              82
+  slice_lower              0
+  else_return             20
+  nested_if               31
+  square                   4
+  return_none              6
+  names                   98
+
+Inventory L2_codenet_pool [n_sites_total 56+]
+=============================================
+samples=9 parsed=9 parse_errors=0
+frac n_sites_total >= 32: 1.0000
+frac n_sites_total >= 20: 1.0000
+frac n_sites_total >= 13: 1.0000
+frac with duplicate fids: 0.2222
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                 66.444    61.000    59.000    67.000
+n_sites_structural            51.333    49.000    44.000    56.000
+n_vars                        15.111    16.000     9.000    18.000
+n_vars_module                  0.000     0.000     0.000     0.000
+n_bits_v1                     81.556    77.000    67.000    87.000
+n_sites_aug_assign             2.889     2.000     0.000     6.000
+n_sites_compare_dir            5.889     7.000     1.000     8.000
+n_sites_equality_dir          21.667    12.000     9.000    29.000
+n_sites_list_comp              1.000     0.000     0.000     2.000
+n_sites_ternary                0.333     0.000     0.000     0.000
+n_sites_operand_order          4.333     3.000     1.000     7.000
+n_sites_empty_coll             2.556     2.000     1.000     4.000
+n_sites_none_check             0.333     0.000     0.000     1.000
+n_sites_range_zero             5.222     4.000     3.000     6.000
+n_sites_slice_lower            0.111     0.000     0.000     0.000
+n_sites_else_return            4.000     2.000     2.000     5.000
+n_sites_nested_if              1.111     0.000     0.000     1.000
+n_sites_square                 1.444     0.000     0.000     2.000
+n_sites_return_none            0.444     0.000     0.000     1.000
+n_functions                   17.222    15.000     2.000    32.000
+n_duplicate_fids               1.000     0.000     0.000     0.000
+loc                          150.667   167.000   123.000   178.000
+
+total sites by channel:
+  aug_assign              26
+  compare_dir             53
+  equality_dir           195
+  list_comp                9
+  ternary                  3
+  operand_order           39
+  empty_coll              23
+  none_check               3
+  range_zero              47
+  slice_lower              1
+  else_return             36
+  nested_if               10
+  square                  13
+  return_none              4
+  names                  136
+
+######## variant mcss_mod (canonical-paper_guards-on_params-on_modlevel-on)
+
+multimark source commit: 1712e38db3374eb44e2d870f00c547258811f066
+options: canonical-paper_guards-on_params-on_modlevel-on, channels=mcss8
+loc bands: loc 1-5, loc 6-10, loc 11-20, loc 21-40, loc 41+
+site bands: n_sites_total 1-7, n_sites_total 8-12, n_sites_total 13-19, n_sites_total 20-31, n_sites_total 32-55, n_sites_total 56+
+
+Inventory L2_codenet_pool
+=========================
+samples=5449 parsed=5449 parse_errors=0
+frac n_sites_total >= 32: 0.0061
+frac n_sites_total >= 20: 0.0264
+frac n_sites_total >= 13: 0.0784
+frac with duplicate fids: 0.0015
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                  5.111     4.000     1.000     7.000
+n_sites_structural             3.142     2.000     1.000     4.000
+n_vars                         1.969     1.000     0.000     3.000
+n_vars_module                  1.489     1.000     0.000     2.000
+n_bits_v1                      7.080     5.000     2.000     9.000
+n_sites_aug_assign             0.396     0.000     0.000     0.000
+n_sites_compare_dir            0.629     0.000     0.000     1.000
+n_sites_equality_dir           1.082     1.000     0.000     1.000
+n_sites_list_comp              0.128     0.000     0.000     0.000
+n_sites_ternary                0.021     0.000     0.000     0.000
+n_sites_operand_order          0.643     0.000     0.000     1.000
+n_sites_empty_coll             0.237     0.000     0.000     0.000
+n_sites_none_check             0.007     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.506     0.000     0.000     0.000
+n_duplicate_fids               0.004     0.000     0.000     0.000
+loc                           12.786    10.000     6.000    16.000
+
+total sites by channel:
+  aug_assign            2158
+  compare_dir           3426
+  equality_dir          5895
+  list_comp              695
+  ternary                113
+  operand_order         3505
+  empty_coll            1290
+  none_check              39
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                10730
+
+input sha256: 9fad8312aab8f2188cc8652cb879022b5ed1ad1f3419960e7fdbf9fa81d9c825
+rows with library loc != bench loc: 0
+rows outside loc bands (loc_bench = 0): 0
+parsed rows outside site bands (n_sites_total = 0): 674
+
+Inventory L2_codenet_pool [role=canonical_dev]
+==============================================
+samples=50 parsed=50 parse_errors=0
+frac n_sites_total >= 32: 0.0200
+frac n_sites_total >= 20: 0.0200
+frac n_sites_total >= 13: 0.1000
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                  5.220     3.000     1.250     7.000
+n_sites_structural             3.520     2.000     1.000     4.000
+n_vars                         1.700     1.000     0.000     2.000
+n_vars_module                  1.240     1.000     0.000     2.000
+n_bits_v1                      6.920     4.500     2.000    10.000
+n_sites_aug_assign             0.600     0.000     0.000     1.000
+n_sites_compare_dir            0.660     0.000     0.000     1.000
+n_sites_equality_dir           1.340     1.000     0.000     1.750
+n_sites_list_comp              0.060     0.000     0.000     0.000
+n_sites_ternary                0.060     0.000     0.000     0.000
+n_sites_operand_order          0.600     0.000     0.000     0.000
+n_sites_empty_coll             0.200     0.000     0.000     0.000
+n_sites_none_check             0.000     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.400     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           12.220     9.500     6.250    14.750
+
+total sites by channel:
+  aug_assign              30
+  compare_dir             33
+  equality_dir            67
+  list_comp                3
+  ternary                  3
+  operand_order           30
+  empty_coll              10
+  none_check               0
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                   85
+
+Inventory L2_codenet_pool [role=negative_dev]
+=============================================
+samples=250 parsed=250 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0240
+frac n_sites_total >= 13: 0.0960
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                  5.336     4.000     1.250     7.000
+n_sites_structural             3.576     2.000     1.000     5.000
+n_vars                         1.760     1.000     0.000     3.000
+n_vars_module                  1.300     1.000     0.000     2.000
+n_bits_v1                      7.096     5.000     2.000    10.750
+n_sites_aug_assign             0.608     0.000     0.000     1.000
+n_sites_compare_dir            0.848     0.000     0.000     1.000
+n_sites_equality_dir           1.232     1.000     0.000     2.000
+n_sites_list_comp              0.052     0.000     0.000     0.000
+n_sites_ternary                0.020     0.000     0.000     0.000
+n_sites_operand_order          0.580     0.000     0.000     1.000
+n_sites_empty_coll             0.232     0.000     0.000     0.000
+n_sites_none_check             0.004     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.508     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           12.852    10.500     6.000    17.000
+
+total sites by channel:
+  aug_assign             152
+  compare_dir            212
+  equality_dir           308
+  list_comp               13
+  ternary                  5
+  operand_order          145
+  empty_coll              58
+  none_check               1
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                  440
+
+Inventory L2_codenet_pool [role=unselected]
+===========================================
+samples=5149 parsed=5149 parse_errors=0
+frac n_sites_total >= 32: 0.0062
+frac n_sites_total >= 20: 0.0266
+frac n_sites_total >= 13: 0.0773
+frac with duplicate fids: 0.0016
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                  5.099     4.000     1.000     7.000
+n_sites_structural             3.117     2.000     1.000     4.000
+n_vars                         1.982     1.000     0.000     3.000
+n_vars_module                  1.500     1.000     0.000     2.000
+n_bits_v1                      7.081     5.000     2.000     9.000
+n_sites_aug_assign             0.384     0.000     0.000     0.000
+n_sites_compare_dir            0.618     0.000     0.000     1.000
+n_sites_equality_dir           1.072     1.000     0.000     1.000
+n_sites_list_comp              0.132     0.000     0.000     0.000
+n_sites_ternary                0.020     0.000     0.000     0.000
+n_sites_operand_order          0.647     0.000     0.000     1.000
+n_sites_empty_coll             0.237     0.000     0.000     0.000
+n_sites_none_check             0.007     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.507     0.000     0.000     0.000
+n_duplicate_fids               0.004     0.000     0.000     0.000
+loc                           12.788    10.000     6.000    16.000
+
+total sites by channel:
+  aug_assign            1976
+  compare_dir           3181
+  equality_dir          5520
+  list_comp              679
+  ternary                105
+  operand_order         3330
+  empty_coll            1222
+  none_check              38
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                10205
+
+Inventory L2_codenet_pool [loc 1-5]
+===================================
+samples=1284 parsed=1284 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 0.0000
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): equality_dir
+
+column                          mean    median       p25       p75
+n_sites_total                  0.984     1.000     0.000     1.000
+n_sites_structural             0.674     0.000     0.000     1.000
+n_vars                         0.310     0.000     0.000     0.000
+n_vars_module                  0.310     0.000     0.000     0.000
+n_bits_v1                      1.294     1.000     0.000     2.000
+n_sites_aug_assign             0.009     0.000     0.000     0.000
+n_sites_compare_dir            0.149     0.000     0.000     0.000
+n_sites_equality_dir           0.321     0.000     0.000     0.000
+n_sites_list_comp              0.040     0.000     0.000     0.000
+n_sites_ternary                0.004     0.000     0.000     0.000
+n_sites_operand_order          0.150     0.000     0.000     0.000
+n_sites_empty_coll             0.002     0.000     0.000     0.000
+n_sites_none_check             0.000     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.021     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                            3.355     3.000     2.000     5.000
+
+total sites by channel:
+  aug_assign              12
+  compare_dir            191
+  equality_dir           412
+  list_comp               51
+  ternary                  5
+  operand_order          192
+  empty_coll               2
+  none_check               0
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                  398
+
+Inventory L2_codenet_pool [loc 6-10]
+====================================
+samples=1619 parsed=1619 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 0.0006
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                  2.956     3.000     2.000     4.000
+n_sites_structural             1.915     2.000     1.000     3.000
+n_vars                         1.041     1.000     0.000     2.000
+n_vars_module                  0.977     1.000     0.000     1.000
+n_bits_v1                      3.996     4.000     2.000     5.000
+n_sites_aug_assign             0.214     0.000     0.000     0.000
+n_sites_compare_dir            0.403     0.000     0.000     1.000
+n_sites_equality_dir           0.660     0.000     0.000     1.000
+n_sites_list_comp              0.080     0.000     0.000     0.000
+n_sites_ternary                0.025     0.000     0.000     0.000
+n_sites_operand_order          0.460     0.000     0.000     1.000
+n_sites_empty_coll             0.072     0.000     0.000     0.000
+n_sites_none_check             0.001     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.102     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                            7.905     8.000     7.000     9.000
+
+total sites by channel:
+  aug_assign             346
+  compare_dir            653
+  equality_dir          1069
+  list_comp              130
+  ternary                 40
+  operand_order          745
+  empty_coll             116
+  none_check               1
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                 1685
+
+Inventory L2_codenet_pool [loc 11-20]
+=====================================
+samples=1702 parsed=1702 parse_errors=0
+frac n_sites_total >= 32: 0.0006
+frac n_sites_total >= 20: 0.0047
+frac n_sites_total >= 13: 0.0329
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                  6.035     5.000     4.000     8.000
+n_sites_structural             3.734     3.000     2.000     5.000
+n_vars                         2.301     2.000     1.000     3.000
+n_vars_module                  1.922     2.000     1.000     3.000
+n_bits_v1                      8.336     8.000     5.000    11.000
+n_sites_aug_assign             0.536     0.000     0.000     1.000
+n_sites_compare_dir            0.716     0.000     0.000     1.000
+n_sites_equality_dir           1.259     1.000     0.000     2.000
+n_sites_list_comp              0.155     0.000     0.000     0.000
+n_sites_ternary                0.021     0.000     0.000     0.000
+n_sites_operand_order          0.771     0.000     0.000     1.000
+n_sites_empty_coll             0.275     0.000     0.000     0.000
+n_sites_none_check             0.003     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.364     0.000     0.000     1.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           14.569    14.000    12.000    17.000
+
+total sites by channel:
+  aug_assign             912
+  compare_dir           1218
+  equality_dir          2143
+  list_comp              263
+  ternary                 35
+  operand_order         1312
+  empty_coll             468
+  none_check               5
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                 3916
+
+Inventory L2_codenet_pool [loc 21-40]
+=====================================
+samples=713 parsed=713 parse_errors=0
+frac n_sites_total >= 32: 0.0042
+frac n_sites_total >= 20: 0.0842
+frac n_sites_total >= 13: 0.3647
+frac with duplicate fids: 0.0014
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                 11.607    11.000     8.000    14.000
+n_sites_structural             6.919     6.000     4.000     9.000
+n_vars                         4.689     4.000     2.000     6.000
+n_vars_module                  3.245     3.000     1.000     5.000
+n_bits_v1                     16.296    15.000    11.000    21.000
+n_sites_aug_assign             0.903     0.000     0.000     1.000
+n_sites_compare_dir            1.372     1.000     0.000     2.000
+n_sites_equality_dir           2.292     2.000     1.000     3.000
+n_sites_list_comp              0.258     0.000     0.000     0.000
+n_sites_ternary                0.029     0.000     0.000     0.000
+n_sites_operand_order          1.292     0.000     0.000     2.000
+n_sites_empty_coll             0.755     0.000     0.000     1.000
+n_sites_none_check             0.018     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    1.397     1.000     0.000     2.000
+n_duplicate_fids               0.001     0.000     0.000     0.000
+loc                           27.107    26.000    23.000    30.000
+
+total sites by channel:
+  aug_assign             644
+  compare_dir            978
+  equality_dir          1634
+  list_comp              184
+  ternary                 21
+  operand_order          921
+  empty_coll             538
+  none_check              13
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                 3343
+
+Inventory L2_codenet_pool [loc 41+]
+===================================
+samples=131 parsed=131 parse_errors=0
+frac n_sites_total >= 32: 0.2214
+frac n_sites_total >= 20: 0.5802
+frac n_sites_total >= 13: 0.8397
+frac with duplicate fids: 0.0534
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                 24.847    22.000    15.000    29.500
+n_sites_structural            14.252    11.000     7.000    19.000
+n_vars                        10.595     9.000     6.000    12.000
+n_vars_module                  4.176     3.000     1.000     6.000
+n_bits_v1                     35.443    30.000    23.000    38.500
+n_sites_aug_assign             1.863     1.000     0.000     3.000
+n_sites_compare_dir            2.947     2.000     1.000     4.000
+n_sites_equality_dir           4.863     3.000     1.000     6.000
+n_sites_list_comp              0.511     0.000     0.000     1.000
+n_sites_ternary                0.092     0.000     0.000     0.000
+n_sites_operand_order          2.557     2.000     0.000     3.500
+n_sites_empty_coll             1.267     1.000     0.000     2.000
+n_sites_none_check             0.153     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    7.229     4.000     1.000    11.000
+n_duplicate_fids               0.160     0.000     0.000     0.000
+loc                           64.420    53.000    46.000    64.500
+
+total sites by channel:
+  aug_assign             244
+  compare_dir            386
+  equality_dir           637
+  list_comp               67
+  ternary                 12
+  operand_order          335
+  empty_coll             166
+  none_check              20
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                 1388
+
+Inventory L2_codenet_pool [n_sites_total 1-7]
+=============================================
+samples=3599 parsed=3599 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 0.0000
+frac with duplicate fids: 0.0000
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                  3.386     3.000     2.000     5.000
+n_sites_structural             2.129     2.000     1.000     3.000
+n_vars                         1.257     1.000     0.000     2.000
+n_vars_module                  1.121     1.000     0.000     2.000
+n_bits_v1                      4.644     4.000     2.000     7.000
+n_sites_aug_assign             0.234     0.000     0.000     0.000
+n_sites_compare_dir            0.453     0.000     0.000     1.000
+n_sites_equality_dir           0.785     1.000     0.000     1.000
+n_sites_list_comp              0.095     0.000     0.000     0.000
+n_sites_ternary                0.017     0.000     0.000     0.000
+n_sites_operand_order          0.413     0.000     0.000     1.000
+n_sites_empty_coll             0.131     0.000     0.000     0.000
+n_sites_none_check             0.002     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.298     0.000     0.000     0.000
+n_duplicate_fids               0.000     0.000     0.000     0.000
+loc                           10.057     9.000     6.000    13.000
+
+total sites by channel:
+  aug_assign             843
+  compare_dir           1630
+  equality_dir          2826
+  list_comp              341
+  ternary                 60
+  operand_order         1487
+  empty_coll             471
+  none_check               6
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                 4524
+
+Inventory L2_codenet_pool [n_sites_total 8-12]
+==============================================
+samples=749 parsed=749 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 0.0000
+frac with duplicate fids: 0.0013
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                  9.598     9.000     8.000    11.000
+n_sites_structural             5.674     6.000     4.000     7.000
+n_vars                         3.924     4.000     2.000     5.000
+n_vars_module                  2.957     3.000     1.000     4.000
+n_bits_v1                     13.522    13.000    12.000    15.000
+n_sites_aug_assign             0.833     0.000     0.000     1.000
+n_sites_compare_dir            1.013     1.000     0.000     2.000
+n_sites_equality_dir           1.830     1.000     0.000     3.000
+n_sites_list_comp              0.230     0.000     0.000     0.000
+n_sites_ternary                0.045     0.000     0.000     0.000
+n_sites_operand_order          1.219     0.000     0.000     2.000
+n_sites_empty_coll             0.493     0.000     0.000     1.000
+n_sites_none_check             0.011     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    0.856     0.000     0.000     1.000
+n_duplicate_fids               0.001     0.000     0.000     0.000
+loc                           20.111    19.000    15.000    24.000
+
+total sites by channel:
+  aug_assign             624
+  compare_dir            759
+  equality_dir          1371
+  list_comp              172
+  ternary                 34
+  operand_order          913
+  empty_coll             369
+  none_check               8
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                 2939
+
+Inventory L2_codenet_pool [n_sites_total 13-19]
+===============================================
+samples=283 parsed=283 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 0.0000
+frac n_sites_total >= 13: 1.0000
+frac with duplicate fids: 0.0071
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                 15.318    15.000    14.000    17.000
+n_sites_structural             9.201     9.000     7.000    11.000
+n_vars                         6.117     6.000     4.000     8.000
+n_vars_module                  3.809     3.000     1.000     6.000
+n_bits_v1                     21.435    21.000    18.000    24.000
+n_sites_aug_assign             1.180     0.000     0.000     2.000
+n_sites_compare_dir            1.852     1.000     0.000     3.000
+n_sites_equality_dir           2.756     2.000     1.000     4.000
+n_sites_list_comp              0.389     0.000     0.000     1.000
+n_sites_ternary                0.025     0.000     0.000     0.000
+n_sites_operand_order          2.057     1.000     0.000     3.000
+n_sites_empty_coll             0.905     0.000     0.000     2.000
+n_sites_none_check             0.039     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    1.707     1.000     0.000     2.000
+n_duplicate_fids               0.032     0.000     0.000     0.000
+loc                           29.710    28.000    22.500    33.500
+
+total sites by channel:
+  aug_assign             334
+  compare_dir            524
+  equality_dir           780
+  list_comp              110
+  ternary                  7
+  operand_order          582
+  empty_coll             256
+  none_check              11
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                 1731
+
+Inventory L2_codenet_pool [n_sites_total 20-31]
+===============================================
+samples=111 parsed=111 parse_errors=0
+frac n_sites_total >= 32: 0.0000
+frac n_sites_total >= 20: 1.0000
+frac n_sites_total >= 13: 1.0000
+frac with duplicate fids: 0.0180
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                 23.550    23.000    21.000    25.000
+n_sites_structural            14.766    15.000    11.000    19.000
+n_vars                         8.784     9.000     5.000    11.000
+n_vars_module                  5.396     4.000     2.000     8.000
+n_bits_v1                     32.333    32.000    28.000    36.000
+n_sites_aug_assign             2.000     1.000     0.000     3.000
+n_sites_compare_dir            2.721     2.000     1.000     4.000
+n_sites_equality_dir           5.072     4.000     2.000     7.000
+n_sites_list_comp              0.396     0.000     0.000     1.000
+n_sites_ternary                0.063     0.000     0.000     0.000
+n_sites_operand_order          3.261     2.000     0.000     5.000
+n_sites_empty_coll             1.171     1.000     0.000     2.000
+n_sites_none_check             0.081     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    2.369     1.000     0.000     2.000
+n_duplicate_fids               0.018     0.000     0.000     0.000
+loc                           41.559    38.000    29.500    51.000
+
+total sites by channel:
+  aug_assign             222
+  compare_dir            302
+  equality_dir           563
+  list_comp               44
+  ternary                  7
+  operand_order          362
+  empty_coll             130
+  none_check               9
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                  975
+
+Inventory L2_codenet_pool [n_sites_total 32-55]
+===============================================
+samples=24 parsed=24 parse_errors=0
+frac n_sites_total >= 32: 1.0000
+frac n_sites_total >= 20: 1.0000
+frac n_sites_total >= 13: 1.0000
+frac with duplicate fids: 0.0417
+most frequent structural channel: compare_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                 37.542    34.500    32.750    41.000
+n_sites_structural            23.833    24.000    16.750    30.250
+n_vars                        13.708    16.000     7.000    20.000
+n_vars_module                  6.125     4.000     1.000     9.000
+n_bits_v1                     51.250    50.500    40.000    65.000
+n_sites_aug_assign             4.375     3.000     1.000     5.750
+n_sites_compare_dir            6.250     5.000     3.750     7.250
+n_sites_equality_dir           6.083     4.500     1.750     9.000
+n_sites_list_comp              0.792     0.000     0.000     1.000
+n_sites_ternary                0.083     0.000     0.000     0.000
+n_sites_operand_order          4.375     3.000     1.000     7.000
+n_sites_empty_coll             1.792     1.000     0.000     3.000
+n_sites_none_check             0.083     0.000     0.000     0.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                    4.625     1.500     0.000     6.000
+n_duplicate_fids               0.042     0.000     0.000     0.000
+loc                           72.458    59.500    50.250    84.750
+
+total sites by channel:
+  aug_assign             105
+  compare_dir            150
+  equality_dir           146
+  list_comp               19
+  ternary                  2
+  operand_order          105
+  empty_coll              43
+  none_check               2
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                  329
+
+Inventory L2_codenet_pool [n_sites_total 56+]
+=============================================
+samples=9 parsed=9 parse_errors=0
+frac n_sites_total >= 32: 1.0000
+frac n_sites_total >= 20: 1.0000
+frac n_sites_total >= 13: 1.0000
+frac with duplicate fids: 0.2222
+most frequent structural channel: equality_dir
+most frequent channel (names included): names
+
+column                          mean    median       p25       p75
+n_sites_total                 69.333    66.000    61.000    71.000
+n_sites_structural            43.556    42.000    33.000    56.000
+n_vars                        25.778    27.000     7.000    42.000
+n_vars_module                  4.222     3.000     1.000     7.000
+n_bits_v1                     95.111    90.000    65.000   116.000
+n_sites_aug_assign             3.333     4.000     0.000     6.000
+n_sites_compare_dir            6.778     7.000     2.000    10.000
+n_sites_equality_dir          23.222    14.000     8.000    32.000
+n_sites_list_comp              1.000     0.000     0.000     2.000
+n_sites_ternary                0.333     0.000     0.000     0.000
+n_sites_operand_order          6.222     3.000     1.000     8.000
+n_sites_empty_coll             2.333     1.000     0.000     4.000
+n_sites_none_check             0.333     0.000     0.000     1.000
+n_sites_range_zero             0.000     0.000     0.000     0.000
+n_sites_slice_lower            0.000     0.000     0.000     0.000
+n_sites_else_return            0.000     0.000     0.000     0.000
+n_sites_nested_if              0.000     0.000     0.000     0.000
+n_sites_square                 0.000     0.000     0.000     0.000
+n_sites_return_none            0.000     0.000     0.000     0.000
+n_functions                   17.111    15.000     2.000    32.000
+n_duplicate_fids               1.000     0.000     0.000     0.000
+loc                          137.333   124.000   100.000   175.000
+
+total sites by channel:
+  aug_assign              30
+  compare_dir             61
+  equality_dir           209
+  list_comp                9
+  ternary                  3
+  operand_order           56
+  empty_coll              21
+  none_check               3
+  range_zero               0
+  slice_lower              0
+  else_return              0
+  nested_if                0
+  square                   0
+  return_none              0
+  names                  232
