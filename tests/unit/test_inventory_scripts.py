@@ -224,6 +224,10 @@ def _input(path: Path, codes: list[tuple[str, str]]) -> None:
 def test_variant_names() -> None:
     assert inv.variant_name("kind", True, False) == "canonical-kind_guards-on_params-off"
     assert inv.variant_name("paper", False, True) == "canonical-paper_guards-off_params-on"
+    assert (
+        inv.variant_name("paper", True, True, module_level=True)
+        == "canonical-paper_guards-on_params-on_modlevel-on"
+    )
 
 
 def test_bands_are_the_decided_ones_closed_and_contiguous() -> None:
@@ -268,6 +272,7 @@ def test_inventory_calls_the_library_and_refuses_to_overwrite(tmp_path: Path) ->
     argv = [
         "--input", str(inputs), "--out-dir", str(out), "--library", str(LIBRARY),
         "--summary", str(summary), "--summary-json", str(tmp_path / "s.json"),
+        "--channels", "extended",
     ]  # fmt: skip
     assert inv.main(argv) == 0
 
@@ -278,7 +283,7 @@ def test_inventory_calls_the_library_and_refuses_to_overwrite(tmp_path: Path) ->
         rows = list(csv.DictReader(fh))
     assert [r["dataset"] for r in rows] == ["humanevalplus", "mbppplus"]
     assert "code" not in rows[0] and rows[0]["loc_bench"] == "4"
-    expected = inventory_code(CODE_A)
+    expected = inventory_code(CODE_A, channels="extended")
     assert int(rows[0]["n_sites_total"]) == expected["n_sites_total"]
     assert int(rows[0]["loc"]) == expected["loc"]
 
@@ -294,7 +299,14 @@ def test_inventory_calls_the_library_and_refuses_to_overwrite(tmp_path: Path) ->
     assert groups["L1_dev_bad"]["outside_site_bands"] == 0  # non analizzato: non conta
     assert "parse_errors=1" in text  # il campione non analizzabile è contato a parte
     data = json.loads((tmp_path / "s.json").read_text(encoding="utf-8"))
-    assert data["options"] == {"canonical": "kind", "guards": True, "include_params": False}
+    assert data["options"] == {
+        "canonical": "kind",
+        "guards": True,
+        "include_params": False,
+        "module_level": False,
+        "channels": "extended",
+    }
+    assert "options: canonical-kind_guards-on_params-off, channels=extended\n" in text
     assert data["groups"]["L1_dev_canonical"]["summary"]["n_parsed"] == 2
 
     # Stesso ingresso: nessuna riscrittura; ingresso diverso: rifiuto, file intatti.
@@ -310,6 +322,7 @@ def test_include_params_changes_only_the_names_channel(tmp_path: Path) -> None:
     inputs = tmp_path / "in.jsonl"
     _input(inputs, [("humanevalplus", CODE_B)])
     base = ["--input", str(inputs), "--out-dir", str(tmp_path), "--library", str(LIBRARY)]
+    base += ["--channels", "extended"]
     assert inv.main(base) == 0
     assert inv.main([*base, "--include-params"]) == 0
 
@@ -321,6 +334,51 @@ def test_include_params_changes_only_the_names_channel(tmp_path: Path) -> None:
     on = read("canonical-kind_guards-on_params-on")
     assert int(on["n_vars"]) > int(off["n_vars"])
     assert on["n_sites_structural"] == off["n_sites_structural"]
+
+
+MODULE_CODE = "total = 0\nfor x in range(3):\n    total = total + x\nprint(total)\n"
+
+
+@needs_library
+def test_module_level_and_channels_are_passed_to_the_library(tmp_path: Path) -> None:
+    inputs = tmp_path / "in.jsonl"
+    _input(inputs, [("humanevalplus", MODULE_CODE), ("humanevalplus", CODE_B)])
+    base = ["--input", str(inputs), "--out-dir", str(tmp_path), "--library", str(LIBRARY)]
+    assert inv.main([*base, "--channels", "extended"]) == 0
+    assert inv.main([*base, "--channels", "extended", "--module-level", "on"]) == 0
+
+    from multimark.inventory import inventory_code  # importato da LIBRARY
+
+    def read(variant: str) -> list[dict[str, str]]:
+        with (tmp_path / f"in.{variant}.csv").open(encoding="utf-8", newline="") as fh:
+            return list(csv.DictReader(fh))
+
+    off = read("canonical-kind_guards-on_params-off")
+    on = read("canonical-kind_guards-on_params-off_modlevel-on")
+    assert off[0]["n_vars_module"] == "0"
+    expected = inventory_code(MODULE_CODE, module_level=True, channels="extended")
+    assert int(on[0]["n_vars_module"]) == expected["n_vars_module"] > 0
+    assert on[0]["n_sites_structural"] == off[0]["n_sites_structural"]
+
+    # mcss8 legge solo i canali 1-8: stessa tabella della libreria con channels="mcss8".
+    out = tmp_path / "m"
+    assert inv.main([*base[:2], "--out-dir", str(out), *base[4:], "--channels", "mcss8"]) == 0
+    with (out / "in.canonical-kind_guards-on_params-off.csv").open(encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    for row, code in zip(rows, (MODULE_CODE, CODE_B), strict=True):
+        assert (
+            int(row["n_sites_structural"])
+            == inventory_code(code, channels="mcss8")["n_sites_structural"]
+        )
+
+
+def test_channels_must_be_explicit(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit):
+        inv.build_parser().parse_args(["--input", "x", "--out-dir", str(tmp_path)])
+    with pytest.raises(SystemExit):
+        inv.build_parser().parse_args(
+            ["--input", "x", "--out-dir", str(tmp_path), "--channels", "all"]
+        )
 
 
 def test_missing_library_is_reported(tmp_path: Path) -> None:

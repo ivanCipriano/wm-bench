@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import json
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -120,6 +121,7 @@ def test_inventory_passes_the_role_through(tmp_path: Path) -> None:
     pool.write_bytes(export.jsonl_bytes(rows))
     summary = tmp_path / "s.txt"
     argv = ["--input", str(pool), "--out-dir", str(tmp_path / "t"), "--library", str(LIBRARY)]
+    argv += ["--channels", "extended"]
     assert inv.main([*argv, "--summary", str(summary)]) == 0
     table = tmp_path / "t" / "L2_codenet_pool.canonical-kind_guards-on_params-off.csv"
     with table.open(encoding="utf-8", newline="") as fh:
@@ -134,6 +136,20 @@ def test_inventory_passes_the_role_through(tmp_path: Path) -> None:
     assert "Inventory L2_codenet_pool [role=unselected]" in text
 
 
+# ---------------------------------------------------------------- cluster di test
+
+
+def test_test_clusters_lists_non_test_problems_sharing_a_cluster() -> None:
+    clusters = {"p00001": 0, "p00007": 0, "p00002": 1, "p00008": 1, "p00009": 2}
+    splits: dict[str, str | None] = {
+        "codenet/p00001": "test",
+        "codenet/p00002": "dev",
+        "codenet/p00003": "test",  # senza cluster
+    }
+    got = export.test_clusters(clusters, splits)
+    assert got == {"test_problems": ["p00001", "p00003"], "same_cluster_as_test": ["p00007"]}
+
+
 # ---------------------------------------------------------------- selezione
 
 
@@ -143,48 +159,90 @@ def _row(sid: str, bits: int, *, vars_: int = 10, structural: int = 12, ok: bool
         "parse_ok": "True" if ok else "False",
         "n_bits_v1": str(bits),
         "n_vars": str(vars_),
+        "n_vars_module": str(vars_ // 2),
         "n_sites_structural": str(structural),
         "n_sites_total": str(vars_ + structural),
     }
 
 
-def test_band_is_closed_32_39_in_bits_and_needs_parsing() -> None:
-    assert sel.BAND == (32, 39) and sel.MAX_FILES == 250
-    assert [sel.in_band(_row("x", b)) for b in (31, 32, 39, 40)] == [False, True, True, False]
-    assert not sel.in_band(_row("x", 35, ok=False))
-
-
-def test_select_takes_all_when_fewer_and_the_seed_order_when_more() -> None:
-    mcss = {f"s{i:03}": _row(f"s{i:03}", 32 + i % 10) for i in range(40)}
-    band, chosen = sel.select(mcss, SEED)
-    assert band == chosen == sorted(s for s, r in mcss.items() if sel.in_band(r))  # 32 file
-
-    band, chosen = sel.select(mcss, SEED, limit=5)
-    expected = sorted(band, key=lambda s: (derive_seed(SEED, "mcss-selftest", s), s))[:5]
-    assert chosen == sorted(expected) and len(chosen) == 5
-    # Indipendente dall'ordine delle righe dell'ingresso.
-    assert sel.select(dict(reversed(list(mcss.items()))), SEED, limit=5)[1] == chosen
-
-
-def _pool_files(tmp_path: Path, n: int) -> list[str]:
-    pool = tmp_path / "L2_codenet_pool.jsonl"
-    sids = [f"codenet/p{i:05}/python/s{i}" for i in range(n)]
-    recs = [
-        {
-            "sample_id": s,
-            "problem_key": s.rsplit("/", 2)[0],
-            "role": "unselected" if i % 2 else "negative_dev",
+def _pool(n: int, *, problems: int | None = None) -> dict[str, Any]:
+    """``n`` sottomissioni distribuite su ``problems`` problemi (default: uno a testa)."""
+    problems = problems or n
+    return {
+        f"codenet/p{i % problems:05}/python/s{i:03}": {
+            "problem_key": f"codenet/p{i % problems:05}",
+            "role": "unselected",
             "split": None,
-            "loc": 30,
-            "code": f"x = {i}\n",
         }
-        for i, s in enumerate(sids)
-    ]
-    pool.write_text("".join(json.dumps(r) + "\n" for r in recs), encoding="utf-8")
+        for i in range(n)
+    }
+
+
+def test_constants_follow_pipeline_v12() -> None:
+    assert sel.BAND == (32, 39) and sel.MAX_FILES == 250 and sel.MIN_FILES == 100
+    assert (sel.PAPER_BITS, sel.BITS_TOLERANCE) == (34.6, 0.10)
+
+
+def test_eligible_drops_test_split_test_clusters_and_parse_errors() -> None:
+    pool = {
+        "codenet/p00001/python/a": {"problem_key": "codenet/p00001", "split": "test"},
+        "codenet/p00002/python/b": {"problem_key": "codenet/p00002", "split": None},
+        "codenet/p00003/python/c": {"problem_key": "codenet/p00003", "split": "dev"},
+        "codenet/p00004/python/d": {"problem_key": "codenet/p00004", "split": None},
+    }
+    mcss = {s: _row(s, 35) for s in pool}
+    mcss["codenet/p00004/python/d"] = _row("codenet/p00004/python/d", 35, ok=False)
+    ids, excluded = sel.eligible(pool, mcss, {"p00002"})
+    assert ids == ["codenet/p00003/python/c"]
+    assert excluded == {"split_test": 1, "test_cluster": 1, "parse_error": 1}
+
+
+def test_band_widens_to_32_plus_below_the_minimum() -> None:
+    mcss = {f"s{i:03}": _row(f"s{i:03}", 30 + i % 15) for i in range(150)}
+    band, cands, widened = sel.candidates(mcss, sorted(mcss))
+    assert len(band) == 80 and widened  # 32..39: 8 valori su 15
+    assert len(cands) == 130 and all(int(mcss[s]["n_bits_v1"]) >= 32 for s in cands)
+    more = {f"s{i:03}": _row(f"s{i:03}", 32 + i % 8) for i in range(120)}
+    band, cands, widened = sel.candidates(more, sorted(more))
+    assert band == cands and len(band) == 120 and not widened
+
+
+def test_select_one_per_problem_when_enough_problems() -> None:
+    pool = _pool(300, problems=150)  # due sottomissioni per problema
+    chosen, one = sel.select(pool, sorted(pool), SEED)
+    assert one and len(chosen) == 150
+    assert len({pool[s]["problem_key"] for s in chosen}) == 150
+    # la sottomissione tenuta è la prima del problema nell'ordine del seme
+    for sid in chosen:
+        key = pool[sid]["problem_key"]
+        mates = [s for s in pool if pool[s]["problem_key"] == key]
+        assert sid == min(mates, key=lambda s: (derive_seed(SEED, "mcss-selftest", s), s))
+    big = _pool(400)
+    capped, _ = sel.select(big, sorted(big), SEED)
+    assert len(capped) == 250
+
+
+def test_select_round_robin_when_few_problems() -> None:
+    pool = _pool(120, problems=40)  # 40 problemi < 100: tre a testa, tutti presi
+    chosen, one = sel.select(pool, sorted(pool), SEED)
+    assert not one and chosen == sorted(pool)
+    chosen, _ = sel.select(pool, sorted(pool), SEED, limit=50)
+    per_problem = Counter(pool[s]["problem_key"] for s in chosen)
+    assert len(per_problem) == 40 and max(per_problem.values()) == 2  # prima uno a testa
+    assert sel.select(pool, list(reversed(sorted(pool))), SEED, limit=50)[0] == chosen
+
+
+def _write_pool(tmp_path: Path, pool: dict[str, Any], same_cluster: list[str]) -> Path:
+    path = tmp_path / "L2_codenet_pool.jsonl"
+    recs = [{"sample_id": s, **r, "loc": 30, "code": f"# {s}\n"} for s, r in pool.items()]
+    path.write_text("".join(json.dumps(r) + "\n" for r in recs), encoding="utf-8")
     (tmp_path / "L2_codenet_pool.jsonl.manifest.json").write_text(
         json.dumps({"pool": {"global_seed": SEED}}), encoding="utf-8"
     )
-    return sids
+    (tmp_path / "L2_codenet_pool.test_clusters.json").write_text(
+        json.dumps({"test_problems": [], "same_cluster_as_test": same_cluster}), encoding="utf-8"
+    )
+    return path
 
 
 def _csv(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -194,56 +252,75 @@ def _csv(path: Path, rows: list[dict[str, Any]]) -> None:
         writer.writerows(rows)
 
 
-def test_main_writes_selection_and_report_and_refuses_changes(tmp_path: Path) -> None:
-    sids = _pool_files(tmp_path, 6)
-    bits = [30, 32, 35, 39, 40, 33]  # in fascia: indici 1, 2, 3, 5
-    _csv(
-        tmp_path / "mcss.csv",
-        [_row(s, b, vars_=12, structural=10) for s, b in zip(sids, bits, strict=True)],
-    )
-    _csv(
-        tmp_path / "base.csv",
-        [_row(s, 0, vars_=4, structural=9 + 20 * (i == 2)) for i, s in enumerate(sids)],
-    )
-    out, rep = tmp_path / "sel.jsonl", tmp_path / "rep.txt"
-    argv = [
-        "--pool", str(tmp_path / "L2_codenet_pool.jsonl"),
+def _argv(tmp_path: Path, pool: Path) -> list[str]:
+    return [
+        "--pool", str(pool),
         "--mcss-table", str(tmp_path / "mcss.csv"), "--base-table", str(tmp_path / "base.csv"),
-        "--out", str(out), "--report", str(rep),
+        "--out", str(tmp_path / "sel.jsonl"), "--report", str(tmp_path / "rep.txt"),
     ]  # fmt: skip
+
+
+def test_main_writes_selection_and_report_and_refuses_changes(tmp_path: Path) -> None:
+    pool = _pool(130)
+    sids = sorted(pool)
+    pool[sids[0]]["split"] = "test"  # escluso: problema di test
+    pool[sids[1]]["role"] = "negative_dev"
+    path = _write_pool(tmp_path, pool, same_cluster=["p00002"])  # sids[2] escluso: cluster
+    mcss_rows = [_row(s, 33 + i % 3, vars_=12, structural=10) for i, s in enumerate(sids)]
+    _csv(tmp_path / "mcss.csv", mcss_rows)
+    base_rows = [_row(s, 0, vars_=3, structural=9 + 20 * (i < 10)) for i, s in enumerate(sids)]
+    _csv(tmp_path / "base.csv", base_rows)
+    argv = _argv(tmp_path, path)
     assert sel.main(argv) == 0
+    out = tmp_path / "sel.jsonl"
     chosen = [json.loads(x) for x in out.read_text(encoding="utf-8").splitlines()]
-    assert [c["sample_id"] for c in chosen] == [sids[i] for i in (1, 2, 3, 5)]
-    assert chosen[0]["code"] == "x = 1\n" and chosen[0]["mcss_n_bits_v1"] == 32
-    text = rep.read_text(encoding="utf-8")
-    assert "files in band: 4" in text
-    assert "selected: 4 (fewer than 250: all files in band)" in text
-    assert "mean variables:        12.00 vs 11.9 (+0.8%, within ±30%)" in text
-    assert "structural sites: 10.00 vs 10.9 (-8.3%, within ±30%)" in text
-    assert "files with n_sites_total >= 32: 1" in text  # solo l'indice 2 (4 + 29 siti)
-    assert "selected by role: negative_dev=1, unselected=3" in text
+    assert len(chosen) == 128 and sids[0] not in {c["sample_id"] for c in chosen}
+    assert chosen[0]["mcss_n_vars_module"] == 6
+    text = (tmp_path / "rep.txt").read_text(encoding="utf-8")
+    assert "excluded split == test: 1\n" in text
+    assert "excluded same identical_problem_clusters cluster as a test problem: 1\n" in text
+    assert "band used: 32 <= n_bits_v1 <= 39\n" in text
+    assert "one submission per problem: yes\n" in text
+    assert "selected: 128\n" in text and "WARNING" not in text
+    assert "mean variables:             12.00 vs 11.9 (+0.8%)" in text
+    assert "mean n_bits_v1 (criterion): " in text and ": PASS (±10%)" in text
+    assert "files with n_sites_total >= 13: 8" in text  # sids[1], sids[3..9]
+    assert "selected by role: negative_dev=1, unselected=127" in text
 
     assert sel.main(argv) == 0  # stesso contenuto: nessuna riscrittura
     _csv(tmp_path / "mcss.csv", [_row(s, 36) for s in sids])
     assert sel.main(argv) == 1  # selezione diversa: il file esistente non si tocca
-    assert len(out.read_text(encoding="utf-8").splitlines()) == 4
+    assert len(out.read_text(encoding="utf-8").splitlines()) == 128
+
+
+def test_main_widens_and_warns_below_the_minimum(tmp_path: Path) -> None:
+    pool = _pool(30)
+    sids = sorted(pool)
+    path = _write_pool(tmp_path, pool, same_cluster=[])
+    _csv(tmp_path / "mcss.csv", [_row(s, 30 + i) for i, s in enumerate(sids)])
+    _csv(tmp_path / "base.csv", [_row(s, 0) for s in sids])
+    assert sel.main(_argv(tmp_path, path)) == 0
+    text = (tmp_path / "rep.txt").read_text(encoding="utf-8")
+    assert "eligible files in 32-39: 8\n" in text
+    assert "band used: n_bits_v1 >= 32 (widened" in text
+    assert "selected: 28\n" in text and "WARNING: fewer than 100 files" in text
+    assert "one submission per problem: no\n" in text
 
 
 def test_main_rejects_tables_of_another_pool(tmp_path: Path) -> None:
-    sids = _pool_files(tmp_path, 3)
+    pool = _pool(3)
+    sids = sorted(pool)
+    path = _write_pool(tmp_path, pool, same_cluster=[])
     _csv(tmp_path / "mcss.csv", [_row(s, 33) for s in sids[:2]])
     _csv(tmp_path / "base.csv", [_row(s, 0) for s in sids])
-    argv = [
-        "--pool", str(tmp_path / "L2_codenet_pool.jsonl"),
-        "--mcss-table", str(tmp_path / "mcss.csv"), "--base-table", str(tmp_path / "base.csv"),
-        "--out", str(tmp_path / "sel.jsonl"),
-    ]  # fmt: skip
-    assert sel.main(argv) == 1
+    assert sel.main(_argv(tmp_path, path)) == 1
     assert not (tmp_path / "sel.jsonl").exists()
 
 
-def test_missing_seed_in_manifest_is_an_error(tmp_path: Path) -> None:
+def test_missing_seed_or_clusters_is_an_error(tmp_path: Path) -> None:
     pool = tmp_path / "p.jsonl"
     pool.write_text("", encoding="utf-8")
     with pytest.raises(sel.SelectionError, match="global_seed"):
         sel.pool_seed(pool)
+    with pytest.raises(sel.SelectionError, match="same_cluster_as_test"):
+        sel.read_test_clusters(sel.default_test_clusters(pool))

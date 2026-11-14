@@ -7,17 +7,22 @@
 #          dei modelli), L2 dev (canoniche, baseline) e ClassEval (canoniche);
 #       2. scripts/inventory_sites.py (posthoc), una volta per variante;
 #       3. riepiloghi uniti in $LOG.
-#     Varianti (default: base params):
-#       base      opzioni di base di multimark (forme `kind`, condizioni attive, parametri esclusi)
+#     Varianti (default: base base_mod mcss mcss_mod); --channels sempre esplicito, perché dal
+#     commit P1 di multimark il default della libreria è di 14 canali:
+#       base      base di multimark: forme `kind`, condizioni attive, parametri esclusi,
+#                 --channels extended (canali 1-14)
+#       base_mod  come base con --module-level on (variabili di modulo, decisione O di §7)
+#       mcss      profilo mcss: --canonical paper --include-params --channels mcss8 (canali 1-8)
+#       mcss_mod  come mcss con --module-level on (profilo della Tabella 3, PIPELINE v1.2 §4.4)
 #       params    come base con --include-params (decisione C, PIPELINE §7)
 #       noguards  come base con --no-guards (siti persi per le condizioni semantiche, MD6)
-#       mcss      profilo mcss: --canonical paper --include-params
 #
-#   LOG=docs/milestone_logs/P0_mcss_selftest.txt bash scripts/inventory_sites.sh selftest
-#       selezione CodeNet della verifica di mcss (PIPELINE §4.4 punto 2, decisione dell'utente del
-#       13 novembre 2026): pool delle sottomissioni umane Python, tranne negativi e canoniche dei
-#       problemi di test (export --groups L2_codenet_pool), inventario nei profili base e mcss, poi
-#       scripts/select_mcss_selftest.py (fascia 32-39 bit, al più 250 file).
+#   LOG=docs/milestone_logs/P1_mcss_selftest_modlevel.txt bash scripts/inventory_sites.sh selftest
+#       selezione CodeNet della verifica di mcss (PIPELINE v1.2 §4.4 punto 2): pool delle
+#       sottomissioni umane Python, tranne negativi e canoniche dei problemi di test (export
+#       --groups L2_codenet_pool, con L2_codenet_pool.test_clusters.json), inventario nelle
+#       varianti base e mcss_mod, poi scripts/select_mcss_selftest.py sulla tabella mcss_mod
+#       (fascia 32-39 bit o >= 32, 100-250 file, una sottomissione per problema quando bastano).
 #
 #   bash scripts/inventory_sites.sh candidates        # LOG di default: P0_candidates.txt
 #       canali candidati (P0-bis): `python -m multimark.cli.candidates` sugli stessi JSONL
@@ -27,7 +32,10 @@
 #       .json e tabella per campione samples_<job>.csv); il riepilogo va in $LOG.
 #
 # $LOG non deve esistere (i log non si sovrascrivono). Uscite in
-# $WMB/artifacts/_runs/diagnostics/inventory/; log del job in $WMB/logs/inventory_sites_<job>.log.
+# $WMB/artifacts/_runs/diagnostics/inventory/: ingressi condivisi (inputs/, pool/), tabelle,
+# riepiloghi e selezione separati per commit del submodule (<c> = primi 12 caratteri: tables/<c>/,
+# summary_<c>.*, pool_tables/<c>/, pool_summary_<c>.*, mcss_selftest_<c>.*), così il cambio di
+# libreria non si scontra con le uscite di P0; log del job in $WMB/logs/inventory_sites_<job>.log.
 # Interprete posthoc da configs/envs/envs.yaml (o POSTHOC_PY=...). Un nuovo job aspetta quelli
 # dell'inventario già in coda (scrivono negli stessi ingressi).
 set -euo pipefail
@@ -73,10 +81,12 @@ fi
 
 variant() {  # $1 = variante -> "FLAGS|NOME"
     case "$1" in
-        base)     echo "|canonical-kind_guards-on_params-off" ;;
-        params)   echo "--include-params|canonical-kind_guards-on_params-on" ;;
-        noguards) echo "--no-guards|canonical-kind_guards-off_params-off" ;;
-        mcss)     echo "--canonical paper --include-params|canonical-paper_guards-on_params-on" ;;
+        base)     echo "--channels extended|canonical-kind_guards-on_params-off" ;;
+        base_mod) echo "--channels extended --module-level on|canonical-kind_guards-on_params-off_modlevel-on" ;;
+        mcss)     echo "--channels mcss8 --canonical paper --include-params|canonical-paper_guards-on_params-on" ;;
+        mcss_mod) echo "--channels mcss8 --canonical paper --include-params --module-level on|canonical-paper_guards-on_params-on_modlevel-on" ;;
+        params)   echo "--channels extended --include-params|canonical-kind_guards-on_params-on" ;;
+        noguards) echo "--channels extended --no-guards|canonical-kind_guards-off_params-off" ;;
         *) return 1 ;;
     esac
 }
@@ -86,19 +96,19 @@ if [ "$MODE" != inventory ] && [ "$#" -gt 0 ]; then
     exit 2
 fi
 if [ "$MODE" = selftest ]; then
-    VARIANTS=(base mcss)
+    VARIANTS=(base mcss_mod)
 elif [ "$MODE" = candidates ]; then
     VARIANTS=()
 elif [ "$#" -gt 0 ]; then
     VARIANTS=("$@")
 else
-    VARIANTS=(base params)
+    VARIANTS=(base base_mod mcss mcss_mod)
 fi
 FLAGS=()
 NAMES=()
 for v in ${VARIANTS[@]+"${VARIANTS[@]}"}; do
     if ! spec="$(variant "$v")"; then
-        echo "unknown variant '$v' (base, params, noguards, mcss)" >&2
+        echo "unknown variant '$v' (base, base_mod, mcss, mcss_mod, params, noguards)" >&2
         exit 2
     fi
     FLAGS+=("${spec%%|*}")
@@ -106,6 +116,7 @@ for v in ${VARIANTS[@]+"${VARIANTS[@]}"}; do
 done
 
 OUT="$WMB/artifacts/_runs/diagnostics/inventory"
+C="${LINK:0:12}"  # uscite per commit della libreria
 BENCH_PY="$WMB/bench-core/bin/python"
 mkdir -p "$WMB/logs"
 EXCLUDE=()
@@ -117,13 +128,14 @@ if [ "$MODE" = selftest ]; then
     POOL="$OUT/pool/L2_codenet_pool.jsonl"
     EXPORT="$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/pool --groups L2_codenet_pool"
     INPUT="$POOL"
-    TABLES="$OUT/pool_tables"
-    SUMMARY="$OUT/pool_summary"
+    TABLES="$OUT/pool_tables/$C"
+    SUMMARY="$OUT/pool_summary_$C"
+    SELECTION="$OUT/mcss_selftest_$C"
 else
     EXPORT="$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/inputs"
     INPUT="$OUT/inputs"
-    TABLES="$OUT/tables"
-    SUMMARY="$OUT/summary"
+    TABLES="$OUT/tables/$C"
+    SUMMARY="$OUT/summary_$C"
 fi
 
 # Script del job con nome proprio: due lanci di fila non si sovrascrivono il file.
@@ -164,7 +176,7 @@ CAND=$OUT/candidates
 mkdir -p "\$CAND"
 $POSTHOC_PY -m multimark.cli.candidates "\${INPUTS[@]}" --estimate-groups "\$(IFS=,; echo "\${EST[*]}")" --id-field sample_id --output "\$CAND/samples_\$SLURM_JOB_ID.csv" --summary "\$CAND/summary_\$SLURM_JOB_ID.txt" --summary-json "\$CAND/summary_\$SLURM_JOB_ID.json"
 {
-  echo "# P0 candidates of multimark (scripts/inventory_sites.sh candidates; python -m multimark.cli.candidates)"
+  echo "# candidates of multimark (scripts/inventory_sites.sh candidates; python -m multimark.cli.candidates)"
   echo "# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD), multimark $LINK"
   echo "# inputs: $INPUT (<gruppo>.jsonl.manifest.json): \${INPUTS[*]}"
   echo "# estimate groups: \${EST[*]}"
@@ -179,15 +191,16 @@ SBATCH
             echo "$POSTHOC_PY scripts/inventory_sites.py --input $INPUT --out-dir $TABLES ${FLAGS[$i]} --summary $SUMMARY.${NAMES[$i]}.txt --summary-json $SUMMARY.${NAMES[$i]}.json"
         done
         if [ "$MODE" = selftest ]; then
-            echo "$POSTHOC_PY scripts/select_mcss_selftest.py --pool $POOL --mcss-table $TABLES/L2_codenet_pool.canonical-paper_guards-on_params-on.csv --base-table $TABLES/L2_codenet_pool.canonical-kind_guards-on_params-off.csv --out $OUT/mcss_selftest.jsonl --report $OUT/mcss_selftest_report.txt"
+            echo "$POSTHOC_PY scripts/select_mcss_selftest.py --pool $POOL --mcss-table $TABLES/L2_codenet_pool.canonical-paper_guards-on_params-on_modlevel-on.csv --base-table $TABLES/L2_codenet_pool.canonical-kind_guards-on_params-off.csv --out $SELECTION.jsonl --report ${SELECTION}_report.txt"
         fi
         echo "{"
-        echo "  echo \"# P0 $MODE of multimark sites (scripts/inventory_sites.sh $([ "$MODE" = selftest ] && echo selftest || echo "${VARIANTS[*]}"))\""
-        echo "  echo \"# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD)\""
+        echo "  echo \"# $MODE of multimark sites (scripts/inventory_sites.sh $([ "$MODE" = selftest ] && echo selftest || echo "${VARIANTS[*]}"))\""
+        echo "  echo \"# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD), multimark $LINK\""
+        echo "  echo \"# tables: $TABLES\""
         echo "  echo \"# inputs: $INPUT (<gruppo>.jsonl.manifest.json)\""
         if [ "$MODE" = selftest ]; then
-            echo "  echo \"# selection: $OUT/mcss_selftest.jsonl\"; echo"
-            echo "  cat $OUT/mcss_selftest_report.txt"
+            echo "  echo \"# selection: $SELECTION.jsonl\"; echo"
+            echo "  cat ${SELECTION}_report.txt"
         fi
         for i in "${!VARIANTS[@]}"; do
             echo "  echo; echo \"######## variant ${VARIANTS[$i]} (${NAMES[$i]})\"; echo"

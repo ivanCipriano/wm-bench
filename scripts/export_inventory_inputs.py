@@ -31,6 +31,11 @@ escluso o di un negativo di test di ``data/negatives/*.parquet``. Ogni riga ha i
 delle esclusioni. Le canoniche di test sono escluse dalla seconda decisione dell'utente del
 13 novembre 2026.
 
+Accanto al pool, ``L2_codenet_pool.test_clusters.json`` (``TEST_CLUSTERS_SUFFIX``): i problemi di
+test e i problemi **non** di test che stanno nello stesso cluster di ``identical_problem_clusters``
+di un problema di test (stesso testo). Lo usa ``scripts/select_mcss_selftest.py`` per escluderli
+dalla selezione; il pool resta invariato.
+
 Ogni riga: ``sample_id``, ``code``, ``dataset``, ``problem_key``, ``language``, ``source``
 (``canonical``/``baseline``), ``model_id`` e ``sample_index`` (``null`` per le canoniche),
 ``split``, ``loc`` (righe di codice di ``bench.lang.line_counter.count_code_lines``). Per le
@@ -66,7 +71,7 @@ from typing import Any
 import yaml
 
 from bench.config.builder import load_experiment
-from bench.data.codenet import LANG_NAMES
+from bench.data.codenet import LANG_NAMES, CodeNetFiles, problem_clusters
 from bench.data.loaders.base import normalize_newlines
 from bench.domain.enums import Language, Source
 from bench.domain.ids import sample_id
@@ -95,6 +100,7 @@ ROW_FIELDS = (
 )
 OPTIONAL_FIELDS = ("role",)  # solo nel pool CodeNet
 MANIFEST_SUFFIX = ".manifest.json"  # <gruppo>.jsonl.manifest.json
+TEST_CLUSTERS_SUFFIX = ".test_clusters.json"  # L2_codenet_pool.test_clusters.json
 
 
 class ExportError(RuntimeError):
@@ -270,9 +276,24 @@ def pool_rows(
     return sorted(rows, key=_sort_key), dict(sorted(stats.items()))
 
 
+def test_clusters(clusters: dict[str, int], splits: dict[str, str | None]) -> dict[str, Any]:
+    """Problemi di test e problemi non di test nello stesso cluster di un problema di test.
+
+    ``clusters``: ``pid`` → cluster (``problem_clusters``); ``splits``: ``problem_key`` → split.
+    """
+    test = sorted(k.split("/", 1)[1] for k, v in splits.items() if v == "test")
+    test_ids = {clusters[pid] for pid in test if pid in clusters}
+    same = sorted(
+        pid
+        for pid, cluster in clusters.items()
+        if cluster in test_ids and splits.get(f"codenet/{pid}") != "test"
+    )
+    return {"test_problems": test, "same_cluster_as_test": same}
+
+
 def _pool(
     cfg: Any, store: ArtifactStore
-) -> tuple[list[dict[str, Any]], dict[str, Any], ArtifactRef]:
+) -> tuple[list[dict[str, Any]], dict[str, Any], ArtifactRef, dict[str, Any]]:
     """Pool CodeNet dal disco, con ruoli, split e negativi di test letti dagli artefatti."""
     spec = cfg.datasets["codenet"]
     selection = yaml.safe_load(spec.file("selected").read_text(encoding="utf-8")) or {}
@@ -302,7 +323,13 @@ def _pool(
         "test_negative_codes": len(test_codes),
         "global_seed": int(cfg.global_seed),  # per l'ordine della selezione di verifica di mcss
     }
-    return rows, extra, ref
+    codenet_files = CodeNetFiles.from_spec(spec)
+    side = {
+        "clusters_file": str(codenet_files.clusters),
+        "clusters_sha256": hashlib.sha256(codenet_files.clusters.read_bytes()).hexdigest(),
+        **test_clusters(problem_clusters(codenet_files), splits),
+    }
+    return rows, extra, ref, side
 
 
 def jsonl_bytes(rows: Iterable[dict[str, Any]]) -> bytes:
@@ -399,8 +426,9 @@ def export(
     manifests: dict[str, dict[str, Any]] = {}
     for group in groups:
         pool_extra: dict[str, Any] | None = None
+        side: dict[str, Any] | None = None
         if group is POOL_GROUP:
-            rows, pool_extra, ref = _pool(cfg, store)
+            rows, pool_extra, ref, side = _pool(cfg, store)
         elif group.source == "canonical":
             ref = problems_ref(group.level, LANGUAGE)
             problems = _problems(store, group)
@@ -430,6 +458,9 @@ def export(
         manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
         outcome = write_if_new(path, data)
         write_if_new(path.with_name(path.name + MANIFEST_SUFFIX), manifest_bytes)
+        if side is not None:
+            side_bytes = (json.dumps(side, indent=2, sort_keys=True) + "\n").encode("utf-8")
+            write_if_new(path.with_name(group.name + TEST_CLUSTERS_SUFFIX), side_bytes)
         tag = "SKIP" if outcome == "unchanged" else "OK"
         print(f"[{tag}] {group.name}: {len(rows)} rows -> {path}", flush=True)
         manifests[group.name] = manifest
