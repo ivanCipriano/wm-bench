@@ -21,6 +21,8 @@ Gruppi (file ``<gruppo>.jsonl`` in ``--out-dir``):
 | ``L3_classeval_canonical`` | canoniche di ClassEval (L3; tutte le classi, qualunque split) |
 | ``L2_codenet_pool`` | solo con ``--groups``: sottomissioni umane CodeNet Python estratte in M9, |
 | | tranne negativi e canoniche di test (selezione di verifica di ``mcss``, PIPELINE §4.4) |
+| ``L2_codenet_pool_extra`` | solo con ``--groups`` e ``--extra-data``: pool più le sottomissioni |
+| | in più dei problemi di sviluppo (``codenet_extra_dev.py``), ruolo ``extra_dev`` |
 
 Il pool (decisione dell'utente del 13 novembre 2026) prende tutti i file Python estratti sotto
 ``datasets.codenet.dirs.data`` (problemi candidati della M9, circa 10 sottomissioni ciascuno) ed
@@ -31,7 +33,15 @@ escluso o di un negativo di test di ``data/negatives/*.parquet``. Ogni riga ha i
 delle esclusioni. Le canoniche di test sono escluse dalla seconda decisione dell'utente del
 13 novembre 2026.
 
-Accanto al pool, ``L2_codenet_pool.test_clusters.json`` (``TEST_CLUSTERS_SUFFIX``): i problemi di
+Il pool allargato (decisione K dell'utente del 15 novembre 2026) aggiunge i file Python di
+``--extra-data`` (cartella separata dell'estrazione, ``<pid>/Python/<submission_id>.<ext>``):
+solo problemi con ``split == "dev"``; un file si scarta se il suo codice è uguale a un file
+escluso o a un negativo di test (come sopra) o se la sua impronta (``code_fingerprint``: a meno
+degli spazi) è già quella di un file Python estratto in M9 (tutti, anche quelli esclusi) o di un
+file in più che lo precede nell'ordine di ``pick_submissions``. I conteggi vanno nel manifest
+(``extra_stats``).
+
+Accanto a ogni pool, ``<pool>.test_clusters.json`` (``TEST_CLUSTERS_SUFFIX``): i problemi di
 test e i problemi **non** di test che stanno nello stesso cluster di ``identical_problem_clusters``
 di un problema di test (stesso testo). Lo usa ``scripts/select_mcss_selftest.py`` per escluderli
 dalla selezione; il pool resta invariato.
@@ -74,7 +84,7 @@ from bench.config.builder import load_experiment
 from bench.data.codenet import LANG_NAMES, CodeNetFiles, problem_clusters
 from bench.data.loaders.base import normalize_newlines
 from bench.domain.enums import Language, Source
-from bench.domain.ids import sample_id
+from bench.domain.ids import derive_seed, sample_id
 from bench.domain.models import Problem
 from bench.execution.executors import Executor
 from bench.execution.sandbox import LocalSandbox
@@ -120,7 +130,9 @@ class Group:
 
 
 POOL_GROUP = Group("L2_codenet_pool", "L2", "codenet_pool", None, dataset="codenet")
+POOL_EXTRA_GROUP = Group("L2_codenet_pool_extra", "L2", "codenet_pool", None, dataset="codenet")
 POOL_EXCLUDED_ROLES = frozenset({"negative_test", "canonical_test"})
+EXTRA_ROLE = "extra_dev"
 
 
 def groups_for(models: Iterable[str]) -> list[Group]:
@@ -243,7 +255,7 @@ def pool_rows(
     for path in files:
         pid, sub_id = path.parent.parent.name, path.stem
         role = roles.get((pid, sub_id), "unselected")
-        code = normalize_newlines(path.read_text(encoding="utf-8", errors="replace"))
+        code = read_code(path)
         entries.append((pid, sub_id, role, code))
     excluded_codes = set(test_negative_codes)
     excluded_codes.update(code for _, _, role, code in entries if role in POOL_EXCLUDED_ROLES)
@@ -255,25 +267,84 @@ def pool_rows(
         if code in excluded_codes:
             stats["excluded_code"] += 1
             continue
-        key = f"codenet/{pid}"
-        rows.append(
-            {
-                "sample_id": f"{key}/python/{sub_id}",
-                "code": code,
-                "dataset": "codenet",
-                "problem_key": key,
-                "language": LANGUAGE,
-                "source": POOL_GROUP.source,
-                "model_id": None,
-                "sample_index": None,
-                "split": splits.get(key),
-                "loc": count_code_lines(code, Language.PYTHON),
-                "role": role,
-            }
-        )
+        rows.append(_pool_row(pid, sub_id, code, splits.get(f"codenet/{pid}"), role))
         stats[f"role={role}"] = stats.get(f"role={role}", 0) + 1
     stats["kept"] = len(rows)
     return sorted(rows, key=_sort_key), dict(sorted(stats.items()))
+
+
+def _pool_row(pid: str, sub_id: str, code: str, split: str | None, role: str) -> dict[str, Any]:
+    key = f"codenet/{pid}"
+    return {
+        "sample_id": f"{key}/python/{sub_id}",
+        "code": code,
+        "dataset": "codenet",
+        "problem_key": key,
+        "language": LANGUAGE,
+        "source": POOL_GROUP.source,
+        "model_id": None,
+        "sample_index": None,
+        "split": split,
+        "loc": count_code_lines(code, Language.PYTHON),
+        "role": role,
+    }
+
+
+def read_code(path: Path) -> str:
+    """Codice di un file CodeNet come ``CodeNetLoader._code`` (fine riga normalizzati)."""
+    return normalize_newlines(path.read_text(encoding="utf-8", errors="replace"))
+
+
+def extra_rows(
+    files: Iterable[Path],
+    splits: dict[str, str | None],
+    known_fingerprints: set[str],
+    excluded_codes: set[str],
+    seed: int,
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    """Righe ``extra_dev`` del pool allargato (vedi docstring del modulo).
+
+    ``files`` sono ``<extra>/<pid>/Python/<submission_id>.<ext>``; si visitano per problema
+    nell'ordine di ``pick_submissions`` (``derive_seed(seed, "codenet-sub", pid, "python",
+    submission_id)``), così fra due file con la stessa impronta resta il primo di quell'ordine.
+    ``known_fingerprints``: impronte dei file Python già estratti (si aggiornano qui).
+
+    Returns:
+        righe ordinate e conteggi (``extra_files``, ``extra_not_dev``, ``extra_excluded_code``,
+        ``extra_duplicate_fingerprint``, ``extra_kept``).
+    """
+    from bench.data.negatives import code_fingerprint
+
+    def order(path: Path) -> tuple[str, int, str]:
+        pid, sub_id = path.parent.parent.name, path.stem
+        return pid, derive_seed(seed, "codenet-sub", pid, str(Language.PYTHON), sub_id), sub_id
+
+    stats = {
+        "extra_files": 0,
+        "extra_not_dev": 0,
+        "extra_excluded_code": 0,
+        "extra_duplicate_fingerprint": 0,
+    }
+    rows = []
+    for path in sorted(files, key=order):
+        pid, sub_id = path.parent.parent.name, path.stem
+        stats["extra_files"] += 1
+        split = splits.get(f"codenet/{pid}")
+        if split != "dev":
+            stats["extra_not_dev"] += 1
+            continue
+        code = read_code(path)
+        if code in excluded_codes:
+            stats["extra_excluded_code"] += 1
+            continue
+        fp = code_fingerprint(code)
+        if fp in known_fingerprints:
+            stats["extra_duplicate_fingerprint"] += 1
+            continue
+        known_fingerprints.add(fp)
+        rows.append(_pool_row(pid, sub_id, code, split, EXTRA_ROLE))
+    stats["extra_kept"] = len(rows)
+    return sorted(rows, key=_sort_key), stats
 
 
 def test_clusters(clusters: dict[str, int], splits: dict[str, str | None]) -> dict[str, Any]:
@@ -291,10 +362,17 @@ def test_clusters(clusters: dict[str, int], splits: dict[str, str | None]) -> di
     return {"test_problems": test, "same_cluster_as_test": same}
 
 
+def _python_files(root: Path) -> list[Path]:
+    return sorted(f for f in root.glob(f"*/{LANG_NAMES[Language.PYTHON]}/*") if f.is_file())
+
+
 def _pool(
-    cfg: Any, store: ArtifactStore
+    cfg: Any, store: ArtifactStore, extra_data: Path | None = None
 ) -> tuple[list[dict[str, Any]], dict[str, Any], ArtifactRef, dict[str, Any]]:
-    """Pool CodeNet dal disco, con ruoli, split e negativi di test letti dagli artefatti."""
+    """Pool CodeNet dal disco, con ruoli, split e negativi di test letti dagli artefatti.
+
+    Con ``extra_data`` è il pool allargato: in più le righe ``extra_dev`` di ``extra_rows``.
+    """
     spec = cfg.datasets["codenet"]
     selection = yaml.safe_load(spec.file("selected").read_text(encoding="utf-8")) or {}
     ref = problems_ref("L2", LANGUAGE)
@@ -313,16 +391,21 @@ def _pool(
         test = table[(table["split"] == "test") & (table["language"] == LANGUAGE)]
         test_codes.update(str(c) for c in test["code"])
         tables[nref.path.as_posix()] = _input_sha(store, nref)
-    files = sorted(Path(spec.dirs["data"]).glob(f"*/{LANG_NAMES[Language.PYTHON]}/*"))
-    rows, stats = pool_rows(
-        (f for f in files if f.is_file()), submission_roles(selection, splits), splits, test_codes
-    )
+    files = _python_files(Path(spec.dirs["data"]))
+    roles = submission_roles(selection, splits)
+    rows, stats = pool_rows(files, roles, splits, test_codes)
+    extra_stats: dict[str, Any] | None = None
+    if extra_data is not None:
+        more, extra_stats = _extra(files, roles, splits, test_codes, extra_data, cfg)
+        rows = sorted(rows + more, key=_sort_key)
     extra = {
         "stats": stats,
         "negative_tables": tables,
         "test_negative_codes": len(test_codes),
         "global_seed": int(cfg.global_seed),  # per l'ordine della selezione di verifica di mcss
     }
+    if extra_stats is not None:
+        extra["extra_stats"] = extra_stats
     codenet_files = CodeNetFiles.from_spec(spec)
     side = {
         "clusters_file": str(codenet_files.clusters),
@@ -330,6 +413,36 @@ def _pool(
         **test_clusters(problem_clusters(codenet_files), splits),
     }
     return rows, extra, ref, side
+
+
+def _extra(
+    files: list[Path],
+    roles: dict[tuple[str, str], str],
+    splits: dict[str, str | None],
+    test_codes: set[str],
+    extra_data: Path,
+    cfg: Any,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Righe ``extra_dev`` di ``extra_data``, contro i file Python di M9 (``files``)."""
+    from bench.data.negatives import code_fingerprint
+
+    if not extra_data.is_dir():
+        raise ExportError(f"extra data folder not found: {extra_data}")
+    codes = [read_code(f) for f in files]
+    excluded = set(test_codes)
+    excluded.update(
+        c
+        for f, c in zip(files, codes, strict=True)
+        if roles.get((f.parent.parent.name, f.stem)) in POOL_EXCLUDED_ROLES
+    )
+    present = {(f.parent.parent.name, f.stem) for f in files}
+    extra_files = _python_files(extra_data)
+    clash = [f for f in extra_files if (f.parent.parent.name, f.stem) in present]
+    if clash:
+        raise ExportError(f"{len(clash)} extra files are already in the M9 data, e.g. {clash[0]}")
+    known = {code_fingerprint(c) for c in codes}
+    rows, stats = extra_rows(extra_files, splits, known, excluded, int(cfg.global_seed))
+    return rows, {**stats, "extra_data": str(extra_data)}
 
 
 def jsonl_bytes(rows: Iterable[dict[str, Any]]) -> bytes:
@@ -407,6 +520,7 @@ def export(
     out_dir: Path,
     models: list[str],
     only: Iterable[str] | None = None,
+    extra_data: Path | None = None,
 ) -> dict[str, dict[str, Any]]:
     """Esporta i gruppi (tutti, o quelli di ``only``); restituisce i manifest per gruppo.
 
@@ -416,11 +530,13 @@ def export(
     groups = groups_for(models)
     if only is not None:
         wanted = set(only)
-        known = [*groups, POOL_GROUP]
+        known = [*groups, POOL_GROUP, POOL_EXTRA_GROUP]
         unknown = sorted(wanted - {g.name for g in known})
         if unknown:
             raise ExportError(f"unknown groups {unknown}; known: {[g.name for g in known]}")
         groups = [g for g in known if g.name in wanted]
+    if any(g is POOL_EXTRA_GROUP for g in groups) and extra_data is None:
+        raise ExportError(f"group {POOL_EXTRA_GROUP.name} requires --extra-data")
     stage = ExecuteStage(cfg)
     sandbox = LocalSandbox()  # le canoniche non eseguono nulla: nessun container
     manifests: dict[str, dict[str, Any]] = {}
@@ -429,6 +545,8 @@ def export(
         side: dict[str, Any] | None = None
         if group is POOL_GROUP:
             rows, pool_extra, ref, side = _pool(cfg, store)
+        elif group is POOL_EXTRA_GROUP:
+            rows, pool_extra, ref, side = _pool(cfg, store, extra_data)
         elif group.source == "canonical":
             ref = problems_ref(group.level, LANGUAGE)
             problems = _problems(store, group)
@@ -477,6 +595,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out-dir", type=Path, help="default: <artifacts>/_runs/diagnostics/...")
     parser.add_argument("--models", nargs="+", help="default: models of configs/config.yaml")
     parser.add_argument("--groups", nargs="+", help="only these groups (default: all)")
+    parser.add_argument(
+        "--extra-data",
+        type=Path,
+        help=f"folder <pid>/Python/<file> of the extra extraction (group {POOL_EXTRA_GROUP.name})",
+    )
     parser.add_argument("overrides", nargs="*", help="Hydra overrides (e.g. paths=local)")
     args = parser.parse_args(argv)
     # ``stage`` è obbligatorio nella configurazione: si usa ``execute``, di cui lo script riusa
@@ -485,7 +608,7 @@ def main(argv: list[str] | None = None) -> int:
     store = ArtifactStore(Path(cfg.paths.artifacts))
     out_dir = args.out_dir or default_out_dir(cfg)
     try:
-        export(cfg, store, out_dir, list(args.models or cfg.models), args.groups)
+        export(cfg, store, out_dir, list(args.models or cfg.models), args.groups, args.extra_data)
     except ExportError as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 1

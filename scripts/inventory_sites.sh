@@ -22,7 +22,15 @@
 #       sottomissioni umane Python, tranne negativi e canoniche dei problemi di test (export
 #       --groups L2_codenet_pool, con L2_codenet_pool.test_clusters.json), inventario nelle
 #       varianti base e mcss_mod, poi scripts/select_mcss_selftest.py sulla tabella mcss_mod
-#       (fascia 32-39 bit o >= 32, 100-250 file, una sottomissione per problema quando bastano).
+#       (fascia 32-39 bit senza allargamento, al più 250 file, una sottomissione per problema
+#       quando bastano).
+#
+#   LOG=docs/milestone_logs/P1_mcss_selftest_extra.txt bash scripts/inventory_sites.sh selftest_extra
+#       come selftest sul pool allargato L2_codenet_pool_extra (decisione K del 15 novembre
+#       2026): il pool più le sottomissioni in più dei problemi di sviluppo estratte da
+#       scripts/codenet_extra_dev.sh in $EXTRA_DATA (default
+#       $WMB/datasets/codenet_extra_dev/Project_CodeNet/data), ruolo extra_dev, deduplicate per
+#       impronta; nel log anche il manifest del pool (conteggi) e scripts/mcss_band_detail.py.
 #
 #   bash scripts/inventory_sites.sh candidates        # LOG di default: P0_candidates.txt
 #       canali candidati (P0-bis): `python -m multimark.cli.candidates` sugli stessi JSONL
@@ -34,7 +42,8 @@
 # $LOG non deve esistere (i log non si sovrascrivono). Uscite in
 # $WMB/artifacts/_runs/diagnostics/inventory/: ingressi condivisi (inputs/, pool/), tabelle,
 # riepiloghi e selezione separati per commit del submodule (<c> = primi 12 caratteri: tables/<c>/,
-# summary_<c>.*, pool_tables/<c>/, pool_summary_<c>.*, mcss_selftest_<c>.*), così il cambio di
+# summary_<c>.*, pool_tables/<c>/, pool_summary_<c>.*, mcss_selftest_<c>.*, pool_extra_summary_<c>.*,
+# mcss_selftest_extra_<c>.*), così il cambio di
 # libreria non si scontra con le uscite di P0; log del job in $WMB/logs/inventory_sites_<job>.log.
 # Interprete posthoc da configs/envs/envs.yaml (o POSTHOC_PY=...). Un nuovo job aspetta quelli
 # dell'inventario già in coda (scrivono negli stessi ingressi).
@@ -45,7 +54,7 @@ cd "$REPO_ROOT"
 
 MODE=inventory
 case "${1:-}" in
-    selftest|candidates) MODE="$1"; shift ;;
+    selftest|selftest_extra|candidates) MODE="$1"; shift ;;
 esac
 if [ "$MODE" = candidates ] && [ -z "${LOG:-}" ]; then
     LOG=docs/milestone_logs/P0_candidates.txt
@@ -95,7 +104,7 @@ if [ "$MODE" != inventory ] && [ "$#" -gt 0 ]; then
     echo "$MODE takes no arguments" >&2
     exit 2
 fi
-if [ "$MODE" = selftest ]; then
+if [ "$MODE" = selftest ] || [ "$MODE" = selftest_extra ]; then
     VARIANTS=(base mcss_mod)
 elif [ "$MODE" = candidates ]; then
     VARIANTS=()
@@ -125,12 +134,27 @@ if [ -n "${WMB_EXCLUDE_NODES:-}" ]; then
 fi
 
 if [ "$MODE" = selftest ]; then
-    POOL="$OUT/pool/L2_codenet_pool.jsonl"
-    EXPORT="$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/pool --groups L2_codenet_pool"
+    PGROUP=L2_codenet_pool
+    POOL="$OUT/pool/$PGROUP.jsonl"
+    EXPORT="$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/pool --groups $PGROUP"
     INPUT="$POOL"
     TABLES="$OUT/pool_tables/$C"
     SUMMARY="$OUT/pool_summary_$C"
     SELECTION="$OUT/mcss_selftest_$C"
+elif [ "$MODE" = selftest_extra ]; then
+    EXTRA_DATA="${EXTRA_DATA:-$WMB/datasets/codenet_extra_dev/Project_CodeNet/data}"
+    if [ ! -f "$EXTRA_DATA/../../extracted.ok" ]; then
+        echo "extra submissions not extracted: run sbatch scripts/codenet_extra_dev.sh first" >&2
+        echo "(missing $EXTRA_DATA/../../extracted.ok)" >&2
+        exit 1
+    fi
+    PGROUP=L2_codenet_pool_extra
+    POOL="$OUT/pool/$PGROUP.jsonl"
+    EXPORT="$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/pool --groups $PGROUP --extra-data $EXTRA_DATA"
+    INPUT="$POOL"
+    TABLES="$OUT/pool_tables/$C"  # file con il nome del gruppo: nessuno scontro con il pool di M9
+    SUMMARY="$OUT/pool_extra_summary_$C"
+    SELECTION="$OUT/mcss_selftest_extra_$C"
 else
     EXPORT="$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/inputs"
     INPUT="$OUT/inputs"
@@ -190,17 +214,26 @@ SBATCH
         for i in "${!VARIANTS[@]}"; do
             echo "$POSTHOC_PY scripts/inventory_sites.py --input $INPUT --out-dir $TABLES ${FLAGS[$i]} --summary $SUMMARY.${NAMES[$i]}.txt --summary-json $SUMMARY.${NAMES[$i]}.json"
         done
-        if [ "$MODE" = selftest ]; then
-            echo "$POSTHOC_PY scripts/select_mcss_selftest.py --pool $POOL --mcss-table $TABLES/L2_codenet_pool.canonical-paper_guards-on_params-on_modlevel-on.csv --base-table $TABLES/L2_codenet_pool.canonical-kind_guards-on_params-off.csv --out $SELECTION.jsonl --report ${SELECTION}_report.txt"
+        if [ "$MODE" != inventory ]; then
+            MCSS_TABLE="$TABLES/$PGROUP.canonical-paper_guards-on_params-on_modlevel-on.csv"
+            echo "$POSTHOC_PY scripts/select_mcss_selftest.py --pool $POOL --mcss-table $MCSS_TABLE --base-table $TABLES/$PGROUP.canonical-kind_guards-on_params-off.csv --out $SELECTION.jsonl --report ${SELECTION}_report.txt"
+        fi
+        if [ "$MODE" = selftest_extra ]; then
+            echo "$POSTHOC_PY scripts/mcss_band_detail.py --pool $POOL --mcss-table $MCSS_TABLE --report ${SELECTION}_band_detail.txt"
         fi
         echo "{"
-        echo "  echo \"# $MODE of multimark sites (scripts/inventory_sites.sh $([ "$MODE" = selftest ] && echo selftest || echo "${VARIANTS[*]}"))\""
+        echo "  echo \"# $MODE of multimark sites (scripts/inventory_sites.sh $([ "$MODE" = inventory ] && echo "${VARIANTS[*]}" || echo "$MODE"))\""
         echo "  echo \"# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD), multimark $LINK\""
         echo "  echo \"# tables: $TABLES\""
         echo "  echo \"# inputs: $INPUT (<gruppo>.jsonl.manifest.json)\""
-        if [ "$MODE" = selftest ]; then
+        if [ "$MODE" != inventory ]; then
             echo "  echo \"# selection: $SELECTION.jsonl\"; echo"
+            echo "  echo \"pool manifest ($POOL.manifest.json):\"; cat $POOL.manifest.json; echo"
             echo "  cat ${SELECTION}_report.txt"
+        fi
+        if [ "$MODE" = selftest_extra ]; then
+            echo "  echo; echo \"######## band detail (scripts/mcss_band_detail.py)\"; echo"
+            echo "  cat ${SELECTION}_band_detail.txt"
         fi
         for i in "${!VARIANTS[@]}"; do
             echo "  echo; echo \"######## variant ${VARIANTS[$i]} (${NAMES[$i]})\"; echo"

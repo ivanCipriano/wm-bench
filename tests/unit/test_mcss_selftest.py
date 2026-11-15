@@ -1,13 +1,15 @@
 """Selezione CodeNet della verifica di ``mcss`` (PIPELINE §4.4 punto 2; decisione del 13 novembre).
 
-Pool (``export_inventory_inputs.pool_rows``), passaggio di ``role`` in ``inventory_sites.py`` e
-selezione della fascia 32-39 bit (``select_mcss_selftest.py``).
+Pool (``export_inventory_inputs.pool_rows`` ed ``extra_rows`` del pool allargato), passaggio di
+``role`` in ``inventory_sites.py``, selezione della fascia 32-39 bit senza allargamento
+(``select_mcss_selftest.py``) e dettaglio della fascia (``mcss_band_detail.py``).
 """
 
 from __future__ import annotations
 
 import csv
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -20,6 +22,7 @@ from tests.unit.test_inventory_scripts import LIBRARY, _load, needs_library
 export = _load("export_inventory_inputs")
 inv = _load("inventory_sites")
 sel = _load("select_mcss_selftest")
+detail = _load("mcss_band_detail")
 
 SEED = 20261001
 SELECTION = {
@@ -103,7 +106,45 @@ def test_pool_excludes_test_negatives_and_canonicals(tmp_path: Path) -> None:
 
 
 def test_pool_group_is_not_in_the_default_export() -> None:
-    assert "L2_codenet_pool" not in {g.name for g in export.groups_for(["m"])}
+    names = {g.name for g in export.groups_for(["m"])}
+    assert "L2_codenet_pool" not in names and "L2_codenet_pool_extra" not in names
+
+
+def test_extra_pool_requires_the_extra_folder(tmp_path: Path) -> None:
+    with pytest.raises(export.ExportError, match="requires --extra-data"):
+        export.export(None, None, tmp_path, ["m"], ["L2_codenet_pool_extra"])
+
+
+def test_extra_rows_keep_new_dev_code_only(tmp_path: Path) -> None:
+    from bench.data.negatives import code_fingerprint
+
+    splits: dict[str, str | None] = {"codenet/p00002": "dev", "codenet/p00001": "test"}
+    files = [
+        _write(tmp_path, "p00002", "s20", "a = 1\n"),
+        _write(tmp_path, "p00002", "s21", "a  =  1\r\n"),  # stessa impronta di s20
+        _write(tmp_path, "p00002", "s22", "print(6)\n"),  # impronta di un file di M9
+        _write(tmp_path, "p00002", "s23", "print(2)\n"),  # codice di un negativo di test
+        _write(tmp_path, "p00002", "s24", "b = 2\nc = 3\n"),
+        _write(tmp_path, "p00001", "s25", "z = 0\n"),  # problema di test
+        _write(tmp_path, "p00077", "s26", "y = 0\n"),  # problema non nella selezione
+    ]
+    known = {code_fingerprint("print(6)\n")}
+    rows, stats = export.extra_rows(files, splits, known, {"print(2)\n"}, SEED)
+    first = min(  # fra s20 e s21 resta il primo nell'ordine di pick_submissions
+        ("s20", "s21"), key=lambda sid: derive_seed(SEED, "codenet-sub", "p00002", "python", sid)
+    )
+    assert [r["sample_id"] for r in rows] == sorted(
+        [f"codenet/p00002/python/{first}", "codenet/p00002/python/s24"]
+    )
+    assert {r["role"] for r in rows} == {"extra_dev"} and {r["split"] for r in rows} == {"dev"}
+    assert stats == {
+        "extra_files": 7,
+        "extra_not_dev": 2,
+        "extra_excluded_code": 1,
+        "extra_duplicate_fingerprint": 2,
+        "extra_kept": 2,
+    }
+    assert code_fingerprint("b = 2\nc = 3\n") in known  # impronte aggiornate
 
 
 @needs_library
@@ -197,14 +238,12 @@ def test_eligible_drops_test_split_test_clusters_and_parse_errors() -> None:
     assert excluded == {"split_test": 1, "test_cluster": 1, "parse_error": 1}
 
 
-def test_band_widens_to_32_plus_below_the_minimum() -> None:
+def test_band_is_32_39_without_widening() -> None:
     mcss = {f"s{i:03}": _row(f"s{i:03}", 30 + i % 15) for i in range(150)}
-    band, cands, widened = sel.candidates(mcss, sorted(mcss))
-    assert len(band) == 80 and widened  # 32..39: 8 valori su 15
-    assert len(cands) == 130 and all(int(mcss[s]["n_bits_v1"]) >= 32 for s in cands)
-    more = {f"s{i:03}": _row(f"s{i:03}", 32 + i % 8) for i in range(120)}
-    band, cands, widened = sel.candidates(more, sorted(more))
-    assert band == cands and len(band) == 120 and not widened
+    band = sel.in_band(mcss, sorted(mcss))
+    assert len(band) == 80  # 32..39: 8 valori su 15, anche sotto il minimo di 100
+    assert all(32 <= int(mcss[s]["n_bits_v1"]) <= 39 for s in band)
+    assert not hasattr(sel, "candidates")
 
 
 def test_select_one_per_problem_when_enough_problems() -> None:
@@ -279,7 +318,7 @@ def test_main_writes_selection_and_report_and_refuses_changes(tmp_path: Path) ->
     text = (tmp_path / "rep.txt").read_text(encoding="utf-8")
     assert "excluded split == test: 1\n" in text
     assert "excluded same identical_problem_clusters cluster as a test problem: 1\n" in text
-    assert "band used: 32 <= n_bits_v1 <= 39\n" in text
+    assert "band used: 32 <= n_bits_v1 <= 39 (no widening)\n" in text
     assert "one submission per problem: yes\n" in text
     assert "selected: 128\n" in text and "WARNING" not in text
     assert "mean variables:             12.00 vs 11.9 (+0.8%)" in text
@@ -293,18 +332,21 @@ def test_main_writes_selection_and_report_and_refuses_changes(tmp_path: Path) ->
     assert len(out.read_text(encoding="utf-8").splitlines()) == 128
 
 
-def test_main_widens_and_warns_below_the_minimum(tmp_path: Path) -> None:
+def test_main_does_not_widen_and_warns_below_the_minimum(tmp_path: Path) -> None:
     pool = _pool(30)
     sids = sorted(pool)
+    pool[sids[3]]["role"] = "extra_dev"
     path = _write_pool(tmp_path, pool, same_cluster=[])
     _csv(tmp_path / "mcss.csv", [_row(s, 30 + i) for i, s in enumerate(sids)])
     _csv(tmp_path / "base.csv", [_row(s, 0) for s in sids])
     assert sel.main(_argv(tmp_path, path)) == 0
     text = (tmp_path / "rep.txt").read_text(encoding="utf-8")
+    assert "eligible files with n_bits_v1 >= 32: 28\n" in text
     assert "eligible files in 32-39: 8\n" in text
-    assert "band used: n_bits_v1 >= 32 (widened" in text
-    assert "selected: 28\n" in text and "WARNING: fewer than 100 files" in text
+    assert "band used: 32 <= n_bits_v1 <= 39 (no widening)\n" in text
+    assert "selected: 8\n" in text and "WARNING: fewer than 100 files in 32-39" in text
     assert "one submission per problem: no\n" in text
+    assert "selected by role: extra_dev=1, unselected=7" in text
 
 
 def test_main_rejects_tables_of_another_pool(tmp_path: Path) -> None:
@@ -324,3 +366,35 @@ def test_missing_seed_or_clusters_is_an_error(tmp_path: Path) -> None:
         sel.pool_seed(pool)
     with pytest.raises(sel.SelectionError, match="same_cluster_as_test"):
         sel.read_test_clusters(sel.default_test_clusters(pool))
+
+
+# ---------------------------------------------------------------- dettaglio della fascia
+
+
+def test_band_detail_reports_band_and_eligible(tmp_path: Path) -> None:
+    pool = _pool(6)
+    sids = sorted(pool)
+    pool[sids[0]]["split"] = "test"  # escluso
+    path = _write_pool(tmp_path, pool, same_cluster=["p00001"])  # sids[1] escluso
+    rows = []
+    for i, s in enumerate(sids):
+        bits = [35, 35, 34, 36, 10, 50][i]
+        row = _row(s, bits, vars_=[0, 0, 12, 10, 2, 20][i], structural=[0, 0, 10, 16, 6, 10][i])
+        row.update(n_sites_aug_assign=str(i), n_sites_ternary="0")
+        rows.append(row)
+    _csv(tmp_path / "mcss.csv", rows)
+    report = tmp_path / "detail.txt"
+    argv = ["--pool", str(path), "--mcss-table", str(tmp_path / "mcss.csv")]
+    assert detail.main([*argv, "--report", str(report)]) == 0
+    text = report.read_text(encoding="utf-8")
+    assert "same cluster as a test problem: 1" in text and "excluded split == test: 1" in text
+    lines = {re.split(r"\s{2,}", x.strip())[0]: x.split() for x in text.splitlines()}
+    assert lines["files"][-2:] == ["2", "4"]  # fascia: sids[2], sids[3]; ammessi: 2..5
+    assert lines["mean n_bits_v1"][-3:] == ["35.00", "32.50", "34.6"]
+    assert lines["mean n_vars"][-3:] == ["11.00", "11.00", "11.9"]
+    assert lines["mean n_sites_structural"][-3:] == ["13.00", "10.50", "10.9"]
+    assert lines["structural / variables"][-3:] == ["1.18", "0.95", "0.92"]
+    assert lines["aug_assign"][-2:] == ["2.50", "3.50"]
+    assert "channels with no sites in either set: ternary" in text
+    assert ": PASS (±10%)" in text and text.startswith("# mcss band detail")
+    assert detail.main([*argv, "--report", str(report)]) == 1  # il log esiste già

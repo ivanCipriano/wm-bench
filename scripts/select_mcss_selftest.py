@@ -1,6 +1,7 @@
 """Selezione CodeNet per la verifica della Tabella 3 di MCSS (PIPELINE_metodo.md v1.2 §4.4.2).
 
-Criteri (pipeline v1.2 e decisioni dell'utente del 13 novembre 2026, ``docs/deviations.md``):
+Criteri (pipeline v1.2 e decisioni dell'utente del 13 e del 15 novembre 2026,
+``docs/deviations.md``):
 
 - tabella del profilo ``mcss`` **con le variabili di modulo** (``--canonical paper
   --include-params --module-level on --channels mcss8``); ``n_bits_v1`` = siti strutturali +
@@ -9,15 +10,16 @@ Criteri (pipeline v1.2 e decisioni dell'utente del 13 novembre 2026, ``docs/devi
   umane CodeNet Python, già senza canoniche e negativi di test), da cui si tolgono anche le righe
   dei problemi di test (``split == "test"``: sottomissioni di riserva e quasi duplicati) e quelle
   dei problemi nello stesso cluster ``identical_problem_clusters`` di un problema di test
-  (``L2_codenet_pool.test_clusters.json``, scritto dall'export);
-- fascia **32–39 bit**; se vi cadono meno di ``MIN_FILES`` = 100 file ammessi, si allarga a
-  ``n_bits_v1 >= 32``;
+  (``<pool>.test_clusters.json``, scritto dall'export); il pool può essere quello allargato
+  ``L2_codenet_pool_extra`` (sottomissioni in più dei problemi di sviluppo, ruolo ``extra_dev``);
+- fascia **32–39 bit, senza allargamento** (decisione dell'utente del 15 novembre 2026: il
+  ripiego su ``n_bits_v1 >= 32`` del primo tentativo è tolto; il numero di file con
+  ``n_bits_v1 >= 32`` resta nel riepilogo);
 - al più ``MAX_FILES`` = 250 file, in ordine ``derive_seed(global_seed, "mcss-selftest",
   sample_id)`` (``global_seed`` dal manifest del pool); **una sottomissione per problema** (la
   prima nell'ordine) quando i problemi distinti fra i candidati sono almeno 100, altrimenti si
   prendono a turno la prima, la seconda, ... sottomissione di ogni problema;
-- con meno di 100 file scelti il riepilogo lo segnala: la pipeline prevede allora di valutare
-  altre sottomissioni dei soli problemi di sviluppo (estrazione non ancora decisa);
+- con meno di ``MIN_FILES`` = 100 file scelti il riepilogo lo segnala;
 - criterio di accettazione: media di ``n_bits_v1`` entro ±10% di 34,6; le medie di variabili e
   siti strutturali si riportano con lo scostamento da 11,9 e 10,9, senza esito.
 
@@ -55,7 +57,7 @@ from bench_contracts import derive_seed
 
 BAND = (32, 39)  # fascia D32 di MCSS, in bit
 MAX_FILES = 250
-MIN_FILES = 100  # minimo utile (§4.4 punto 2): sotto si allarga a n_bits_v1 >= 32
+MIN_FILES = 100  # minimo utile (§4.4 punto 2): sotto, avviso nel riepilogo (nessun allargamento)
 SEED_LABEL = "mcss-selftest"
 TEST_CLUSTERS_SUFFIX = ".test_clusters.json"  # come scripts/export_inventory_inputs.py
 # Tabella 3 di MCSS (p. 8), fascia 32-39 bit: medie per file.
@@ -137,15 +139,9 @@ def eligible(
     return kept, excluded
 
 
-def candidates(
-    mcss: dict[str, dict[str, str]], ids: Sequence[str]
-) -> tuple[list[str], list[str], bool]:
-    """``(fascia, candidati, allargata)``: righe in 32-39 bit e, se sono meno di ``MIN_FILES``,
-    candidati con ``n_bits_v1 >= 32``."""
-    band = [s for s in ids if BAND[0] <= _int(mcss[s], "n_bits_v1") <= BAND[1]]
-    if len(band) >= MIN_FILES:
-        return band, band, False
-    return band, [s for s in ids if _int(mcss[s], "n_bits_v1") >= BAND[0]], True
+def in_band(mcss: dict[str, dict[str, str]], ids: Sequence[str]) -> list[str]:
+    """Righe con ``n_bits_v1`` nella fascia 32-39 (i candidati della selezione)."""
+    return [s for s in ids if BAND[0] <= _int(mcss[s], "n_bits_v1") <= BAND[1]]
 
 
 def select(
@@ -207,14 +203,9 @@ def report(
 ) -> str:
     """Testo del riepilogo (vedi docstring del modulo)."""
     ids, excluded = sel["eligible"], sel["excluded"]
-    band, cands, chosen = sel["band"], sel["candidates"], sel["chosen"]
+    cands, chosen = sel["candidates"], sel["chosen"]
     sel_m = [mcss[s] for s in chosen]
     sel_b = [base[s] for s in chosen]
-    used = (
-        f"n_bits_v1 >= {BAND[0]} (widened: fewer than {MIN_FILES} files in {BAND[0]}-{BAND[1]})"
-        if sel["widened"]
-        else f"{BAND[0]} <= n_bits_v1 <= {BAND[1]}"
-    )
     roles = Counter(str(pool[s].get("role")) for s in chosen)
     lines = [
         "MCSS self-test selection (PIPELINE_metodo.md v1.2 §4.4 point 2)",
@@ -230,8 +221,8 @@ def report(
         f"eligible files: {len(ids)} (problems: {len({_pid(pool[s]) for s in ids})})",
         f"eligible files with n_bits_v1 >= {BAND[0]}: "
         f"{sum(1 for s in ids if _int(mcss[s], 'n_bits_v1') >= BAND[0])}",
-        f"eligible files in {BAND[0]}-{BAND[1]}: {len(band)}",
-        f"band used: {used}",
+        f"eligible files in {BAND[0]}-{BAND[1]}: {len(cands)}",
+        f"band used: {BAND[0]} <= n_bits_v1 <= {BAND[1]} (no widening)",
         f"candidates: {len(cands)} (problems: {len({_pid(pool[s]) for s in cands})})",
         f"one submission per problem: {'yes' if sel['one_per_problem'] else 'no'}",
         f"selected: {len(chosen)}",
@@ -239,8 +230,8 @@ def report(
     ]
     if len(chosen) < MIN_FILES:
         lines.append(
-            f"WARNING: fewer than {MIN_FILES} files: §4.4 point 2 asks whether more CodeNet "
-            "Python submissions of development problems can be extracted"
+            f"WARNING: fewer than {MIN_FILES} files in {BAND[0]}-{BAND[1]} "
+            "(minimum of §4.4 point 2; no widening)"
         )
     lines += [
         "",
@@ -319,7 +310,7 @@ def write_if_new(path: Path, data: bytes) -> str:
 
 def main(argv: Sequence[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
-    p.add_argument("--pool", required=True, type=Path, help="L2_codenet_pool.jsonl")
+    p.add_argument("--pool", required=True, type=Path, help="L2_codenet_pool[_extra].jsonl")
     p.add_argument("--mcss-table", required=True, type=Path, help="pool table, mcss_mod profile")
     p.add_argument("--base-table", required=True, type=Path, help="pool table, multimark base")
     p.add_argument("--test-clusters", type=Path, help="default: <pool stem>.test_clusters.json")
@@ -334,14 +325,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         seed = pool_seed(args.pool)
         cluster_pids = read_test_clusters(args.test_clusters or default_test_clusters(args.pool))
         ids, excluded = eligible(pool, mcss, cluster_pids)
-        band, cands, widened = candidates(mcss, ids)
+        cands = in_band(mcss, ids)
         chosen, one_per_problem = select(pool, cands, seed)
         sel = {
             "eligible": ids,
             "excluded": excluded,
-            "band": band,
             "candidates": cands,
-            "widened": widened,
             "chosen": chosen,
             "one_per_problem": one_per_problem,
         }

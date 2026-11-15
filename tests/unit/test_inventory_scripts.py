@@ -186,7 +186,10 @@ def test_main_builds_the_configuration(
     """``main`` compone la configurazione come sul cluster (``stage`` obbligatorio, job 818687)."""
     calls: list[tuple[Any, ...]] = []
 
-    def fake_export(cfg: Any, store: Any, out_dir: Path, models: list[str], only: Any) -> dict:  # type: ignore[type-arg]
+    def fake_export(
+        cfg: Any, store: Any, out_dir: Path, models: list[str], only: Any, extra: Any = None
+    ) -> dict[str, Any]:
+        assert extra is None  # --extra-data solo per il pool allargato
         calls.append((cfg.stage, cfg.paths.artifacts, out_dir, models, only))
         return {}
 
