@@ -22,7 +22,7 @@ Gruppi (file ``<gruppo>.jsonl`` in ``--out-dir``):
 | ``L2_codenet_pool`` | solo con ``--groups``: sottomissioni umane CodeNet Python estratte in M9, |
 | | tranne negativi e canoniche di test (selezione di verifica di ``mcss``, PIPELINE §4.4) |
 | ``L2_codenet_pool_extra`` | solo con ``--groups`` e ``--extra-data``: pool più le sottomissioni |
-| | in più dei problemi di sviluppo (``codenet_extra_dev.py``), ruolo ``extra_dev`` |
+| | in più di ``codenet_extra.py``, ruoli ``extra_dev`` ed ``extra_unused`` |
 
 Il pool (decisione dell'utente del 13 novembre 2026) prende tutti i file Python estratti sotto
 ``datasets.codenet.dirs.data`` (problemi candidati della M9, circa 10 sottomissioni ciascuno) ed
@@ -33,9 +33,11 @@ escluso o di un negativo di test di ``data/negatives/*.parquet``. Ogni riga ha i
 delle esclusioni. Le canoniche di test sono escluse dalla seconda decisione dell'utente del
 13 novembre 2026.
 
-Il pool allargato (decisione K dell'utente del 15 novembre 2026) aggiunge i file Python di
-``--extra-data`` (cartella separata dell'estrazione, ``<pid>/Python/<submission_id>.<ext>``):
-solo problemi con ``split == "dev"``; un file si scarta se il suo codice è uguale a un file
+Il pool allargato (decisioni K e successiva dell'utente del 15 novembre 2026) aggiunge i file
+Python di ``--extra-data`` (cartella separata dell'estrazione,
+``<pid>/Python/<submission_id>.<ext>``): ruolo ``extra_dev`` per i problemi con
+``split == "dev"``, ``extra_unused`` per i candidati M9 fuori da L2 (split nullo); i file dei
+problemi di test si scartano. Un file si scarta anche se il suo codice è uguale a un file
 escluso o a un negativo di test (come sopra) o se la sua impronta (``code_fingerprint``: a meno
 degli spazi) è già quella di un file Python estratto in M9 (tutti, anche quelli esclusi) o di un
 file in più che lo precede nell'ordine di ``pick_submissions``. I conteggi vanno nel manifest
@@ -132,7 +134,7 @@ class Group:
 POOL_GROUP = Group("L2_codenet_pool", "L2", "codenet_pool", None, dataset="codenet")
 POOL_EXTRA_GROUP = Group("L2_codenet_pool_extra", "L2", "codenet_pool", None, dataset="codenet")
 POOL_EXCLUDED_ROLES = frozenset({"negative_test", "canonical_test"})
-EXTRA_ROLE = "extra_dev"
+EXTRA_ROLES: dict[str | None, str] = {"dev": "extra_dev", None: "extra_unused"}  # per split
 
 
 def groups_for(models: Iterable[str]) -> list[Group]:
@@ -302,7 +304,7 @@ def extra_rows(
     excluded_codes: set[str],
     seed: int,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    """Righe ``extra_dev`` del pool allargato (vedi docstring del modulo).
+    """Righe ``extra_dev``/``extra_unused`` del pool allargato (vedi docstring del modulo).
 
     ``files`` sono ``<extra>/<pid>/Python/<submission_id>.<ext>``; si visitano per problema
     nell'ordine di ``pick_submissions`` (``derive_seed(seed, "codenet-sub", pid, "python",
@@ -310,8 +312,9 @@ def extra_rows(
     ``known_fingerprints``: impronte dei file Python già estratti (si aggiornano qui).
 
     Returns:
-        righe ordinate e conteggi (``extra_files``, ``extra_not_dev``, ``extra_excluded_code``,
-        ``extra_duplicate_fingerprint``, ``extra_kept``).
+        righe ordinate e conteggi (``extra_files``, ``extra_test_split``,
+        ``extra_excluded_code``, ``extra_duplicate_fingerprint``, ``extra_kept`` e
+        ``role=<ruolo>``).
     """
     from bench.data.negatives import code_fingerprint
 
@@ -321,7 +324,7 @@ def extra_rows(
 
     stats = {
         "extra_files": 0,
-        "extra_not_dev": 0,
+        "extra_test_split": 0,
         "extra_excluded_code": 0,
         "extra_duplicate_fingerprint": 0,
     }
@@ -330,8 +333,8 @@ def extra_rows(
         pid, sub_id = path.parent.parent.name, path.stem
         stats["extra_files"] += 1
         split = splits.get(f"codenet/{pid}")
-        if split != "dev":
-            stats["extra_not_dev"] += 1
+        if split not in EXTRA_ROLES:
+            stats["extra_test_split"] += 1
             continue
         code = read_code(path)
         if code in excluded_codes:
@@ -342,7 +345,9 @@ def extra_rows(
             stats["extra_duplicate_fingerprint"] += 1
             continue
         known_fingerprints.add(fp)
-        rows.append(_pool_row(pid, sub_id, code, split, EXTRA_ROLE))
+        role = EXTRA_ROLES[split]
+        rows.append(_pool_row(pid, sub_id, code, split, role))
+        stats[f"role={role}"] = stats.get(f"role={role}", 0) + 1
     stats["extra_kept"] = len(rows)
     return sorted(rows, key=_sort_key), stats
 
@@ -371,7 +376,7 @@ def _pool(
 ) -> tuple[list[dict[str, Any]], dict[str, Any], ArtifactRef, dict[str, Any]]:
     """Pool CodeNet dal disco, con ruoli, split e negativi di test letti dagli artefatti.
 
-    Con ``extra_data`` è il pool allargato: in più le righe ``extra_dev`` di ``extra_rows``.
+    Con ``extra_data`` è il pool allargato: in più le righe di ``extra_rows``.
     """
     spec = cfg.datasets["codenet"]
     selection = yaml.safe_load(spec.file("selected").read_text(encoding="utf-8")) or {}
@@ -423,7 +428,7 @@ def _extra(
     extra_data: Path,
     cfg: Any,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Righe ``extra_dev`` di ``extra_data``, contro i file Python di M9 (``files``)."""
+    """Righe in più di ``extra_data``, contro i file Python di M9 (``files``)."""
     from bench.data.negatives import code_fingerprint
 
     if not extra_data.is_dir():

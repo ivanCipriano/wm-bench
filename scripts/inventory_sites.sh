@@ -26,11 +26,11 @@
 #       quando bastano).
 #
 #   LOG=docs/milestone_logs/P1_mcss_selftest_extra.txt bash scripts/inventory_sites.sh selftest_extra
-#       come selftest sul pool allargato L2_codenet_pool_extra (decisione K del 15 novembre
-#       2026): il pool più le sottomissioni in più dei problemi di sviluppo estratte da
-#       scripts/codenet_extra_dev.sh in $EXTRA_DATA (default
-#       $WMB/datasets/codenet_extra_dev/Project_CodeNet/data), ruolo extra_dev, deduplicate per
-#       impronta; nel log anche il manifest del pool (conteggi) e scripts/mcss_band_detail.py.
+#       come selftest sul pool allargato L2_codenet_pool_extra (decisioni del 15 novembre
+#       2026): il pool più le sottomissioni in più dei problemi dev (ruolo extra_dev) e dei
+#       candidati M9 non usati (extra_unused) estratte da scripts/codenet_extra.sh in
+#       $EXTRA_DATA (default $WMB/datasets/codenet_extra/Project_CodeNet/data), deduplicate
+#       per impronta; nel log anche il manifest del pool (conteggi) e mcss_band_detail.py.
 #
 #   bash scripts/inventory_sites.sh candidates        # LOG di default: P0_candidates.txt
 #       canali candidati (P0-bis): `python -m multimark.cli.candidates` sugli stessi JSONL
@@ -142,9 +142,9 @@ if [ "$MODE" = selftest ]; then
     SUMMARY="$OUT/pool_summary_$C"
     SELECTION="$OUT/mcss_selftest_$C"
 elif [ "$MODE" = selftest_extra ]; then
-    EXTRA_DATA="${EXTRA_DATA:-$WMB/datasets/codenet_extra_dev/Project_CodeNet/data}"
+    EXTRA_DATA="${EXTRA_DATA:-$WMB/datasets/codenet_extra/Project_CodeNet/data}"
     if [ ! -f "$EXTRA_DATA/../../extracted.ok" ]; then
-        echo "extra submissions not extracted: run sbatch scripts/codenet_extra_dev.sh first" >&2
+        echo "extra submissions not extracted: run sbatch scripts/codenet_extra.sh first" >&2
         echo "(missing $EXTRA_DATA/../../extracted.ok)" >&2
         exit 1
     fi

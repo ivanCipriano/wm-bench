@@ -11,7 +11,8 @@ Criteri (pipeline v1.2 e decisioni dell'utente del 13 e del 15 novembre 2026,
   dei problemi di test (``split == "test"``: sottomissioni di riserva e quasi duplicati) e quelle
   dei problemi nello stesso cluster ``identical_problem_clusters`` di un problema di test
   (``<pool>.test_clusters.json``, scritto dall'export); il pool può essere quello allargato
-  ``L2_codenet_pool_extra`` (sottomissioni in più dei problemi di sviluppo, ruolo ``extra_dev``);
+  ``L2_codenet_pool_extra`` (sottomissioni in più dei problemi di sviluppo, ruolo ``extra_dev``,
+  e dei candidati M9 fuori da L2, ruolo ``extra_unused``; candidati e scelti contati per ruolo);
 - fascia **32–39 bit, senza allargamento** (decisione dell'utente del 15 novembre 2026: il
   ripiego su ``n_bits_v1 >= 32`` del primo tentativo è tolto; il numero di file con
   ``n_bits_v1 >= 32`` resta nel riepilogo);
@@ -207,6 +208,7 @@ def report(
     sel_m = [mcss[s] for s in chosen]
     sel_b = [base[s] for s in chosen]
     roles = Counter(str(pool[s].get("role")) for s in chosen)
+    cand_roles = Counter(str(pool[s].get("role")) for s in cands)
     lines = [
         "MCSS self-test selection (PIPELINE_metodo.md v1.2 §4.4 point 2)",
         "mcss profile: canonical paper, params on, module-level variables on, channels mcss8",
@@ -235,6 +237,7 @@ def report(
         )
     lines += [
         "",
+        "candidates by role: " + ", ".join(f"{k}={v}" for k, v in sorted(cand_roles.items())),
         "selected by role: " + ", ".join(f"{k}={v}" for k, v in sorted(roles.items())),
         "",
         "mcss profile on selected files (Table 3 of MCSS, band 32-39 bit):",

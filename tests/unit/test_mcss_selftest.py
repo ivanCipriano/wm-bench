@@ -115,7 +115,7 @@ def test_extra_pool_requires_the_extra_folder(tmp_path: Path) -> None:
         export.export(None, None, tmp_path, ["m"], ["L2_codenet_pool_extra"])
 
 
-def test_extra_rows_keep_new_dev_code_only(tmp_path: Path) -> None:
+def test_extra_rows_keep_new_dev_and_unused_code(tmp_path: Path) -> None:
     from bench.data.negatives import code_fingerprint
 
     splits: dict[str, str | None] = {"codenet/p00002": "dev", "codenet/p00001": "test"}
@@ -126,7 +126,8 @@ def test_extra_rows_keep_new_dev_code_only(tmp_path: Path) -> None:
         _write(tmp_path, "p00002", "s23", "print(2)\n"),  # codice di un negativo di test
         _write(tmp_path, "p00002", "s24", "b = 2\nc = 3\n"),
         _write(tmp_path, "p00001", "s25", "z = 0\n"),  # problema di test
-        _write(tmp_path, "p00077", "s26", "y = 0\n"),  # problema non nella selezione
+        _write(tmp_path, "p00077", "s26", "y = 0\n"),  # candidato fuori da L2: extra_unused
+        _write(tmp_path, "p00077", "s27", "b = 2\nc = 3\n"),  # impronta di p00002/s24
     ]
     known = {code_fingerprint("print(6)\n")}
     rows, stats = export.extra_rows(files, splits, known, {"print(2)\n"}, SEED)
@@ -134,15 +135,25 @@ def test_extra_rows_keep_new_dev_code_only(tmp_path: Path) -> None:
         ("s20", "s21"), key=lambda sid: derive_seed(SEED, "codenet-sub", "p00002", "python", sid)
     )
     assert [r["sample_id"] for r in rows] == sorted(
-        [f"codenet/p00002/python/{first}", "codenet/p00002/python/s24"]
+        [
+            f"codenet/p00002/python/{first}",
+            "codenet/p00002/python/s24",
+            "codenet/p00077/python/s26",
+        ]
     )
-    assert {r["role"] for r in rows} == {"extra_dev"} and {r["split"] for r in rows} == {"dev"}
+    assert [(r["role"], r["split"]) for r in rows] == [
+        ("extra_dev", "dev"),
+        ("extra_dev", "dev"),
+        ("extra_unused", None),
+    ]
     assert stats == {
-        "extra_files": 7,
-        "extra_not_dev": 2,
+        "extra_files": 8,
+        "extra_test_split": 1,
         "extra_excluded_code": 1,
-        "extra_duplicate_fingerprint": 2,
-        "extra_kept": 2,
+        "extra_duplicate_fingerprint": 3,
+        "extra_kept": 3,
+        "role=extra_dev": 2,
+        "role=extra_unused": 1,
     }
     assert code_fingerprint("b = 2\nc = 3\n") in known  # impronte aggiornate
 
@@ -346,6 +357,7 @@ def test_main_does_not_widen_and_warns_below_the_minimum(tmp_path: Path) -> None
     assert "band used: 32 <= n_bits_v1 <= 39 (no widening)\n" in text
     assert "selected: 8\n" in text and "WARNING: fewer than 100 files in 32-39" in text
     assert "one submission per problem: no\n" in text
+    assert "candidates by role: extra_dev=1, unselected=7" in text
     assert "selected by role: extra_dev=1, unselected=7" in text
 
 
