@@ -1,0 +1,303 @@
+# selftest_eel of mcss (scripts/inventory_sites.sh selftest_eel; PIPELINE v1.2.7 §4.2 point 9: names.single_letter = extend_except_loop)
+# date 2026-11-16T13:01:40+01:00, host tnode05, wm-bench 202f1ddec6f0a68016410db44a957d874bc7d078, multimark 488fb5a769241e7887be2ad7f6596e21495ece82
+# no new inventory: existing tables
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool/L2_codenet_pool_extra.jsonl sha256 a4d5b80f81c60a5126fbf179ef99846b25f6a067e2d51d4f2e598111d5379726
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool_tables/fb311767f65c/L2_codenet_pool_extra.canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_except_loop.csv sha256 25ae45e4c389f77ccf7a2c205b342dbb78b274149511a3a7b290f93182eafb86
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool_tables/1712e38db337/L2_codenet_pool_extra.canonical-kind_guards-on_params-off.csv sha256 9bcba24a9806647e91467977f2f30e6bcfe2d6d1489eb0d7bb2e54989188dabb
+# selection: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/mcss_selftest_eel_fb311767f65c.jsonl
+
+pool manifest (/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool/L2_codenet_pool_extra.jsonl.manifest.json):
+{
+  "group": "L2_codenet_pool_extra",
+  "input": {
+    "path": "data/problems/L2_python.parquet",
+    "sha256": "fb872edcf126740210803013c4d6e82304849c4481a53aca1bae8fd9a62db483"
+  },
+  "pool": {
+    "extra_stats": {
+      "extra_data": "/mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/datasets/codenet_extra/Project_CodeNet/data",
+      "extra_duplicate_fingerprint": 53,
+      "extra_excluded_code": 0,
+      "extra_files": 22483,
+      "extra_kept": 22430,
+      "extra_test_split": 0,
+      "role=extra_dev": 2496,
+      "role=extra_unused": 19934
+    },
+    "global_seed": 20261001,
+    "negative_tables": {
+      "data/negatives/L1L2_cpp_integration_dev.parquet": "39ac4d0f00905c31a79b98a702a12f2263e580cae556dd0f8a02f46f6a76b2c4",
+      "data/negatives/L1L2_java_integration_dev.parquet": "f73644caf90bad9f4b47c05747693330f4fd534b610bf9e5e6b039280d7f090c",
+      "data/negatives/L1L2_javascript_integration_dev.parquet": "d5fdc8a4c94ab909aeaa2cc7b0266255c3586199b4e011f2456ea72a8d11d8d2",
+      "data/negatives/L1L2_python_integration_dev.parquet": "22098460e22c6b73f9d9fce0aa01b64bb5cfdb3bc6e6f48524623d28418392a8",
+      "data/negatives/L1_cpp_integration_dev.parquet": "2c34f7b3ca2128d144002edafdd099038fd31ae87ea9d2d2abf7596a6d85583c",
+      "data/negatives/L1_cpp_integration_test.parquet": "9f91bbdd7c79670cd6f38b0b17d643bf5df8bb0cfcfe63c0e661cbbd6ad95a3d",
+      "data/negatives/L1_cpp_native.parquet": "349dba022fc1518417ec6f844b7a68523523a906db5171b34dfd36f8f73e6b8e",
+      "data/negatives/L1_java_integration_dev.parquet": "70ffbdcf64aae464a4d3a85527753d7a65774a77e6018ae9d47f724f2e87feb2",
+      "data/negatives/L1_java_integration_test.parquet": "1d34b8bd35dfaa3531a8271850b87cbafbf965e3e6ecf86c79947138bf9dea94",
+      "data/negatives/L1_java_native.parquet": "d208c9793d900b0f8154aa3c81920473cc380353259dcea237f9ccd2e3dc792b",
+      "data/negatives/L1_javascript_integration_dev.parquet": "3cc4ecc4b9c55502fbb04f49f2f8d97abb58194eab3fd51407223c50e0d8885c",
+      "data/negatives/L1_javascript_integration_test.parquet": "81a8159e0acb8c49b6cb189623487edc708f62750404df229b7d20ff4f7d5f9d",
+      "data/negatives/L1_javascript_native.parquet": "45acede0168753c3e773a6b252fd3cbf65873bc7fd75f4248b3919f815870af6",
+      "data/negatives/L1_python_integration_dev.parquet": "6681e23f4ac867757d58b1fbef7d240cb5cdf2c9d5ad90b66f25762e6f6e8ddf",
+      "data/negatives/L1_python_native.parquet": "dd9ec3bc184d113741f4cad5699f96ba74c3392e1924f8fd139a9e2c69582794",
+      "data/negatives/L2_cpp_native.parquet": "ee326b35262a488f34163da8b2c04cfeb0aa326536ec4bf957208e9e2cff39d2",
+      "data/negatives/L2_java_native.parquet": "cb2ec87634163f4921f92a3c98c799e83a64ec39a5ba2f09c04723ed72f733bc",
+      "data/negatives/L2_javascript_native.parquet": "5b7b83572ee4bf180fedca8a9cce8aa658e64c1c6bd39afce416199fac750e43",
+      "data/negatives/L2_python_native.parquet": "602afb942b8472a2f0e952c3f3c8978dc3109305e27c336ee0ab7afd28b0e040",
+      "data/negatives/L3_cpp_native.parquet": "aca38df8b9751cdd825c15f3a5fd815864bde75336526e8d1bb7ad0880b897a0",
+      "data/negatives/L3_java_native.parquet": "c76dd8b3ac9dd8ae1189d0ddd7f53ec03dfac0fc9c95a8ebf7cf1de0ec33f973",
+      "data/negatives/L3_javascript_native.parquet": "04290345f9c000cd36b416f3ec1a276d30c603bc5175920240288cf177d52c1c",
+      "data/negatives/L3_python_native.parquet": "54e4e20aaa30459c22087d405bd1da9c9d888acc4db234bd05311cdd101dd8ed"
+    },
+    "stats": {
+      "excluded_code": 1,
+      "excluded_role": 1200,
+      "files": 6650,
+      "kept": 5449,
+      "role=canonical_dev": 50,
+      "role=negative_dev": 250,
+      "role=unselected": 5149
+    },
+    "test_negative_codes": 24195
+  },
+  "rows": 27879,
+  "sha256": "a4d5b80f81c60a5126fbf179ef99846b25f6a067e2d51d4f2e598111d5379726"
+}
+
+MCSS self-test selection (PIPELINE_metodo.md v1.2 §4.4 point 2)
+mcss profile: canonical paper, params on, module-level variables on, channels mcss8, single_letter=extend_except_loop
+order: derive_seed(20261001, 'mcss-selftest', sample_id); max 250 files, minimum 100
+
+pool files: 27879 (test canonicals and negatives already excluded by the export)
+excluded split == test: 800
+excluded same identical_problem_clusters cluster as a test problem: 39
+excluded parse errors: 0
+eligible files: 27040 (problems: 461)
+eligible files with n_bits_v1 >= 32: 1315
+eligible files in 32-39: 693
+band used: 32 <= n_bits_v1 <= 39 (no widening)
+candidates: 693 (problems: 169)
+one submission per problem: yes
+selected: 169
+distinct problems among selected: 169
+
+candidates by role: extra_dev=86, extra_unused=467, negative_dev=4, unselected=136
+selected by role: extra_dev=13, extra_unused=123, unselected=33
+
+mcss profile on selected files (Table 3 of MCSS, band 32-39 bit):
+  mean n_bits_v1 (criterion): 34.61 vs 34.6 (+0.0%): PASS (±10%)
+  mean variables:             12.89 vs 11.9 (+8.3%)
+  mean structural sites:      8.82 vs 10.9 (-19.1%)
+  mean module variables:      6.15
+
+multimark base profile on the same files (canonical kind, params off, extended):
+  mean n_sites_total:    13.54
+  files with n_sites_total >= 32: 2
+  files with n_sites_total >= 13: 84
+
+selected sample_id:
+  codenet/p00004/python/s489603143
+  codenet/p00008/python/s669733280
+  codenet/p00012/python/s597178580
+  codenet/p00017/python/s107432085
+  codenet/p00021/python/s531181563
+  codenet/p00025/python/s785012234
+  codenet/p02261/python/s885079141
+  codenet/p02262/python/s016302158
+  codenet/p02263/python/s743733526
+  codenet/p02264/python/s041663594
+  codenet/p02265/python/s985287889
+  codenet/p02269/python/s208782670
+  codenet/p02270/python/s134780371
+  codenet/p02274/python/s291150503
+  codenet/p02276/python/s183383397
+  codenet/p02315/python/s493822285
+  codenet/p02379/python/s169838426
+  codenet/p02382/python/s290082872
+  codenet/p02420/python/s998738310
+  codenet/p02422/python/s478688017
+  codenet/p02467/python/s720926308
+  codenet/p02548/python/s796288151
+  codenet/p02553/python/s240749212
+  codenet/p02556/python/s878547217
+  codenet/p02571/python/s056992512
+  codenet/p02573/python/s223367040
+  codenet/p02577/python/s368199419
+  codenet/p02580/python/s101009639
+  codenet/p02582/python/s948788380
+  codenet/p02584/python/s398862696
+  codenet/p02596/python/s627034613
+  codenet/p02597/python/s580826632
+  codenet/p02598/python/s187487303
+  codenet/p02603/python/s277252162
+  codenet/p02614/python/s474453319
+  codenet/p02618/python/s433778996
+  codenet/p02623/python/s600932002
+  codenet/p02624/python/s664674058
+  codenet/p02627/python/s624413948
+  codenet/p02629/python/s715689449
+  codenet/p02641/python/s554159940
+  codenet/p02647/python/s617642351
+  codenet/p02660/python/s433663286
+  codenet/p02661/python/s234968488
+  codenet/p02663/python/s906915214
+  codenet/p02676/python/s506607299
+  codenet/p02678/python/s088828752
+  codenet/p02683/python/s135676979
+  codenet/p02684/python/s914845291
+  codenet/p02689/python/s651593995
+  codenet/p02690/python/s747616261
+  codenet/p02695/python/s749069610
+  codenet/p02700/python/s821112491
+  codenet/p02702/python/s029683613
+  codenet/p02713/python/s294225947
+  codenet/p02718/python/s556527911
+  codenet/p02720/python/s761900781
+  codenet/p02723/python/s360055688
+  codenet/p02732/python/s031856425
+  codenet/p02741/python/s098884039
+  codenet/p02748/python/s307454283
+  codenet/p02760/python/s308283376
+  codenet/p02761/python/s034242427
+  codenet/p02772/python/s683662865
+  codenet/p02780/python/s332016161
+  codenet/p02792/python/s692107721
+  codenet/p02795/python/s371156117
+  codenet/p02802/python/s802145001
+  codenet/p02803/python/s036544347
+  codenet/p02812/python/s298972325
+  codenet/p02832/python/s718418336
+  codenet/p02837/python/s397599727
+  codenet/p02844/python/s414094550
+  codenet/p02853/python/s425708630
+  codenet/p02854/python/s394004081
+  codenet/p02861/python/s322026958
+  codenet/p02865/python/s593169414
+  codenet/p02888/python/s696604801
+  codenet/p02900/python/s144025571
+  codenet/p02911/python/s079035776
+  codenet/p02912/python/s649859389
+  codenet/p02918/python/s375134253
+  codenet/p02947/python/s370590258
+  codenet/p02958/python/s370683801
+  codenet/p02959/python/s226332524
+  codenet/p02972/python/s254745444
+  codenet/p02995/python/s389667969
+  codenet/p03001/python/s138620191
+  codenet/p03013/python/s132135888
+  codenet/p03017/python/s381916831
+  codenet/p03026/python/s719953372
+  codenet/p03031/python/s690756690
+  codenet/p03038/python/s652218839
+  codenet/p03044/python/s268448741
+  codenet/p03045/python/s372331119
+  codenet/p03049/python/s092993030
+  codenet/p03050/python/s540102050
+  codenet/p03053/python/s490869153
+  codenet/p03061/python/s438267389
+  codenet/p03076/python/s737738692
+  codenet/p03078/python/s567000585
+  codenet/p03081/python/s874951966
+  codenet/p03088/python/s798566073
+  codenet/p03108/python/s778225209
+  codenet/p03125/python/s579356342
+  codenet/p03126/python/s076046036
+  codenet/p03128/python/s626625862
+  codenet/p03150/python/s658658778
+  codenet/p03160/python/s354929775
+  codenet/p03162/python/s847931400
+  codenet/p03163/python/s488178844
+  codenet/p03164/python/s374767733
+  codenet/p03165/python/s559870691
+  codenet/p03168/python/s657248060
+  codenet/p03170/python/s570224127
+  codenet/p03173/python/s533601409
+  codenet/p03186/python/s222438451
+  codenet/p03196/python/s861579613
+  codenet/p03209/python/s859280343
+  codenet/p03212/python/s433776218
+  codenet/p03213/python/s415421834
+  codenet/p03219/python/s330645159
+  codenet/p03244/python/s125685003
+  codenet/p03246/python/s188726679
+  codenet/p03262/python/s754205009
+  codenet/p03263/python/s808323517
+  codenet/p03265/python/s855661050
+  codenet/p03266/python/s113232360
+  codenet/p03273/python/s904681490
+  codenet/p03286/python/s487766513
+  codenet/p03290/python/s126581286
+  codenet/p03293/python/s199364456
+  codenet/p03295/python/s896042206
+  codenet/p03315/python/s287940427
+  codenet/p03317/python/s992502819
+  codenet/p03324/python/s139827236
+  codenet/p03326/python/s622116138
+  codenet/p03341/python/s674859103
+  codenet/p03352/python/s514232723
+  codenet/p03353/python/s143087643
+  codenet/p03371/python/s561837120
+  codenet/p03378/python/s792685559
+  codenet/p03387/python/s205230996
+  codenet/p03408/python/s258190004
+  codenet/p03409/python/s256589271
+  codenet/p03435/python/s403541721
+  codenet/p03448/python/s149830037
+  codenet/p03457/python/s162876714
+  codenet/p03472/python/s702450141
+  codenet/p03476/python/s602685431
+  codenet/p03495/python/s096984181
+  codenet/p03503/python/s435587259
+  codenet/p03504/python/s426749667
+  codenet/p03545/python/s216959886
+  codenet/p03599/python/s791350254
+  codenet/p03611/python/s622825911
+  codenet/p03640/python/s213951559
+  codenet/p03695/python/s164570630
+  codenet/p03699/python/s110483518
+  codenet/p03774/python/s675672494
+  codenet/p03785/python/s092532619
+  codenet/p03807/python/s513454055
+  codenet/p03835/python/s570375621
+  codenet/p03836/python/s183274850
+  codenet/p03854/python/s769067405
+  codenet/p03971/python/s401359126
+  codenet/p04001/python/s590950951
+  codenet/p04043/python/s527579123
+  codenet/p04045/python/s124301987
+
+######## band detail (scripts/mcss_band_detail.py)
+
+# mcss band detail (scripts/mcss_band_detail.py; PIPELINE v1.2 §4.4 point 2)
+# date 2026-11-16T13:01:40+01:00, host tnode05
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool/L2_codenet_pool_extra.jsonl sha256 a4d5b80f81c60a5126fbf179ef99846b25f6a067e2d51d4f2e598111d5379726
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool_tables/fb311767f65c/L2_codenet_pool_extra.canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_except_loop.csv sha256 25ae45e4c389f77ccf7a2c205b342dbb78b274149511a3a7b290f93182eafb86
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool/L2_codenet_pool_extra.test_clusters.json sha256 92be5788d0913e1826b3738eefd158b85a0325cbdd23b22ce1dc1d0d9b633d57
+
+MCSS profile (mcss_mod: canonical paper, params on, module-level on, channels mcss8), single_letter=extend_except_loop
+pool files: 27879; excluded split == test: 800, same cluster as a test problem: 39, parse errors: 0
+
+                              band 32-39      eligible       MCSS T3
+files                                693         27040              
+problems                             169           461              
+mean n_bits_v1                     34.93         13.17          34.6
+mean n_vars                        12.88          4.99          11.9
+mean n_vars_module                  7.22          3.82              
+mean n_sites_structural             9.17          3.18          10.9
+structural / variables              0.71          0.64          0.92
+  (ratio of the means; MCSS T3: 10.9 / 11.9)
+
+criterion on the band files (mean n_bits_v1): 34.93 vs 34.6 (+1.0%): PASS (±10%)
+
+mean structural sites per channel:
+                              band 32-39      eligible
+  aug_assign                        1.20          0.41
+  compare_dir                       2.01          0.66
+  equality_dir                      2.91          1.07
+  list_comp                         0.38          0.13
+  ternary                           0.06          0.02
+  operand_order                     1.77          0.65
+  empty_coll                        0.81          0.23
+  none_check                        0.03          0.01
+channels with no sites in either set: range_zero, slice_lower, else_return, nested_if, square, return_none
