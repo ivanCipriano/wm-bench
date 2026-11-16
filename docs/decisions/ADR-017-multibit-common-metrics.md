@@ -36,3 +36,30 @@ che il §4 corregge.
 **Effetto sui metodi esistenti.** Nessuno: nessun adapter esistente ridefinisce il metodo.
 `tests/unit/test_detect_bits_correct_compat.py` lo verifica su 1.000 `WorkerResult` casuali per
 ciascuno dei cinque metodi, confrontando con la funzione di prima, copiata nel test.
+
+## 2. Lunghezza del messaggio per metodo e `message_accuracy_detected` (§5.2)
+
+**Decisione.**
+
+- `Detector.message_bits: ClassVar[int | None] = None`. `McgmarkAdapter.message_bits = 12`, come
+  la costante `MESSAGE_BITS` di prima; `mcss` e `multimark` hanno 24.
+- `MetricsStage._capacity(add, boot, positives, message_bits, tau)` usa la lunghezza
+  dell'adapter. La costante `MESSAGE_BITS = 12` di `metrics.py` è tolta. Un metodo con messaggio
+  (che ridefinisce `message_for`) ma senza `message_bits` è un errore di configurazione.
+- `_multibit` resta com'è: un metodo è multi-bit se ridefinisce `message_for`.
+- Nuova metrica `message_accuracy_detected`: frazione dei positivi **rilevati** con la soglia
+  della cella (`detected` di `metrics/calibration.py`, la stessa regola di `tpr_at_fpr`) che hanno
+  tutti i `message_bits` bit giusti. IC di Wilson, `n` = numero di rilevati.
+  - Vale anche per MCGMark (misura nuova e additiva, §0.3 della pipeline).
+  - Senza nessun positivo rilevato la metrica non è definita e la riga non si scrive, perché I7
+    vuole un intervallo per ogni metrica. È il caso delle celle finte dei test, con soglia
+    `inf`.
+
+**Effetto sui metodi esistenti.**
+
+- `message_accuracy`, `bit_accuracy` ed `embedding_success_rate` di MCGMark restano identici.
+  `tests/unit/test_metrics_capacity_compat.py` li confronta con la funzione di prima, copiata
+  nel test come `_capacity_legacy`, su cinque tabelle sintetiche da 300 positivi; lo stesso
+  confronto lo fa `test_metrics_compat.py` sulla catena finta.
+- MCGMark riceve la riga nuova `message_accuracy_detected`.
+- Gli altri metodi non hanno messaggio e non cambiano.

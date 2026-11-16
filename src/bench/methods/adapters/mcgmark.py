@@ -46,6 +46,7 @@ class McgmarkAdapter(PromptEmbedder, Detector):
     gpu_for_embed: ClassVar[bool] = True
     gpu_for_detect: ClassVar[bool] = True  # torch.Generator sul dispositivo (audit §7)
     one_sample_per_item: ClassVar[bool] = True  # niente batch: stato globale (audit §7)
+    message_bits: ClassVar[int | None] = MESSAGE_BITS  # ADR-017 §2
     twin_baseline: ClassVar[bool] = True  # baseline gemella con lo stesso prefill (D20)
 
     def to_native_hparams(self, hp: dict[str, Any]) -> dict[str, Any]:

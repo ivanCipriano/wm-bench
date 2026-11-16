@@ -17,7 +17,10 @@ metodo. Output ``metrics/<metodo>/<modello>/<cfg>/<L>_<lang>_<parte>.parquet``, 
   per problema); per MCGMark il riferimento è la gemella (TODO 10) e ``delta_pass_at_1_pp_baseline``
   usa la baseline normale; per ACW la baseline da cui derivano i campioni;
 - ``conditional_preservation`` (solo ACW): P(corretto dopo | corretto prima), Wilson;
-- capacità (solo MCGMark): ``message_accuracy``, ``bit_accuracy``, ``embedding_success_rate``.
+- capacità (metodi multi-bit: MCGMark, ``mcss``, ``multimark``): ``message_accuracy``,
+  ``bit_accuracy``, ``embedding_success_rate`` con la lunghezza del messaggio dell'adapter
+  (``Detector.message_bits``) e ``message_accuracy_detected`` sui soli positivi rilevati
+  (ADR-017 §2).
 
 **Livello 3** (ADR-016): Pass@1, ΔPass@1 e preservazione condizionata solo su ClassEval (91 classi,
 D41); per CodeSearchNet e The Stack ``tree_sitter_valid`` (principale), ``syntax_check``
@@ -74,8 +77,6 @@ from bench.registry import STAGES
 from bench.store.refs import ArtifactRef
 
 logger = logging.getLogger(__name__)
-
-MESSAGE_BITS = 12  # D1
 
 
 def metrics_ref(
@@ -435,7 +436,7 @@ class MetricsStage(Stage):
                 self._l3_exec(ctx, refs["exec_baseline"], level),
             )  # fmt: skip
         if self._multibit(method):
-            self._capacity(add, boot, applicable)
+            self._capacity(add, boot, applicable, self._message_bits(method), tau)
         self._write(ctx, cell, rows, cfg_hash, thresholds, not_applicable=False)
 
     # ------------------------------------------------------------------ Livello 3 (ADR-016)
@@ -625,6 +626,17 @@ class MetricsStage(Stage):
         """Metodi con messaggio (ridefiniscono ``Detector.message_for``): capacità §13.5."""
         return type(self.adapter(method)).message_for is not Detector.message_for
 
+    def _message_bits(self, method: str) -> int:
+        """Lunghezza del messaggio del metodo multi-bit (``Detector.message_bits``, ADR-017 §2).
+
+        Raises:
+            ConfigError: se un metodo con messaggio non dichiara la lunghezza.
+        """
+        bits = self.adapter(method).message_bits
+        if not isinstance(bits, int) or bits <= 0:
+            raise ConfigError(f"{method}: multi-bit method without message_bits")
+        return bits
+
     def _fpr_subjects(self, method: str) -> list[tuple[str, str]]:
         subjects = [("fpr_human", "neg_human")]
         if self._twin(method):
@@ -696,15 +708,22 @@ class MetricsStage(Stage):
 
     @staticmethod
     def _capacity(
-        add: Callable[..., None], boot: Callable[[str], ClusterBootstrap], positives: pd.DataFrame
+        add: Callable[..., None],
+        boot: Callable[[str], ClusterBootstrap],
+        positives: pd.DataFrame,
+        message_bits: int,
+        tau: float,
     ) -> None:
-        """MCGMark (SPEC §13.5): bit corretti dei positivi; rilevazione fallita = 0 bit."""
+        """Capacità dei metodi multi-bit (SPEC §13.5, ADR-017 §2): bit corretti dei positivi su
+        ``message_bits`` (rilevazione fallita = 0 bit); ``message_accuracy_detected`` = frazione
+        dei positivi **rilevati** con la soglia della cella che hanno tutti i bit giusti (Wilson,
+        ``n`` = rilevati; senza rilevati la riga non c'è)."""
         bits = pd.to_numeric(positives["bits_correct"], errors="coerce").fillna(0)
         bits = bits.where(positives["status"] == "OK", 0)
         n = len(positives)
-        full = int((bits == MESSAGE_BITS).sum())
+        full = int((bits == message_bits).sum())
         add("message_accuracy", full / n, wilson(full, n), "wilson", n)
-        table = positives.assign(bit_frac=bits / MESSAGE_BITS)
+        table = positives.assign(bit_frac=bits / message_bits)
         add(
             "bit_accuracy",
             float(table["bit_frac"].mean()),
@@ -716,6 +735,11 @@ class MetricsStage(Stage):
         )
         ok = int((positives["embed_status"] == "OK").sum())
         add("embedding_success_rate", ok / n, wilson(ok, n), "wilson", n)
+        hit = _detected(positives, tau).to_numpy(dtype=bool)
+        n_hit = int(hit.sum())
+        if n_hit:  # nessun rilevato: metrica non definita, non si emette (I7: valore con IC)
+            k = int((bits.to_numpy() == message_bits)[hit].sum())
+            add("message_accuracy_detected", k / n_hit, wilson(k, n_hit), "wilson", n_hit)
 
     def _correctness_loop(self, ctx: StageContext, cell: Cell) -> bool | None:
         """Ciclo di correttezza dei campioni marcati, dal manifest (``native_hparams``)."""

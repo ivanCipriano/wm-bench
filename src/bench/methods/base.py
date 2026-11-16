@@ -665,6 +665,9 @@ class Detector(MethodAdapter):
     # resta disponibile come secondario con il nome ``native_score_name``. ``None`` = nativo.
     primary_score: ClassVar[str | None] = None
     native_score_name: ClassVar[str] = "native"
+    # Lunghezza del messaggio dei metodi multi-bit (ADR-017 §2): MCGMark 12 (D1), ``mcss`` e
+    # ``multimark`` 24; ``None`` per i metodi senza messaggio.
+    message_bits: ClassVar[int | None] = None
 
     def secondary_score(self, name: str, extra: dict[str, Any]) -> float | None:
         """Punteggio secondario dall'``extra`` di una rilevazione (più alto = più marcato)."""
