@@ -678,6 +678,19 @@ class Detector(MethodAdapter):
         ``None`` per i metodi senza messaggio (MCGMark lo ridefinisce, SPEC §9.5)."""
         return None
 
+    def bits_correct(self, result: WorkerResult) -> int | None:
+        """Bit del messaggio decodificati correttamente (colonna ``bits_correct`` della fase
+        ``detect``, ADR-017 §1).
+
+        Default (il comportamento di prima, MCGMark, D1): ``None`` se mancano il messaggio
+        decodificato o il punteggio, altrimenti il punteggio, che è il numero di bit uguali al
+        messaggio atteso. I metodi con un punteggio che non conta bit (``mcss``, ``multimark``) lo
+        ridefiniscono leggendo ``extra["bits_correct"]``.
+        """
+        if result.decoded_message is None or result.score is None:
+            return None
+        return int(result.score)
+
     def detect_codes(
         self,
         inputs: Sequence[DetectInput],

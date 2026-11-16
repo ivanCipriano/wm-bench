@@ -24,6 +24,7 @@ quello del campione per i positivi, dagli identificativi per i negativi (SPEC §
 
 Una riga per codice (I1), con i campi di ``DetectionRecord`` (``extra`` come JSON) più
 ``problem_key``, ``sample_index``, ``dataset``, ``source``, ``embed_status`` e ``parent_id``.
+``bits_correct`` lo calcola l'adapter (``Detector.bits_correct``, ADR-017 §1).
 **Ripresa:** la cartella di lavoro del worker è stabile per cella e soggetto.
 """
 
@@ -297,6 +298,7 @@ class DetectStage(Stage):
         cfg_hash: str,
         model_id: str,
     ) -> None:
+        adapter = self.adapter(str(cell.method))
         rows = []
         for sample, result in zip(samples, results, strict=True):
             record = DetectionRecord(
@@ -309,7 +311,7 @@ class DetectStage(Stage):
                 score=result.score,
                 native_decision=result.native_decision,
                 decoded_message=result.decoded_message,
-                bits_correct=_bits_correct(result),
+                bits_correct=adapter.bits_correct(result),  # ADR-017 §1
                 extra=dict(result.extra or {}),
             )
             dump = record.model_dump(mode="json")
@@ -352,13 +354,6 @@ class DetectStage(Stage):
         )
         ctx.store.write_table(ref, df, manifest)
         logger.info("%s %s: %d records, status %s", cell.key(), subject, len(df), dict(statuses))
-
-
-def _bits_correct(result: Any) -> int | None:
-    """Bit corretti (MCGMark): il punteggio è il numero di bit uguali al messaggio (D1)."""
-    if result.decoded_message is None or result.score is None:
-        return None
-    return int(result.score)
 
 
 def _clean(row: dict[Any, Any]) -> dict[str, Any]:
