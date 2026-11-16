@@ -4,8 +4,8 @@ Le metriche di MCGMark (senza attacco e sotto T1.5), STONE e ACW calcolate dal c
 catena finta di ``tests/compat_metrics.py`` devono coincidere, riga per riga e a tolleranza 1e-9,
 con quelle registrate dal codice di prima delle modifiche comuni
 (``tests/fixtures/compat/metrics_before_p2.json``). Sono ammesse solo metriche **nuove** e additive
-(``NEW_METRICS``): nessuna metrica esistente cambia valore, intervallo, ``n`` o metodo dell'IC, e
-nessuna sparisce.
+(``NEW_METRICS``; nelle celle con attacco anche la capacità dei metodi multi-bit, §5.3): nessuna
+metrica esistente cambia valore, intervallo, ``n`` o metodo dell'IC, e nessuna sparisce.
 """
 
 from __future__ import annotations
@@ -22,6 +22,8 @@ from tests.compat_metrics import GOLDEN, compute
 TOL = 1e-9
 # Metriche additive delle modifiche comuni (§5.2, §5.3): nuove righe, nessuna riga vecchia toccata.
 NEW_METRICS = re.compile(r"^(message_accuracy_detected|wrong_attribution_rate_\w+)$")
+# Capacità sugli attaccati (§5.3): righe nuove solo nelle celle con attacco.
+NEW_ATTACKED = re.compile(r"^(message_accuracy|bit_accuracy|embedding_success_rate)$")
 
 
 def _same(a: Any, b: Any) -> bool:
@@ -45,6 +47,14 @@ def test_golden_was_recorded_before_the_common_changes() -> None:
     assert any(cell.startswith("metrics/attacked/T1.5/") for cell in golden["cells"])
 
 
+def test_attacked_mcgmark_gets_the_capacity(current: dict[str, dict[str, dict[str, Any]]]) -> None:
+    """§5.3: la capacità si calcola anche sugli attaccati di un metodo multi-bit."""
+    cells = [c for c in current if c.startswith("metrics/attacked/T1.5/")]
+    assert len(cells) == 3
+    for cell in cells:
+        assert {"message_accuracy", "bit_accuracy", "embedding_success_rate"} <= set(current[cell])
+
+
 def test_existing_metrics_are_unchanged(current: dict[str, dict[str, dict[str, Any]]]) -> None:
     golden = json.loads(GOLDEN.read_text(encoding="utf-8"))["cells"]
     assert set(current) == set(golden)  # stesse celle, stessi percorsi (config_hash invariati)
@@ -52,7 +62,9 @@ def test_existing_metrics_are_unchanged(current: dict[str, dict[str, dict[str, A
         now = current[cell]
         assert set(rows) <= set(now), f"{cell}: metrics disappeared {set(rows) - set(now)}"
         added = set(now) - set(rows)
-        assert all(NEW_METRICS.match(name) for name in added), f"{cell}: unexpected {added}"
+        attacked = cell.startswith("metrics/attacked/")
+        allowed = [NEW_METRICS, NEW_ATTACKED] if attacked else [NEW_METRICS]
+        assert all(any(r.match(n) for r in allowed) for n in added), f"{cell}: unexpected {added}"
         for name, fields in rows.items():
             for key, value in fields.items():
                 assert _same(now[name][key], value), (cell, name, key, now[name][key], value)

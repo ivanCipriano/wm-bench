@@ -63,3 +63,35 @@ ciascuno dei cinque metodi, confrontando con la funzione di prima, copiata nel t
   confronto lo fa `test_metrics_compat.py` sulla catena finta.
 - MCGMark riceve la riga nuova `message_accuracy_detected`.
 - Gli altri metodi non hanno messaggio e non cambiano.
+
+## 3. Capacità sotto attacco e attribuzioni sbagliate (§5.3)
+
+**Decisione.**
+
+- **Capacità sotto attacco.** In `MetricsStage._attacked_metrics`, dopo i punteggi secondari, i
+  metodi multi-bit ricevono la capacità anche sugli attaccati: `_capacity(..., message_bits,
+  tau)`, con la stessa definizione della cella senza attacco (rilevazione `FAILED` = 0 bit) e la
+  soglia congelata della cella senza attacco.
+- **Attribuzioni sbagliate.** `wrong_attribution_rate_<nome>` per ogni punteggio secondario
+  `<nome>` di `adapter.secondary_scores` per cui `extra` ha `best_<nome>`, cioè il messaggio
+  scelto dal registro di esche (`nreg16`, `nreg1024` di `mcss` e `multimark`, pipeline
+  §3.10.4).
+  - Valore: frazione dei positivi **rilevati** con quel punteggio (soglia secondaria della
+    cella) il cui messaggio scelto è diverso dal messaggio atteso del campione. Il messaggio
+    atteso viene da `expected_message` dei campioni marcati o attaccati, per `sample_id`. IC di
+    Wilson.
+  - Si calcola nelle celle senza attacco e in quelle con attacco.
+  - Non si emette quando nessuna riga ha `best_<nome>`, cioè per tutti i metodi esistenti, né
+    quando nessun positivo è rilevato (I7).
+- La tabella dei campioni attaccati (`refs["attacked"]`) si legge una volta sola: serve sia ai
+  messaggi attesi sia all'intensità dell'attacco, come prima.
+
+**Effetto sui metodi esistenti.**
+
+- Nelle celle con attacco di MCGMark si aggiungono `message_accuracy`, `bit_accuracy`,
+  `embedding_success_rate` e, se c'è almeno un rilevato, `message_accuracy_detected`. Le metriche
+  che c'erano già restano identiche: `test_metrics_compat.py` le confronta riga per riga sulle tre
+  celle T1.5 della catena finta e verifica che le righe nuove siano solo quelle elencate.
+- Nessun metodo esistente ha `best_<nome>` in `extra`, quindi `wrong_attribution_rate_*` non
+  compare per nessuno di loro (`tests/unit/test_metrics_attacked_compat.py`). Lo stesso test
+  verifica il calcolo su tabelle sintetiche con un registro finto.

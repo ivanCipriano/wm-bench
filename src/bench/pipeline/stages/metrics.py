@@ -20,7 +20,11 @@ metodo. Output ``metrics/<metodo>/<modello>/<cfg>/<L>_<lang>_<parte>.parquet``, 
 - capacità (metodi multi-bit: MCGMark, ``mcss``, ``multimark``): ``message_accuracy``,
   ``bit_accuracy``, ``embedding_success_rate`` con la lunghezza del messaggio dell'adapter
   (``Detector.message_bits``) e ``message_accuracy_detected`` sui soli positivi rilevati
-  (ADR-017 §2).
+  (ADR-017 §2);
+- ``wrong_attribution_rate_<nome>`` per ogni punteggio secondario ``<nome>`` con il messaggio
+  scelto in ``extra["best_<nome>"]`` (registro di esche di ``mcss`` e ``multimark``): frazione dei
+  positivi rilevati con quel punteggio il cui messaggio scelto non è quello atteso, Wilson; per i
+  metodi senza ``best_<nome>`` non si emette (ADR-017 §3).
 
 **Livello 3** (ADR-016): Pass@1, ΔPass@1 e preservazione condizionata solo su ClassEval (91 classi,
 D41); per CodeSearchNet e The Stack ``tree_sitter_valid`` (principale), ``syntax_check``
@@ -34,7 +38,8 @@ attacco; output ``<cartella>/attacked/<attacco>/<params_hash>/<metodo>/...``. Me
 attaccati, ``delta_pass_at_1_pp`` (riferimento − attaccato, come per i marcati: gemella per
 MCGMark), ``delta_pass_at_1_pp_vs_marked`` (marcato non attaccato − attaccato),
 ``changed_fraction`` (campioni modificati, Wilson) e ``codebleu_distance`` (1 − CodeBLEU medio,
-bootstrap per problema): l'intensità dell'attacco accanto al suo effetto.
+bootstrap per problema): l'intensità dell'attacco accanto al suo effetto. Per i metodi multi-bit
+anche la capacità sugli attaccati e ``wrong_attribution_rate_<nome>`` (ADR-017 §3).
 
 **Soglie provvisorie** (decisione dell'utente del 9 ottobre 2026): sulla parte di test la fase si
 rifiuta di usarle, salvo ``detection.allow_provisional_test`` (solo smoke test).
@@ -42,6 +47,7 @@ rifiuta di usarle, salvo ``detection.allow_provisional_test`` (solo smoke test).
 
 from __future__ import annotations
 
+import json
 import logging
 import math
 from collections.abc import Callable, Sequence
@@ -415,6 +421,9 @@ class MetricsStage(Stage):
 
         # --- punteggi secondari (varianti del paper): soglia propria, stessi positivi e negativi
         self._secondary_metrics(cell, add, applicable, neg_human, thresholds)
+        self._wrong_attribution(
+            cell, add, applicable, ctx.store.read_table(refs["watermarked"]), thresholds
+        )
 
         if level == "L3":  # TPR, FPR e AUROC anche per dataset, con il flag I6 (ADR-016)
             self._per_dataset(cell, add, applicable, neg_human, tau)
@@ -594,6 +603,11 @@ class MetricsStage(Stage):
             len(pos_scores) + len(neg_scores),
         )
         self._secondary_metrics(cell, add, attacked, neg_human, thresholds)
+        # --- capacità sotto attacco e attribuzioni sbagliate (ADR-017 §3)
+        samples = ctx.store.read_table(refs["attacked"])
+        if self._multibit(method):
+            self._capacity(add, boot, attacked, self._message_bits(method), tau)
+        self._wrong_attribution(cell, add, attacked, samples, thresholds)
         # --- preservazione funzionale
         attacked_exec = self._read_exec(ctx, refs["exec_attacked"])
         reference = "exec_twin" if self._twin(method) else "exec_baseline"
@@ -603,7 +617,6 @@ class MetricsStage(Stage):
             only_delta=True,
         )  # fmt: skip
         # --- intensità dell'attacco
-        samples = ctx.store.read_table(refs["attacked"])
         samples = samples[samples["attack_status"] != "NOT_APPLICABLE"]
         changed = int((samples["attack_status"] == "APPLIED").sum())
         add("changed_fraction", changed / len(samples) if len(samples) else math.nan,
@@ -621,6 +634,44 @@ class MetricsStage(Stage):
             "cluster_bootstrap",
             len(samples),
         )
+
+    def _wrong_attribution(
+        self,
+        cell: Cell,
+        add: Callable[..., None],
+        positives: pd.DataFrame,
+        samples: pd.DataFrame,
+        thresholds: ThresholdSet,
+    ) -> None:
+        """``wrong_attribution_rate_<nome>`` (ADR-017 §3): per ogni punteggio secondario con il
+        messaggio scelto in ``extra["best_<nome>"]``, frazione dei positivi rilevati con quel
+        punteggio (soglia secondaria della cella) il cui messaggio scelto è diverso dal messaggio
+        atteso del campione (``expected_message`` di ``samples``, per ``sample_id``); Wilson.
+
+        Non si emette per i punteggi senza ``best_<nome>`` in nessuna riga (metodi esistenti) né
+        quando nessun positivo è rilevato (I7)."""
+        adapter = self.adapter(str(cell.method))
+        expected = dict(zip(samples["sample_id"], samples["expected_message"], strict=True))
+        extras = [
+            json.loads(raw) if isinstance(raw, str) and raw else {}
+            for raw in positives["extra_json"]
+        ]
+        for name in adapter.secondary_scores:
+            key = f"best_{name}"
+            if not any(key in extra for extra in extras):
+                continue
+            sec = thresholds.secondary.get(name)
+            if sec is None:
+                raise ConfigError(f"{cell.key()}: no threshold for the secondary score {name}")
+            hit = _detected(with_secondary(positives, adapter, name), sec["threshold"])
+            wrong = [
+                extra.get(key) != expected.get(sid)
+                for sid, extra, h in zip(positives["sample_id"], extras, hit, strict=True)
+                if h
+            ]
+            if wrong:
+                k, n = int(sum(wrong)), len(wrong)
+                add(f"wrong_attribution_rate_{name}", k / n, wilson(k, n), "wilson", n)
 
     def _multibit(self, method: str) -> bool:
         """Metodi con messaggio (ridefiniscono ``Detector.message_for``): capacità §13.5."""
