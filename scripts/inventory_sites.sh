@@ -15,6 +15,9 @@
 #       mcss      profilo mcss: --canonical paper --include-params --channels mcss8 (canali 1-8)
 #       mcss_mod  come mcss con --module-level on (profilo della Tabella 3, PIPELINE v1.2 §4.4)
 #       params    come base con --include-params (decisione C, PIPELINE §7)
+#       mcss_mod_eel, mcss_mod_all, base_mod_eel, base_mod_all
+#                 come mcss_mod e base_mod con --single-letter extend_except_loop / extend_all
+#                 (PIPELINE v1.2.6 §4.2 punto 9; con exclude il nome della variante non cambia)
 #       noguards  come base con --no-guards (siti persi per le condizioni semantiche, MD6)
 #
 #   LOG=docs/milestone_logs/P1_mcss_selftest_modlevel.txt bash scripts/inventory_sites.sh selftest
@@ -31,6 +34,17 @@
 #       candidati M9 non usati (extra_unused) estratte da scripts/codenet_extra.sh in
 #       $EXTRA_DATA (default $WMB/datasets/codenet_extra/Project_CodeNet/data), deduplicate
 #       per impronta; nel log anche il manifest del pool (conteggi) e mcss_band_detail.py.
+#
+#   LOG=docs/milestone_logs/P1_single_letter.txt bash scripts/inventory_sites.sh single_letter
+#       variabili di una lettera (PIPELINE v1.2.6 §4.2 punto 9, opzione names.single_letter):
+#       sul pool allargato L2_codenet_pool_extra (stesso export di selftest_extra) le varianti
+#       mcss_mod, mcss_mod_eel, mcss_mod_all, base_mod, base_mod_eel, base_mod_all; sui gruppi
+#       di inputs/ (L1 dev, L2 dev, ClassEval) base_mod, base_mod_eel, base_mod_all; fino a 4
+#       inventari insieme. Poi scripts/mcss_band_detail.py per ognuna delle tre letture di
+#       mcss_mod (fascia 32-39, file ammessi della selezione) e scripts/single_letter_choice.py
+#       (regola di scelta di §4.2 punto 9 ed esito). mcss_mod (exclude) si rifà sotto il nuovo
+#       commit della libreria, così le tre letture vengono dalla stessa libreria. Dettagli e
+#       scelta in single_letter_<c>/.
 #
 #   bash scripts/inventory_sites.sh candidates        # LOG di default: P0_candidates.txt
 #       canali candidati (P0-bis): `python -m multimark.cli.candidates` sugli stessi JSONL
@@ -54,7 +68,7 @@ cd "$REPO_ROOT"
 
 MODE=inventory
 case "${1:-}" in
-    selftest|selftest_extra|candidates) MODE="$1"; shift ;;
+    selftest|selftest_extra|single_letter|candidates) MODE="$1"; shift ;;
 esac
 if [ "$MODE" = candidates ] && [ -z "${LOG:-}" ]; then
     LOG=docs/milestone_logs/P0_candidates.txt
@@ -96,6 +110,10 @@ variant() {  # $1 = variante -> "FLAGS|NOME"
         mcss_mod) echo "--channels mcss8 --canonical paper --include-params --module-level on|canonical-paper_guards-on_params-on_modlevel-on" ;;
         params)   echo "--channels extended --include-params|canonical-kind_guards-on_params-on" ;;
         noguards) echo "--channels extended --no-guards|canonical-kind_guards-off_params-off" ;;
+        mcss_mod_eel) echo "--channels mcss8 --canonical paper --include-params --module-level on --single-letter extend_except_loop|canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_except_loop" ;;
+        mcss_mod_all) echo "--channels mcss8 --canonical paper --include-params --module-level on --single-letter extend_all|canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_all" ;;
+        base_mod_eel) echo "--channels extended --module-level on --single-letter extend_except_loop|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_except_loop" ;;
+        base_mod_all) echo "--channels extended --module-level on --single-letter extend_all|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_all" ;;
         *) return 1 ;;
     esac
 }
@@ -106,6 +124,10 @@ if [ "$MODE" != inventory ] && [ "$#" -gt 0 ]; then
 fi
 if [ "$MODE" = selftest ] || [ "$MODE" = selftest_extra ]; then
     VARIANTS=(base mcss_mod)
+elif [ "$MODE" = single_letter ]; then
+    # VARIANTS sul pool allargato, BASE_INPUTS sui gruppi di inputs/.
+    VARIANTS=(mcss_mod mcss_mod_eel mcss_mod_all base_mod base_mod_eel base_mod_all)
+    BASE_INPUTS=(base_mod base_mod_eel base_mod_all)
 elif [ "$MODE" = candidates ]; then
     VARIANTS=()
 elif [ "$#" -gt 0 ]; then
@@ -117,7 +139,8 @@ FLAGS=()
 NAMES=()
 for v in ${VARIANTS[@]+"${VARIANTS[@]}"}; do
     if ! spec="$(variant "$v")"; then
-        echo "unknown variant '$v' (base, base_mod, mcss, mcss_mod, params, noguards)" >&2
+        echo "unknown variant '$v' (base, base_mod, mcss, mcss_mod, params, noguards," \
+            "mcss_mod_eel, mcss_mod_all, base_mod_eel, base_mod_all)" >&2
         exit 2
     fi
     FLAGS+=("${spec%%|*}")
@@ -141,7 +164,7 @@ if [ "$MODE" = selftest ]; then
     TABLES="$OUT/pool_tables/$C"
     SUMMARY="$OUT/pool_summary_$C"
     SELECTION="$OUT/mcss_selftest_$C"
-elif [ "$MODE" = selftest_extra ]; then
+elif [ "$MODE" = selftest_extra ] || [ "$MODE" = single_letter ]; then
     EXTRA_DATA="${EXTRA_DATA:-$WMB/datasets/codenet_extra/Project_CodeNet/data}"
     if [ ! -f "$EXTRA_DATA/../../extracted.ok" ]; then
         echo "extra submissions not extracted: run sbatch scripts/codenet_extra.sh first" >&2
@@ -155,6 +178,12 @@ elif [ "$MODE" = selftest_extra ]; then
     TABLES="$OUT/pool_tables/$C"  # file con il nome del gruppo: nessuno scontro con il pool di M9
     SUMMARY="$OUT/pool_extra_summary_$C"
     SELECTION="$OUT/mcss_selftest_extra_$C"
+    if [ "$MODE" = single_letter ]; then
+        # Anche i gruppi di inputs/ (stesso export della modalità inventory: [SKIP] se uguali).
+        EXPORT="$EXPORT
+$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/inputs"
+        SL="$OUT/single_letter_$C"
+    fi
 else
     EXPORT="$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/inputs"
     INPUT="$OUT/inputs"
@@ -210,6 +239,53 @@ $POSTHOC_PY -m multimark.cli.candidates "\${INPUTS[@]}" --estimate-groups "\$(IF
 } > $LOG
 echo "[OK] $LOG"
 SBATCH
+    elif [ "$MODE" = single_letter ]; then
+        MCSS_PREFIX="$TABLES/$PGROUP.canonical-paper_guards-on_params-on_modlevel-on"
+        cat <<SBATCH
+# Fino a 4 inventari insieme (job con -c 4); l'errore di uno ferma il job al suo wait.
+PIDS=()
+pwait() { wait "\${PIDS[0]}"; PIDS=("\${PIDS[@]:1}"); }
+prun() { "\$@" & PIDS+=("\$!"); if [ "\${#PIDS[@]}" -ge 4 ]; then pwait; fi; }
+SBATCH
+        for i in "${!VARIANTS[@]}"; do
+            echo "prun $POSTHOC_PY scripts/inventory_sites.py --input $INPUT --out-dir $TABLES ${FLAGS[$i]} --summary $SUMMARY.${NAMES[$i]}.txt --summary-json $SUMMARY.${NAMES[$i]}.json"
+        done
+        BASE_NAMES=()
+        for v in "${BASE_INPUTS[@]}"; do
+            spec="$(variant "$v")"
+            BASE_NAMES+=("${spec#*|}")
+            echo "prun $POSTHOC_PY scripts/inventory_sites.py --input $OUT/inputs --out-dir $OUT/tables/$C ${spec%%|*} --summary $OUT/summary_$C.${spec#*|}.txt --summary-json $OUT/summary_$C.${spec#*|}.json"
+        done
+        echo 'while [ "${#PIDS[@]}" -gt 0 ]; do pwait; done'
+        echo "mkdir -p $SL"
+        TABLE_ARGS=""
+        for mode in exclude extend_except_loop extend_all; do
+            if [ "$mode" = exclude ]; then t="$MCSS_PREFIX.csv"; else t="${MCSS_PREFIX}_singleletter-$mode.csv"; fi
+            TABLE_ARGS="$TABLE_ARGS --table $mode=$t"
+            echo "$POSTHOC_PY scripts/mcss_band_detail.py --pool $POOL --mcss-table $t --single-letter $mode --report $SL/band_detail.$mode.txt"
+        done
+        echo "$POSTHOC_PY scripts/single_letter_choice.py --pool $POOL$TABLE_ARGS --report $SL/choice.txt"
+        echo "{"
+        echo "  echo \"# single_letter of multimark sites (scripts/inventory_sites.sh single_letter; PIPELINE v1.2.6 §4.2 point 9)\""
+        echo "  echo \"# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD), multimark $LINK\""
+        echo "  echo \"# tables: $TABLES (pool), $OUT/tables/$C (inputs)\""
+        echo "  echo \"# inputs: $POOL, $OUT/inputs (<gruppo>.jsonl.manifest.json)\""
+        echo "  echo \"# band detail and choice: $SL\"; echo"
+        echo "  cat $SL/choice.txt"
+        for mode in exclude extend_except_loop extend_all; do
+            echo "  echo; echo \"######## band detail, mcss_mod single_letter=$mode (scripts/mcss_band_detail.py)\"; echo"
+            echo "  cat $SL/band_detail.$mode.txt"
+        done
+        for i in "${!VARIANTS[@]}"; do
+            echo "  echo; echo \"######## pool variant ${VARIANTS[$i]} (${NAMES[$i]})\"; echo"
+            echo "  cat $SUMMARY.${NAMES[$i]}.txt"
+        done
+        for i in "${!BASE_INPUTS[@]}"; do
+            echo "  echo; echo \"######## inputs variant ${BASE_INPUTS[$i]} (${BASE_NAMES[$i]})\"; echo"
+            echo "  cat $OUT/summary_$C.${BASE_NAMES[$i]}.txt"
+        done
+        echo "} > $LOG"
+        echo "echo \"[OK] $LOG\""
     else
         for i in "${!VARIANTS[@]}"; do
             echo "$POSTHOC_PY scripts/inventory_sites.py --input $INPUT --out-dir $TABLES ${FLAGS[$i]} --summary $SUMMARY.${NAMES[$i]}.txt --summary-json $SUMMARY.${NAMES[$i]}.json"
@@ -244,8 +320,12 @@ SBATCH
     fi
 } > "$JOB"
 
+TIME=60
+if [ "$MODE" = single_letter ]; then
+    TIME=240  # nove inventari, sei sul pool allargato (circa 28 mila file)
+fi
 ID=$(sbatch --parsable -p defq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_defq_qos \
-    -c 4 --mem 16G -t 60 ${EXCLUDE[@]+"${EXCLUDE[@]}"} ${DEP[@]+"${DEP[@]}"} \
+    -c 4 --mem 16G -t "$TIME" ${EXCLUDE[@]+"${EXCLUDE[@]}"} ${DEP[@]+"${DEP[@]}"} \
     --job-name wmb-inventory-sites \
     -o "$WMB/logs/inventory_sites_%j.log" "$JOB")
 echo "job $ID (defq): log $WMB/logs/inventory_sites_$ID.log -> $LOG"

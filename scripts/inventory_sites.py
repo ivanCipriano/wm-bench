@@ -23,11 +23,12 @@ Uscite, in ``--out-dir``:
   ogni fascia (0 righe, 0 siti) si contano a parte.
 
 ``<variante>`` riassume le opzioni (``canonical-kind_guards-on_params-off`` per la base di
-multimark; con ``--module-level on`` si aggiunge ``_modlevel-on``). ``--channels`` (``mcss8``:
-canali 1-8 di MCSS; ``extended``: canali 1-14 della base di multimark) è obbligatorio, perché il
-default della libreria è cambiato in P1 (14 canali): non entra nel nome della variante ma nel
-riepilogo, e ``scripts/inventory_sites.sh`` separa le uscite per commit del submodule. Come le
-altre fasi, un file d'uscita che esiste già con lo stesso contenuto non si
+multimark; con ``--module-level on`` si aggiunge ``_modlevel-on``, con ``--single-letter``
+diverso da ``exclude`` si aggiunge ``_singleletter-<valore>``, PIPELINE v1.2.6 §4.2 punto 9).
+``--channels`` (``mcss8``: canali 1-8 di MCSS; ``extended``: canali 1-14 della base di multimark)
+è obbligatorio, perché il default della libreria è cambiato in P1 (14 canali): non entra nel
+nome della variante ma nel riepilogo, e ``scripts/inventory_sites.sh`` separa le uscite per commit
+del submodule. Come le altre fasi, un file d'uscita che esiste già con lo stesso contenuto non si
 riscrive; con contenuto diverso lo script si ferma senza toccarlo.
 
 Uso (vedi scripts/inventory_sites.sh, che lancia esportazione e inventario in un job)::
@@ -111,16 +112,25 @@ def source_commit(library: Path) -> str:
 
 
 CHANNEL_SETS = ("mcss8", "extended")
+# Valori di ``names.single_letter`` (multimark ``names.SINGLE_LETTER_MODES``, PIPELINE v1.2.6
+# §4.2 punto 9); ``exclude`` è il default della libreria e non entra nel nome della variante.
+SINGLE_LETTER_MODES = ("exclude", "extend_except_loop", "extend_all")
 
 
 def variant_name(
-    canonical: str, guards: bool, include_params: bool, module_level: bool = False
+    canonical: str,
+    guards: bool,
+    include_params: bool,
+    module_level: bool = False,
+    single_letter: str = "exclude",
 ) -> str:
-    """Nome della variante delle opzioni dell'inventario (``_modlevel-on`` solo se attivo: senza
-    variabili di modulo i nomi restano quelli di P0)."""
+    """Nome della variante delle opzioni dell'inventario (``_modlevel-on`` e
+    ``_singleletter-<valore>`` solo se attivi: con i default i nomi restano quelli di P0/P1)."""
     return (
         f"canonical-{canonical}_guards-{'on' if guards else 'off'}"
-        f"_params-{'on' if include_params else 'off'}" + ("_modlevel-on" if module_level else "")
+        f"_params-{'on' if include_params else 'off'}"
+        + ("_modlevel-on" if module_level else "")
+        + ("" if single_letter == "exclude" else f"_singleletter-{single_letter}")
     )
 
 
@@ -264,6 +274,12 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help="structural channels: mcss8 (1-8, mcss) or extended (1-14, multimark base)",
     )
+    p.add_argument(
+        "--single-letter",
+        choices=SINGLE_LETTER_MODES,
+        default="exclude",
+        help="one-letter variables as name sites (names.single_letter, default: exclude)",
+    )
     return p
 
 
@@ -278,14 +294,23 @@ def main(argv: Sequence[str] | None = None) -> int:
             "module_level": args.module_level == "on",
             "channels": args.channels,
         }
+        # Solo se diverso dal default: con ``exclude`` riepiloghi e chiamate restano quelli di
+        # prima (stesse uscite, anche con una libreria senza l'opzione).
+        if args.single_letter != "exclude":
+            options["single_letter"] = args.single_letter
         variant = variant_name(
-            args.canonical, not args.no_guards, args.include_params, args.module_level == "on"
+            args.canonical,
+            not args.no_guards,
+            args.include_params,
+            args.module_level == "on",
+            args.single_letter,
         )
         columns = [*INPUT_FIELDS, LOC_FIELD, "parse_ok", "error", *inventory.STAT_COLUMNS]
         commit = source_commit(args.library.resolve())
         text = [
             f"multimark source commit: {commit}",
-            f"options: {variant}, channels={args.channels}",
+            f"options: {variant}, channels={args.channels}"
+            + ("" if args.single_letter == "exclude" else f", single_letter={args.single_letter}"),
             "loc bands: " + ", ".join(band_label("loc", b) for b in LOC_BANDS),
             "site bands: " + ", ".join(band_label("n_sites_total", b) for b in SITE_BANDS),
             "",
