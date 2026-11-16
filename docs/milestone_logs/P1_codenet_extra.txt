@@ -1,0 +1,22 @@
+# CodeNet extra submissions for the mcss self-test (scripts/codenet_extra.sh)
+# date 2026-11-15T12:18:08+01:00, host tnode01, wm-bench 2cb03b69a68fb18abeaec65e693cf59234467b58
+# list: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/codenet/extra_list.{txt,json}; extraction: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/datasets/codenet_extra
+
+CodeNet extra submissions for the mcss self-test (PIPELINE v1.2 §4.4 point 2)
+filters: bench.data.codenet.pick_submissions, Python, limit 60, order derive_seed(20261001, 'codenet-sub', pid, 'python', submission_id)
+groups: dev = L2 problems with split == dev; unused = M9 candidates not in L2 (split null) and not in the identical_problem_clusters cluster of a test problem
+unused candidates dropped (same cluster as a test problem): 4
+[dev] problems: 50
+[dev] submissions picked: 3000 (per problem min 60, median 60.0, max 60; problems below the limit: 0)
+[dev] already extracted in M9: 500 (M9 files of these problems not among the picks: 0)
+[dev] to extract: 2500
+[unused] problems: 400
+[unused] submissions picked: 23983 (per problem min 44, median 60.0, max 60; problems below the limit: 2)
+[unused] already extracted in M9: 4000 (M9 files of these problems not among the picks: 0)
+[unused] to extract: 19983
+to extract (one list, one pass over the archive): 22483
+problems with M9 Python files, split null, not in candidates.json (not listed): 11
+wrote /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/codenet/extra_list.txt and /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/tmp/codenet/extra_list.json
+tar exit status: 0
+extracted 22483 of 22483 files into /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/datasets/codenet_extra
+problems with extracted files: 450

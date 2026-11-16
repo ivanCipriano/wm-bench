@@ -1,0 +1,32 @@
+# mcss band detail (scripts/mcss_band_detail.py; PIPELINE v1.2 §4.4 point 2)
+# date 2026-11-15T12:13:53+01:00, host tnode01
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool/L2_codenet_pool.jsonl sha256 9fad8312aab8f2188cc8652cb879022b5ed1ad1f3419960e7fdbf9fa81d9c825
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool_tables/1712e38db337/L2_codenet_pool.canonical-paper_guards-on_params-on_modlevel-on.csv sha256 4c9e3d2d204f201492637cec828caf37d4a92f569565148db7a0ffcacf91b7cf
+# input /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/pool/L2_codenet_pool.test_clusters.json sha256 92be5788d0913e1826b3738eefd158b85a0325cbdd23b22ce1dc1d0d9b633d57
+
+MCSS profile (mcss_mod: canonical paper, params on, module-level on, channels mcss8)
+pool files: 5449; excluded split == test: 800, same cluster as a test problem: 39, parse errors: 0
+
+                              band 32-39      eligible       MCSS T3
+files                                 51          4610              
+problems                              37           461              
+mean n_bits_v1                     34.53          7.08          34.6
+mean n_vars                         9.94          1.97          11.9
+mean n_vars_module                  5.31          1.49              
+mean n_sites_structural            14.65          3.15          10.9
+structural / variables              1.47          1.60          0.92
+  (ratio of the means; MCSS T3: 10.9 / 11.9)
+
+criterion on the band files (mean n_bits_v1): 34.53 vs 34.6 (-0.2%): PASS (±10%)
+
+mean structural sites per channel:
+                              band 32-39      eligible
+  aug_assign                        2.47          0.40
+  compare_dir                       3.49          0.64
+  equality_dir                      5.10          1.06
+  list_comp                         0.24          0.13
+  ternary                           0.00          0.02
+  operand_order                     2.24          0.66
+  empty_coll                        1.08          0.23
+  none_check                        0.04          0.01
+channels with no sites in either set: range_zero, slice_lower, else_return, nested_if, square, return_none
