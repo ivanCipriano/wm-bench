@@ -167,3 +167,33 @@ def test_band_detail_header_names_the_reading(tmp_path: Path) -> None:
     rep = tmp_path / "b.txt"
     assert detail.main([*argv, "--report", str(rep)]) == 0
     assert "channels mcss8)\n" in rep.read_text(encoding="utf-8")
+
+
+def test_selection_report_names_the_reading(tmp_path: Path) -> None:
+    pool = _pool(4)
+    path = _write_pool(tmp_path, pool, same_cluster=[])
+    sids = sorted(pool)
+    _csv(tmp_path / "mcss.csv", [_row(s, [35, 33, 40, 36][i]) for i, s in enumerate(sids)])
+    _csv(tmp_path / "base.csv", [_row(s, 20) for s in sids])
+    sel = _load("select_mcss_selftest")
+    texts = {}
+    for mode in ("exclude", "extend_except_loop"):
+        argv = ["--pool", str(path), "--mcss-table", str(tmp_path / "mcss.csv")]
+        argv += ["--base-table", str(tmp_path / "base.csv"), "--single-letter", mode]
+        argv += [
+            "--out",
+            str(tmp_path / f"{mode}.jsonl"),
+            "--report",
+            str(tmp_path / f"{mode}.txt"),
+        ]
+        assert sel.main(argv) == 0
+        texts[mode] = (tmp_path / f"{mode}.txt").read_text(encoding="utf-8")
+    assert "channels mcss8\n" in texts["exclude"]
+    assert "channels mcss8, single_letter=extend_except_loop\n" in texts["extend_except_loop"]
+    # la lettura entra solo nel riepilogo: stessa selezione
+    assert (tmp_path / "exclude.jsonl").read_bytes() == (
+        tmp_path / "extend_except_loop.jsonl"
+    ).read_bytes()
+    assert texts["exclude"].replace("channels mcss8\n", "") == texts["extend_except_loop"].replace(
+        "channels mcss8, single_letter=extend_except_loop\n", ""
+    )

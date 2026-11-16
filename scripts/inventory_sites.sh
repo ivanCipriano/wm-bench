@@ -46,6 +46,16 @@
 #       commit della libreria, così le tre letture vengono dalla stessa libreria. Dettagli e
 #       scelta in single_letter_<c>/.
 #
+#   LOG=docs/milestone_logs/P1_mcss_selftest_eel.txt bash scripts/inventory_sites.sh selftest_eel
+#       selezione della verifica di mcss rifatta con names.single_letter = extend_except_loop
+#       (PIPELINE v1.2.7 §4.2 punto 9) sulle tabelle già calcolate, senza export né inventario:
+#       mcss_mod_eel del pool allargato in pool_tables/$EEL_TABLES/ (default fb311767f65c,
+#       modalità single_letter) e, per i siti di multimark base sugli stessi file, la tabella base
+#       della selezione precedente in pool_tables/$BASE_TABLES/ (default 1712e38db337, modalità
+#       selftest_extra). Stessi filtri e fascia 32-39, una sottomissione per problema; uscite
+#       nuove mcss_selftest_eel_$EEL_TABLES.* (la selezione precedente resta) e
+#       mcss_band_detail.py; nel log anche gli sha256 delle tabelle.
+#
 #   bash scripts/inventory_sites.sh candidates        # LOG di default: P0_candidates.txt
 #       canali candidati (P0-bis): `python -m multimark.cli.candidates` sugli stessi JSONL
 #       dell'inventario (tutti i gruppi di inputs/: L1 dev canoniche e baseline dei modelli, L2
@@ -68,7 +78,7 @@ cd "$REPO_ROOT"
 
 MODE=inventory
 case "${1:-}" in
-    selftest|selftest_extra|single_letter|candidates) MODE="$1"; shift ;;
+    selftest|selftest_extra|single_letter|selftest_eel|candidates) MODE="$1"; shift ;;
 esac
 if [ "$MODE" = candidates ] && [ -z "${LOG:-}" ]; then
     LOG=docs/milestone_logs/P0_candidates.txt
@@ -128,7 +138,7 @@ elif [ "$MODE" = single_letter ]; then
     # VARIANTS sul pool allargato, BASE_INPUTS sui gruppi di inputs/.
     VARIANTS=(mcss_mod mcss_mod_eel mcss_mod_all base_mod base_mod_eel base_mod_all)
     BASE_INPUTS=(base_mod base_mod_eel base_mod_all)
-elif [ "$MODE" = candidates ]; then
+elif [ "$MODE" = candidates ] || [ "$MODE" = selftest_eel ]; then
     VARIANTS=()
 elif [ "$#" -gt 0 ]; then
     VARIANTS=("$@")
@@ -184,6 +194,27 @@ elif [ "$MODE" = selftest_extra ] || [ "$MODE" = single_letter ]; then
 $BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/inputs"
         SL="$OUT/single_letter_$C"
     fi
+elif [ "$MODE" = selftest_eel ]; then
+    PGROUP=L2_codenet_pool_extra
+    POOL="$OUT/pool/$PGROUP.jsonl"
+    EEL_TABLES="${EEL_TABLES:-fb311767f65c}"
+    BASE_TABLES="${BASE_TABLES:-1712e38db337}"
+    MCSS_TABLE="$OUT/pool_tables/$EEL_TABLES/$PGROUP.canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_except_loop.csv"
+    BASE_TABLE="$OUT/pool_tables/$BASE_TABLES/$PGROUP.canonical-kind_guards-on_params-off.csv"
+    for f in "$POOL" "${POOL%.jsonl}.test_clusters.json" "$MCSS_TABLE" "$BASE_TABLE"; do
+        if [ ! -f "$f" ]; then
+            echo "missing $f (run the single_letter and selftest_extra modes first)" >&2
+            exit 1
+        fi
+    done
+    EXPORT=": no export and no inventory: existing tables"
+    SELECTION="$OUT/mcss_selftest_eel_$EEL_TABLES"
+    for f in "$SELECTION.jsonl" "${SELECTION}_report.txt" "${SELECTION}_band_detail.txt"; do
+        if [ -e "$f" ]; then
+            echo "$f already exists: move it away first (outputs are never overwritten)" >&2
+            exit 1
+        fi
+    done
 else
     EXPORT="$BENCH_PY scripts/export_inventory_inputs.py --out-dir $OUT/inputs"
     INPUT="$OUT/inputs"
@@ -239,6 +270,23 @@ $POSTHOC_PY -m multimark.cli.candidates "\${INPUTS[@]}" --estimate-groups "\$(IF
 } > $LOG
 echo "[OK] $LOG"
 SBATCH
+    elif [ "$MODE" = selftest_eel ]; then
+        echo "$POSTHOC_PY scripts/select_mcss_selftest.py --pool $POOL --mcss-table $MCSS_TABLE --base-table $BASE_TABLE --single-letter extend_except_loop --out $SELECTION.jsonl --report ${SELECTION}_report.txt"
+        echo "$POSTHOC_PY scripts/mcss_band_detail.py --pool $POOL --mcss-table $MCSS_TABLE --single-letter extend_except_loop --report ${SELECTION}_band_detail.txt"
+        echo "{"
+        echo "  echo \"# selftest_eel of mcss (scripts/inventory_sites.sh selftest_eel; PIPELINE v1.2.7 §4.2 point 9: names.single_letter = extend_except_loop)\""
+        echo "  echo \"# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD), multimark $LINK\""
+        echo "  echo \"# no new inventory: existing tables\""
+        for t in "$POOL" "$MCSS_TABLE" "$BASE_TABLE"; do
+            echo "  echo \"# input $t sha256 \$(sha256sum $t | cut -d' ' -f1)\""
+        done
+        echo "  echo \"# selection: $SELECTION.jsonl\"; echo"
+        echo "  echo \"pool manifest ($POOL.manifest.json):\"; cat $POOL.manifest.json; echo"
+        echo "  cat ${SELECTION}_report.txt"
+        echo "  echo; echo \"######## band detail (scripts/mcss_band_detail.py)\"; echo"
+        echo "  cat ${SELECTION}_band_detail.txt"
+        echo "} > $LOG"
+        echo "echo \"[OK] $LOG\""
     elif [ "$MODE" = single_letter ]; then
         MCSS_PREFIX="$TABLES/$PGROUP.canonical-paper_guards-on_params-on_modlevel-on"
         cat <<SBATCH
@@ -321,7 +369,9 @@ SBATCH
 } > "$JOB"
 
 TIME=60
-if [ "$MODE" = single_letter ]; then
+if [ "$MODE" = selftest_eel ]; then
+    TIME=20  # solo selezione e dettaglio della fascia
+elif [ "$MODE" = single_letter ]; then
     TIME=240  # nove inventari, sei sul pool allargato (circa 28 mila file)
 fi
 ID=$(sbatch --parsable -p defq -A did_tesi_nlp_330 --qos did_tesi_nlp_330_defq_qos \

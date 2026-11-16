@@ -22,7 +22,10 @@ Criteri (pipeline v1.2 e decisioni dell'utente del 13 e del 15 novembre 2026,
   prendono a turno la prima, la seconda, ... sottomissione di ogni problema;
 - con meno di ``MIN_FILES`` = 100 file scelti il riepilogo lo segnala;
 - criterio di accettazione: media di ``n_bits_v1`` entro ±10% di 34,6; le medie di variabili e
-  siti strutturali si riportano con lo scostamento da 11,9 e 10,9, senza esito.
+  siti strutturali si riportano con lo scostamento da 11,9 e 10,9, senza esito;
+- ``--single-letter``: lettura di ``names.single_letter`` della tabella ``mcss`` (PIPELINE v1.2.7
+  §4.2 punto 9: ``extend_except_loop`` per ``mcss``), solo per il riepilogo; con ``exclude`` il
+  riepilogo resta quello di prima.
 
 Gira nell'ambiente **posthoc** (Python >= 3.9, libreria standard e ``bench_contracts``). Uscite:
 
@@ -201,6 +204,7 @@ def report(
     base: dict[str, dict[str, str]],
     sel: dict[str, Any],
     seed: int,
+    single_letter: str = "exclude",
 ) -> str:
     """Testo del riepilogo (vedi docstring del modulo)."""
     ids, excluded = sel["eligible"], sel["excluded"]
@@ -211,7 +215,8 @@ def report(
     cand_roles = Counter(str(pool[s].get("role")) for s in cands)
     lines = [
         "MCSS self-test selection (PIPELINE_metodo.md v1.2 §4.4 point 2)",
-        "mcss profile: canonical paper, params on, module-level variables on, channels mcss8",
+        "mcss profile: canonical paper, params on, module-level variables on, channels mcss8"
+        + ("" if single_letter == "exclude" else f", single_letter={single_letter}"),
         f"order: derive_seed({seed}, {SEED_LABEL!r}, sample_id); max {MAX_FILES} files, "
         f"minimum {MIN_FILES}",
         "",
@@ -319,6 +324,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     p.add_argument("--test-clusters", type=Path, help="default: <pool stem>.test_clusters.json")
     p.add_argument("--out", required=True, type=Path, help="selection JSONL")
     p.add_argument("--report", type=Path, help="text report (default: stdout)")
+    p.add_argument(
+        "--single-letter",
+        choices=("exclude", "extend_except_loop", "extend_all"),
+        default="exclude",
+        help="names.single_letter reading of the mcss table (report only)",
+    )
     args = p.parse_args(argv)
     try:
         pool = read_pool(args.pool)
@@ -338,7 +349,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "one_per_problem": one_per_problem,
         }
         write_if_new(args.out, selection_bytes(pool, mcss, base, chosen))
-        text = report(pool, mcss, base, sel, seed)
+        text = report(pool, mcss, base, sel, seed, args.single_letter)
         if args.report:
             write_if_new(args.report, text.encode("utf-8"))
         else:
