@@ -11,6 +11,16 @@ Sono ammesse solo righe **nuove** delle modifiche comuni: ``message_accuracy_det
 ``embedding_success_rate``) nelle celle con attacco dei metodi multi-bit. Una metrica che cambia o
 sparisce è un errore (exit code 1).
 
+**Cella dal manifest.** Il seme di ogni intervallo bootstrap è ``bootstrap_seed(global_seed,
+metrica, cell.key())``, e la chiave contiene solo i campi valorizzati della cella. Le celle con la
+configurazione di default sono state calcolate con ``config_hash = None`` (lo hash compare nel
+percorso ma non nella cella); quelle dello sweep o del test con lo hash. Per riprodurre gli
+intervalli la cella si ricostruisce dal manifest del parquet (``<file>.manifest.json``, campo
+``cell``), mai dal percorso: con lo hash del percorso cambiano tutti i semi e quindi ``ci_low``
+e ``ci_high`` (primo tentativo sul cluster, 16 novembre 2026). Il percorso serve solo a
+controllare che il manifest sia della stessa cella; anche ``detection.n_bootstrap`` deve essere
+quello del manifest.
+
 Nota: il parquet è stato scritto dal codice del momento in cui la cella è stata calcolata. Una
 differenza può quindi venire anche da una modifica precedente a P2; in quel caso si rilancia lo
 stesso controllo dal commit di prima delle modifiche comuni (``955ab01``) per attribuirla.
@@ -24,6 +34,7 @@ Gira in **bench-core**, solo CPU. Uso::
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import re
 import socket
@@ -111,16 +122,48 @@ def compare(old: pd.DataFrame, new: list[Any], attacked: bool) -> tuple[list[str
     return diffs, added
 
 
-def recompute(cfg: Any, info: dict[str, Any]) -> list[Any]:
+class CellError(RuntimeError):
+    """Manifest assente o di un'altra cella, ``n_bootstrap`` diverso."""
+
+
+CELL_FIELDS = ("method", "model_id", "level", "language", "split", "attack_id",
+               "attack_params_hash")  # fmt: skip
+
+
+def manifest_cell(path: Path, info: dict[str, Any], n_bootstrap: int) -> Any:
+    """Cella esatta con cui la fase ``metrics`` ha scritto ``path`` (campo ``cell`` del manifest).
+
+    Raises:
+        CellError: manifest mancante o illeggibile, campi diversi dal percorso, ``config_hash``
+            diverso da quello del percorso (se valorizzato), ``n_bootstrap`` diverso.
+    """
+    from bench.pipeline.stage import Cell
+
+    mpath = path.with_name(path.name + ".manifest.json")
+    try:
+        data = json.loads(mpath.read_text(encoding="utf-8"))
+        cell_data = dict(data["cell"])
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise CellError(f"no usable manifest {mpath.name}: {exc}") from exc
+    for field in CELL_FIELDS:
+        if cell_data.get(field) != info[field]:
+            raise CellError(f"manifest cell {field}={cell_data.get(field)!r}, path {info[field]!r}")
+    if cell_data.get("config_hash") not in (None, info["config_hash"]):
+        raise CellError(
+            f"manifest config_hash {cell_data['config_hash']}, path {info['config_hash']}"
+        )
+    recorded = ((data.get("config") or {}).get("detection") or {}).get("n_bootstrap")
+    if recorded is not None and int(recorded) != n_bootstrap:
+        raise CellError(f"n_bootstrap {recorded} in the manifest, {n_bootstrap} now")
+    return Cell(**cell_data)
+
+
+def recompute(cfg: Any, cell: Any) -> list[Any]:
     """Metriche della cella ricalcolate in memoria (``MetricsStage._write`` sostituito)."""
     from bench.pipeline.facade import BenchmarkFacade
-    from bench.pipeline.stage import Cell, StageContext
+    from bench.pipeline.stage import StageContext
     from bench.pipeline.stages.metrics import MetricsStage
 
-    cell = Cell(method=info["method"], model_id=info["model_id"], level=info["level"],
-                language=info["language"], split=info["split"], config_hash=info["config_hash"],
-                attack_id=info["attack_id"],
-                attack_params_hash=info["attack_params_hash"])  # fmt: skip
     captured: list[Any] = []
 
     def collect(ctx: Any, c: Any, rows: list[Any], *args: Any, **kwargs: Any) -> None:
@@ -144,6 +187,7 @@ def main(argv: Sequence[str] | None = None) -> int:  # noqa: PLR0915
         print(f"[ERROR] {args.report} already exists (logs are never overwritten)", file=sys.stderr)
         return 1
 
+    import bench
     from bench.config.builder import load_experiment
 
     configs: dict[tuple[str, ...], Any] = {}
@@ -166,6 +210,7 @@ def main(argv: Sequence[str] | None = None) -> int:  # noqa: PLR0915
         f"# date {datetime.now().astimezone().isoformat(timespec='seconds')}, "
         f"host {socket.gethostname()}, wm-bench {commit}",
         f"# artifacts {root}; methods {' '.join(args.methods)}; tolerance {TOL}",
+        f"# bench from {Path(bench.__file__).resolve().parent}; cells from the parquet manifests",
         "",
     ]
     counts = {"identical": 0, "with_new_rows": 0, "different": 0, "error": 0, "skipped": 0}
@@ -181,7 +226,9 @@ def main(argv: Sequence[str] | None = None) -> int:  # noqa: PLR0915
         n_cells += 1
         rel = path.relative_to(root).as_posix()
         try:
-            captured = recompute(config(info["levels"]), info)
+            cfg = config(info["levels"])
+            cell = manifest_cell(path, info, int(cfg.detection.n_bootstrap))
+            captured = recompute(cfg, cell)
             old = pd.read_parquet(path)
             diffs, added = compare(old, captured, info["attack_id"] is not None)
         except Exception as exc:  # una cella che non si ricalcola si conta e si mostra

@@ -14,9 +14,16 @@
     di MCGMark (senza attacco e sotto T1.5), STONE e ACW con quelle registrate dal codice di
     prima (`tests/fixtures/compat/metrics_before_p2.json`, commit `955ab01`);
   - `scripts/check_metrics_compat.py`, da lanciare sul cluster, fa lo stesso confronto sulle
-    celle reali già calcolate (`metrics/*.parquet`).
+    celle reali già calcolate (`metrics/*.parquet`). La cella si ricostruisce dal manifest del
+    parquet, non dal percorso: il seme di ogni intervallo bootstrap è `bootstrap_seed(global_seed,
+    metrica, cell.key())`, e le celle con la configurazione di default hanno `config_hash = None`
+    nella chiave. Il primo tentativo (16 novembre) ricostruiva la cella dal percorso: valori
+    identici e tutti gli estremi spostati. Nelle fixture gli intervalli sono degeneri, quindi
+    `tests/unit/test_metrics_compat_intervals.py` li rende dipendenti dal seme e confronta anche
+    `ci_low` e `ci_high` a 1e-9.
 
-  Sono ammesse solo righe nuove.
+  Sono ammesse solo righe nuove. Le metriche nuove non consumano numeri da un generatore comune:
+  ogni metrica ha il suo seme (nome della metrica e cella).
 - Ogni sezione ha un commit `[P2] common: …` a sé.
 
 ## 1. `bits_correct` per metodo (§5.1)
