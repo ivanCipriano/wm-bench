@@ -95,3 +95,17 @@ ciascuno dei cinque metodi, confrontando con la funzione di prima, copiata nel t
 - Nessun metodo esistente ha `best_<nome>` in `extra`, quindi `wrong_attribution_rate_*` non
   compare per nessuno di loro (`tests/unit/test_metrics_attacked_compat.py`). Lo stesso test
   verifica il calcolo su tabelle sintetiche con un registro finto.
+
+## 4. `conditional_preservation` per ogni `CodeEmbedder` (§5.4)
+
+**Decisione.** In `MetricsStage.run` la condizione `if method == "acw"` diventa
+`if self._post_hoc(method)`, cioè `isinstance(adapter, CodeEmbedder)`: ogni metodo che marca il
+codice della baseline riceve P(corretto dopo | corretto prima), con lo stesso calcolo di prima
+(`_conditional_preservation`, Wilson).
+
+**Effetto sui metodi esistenti.**
+
+- Fra i cinque metodi esistenti l'unico `CodeEmbedder` è ACW, quindi la metrica compare nelle
+  stesse celle di prima (`tests/unit/test_metrics_conditional_compat.py`).
+- Il valore di ACW sulla catena finta resta identico (`test_metrics_compat.py`).
+- `mcss` e `multimark` la ricevono (`tests/unit/test_posthoc_smoke.py`).

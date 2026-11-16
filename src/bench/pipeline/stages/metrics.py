@@ -16,7 +16,8 @@ metodo. Output ``metrics/<metodo>/<modello>/<cfg>/<L>_<lang>_<parte>.parquet``, 
 - ``pass_at_1``, ``pass_at_1_baseline``, ``delta_pass_at_1_pp`` (baseline − marcato, accoppiato
   per problema); per MCGMark il riferimento è la gemella (TODO 10) e ``delta_pass_at_1_pp_baseline``
   usa la baseline normale; per ACW la baseline da cui derivano i campioni;
-- ``conditional_preservation`` (solo ACW): P(corretto dopo | corretto prima), Wilson;
+- ``conditional_preservation`` (metodi post-hoc, ``CodeEmbedder``: ACW, ``mcss``, ``multimark``;
+  ADR-017 §4): P(corretto dopo | corretto prima), Wilson;
 - capacità (metodi multi-bit: MCGMark, ``mcss``, ``multimark``): ``message_accuracy``,
   ``bit_accuracy``, ``embedding_success_rate`` con la lunghezza del messaggio dell'adapter
   (``Detector.message_bits``) e ``message_accuracy_detected`` sui soli positivi rilevati
@@ -64,7 +65,7 @@ from bench.domain.errors import ConfigError
 from bench.domain.models import MetricValue, ThresholdSet
 from bench.hpo.freeze import data_sha256, load_freeze
 from bench.hpo.grid import resolve
-from bench.methods.base import Detector
+from bench.methods.base import CodeEmbedder, Detector
 from bench.metrics.calibration import MIN_SCORE, detected
 from bench.metrics.stats import auroc, auroc_interval, clopper_pearson, ratio_interval, wilson
 from bench.metrics.uncertainty import ClusterBootstrap, bootstrap_seed, pass_at_1
@@ -439,7 +440,7 @@ class MetricsStage(Stage):
                 add, boot, marked_exec, self._l3_exec(ctx, refs["exec_baseline"], level),
                 "_baseline", only_delta=True,
             )  # fmt: skip
-        if method == "acw":
+        if self._post_hoc(method):  # ADR-017 §4 (prima: method == "acw")
             self._conditional_preservation(
                 add, ctx.store.read_table(refs["watermarked"]), marked_exec,
                 self._l3_exec(ctx, refs["exec_baseline"], level),
@@ -673,6 +674,11 @@ class MetricsStage(Stage):
                 k, n = int(sum(wrong)), len(wrong)
                 add(f"wrong_attribution_rate_{name}", k / n, wilson(k, n), "wilson", n)
 
+    def _post_hoc(self, method: str) -> bool:
+        """Metodi che marcano il codice della baseline (``CodeEmbedder``): preservazione
+        condizionata (ADR-017 §4)."""
+        return isinstance(self.adapter(method), CodeEmbedder)
+
     def _multibit(self, method: str) -> bool:
         """Metodi con messaggio (ridefiniscono ``Detector.message_for``): capacità §13.5."""
         return type(self.adapter(method)).message_for is not Detector.message_for
@@ -746,7 +752,8 @@ class MetricsStage(Stage):
         marked_exec: pd.DataFrame,
         baseline_exec: pd.DataFrame,
     ) -> None:
-        """ACW: P(corretto dopo | corretto prima) sui campioni della baseline corretti (Wilson)."""
+        """Metodi post-hoc: P(corretto dopo | corretto prima) sui campioni della baseline
+        corretti (Wilson)."""
         parent_of = dict(zip(watermarked["sample_id"], watermarked["parent_id"], strict=True))
         passed_before = set(baseline_exec.loc[baseline_exec["status"] == "PASSED", "sample_id"])
         pairs = [
