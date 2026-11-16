@@ -1,7 +1,7 @@
 # Configurazione statica del metodo (SPEC §16.2; cluster_info §1; PIPELINE_metodo.md di multimark).
 # Metodo proposto dalla tesi (MultiMark, nome provvisorio), post-hoc, 24 bit, solo Python.
-# Non ancora in methods_catalog di configs/config.yaml: si aggiunge in P2 con l'adapter
-# (src/bench/methods/adapters/multimark.py), mai alla lista `methods` di default.
+# In methods_catalog di configs/config.yaml dal P2 (adapter
+# src/bench/methods/adapters/multimark.py), mai nella lista `methods` di default.
 name: multimark
 env: posthoc
 family: post_hoc
@@ -11,5 +11,20 @@ worker_timeout_s: 18000        # 5 h: sotto il limite di 7 h delle partizioni GP
 # Il pacchetto `multimark` è alla radice della copia: PYTHONPATH = build/patched/multimark.
 patched_subdir: ""
 supported_languages: [python]
-# Profilo di base (PIPELINE §3.11) e validazione delle chiavi: in P2 con l'adapter.
-default_hparams: {}
+# Configurazione di base (PIPELINE §0.1, §3.11). È anche MultimarkAdapter.PROFILE
+# (test_posthoc_adapters lo verifica); una configurazione dell'HPO o dell'ablazione indica solo le
+# chiavi che cambiano. message_bits = 24 e registry_seed li aggiunge l'adapter.
+default_hparams:
+  t: 2
+  linking: function_channel
+  mask: "on"
+  canonical: kind
+  names.variant: V2
+  names.proposer: static            # neural da P3: fino ad allora gpu_for_embed = False
+  names.include_params: false       # decisione C
+  channels: extended
+  names.module_level: true          # decisione O, provvisoria (v1.2.4): conferma a fine P2
+  code.matrix: dmin4                # MD18
+  names.single_letter: exclude      # decisione R in P5
+  voting: simple
+  channel_weights: null

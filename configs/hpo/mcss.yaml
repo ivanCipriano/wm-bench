@@ -1,0 +1,6 @@
+# Griglia HPO di mcss (PIPELINE_metodo.md di multimark §6.4, decisione E di §7): un solo punto, il
+# profilo di configs/method/mcss.yaml (t = 2: D32 è la fascia che conta). `tune` lo conferma
+# banalmente; `freeze` passa.
+method: mcss
+include:
+  - {}

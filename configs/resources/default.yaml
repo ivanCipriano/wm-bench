@@ -4,11 +4,15 @@
 gpu_stages: [generate_baseline, generate_baseline_twin, perplexity, adversarial_unixcoder,
              adversarial_unixcoder_fmtfree]
 gpu_methods_by_stage:
-  watermark: {sweet: true, acw: false, stone: true, promptmark: true, mcgmark: true}
+  # mcss e multimark (PIPELINE di multimark, P2): solo CPU finché names.proposer = static (il
+  # modello dei nomi di P3 porterà multimark su GPU nell'inserimento, gpu_for_embed).
+  watermark: {sweet: true, acw: false, stone: true, promptmark: true, mcgmark: true, mcss: false,
+              multimark: false}
   # Rilevazione: SWEET usa il modello. STONE usa solo il tokenizer, ma la green list nasce da un
   # torch.Generator sul dispositivo dell'inserimento (CUDA): su CPU la permutazione è diversa
   # (audit di STONE §2). MCGMark: stessa ragione (audit di MCGMark §7).
-  detect: {sweet: true, acw: false, stone: true, promptmark: false, mcgmark: true}
+  detect: {sweet: true, acw: false, stone: true, promptmark: false, mcgmark: true, mcss: false,
+           multimark: false}
 # Gruppi (T3) o singoli attacchi (T2.2): T2.2 e T2.3 usano l'LLM attaccante su GPU (gpuq); T1, T2.1,
 # T2.4 e T4 su CPU (defq).
 gpu_attack_groups: [T2.2, T2.3, T3]

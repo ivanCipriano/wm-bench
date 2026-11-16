@@ -1,0 +1,24 @@
+# Ablazioni di multimark (PIPELINE_metodo.md di multimark §6.3, P5): un fattore alla volta rispetto
+# alla base di configs/method/multimark.yaml; ogni punto indica solo la chiave che cambia. Non è la
+# griglia dell'HPO (configs/hpo/multimark.yaml, un punto): si usa in P5 con `hpo.grid`.
+# Mancano, perché non ancora definibili in P2:
+#   - names.proposer: static è già la base fino a P3 (l'ablazione è static contro neural);
+#   - voting weighted / weighted_erasure: servono i pesi dalla flip rate di dev (§5.8, P5);
+#   - channels extended+str: solo se la decisione P di §7 lo ammette.
+method: multimark
+include:
+  - {names.variant: V0}
+  - {names.variant: V1}
+  - {names.variant: V1b}
+  - {names.variant: V2b}
+  - {linking: positional}
+  - {linking: function_single_run}
+  - {mask: "off"}
+  - {canonical: paper}
+  - {t: 0}
+  - {t: 4}
+  - {channels: mcss8}
+  - {names.include_params: true}
+  - {names.module_level: false}
+  - {names.single_letter: extend_except_loop}
+  - {names.single_letter: extend_all}

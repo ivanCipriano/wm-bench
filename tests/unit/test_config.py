@@ -10,15 +10,15 @@ from pydantic import ValidationError
 from bench.config.builder import ExperimentBuilder, compose_config, load_experiment
 from bench.config.schema import ExperimentConfig
 from bench.doctor import load_cluster_profiles
-from bench.domain.enums import KNOWN_METHODS
+from bench.domain.enums import BENCHMARK_METHODS, KNOWN_METHODS, THESIS_METHODS
 from bench.domain.errors import ConfigError
 from tests.conftest import REPO_ROOT, rebuild
 
 
 def test_real_config_is_valid(cfg: ExperimentConfig, local_root: Path) -> None:
     assert cfg.global_seed == 20261001
-    assert set(cfg.methods) == KNOWN_METHODS
-    assert set(cfg.methods_catalog) == KNOWN_METHODS
+    assert set(cfg.methods) == BENCHMARK_METHODS  # i due della tesi non sono nel default
+    assert set(cfg.methods_catalog) == KNOWN_METHODS == BENCHMARK_METHODS | THESIS_METHODS
     assert set(cfg.envs) == {
         "bench-core",
         "sweet",
@@ -50,7 +50,8 @@ def test_cluster_paths_follow_cluster_info() -> None:
     )
     assert qwen.tokenizer_path == qwen.path
     for method in cfg.methods_catalog.values():
-        assert method.env == method.name
+        # mcss e multimark condividono l'ambiente posthoc (PIPELINE di multimark §0.1)
+        assert method.env == ("posthoc" if method.name in THESIS_METHODS else method.name)
         assert method.worker_timeout_s < 7 * 3600
 
 
@@ -58,7 +59,9 @@ def test_every_method_points_to_an_existing_submodule(cfg: ExperimentConfig) -> 
     gitmodules = (REPO_ROOT / ".gitmodules").read_text(encoding="utf-8")
     for method in cfg.methods_catalog.values():
         assert f"path = {method.submodule}" in gitmodules
-        assert method.patched_dir == f"build/patched/{method.name}"
+        # mcss è un profilo della libreria multimark: stessa copia (patches/multimark/README.md)
+        copy = "multimark" if method.name == "mcss" else method.name
+        assert method.patched_dir == f"build/patched/{copy}"
 
 
 def test_global_seed_is_locked(local_root: Path) -> None:

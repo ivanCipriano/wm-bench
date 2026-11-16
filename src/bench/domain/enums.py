@@ -70,8 +70,12 @@ class AttackStatus(StrEnum):
     TOOL_ERROR = "TOOL_ERROR"
 
 
-# I cinque metodi del benchmark (SPEC §1, D10).
-KNOWN_METHODS: frozenset[str] = frozenset({"sweet", "acw", "stone", "promptmark", "mcgmark"})
+# I cinque metodi del benchmark (SPEC §1, D10): la lista ``methods`` di default.
+BENCHMARK_METHODS: frozenset[str] = frozenset({"sweet", "acw", "stone", "promptmark", "mcgmark"})
+# Metodi post-hoc della tesi (PIPELINE_metodo.md di multimark, P2): in ``methods_catalog`` ma non
+# in ``methods`` di default, per non cambiare i lanci dei cinque.
+THESIS_METHODS: frozenset[str] = frozenset({"mcss", "multimark"})
+KNOWN_METHODS: frozenset[str] = BENCHMARK_METHODS | THESIS_METHODS
 
 # Seme globale fissato dall'utente il 1° ottobre 2026 (cluster_info §10): non modificabile.
 LOCKED_GLOBAL_SEED = 20261001

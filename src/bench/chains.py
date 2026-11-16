@@ -45,9 +45,11 @@ LANGS = {
     "mcgmark": "[python]",
     "promptmark": "[python]",
     "acw": "[python]",
+    "mcss": "[python]",
+    "multimark": "[python]",
 }
 METHOD_OWNER = {"sweet": "simone", "promptmark": "simone", "stone": "ivan", "mcgmark": "ivan",
-                "acw": "ivan"}  # fmt: skip
+                "acw": "ivan", "mcss": "ivan", "multimark": "ivan"}  # fmt: skip
 # job di rilevazione per passo: la rilevazione di SWEET (con Qwen) è il collo di bottiglia
 # delle catene (stima complessiva, M13_closing_cost_4.txt); al più i posti liberi
 DETECT_JOBS = {"sweet": 8}

@@ -1,0 +1,6 @@
+# Griglia HPO di multimark (PIPELINE_metodo.md di multimark §6.4): un solo punto, la configurazione
+# di base di configs/method/multimark.yaml. Il solo fattore scelto fuori dall'HPO è il canale dei
+# nomi (§6.4); la scelta aggiornerà questo punto (deviazione D4x, ADR-021).
+method: multimark
+include:
+  - {}

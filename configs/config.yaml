@@ -22,6 +22,10 @@ defaults:
   - method@methods_catalog.stone: stone
   - method@methods_catalog.promptmark: promptmark
   - method@methods_catalog.mcgmark: mcgmark
+  # Metodi post-hoc della tesi (PIPELINE_metodo.md di multimark, P2): nel catalogo, non in
+  # `methods` di default (lì restano i cinque, per non cambiare i lanci di Simone).
+  - method@methods_catalog.mcss: mcss
+  - method@methods_catalog.multimark: multimark
   - dataset@datasets.humanevalplus: humanevalplus
   - dataset@datasets.mbppplus: mbppplus
   - dataset@datasets.mbpp_original: mbpp_original
