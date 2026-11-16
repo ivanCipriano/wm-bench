@@ -122,3 +122,21 @@ def test_wilson_matches_the_benchmark(script: ModuleType) -> None:
     for s, n in ((0, 10), (3, 10), (10, 10), (169, 169), (1, 2)):
         assert script.wilson(s, n) == pytest.approx(wilson(s, n), abs=1e-12)
     assert all(math.isnan(x) for x in script.wilson(0, 0))
+
+
+def test_posthoc_examples_report(tmp_path: Path) -> None:
+    """``scripts/posthoc_examples.py``: esempi prima/dopo (``docs/reports/P2_esempi_bench.md``)."""
+    examples = _load("posthoc_examples")
+    out = tmp_path / "examples.md"
+    fixture = LIBRARY.parent.parent / "tests" / "fixtures" / "tiny" / "humanevalplus.jsonl"
+    argv = ["--input", str(fixture), "--ids", "HumanEval/2", "--synthetic", "3:8:2",
+            "--library", str(LIBRARY), "--out", str(out)]  # fmt: skip
+    assert examples.main(argv) == 0
+    text = out.read_text(encoding="utf-8")
+    assert "## Esempio 1: `HumanEval/2`" in text and "## Esempio 2: `synthetic-3`" in text
+    assert text.count("#### `mcss`") == 2 and text.count("#### `multimark`") == 2
+    assert "`FAILED` (`no_sites`)" in text  # multimark senza siti su HumanEval/2
+    assert "`ok`, 0 posizioni cancellate, uguale al messaggio" in text  # mcss, N >= B
+    assert "**no**" not in text and "**messaggio sbagliato**" not in text  # senza attacchi
+    assert examples.main(argv) == 1  # il file esiste già
+    assert examples.main(["--ids", "x", "--out", str(tmp_path / "x.md")]) == 1

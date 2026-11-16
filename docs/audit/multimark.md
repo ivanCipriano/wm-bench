@@ -16,6 +16,11 @@
 - **Config hash:** il commit vi entra tramite `MethodAdapter.source_commit`.
 - **Specifica:** `PIPELINE_metodo.md` v1.2.8. Stato: **P1 chiusa** il 16 novembre; questo audit
   apre P2.
+- **ClassEval fuori da P2** (decisione di Ivan del 16 novembre, pipeline v1.2.9). ClassEval è L3,
+  solo `split=test`, e per ADR-013 nessuno stage gira sul test prima del congelamento. Il
+  criterio (b) si misura quindi solo su L2 dev.
+- **Esempi prima/dopo** dei due metodi (siti, voti, punteggio): `docs/reports/P2_esempi_bench.md`
+  (`scripts/posthoc_examples.py`).
 
 ## 2. Punto d'innesto
 
