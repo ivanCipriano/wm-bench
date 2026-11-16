@@ -128,7 +128,7 @@ def recompute(cfg: Any, info: dict[str, Any]) -> list[Any]:
 
     facade = BenchmarkFacade(cfg)
     stage = MetricsStage(cfg)
-    stage._write = collect  # type: ignore[method-assign]
+    stage._write = collect  # type: ignore[method-assign,assignment]
     stage.run(cell, StageContext(cfg, facade.store, facade.provenance, "metrics", cell))
     return captured
 

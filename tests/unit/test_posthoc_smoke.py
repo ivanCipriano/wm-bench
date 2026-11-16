@@ -106,6 +106,32 @@ def facade(cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch) -> BenchmarkF
     return BenchmarkFacade(tcfg)
 
 
+def _check_capacity(
+    facade: BenchmarkFacade, method: str, positives: pd.DataFrame, marked: pd.DataFrame
+) -> None:
+    """``scripts/report_capacity.py`` (§5.6, riga di comando) sulla stessa catena."""
+    from tests.unit.test_inventory_scripts import _load
+
+    script = _load("report_capacity")
+    out = facade.cfg.paths.artifacts.parent / f"capacity_{method}"
+    report = out / "capacity.txt"
+    out.mkdir(parents=True, exist_ok=True)
+    argv = ["--method", method, "--models", MODEL, "--out-dir", str(out), "--report",
+            str(report), "paths=local"]  # fmt: skip
+    assert script.main(argv) == 0
+    sites = pd.read_csv(out / f"capacity_by_sites_{method}_{MODEL}_L1_python_dev.csv")
+    assert list(sites["band"][:6]) == ["1-7", "8-12", "13-19", "20-31", "32-55", "56+"]
+    assert int(sites["n"].sum()) == len(positives)  # ogni positivo in una sola riga
+    big = sites[sites["band"].isin(["32-55", "56+"])]
+    n_big = int(big["n"].sum())
+    assert n_big == int((marked["embed_status"] == "OK").sum())
+    # con N ≥ B tutti i messaggi giusti (positivi OK decodificati)
+    assert (big[big["n"] > 0]["message_accuracy"] == 1.0).all()
+    assert (out / f"capacity_by_loc_{method}_{MODEL}_L1_python_dev.csv").is_file()
+    assert "by n_sites:" in report.read_text(encoding="utf-8")
+    assert script.main(argv) == 1  # il riepilogo esiste già
+
+
 @needs_library
 def test_watermark_execute_detect_calibrate_metrics(facade: BenchmarkFacade) -> None:
     for stage in ("generate_baseline", "watermark", "evalplus_groundtruth", "execute", "detect",
@@ -162,3 +188,5 @@ def test_watermark_execute_detect_calibrate_metrics(facade: BenchmarkFacade) -> 
         assert values["embedding_success_rate"] == pytest.approx(
             (marked["embed_status"] == "OK").mean()
         )
+
+        _check_capacity(facade, method, positives, marked)
