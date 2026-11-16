@@ -1,0 +1,411 @@
+{
+ "cells": {
+  "metrics/acw/qwen25_coder_7b/a55b093d39e8/L1_python_dev.parquet": {
+   "auroc": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap+negative_resampling",
+    "n": 38,
+    "value": 0.0
+   },
+   "conditional_preservation": {
+    "ci_high": 1.0,
+    "ci_low": 0.7961166989641515,
+    "ci_method": "wilson",
+    "n": 15,
+    "value": 1.0
+   },
+   "delta_pass_at_1_pp": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.0
+   },
+   "fpr_human": {
+    "ci_high": 0.1684334709830853,
+    "ci_low": 0.0,
+    "ci_method": "clopper_pearson",
+    "n": 20,
+    "value": 0.0
+   },
+   "fpr_llm": {
+    "ci_high": 0.1853019681378522,
+    "ci_low": 0.0,
+    "ci_method": "clopper_pearson",
+    "n": 18,
+    "value": 0.0
+   },
+   "pass_at_1": {
+    "ci_high": 0.8333333333333334,
+    "ci_low": 0.8333333333333334,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.8333333333333334
+   },
+   "pass_at_1_baseline": {
+    "ci_high": 0.8333333333333334,
+    "ci_low": 0.8333333333333334,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.8333333333333334
+   },
+   "tpr_at_fpr": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   }
+  },
+  "metrics/attacked/T1.5/22e881a50348/mcgmark/qwen25_coder_7b/e229472f5eda/L1_python_dev.parquet": {
+   "auroc": {
+    "ci_high": 1.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap+negative_resampling",
+    "n": 38,
+    "value": 0.6
+   },
+   "changed_fraction": {
+    "ci_high": 0.17587922364665765,
+    "ci_low": 0.0,
+    "ci_method": "wilson",
+    "n": 18,
+    "value": 0.0
+   },
+   "codebleu_distance": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   },
+   "delta_pass_at_1_pp": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.0
+   },
+   "delta_pass_at_1_pp_vs_marked": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.0
+   },
+   "pass_at_1": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "pass_at_1_baseline": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "tool_error_fraction": {
+    "ci_high": 0.17587922364665765,
+    "ci_low": 0.0,
+    "ci_method": "wilson",
+    "n": 18,
+    "value": 0.0
+   },
+   "tpr_at_fpr": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   }
+  },
+  "metrics/attacked/T1.5/705d07d343b2/mcgmark/qwen25_coder_7b/e229472f5eda/L1_python_dev.parquet": {
+   "auroc": {
+    "ci_high": 1.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap+negative_resampling",
+    "n": 38,
+    "value": 0.6
+   },
+   "changed_fraction": {
+    "ci_high": 0.17587922364665765,
+    "ci_low": 0.0,
+    "ci_method": "wilson",
+    "n": 18,
+    "value": 0.0
+   },
+   "codebleu_distance": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   },
+   "delta_pass_at_1_pp": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.0
+   },
+   "delta_pass_at_1_pp_vs_marked": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.0
+   },
+   "pass_at_1": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "pass_at_1_baseline": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "tool_error_fraction": {
+    "ci_high": 0.17587922364665765,
+    "ci_low": 0.0,
+    "ci_method": "wilson",
+    "n": 18,
+    "value": 0.0
+   },
+   "tpr_at_fpr": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   }
+  },
+  "metrics/attacked/T1.5/cf35cfccc99a/mcgmark/qwen25_coder_7b/e229472f5eda/L1_python_dev.parquet": {
+   "auroc": {
+    "ci_high": 1.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap+negative_resampling",
+    "n": 38,
+    "value": 0.6
+   },
+   "changed_fraction": {
+    "ci_high": 0.17587922364665765,
+    "ci_low": 0.0,
+    "ci_method": "wilson",
+    "n": 18,
+    "value": 0.0
+   },
+   "codebleu_distance": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   },
+   "delta_pass_at_1_pp": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.0
+   },
+   "delta_pass_at_1_pp_vs_marked": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.0
+   },
+   "pass_at_1": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "pass_at_1_baseline": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "tool_error_fraction": {
+    "ci_high": 0.17587922364665765,
+    "ci_low": 0.0,
+    "ci_method": "wilson",
+    "n": 18,
+    "value": 0.0
+   },
+   "tpr_at_fpr": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   }
+  },
+  "metrics/mcgmark/qwen25_coder_7b/e229472f5eda/L1_python_dev.parquet": {
+   "auroc": {
+    "ci_high": 1.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap+negative_resampling",
+    "n": 38,
+    "value": 0.6
+   },
+   "bit_accuracy": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   },
+   "delta_pass_at_1_pp": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.0
+   },
+   "delta_pass_at_1_pp_baseline": {
+    "ci_high": -16.666666666666664,
+    "ci_low": -16.666666666666664,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": -16.666666666666664
+   },
+   "embedding_success_rate": {
+    "ci_high": 1.0,
+    "ci_low": 0.8241207763533425,
+    "ci_method": "wilson",
+    "n": 18,
+    "value": 1.0
+   },
+   "fpr_human": {
+    "ci_high": 0.1684334709830853,
+    "ci_low": 0.0,
+    "ci_method": "clopper_pearson",
+    "n": 20,
+    "value": 0.0
+   },
+   "fpr_llm": {
+    "ci_high": 0.1853019681378522,
+    "ci_low": 0.0,
+    "ci_method": "clopper_pearson",
+    "n": 18,
+    "value": 0.0
+   },
+   "fpr_llm_baseline": {
+    "ci_high": 0.1853019681378522,
+    "ci_low": 0.0,
+    "ci_method": "clopper_pearson",
+    "n": 18,
+    "value": 0.0
+   },
+   "message_accuracy": {
+    "ci_high": 0.17587922364665765,
+    "ci_low": 0.0,
+    "ci_method": "wilson",
+    "n": 18,
+    "value": 0.0
+   },
+   "pass_at_1": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "pass_at_1_baseline": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "tpr_at_fpr": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   }
+  },
+  "metrics/stone/qwen25_coder_7b/20bd3743dc1e/L1_python_dev.parquet": {
+   "auroc": {
+    "ci_high": 0.5,
+    "ci_low": 0.5,
+    "ci_method": "cluster_bootstrap+negative_resampling",
+    "n": 38,
+    "value": 0.5
+   },
+   "auroc_z_official": {
+    "ci_high": 1.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap+negative_resampling",
+    "n": 38,
+    "value": 0.6
+   },
+   "delta_pass_at_1_pp": {
+    "ci_high": -16.666666666666664,
+    "ci_low": -16.666666666666664,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": -16.666666666666664
+   },
+   "fpr_human": {
+    "ci_high": 0.1684334709830853,
+    "ci_low": 0.0,
+    "ci_method": "clopper_pearson",
+    "n": 20,
+    "value": 0.0
+   },
+   "fpr_llm": {
+    "ci_high": 0.1853019681378522,
+    "ci_low": 0.0,
+    "ci_method": "clopper_pearson",
+    "n": 18,
+    "value": 0.0
+   },
+   "pass_at_1": {
+    "ci_high": 1.0,
+    "ci_low": 1.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 1.0
+   },
+   "pass_at_1_baseline": {
+    "ci_high": 0.8333333333333334,
+    "ci_low": 0.8333333333333334,
+    "ci_method": "cluster_bootstrap",
+    "n": 3,
+    "value": 0.8333333333333334
+   },
+   "tpr_at_fpr": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   },
+   "tpr_at_fpr_z_official": {
+    "ci_high": 0.0,
+    "ci_low": 0.0,
+    "ci_method": "cluster_bootstrap",
+    "n": 18,
+    "value": 0.0
+   }
+  }
+ },
+ "description": "metrics of existing methods before the P2 common changes (ADR-017)",
+ "src_dirty": false,
+ "wm_bench_commit": "955ab01054615f59cdd633378a99abb1d9428351"
+}
