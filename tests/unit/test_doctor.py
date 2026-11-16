@@ -167,7 +167,7 @@ def _make_submodules(repo: Path, n: int) -> dict[str, str]:
 
 def test_submodules_ok_and_problems(cfg: ExperimentConfig, tmp_path: Path) -> None:
     repo = tmp_path / "repo"
-    links = _make_submodules(repo, 8)
+    links = _make_submodules(repo, 9)
     paths = sorted(links)
     runner = _git_runner(repo, links, heads={paths[0]: "f" * 40}, dirty={paths[1]})
     results = _statuses(SubmodulesCheck().run(_ctx(cfg, runner, repo=repo)))
@@ -180,7 +180,7 @@ def test_submodules_ok_and_problems(cfg: ExperimentConfig, tmp_path: Path) -> No
 
 def test_submodule_count_mismatch(cfg: ExperimentConfig, tmp_path: Path) -> None:
     repo = tmp_path / "repo"
-    links = _make_submodules(repo, 9)
+    links = _make_submodules(repo, 8)  # prima di third_party/multimark
     results = _statuses(SubmodulesCheck().run(_ctx(cfg, _git_runner(repo, links, {}), repo=repo)))
     assert results["count"] is Status.FAIL
 
@@ -204,7 +204,7 @@ def test_patched_copies(cfg: ExperimentConfig, tmp_path: Path) -> None:
         m.submodule: hashlib.sha1(m.name.encode()).hexdigest() for m in cfg.methods_catalog.values()
     }
     for m in cfg.methods_catalog.values():
-        if m.name != "mcgmark":
+        if m.name not in ("mcgmark", "mcss"):  # mcss non ha una copia sua
             _make_patched(repo, m.name, m.submodule, links[m.submodule], f"patch {m.name}\n")
     # sweet: patch modificata dopo la copia; stone: copia da un commit diverso.
     (repo / "patches" / "sweet" / "0000-x.patch").write_text("changed\n", encoding="utf-8")
@@ -217,6 +217,44 @@ def test_patched_copies(cfg: ExperimentConfig, tmp_path: Path) -> None:
     assert results["sweet"] is Status.FAIL
     assert results["stone"] is Status.FAIL
     assert results["mcgmark"] is Status.FAIL
+    assert results["multimark"] is Status.OK
+    assert results["mcss"] is Status.OK  # copia condivisa build/patched/multimark
+    assert not (repo / "build" / "patched" / "mcss").exists()
+
+
+def test_mcss_follows_the_multimark_copy(cfg: ExperimentConfig, tmp_path: Path) -> None:
+    """``mcss`` (``patched_dir: build/patched/multimark``): doctor e adapter usano la copia di
+    ``multimark``; se manca o è vecchia, il messaggio indica ``apply_patches.sh multimark``."""
+    from bench.methods.base import MethodAdapter
+    from bench.pipeline.stages.watermark import make_adapter
+
+    assert cfg.methods_catalog["mcss"].patched_dir == cfg.methods_catalog["multimark"].patched_dir
+    repo = tmp_path / "repo"
+    links = {m.submodule: "a" * 40 for m in cfg.methods_catalog.values()}
+    results = PatchedCopiesCheck().run(_ctx(cfg, _git_runner(repo, links, {}), repo=repo))
+    by_name = {r.name: r for r in results}
+    assert by_name["mcss"].status is Status.FAIL
+    assert by_name["mcss"].detail.endswith("apply_patches.sh multimark")
+    patched = repo / "build" / "patched"
+    (patched / "multimark").mkdir(parents=True)
+    (patched / "multimark.source_commit").write_text("a" * 40 + "\n", encoding="utf-8")
+    (patched / "multimark.patches.sha256").write_text("", encoding="utf-8")
+    by_name = {
+        r.name: r
+        for r in PatchedCopiesCheck().run(_ctx(cfg, _git_runner(repo, links, {}), repo=repo))
+    }
+    assert by_name["mcss"].status is Status.OK and "shared copy" in by_name["mcss"].detail
+    assert by_name["multimark"].status is Status.OK
+    (patched / "multimark.source_commit").write_text("b" * 40, encoding="utf-8")
+    by_name = {
+        r.name: r
+        for r in PatchedCopiesCheck().run(_ctx(cfg, _git_runner(repo, links, {}), repo=repo))
+    }
+    assert by_name["mcss"].status is Status.FAIL and "multimark" in by_name["mcss"].detail
+    # le fasi: l'adapter di mcss legge build/patched/multimark.source_commit
+    mcss, mm = make_adapter(cfg, "mcss"), make_adapter(cfg, "multimark")
+    assert mcss.source() == mm.source()
+    assert isinstance(mcss, MethodAdapter)
 
 
 # --------------------------------------------------- apptainer, modelli, dataset

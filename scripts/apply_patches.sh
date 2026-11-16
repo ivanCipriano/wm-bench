@@ -13,6 +13,7 @@
 # Uso:
 #   bash scripts/apply_patches.sh                 # tutti i metodi (i cinque più multimark)
 #   bash scripts/apply_patches.sh multimark       # libreria di mcss e multimark (zero patch)
+#   bash scripts/apply_patches.sh mcss            # alias: rifà la stessa copia build/patched/multimark
 #   bash scripts/apply_patches.sh stone mcgmark   # solo alcuni
 set -euo pipefail
 
@@ -37,8 +38,26 @@ submodule_of() {
     esac
 }
 
+# mcss non ha una copia sua: patched_dir = build/patched/multimark (configs/method/mcss.yaml).
+copy_of() {
+    case "$1" in
+        mcss) echo multimark ;;
+        *)    echo "$1" ;;
+    esac
+}
+
 if [ "$#" -gt 0 ]; then
-    methods=("$@")
+    methods=()
+    for m in "$@"; do
+        c="$(copy_of "$m")"
+        if [ "$c" != "$m" ]; then
+            echo "[apply_patches] $m uses the copy of $c (build/patched/$c)" >&2
+        fi
+        # una sola volta anche con `mcss multimark`
+        if [[ " ${methods[*]-} " != *" $c "* ]]; then
+            methods+=("$c")
+        fi
+    done
 else
     methods=("${ALL_METHODS[@]}")
 fi
@@ -58,7 +77,7 @@ trap cleanup_on_error ERR
 
 for method in "${methods[@]}"; do
     if ! sub="$(submodule_of "$method")"; then
-        echo "[ERROR] unknown method '$method' (known: ${ALL_METHODS[*]})" >&2
+        echo "[ERROR] unknown method '$method' (known: ${ALL_METHODS[*]} mcss)" >&2
         exit 2
     fi
     if [ ! -e "$sub/.git" ]; then

@@ -29,7 +29,8 @@ from bench.config.schema import ClusterProfile, ExperimentConfig
 from bench.domain.errors import ConfigError
 
 # Valori attesi (fonti: cluster_info §3, §5, §9; ADR-002).
-EXPECTED_SUBMODULES = 8
+# 8 di ADR-002 più third_party/multimark (libreria di mcss e multimark, PIPELINE_metodo.md §0.4)
+EXPECTED_SUBMODULES = 9
 EXPECTED_APPTAINER = "1.1.9"
 BENCH_CORE_PYTHON = (3, 11)
 MIN_WORKER_PYTHON = (3, 9)
@@ -268,7 +269,7 @@ def _gitlinks(ctx: DoctorContext) -> dict[str, str]:
 
 
 class SubmodulesCheck(DoctorCheck):
-    """Commit e pulizia degli 8 submodule; stato del repository principale."""
+    """Commit e pulizia dei submodule (``EXPECTED_SUBMODULES``); stato del repository."""
 
     category = "submodules"
 
@@ -333,7 +334,13 @@ class SubmodulesCheck(DoctorCheck):
 
 
 class PatchedCopiesCheck(DoctorCheck):
-    """Copie patchate in ``build/patched/`` aggiornate rispetto a submodule e patch."""
+    """Copie patchate in ``build/patched/`` aggiornate rispetto a submodule e patch.
+
+    La copia di un metodo è ``patched_dir`` della sua configurazione: i file accanto
+    (``<copia>.source_commit``, ``<copia>.patches.sha256``) e le patch (``patches/<copia>/``) hanno
+    il nome della copia, non del metodo. Così ``mcss``, che usa ``build/patched/multimark``, si
+    controlla sulla copia di ``multimark`` (``bash scripts/apply_patches.sh multimark``).
+    """
 
     category = "patched"
 
@@ -342,11 +349,15 @@ class PatchedCopiesCheck(DoctorCheck):
         links = _gitlinks(ctx)
         for name, method in sorted(ctx.cfg.methods_catalog.items()):
             copy_dir = ctx.repo / method.patched_dir
-            commit_file = copy_dir.with_name(f"{name}.source_commit")
-            sha_file = copy_dir.with_name(f"{name}.patches.sha256")
+            copy = copy_dir.name
+            commit_file = copy_dir.with_name(f"{copy}.source_commit")
+            sha_file = copy_dir.with_name(f"{copy}.patches.sha256")
+            shared = f" (shared copy {method.patched_dir})" if copy != name else ""
             if not copy_dir.is_dir() or not commit_file.is_file() or not sha_file.is_file():
                 results.append(
-                    self.result(name, Status.FAIL, "missing: run scripts/apply_patches.sh")
+                    self.result(
+                        name, Status.FAIL, f"missing{shared}: run scripts/apply_patches.sh {copy}"
+                    )
                 )
                 continue
             problems: list[str] = []
@@ -358,19 +369,23 @@ class PatchedCopiesCheck(DoctorCheck):
                 if line.strip()
             }
             current = {
-                f"patches/{name}/{p.name}": hashlib.sha256(p.read_bytes()).hexdigest()
-                for p in sorted((ctx.repo / "patches" / name).glob("[0-9][0-9][0-9][0-9]-*.patch"))
+                f"patches/{copy}/{p.name}": hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in sorted((ctx.repo / "patches" / copy).glob("[0-9][0-9][0-9][0-9]-*.patch"))
             }
             if recorded != current:
                 problems.append("patches changed since the copy was built")
             if problems:
                 results.append(
                     self.result(
-                        name, Status.FAIL, "; ".join(problems) + ": rerun scripts/apply_patches.sh"
+                        name,
+                        Status.FAIL,
+                        "; ".join(problems) + f"{shared}: rerun scripts/apply_patches.sh {copy}",
                     )
                 )
             else:
-                results.append(self.result(name, Status.OK, f"{len(current)} patch(es) applied"))
+                results.append(
+                    self.result(name, Status.OK, f"{len(current)} patch(es) applied{shared}")
+                )
         return results
 
 

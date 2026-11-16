@@ -1,6 +1,7 @@
 # ADR-002 — Submodule fissati e copie patchate dei metodi
 
 - **Stato:** accettata (Milestone 0, 1° ottobre 2026; aggiornata il 2 ottobre 2026: 5 metodi, 8 submodule)
+- **Aggiornamento del 16 novembre 2026 (P2 di multimark):** 9 submodule con `third_party/multimark` (PIPELINE_metodo.md §0.4); `bench doctor` ne attende 9. La copia `build/patched/multimark` serve due metodi, `mcss` e `multimark`: la copia di un metodo è il suo `patched_dir`, e `<copia>.source_commit`, `<copia>.patches.sha256` e `patches/<copia>/` hanno il nome della copia. `bash scripts/apply_patches.sh mcss` rifà la copia di `multimark`.
 - **Contesto:** SPEC §4, §8.1, §9.0; `docs/cluster_info.md` §1, §9, §9.1.
 - ADR-001 è riservato alla scelta su sandbox e rete (Milestone 4).
 

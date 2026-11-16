@@ -133,7 +133,8 @@ class MethodAdapter(ABC):
         """
         path = Path(f"{self.source().root}.source_commit")
         if not path.is_file():
-            raise ConfigError(f"{path} not found: run scripts/apply_patches.sh {self.name}")
+            copy = self.source().root.name  # mcss: copia condivisa di multimark
+            raise ConfigError(f"{path} not found: run scripts/apply_patches.sh {copy}")
         return path.read_text(encoding="utf-8").strip()
 
     # ------------------------------------------------------------------ iperparametri
