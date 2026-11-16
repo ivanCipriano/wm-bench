@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from bench.domain.enums import KNOWN_METHODS, Language, Level
+from bench.domain.enums import BENCHMARK_METHODS, KNOWN_METHODS, Language, Level
 from bench.domain.errors import (
     BenchError,
     ConfigError,
@@ -139,7 +139,9 @@ def test_worker_models_validate_contract_values() -> None:
 
 
 def test_known_methods_are_the_five_of_the_benchmark() -> None:
-    assert {"sweet", "acw", "stone", "promptmark", "mcgmark"} == KNOWN_METHODS
+    assert {"sweet", "acw", "stone", "promptmark", "mcgmark"} == BENCHMARK_METHODS
+    # i due metodi post-hoc della tesi (PIPELINE di multimark, P2) si aggiungono a parte
+    assert BENCHMARK_METHODS | {"mcss", "multimark"} == KNOWN_METHODS
 
 
 def test_error_hierarchy() -> None:
