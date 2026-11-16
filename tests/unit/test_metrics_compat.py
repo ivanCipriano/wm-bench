@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import math
 import re
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -35,8 +36,13 @@ def _same(a: Any, b: Any) -> bool:
 
 
 @pytest.fixture(scope="module")
-def current(tmp_path_factory: pytest.TempPathFactory) -> dict[str, dict[str, dict[str, Any]]]:
-    return compute(tmp_path_factory.mktemp("compat") / "wmb")
+def chain_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    return tmp_path_factory.mktemp("compat") / "wmb"
+
+
+@pytest.fixture(scope="module")
+def current(chain_root: Path) -> dict[str, dict[str, dict[str, Any]]]:
+    return compute(chain_root)
 
 
 def test_golden_was_recorded_before_the_common_changes() -> None:
@@ -68,3 +74,24 @@ def test_existing_metrics_are_unchanged(current: dict[str, dict[str, dict[str, A
         for name, fields in rows.items():
             for key, value in fields.items():
                 assert _same(now[name][key], value), (cell, name, key, now[name][key], value)
+
+
+def test_cluster_script_recomputes_the_cells(
+    current: dict[str, dict[str, dict[str, Any]]], chain_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """``scripts/check_metrics_compat.py`` (il controllo sulle celle reali del cluster) sulla
+    catena finta: ricalcola ogni cella senza scrivere artefatti e trova tutte le righe uguali."""
+    from bench.methods.base import MethodAdapter
+    from tests.unit.test_inventory_scripts import _load
+
+    script = _load("check_metrics_compat")
+    monkeypatch.setenv("WMB_LOCAL_ROOT", str(chain_root))
+    monkeypatch.setattr(MethodAdapter, "source_commit", lambda self: "b" * 40)
+    before = {p: p.stat().st_mtime_ns for p in chain_root.rglob("*.parquet")}
+    report = chain_root.parent / "compat.txt"
+    assert script.main(["--report", str(report), "paths=local"]) == 0
+    text = report.read_text(encoding="utf-8")
+    assert "outcome: PASS" in text and f"cells compared: {len(current)}" in text
+    assert text.count("[OK") == len(current) and "[DIFF]" not in text
+    assert {p: p.stat().st_mtime_ns for p in chain_root.rglob("*.parquet")} == before
+    assert script.main(["--report", str(report), "paths=local"]) == 1  # il log esiste già
