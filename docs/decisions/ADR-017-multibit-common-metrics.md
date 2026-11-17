@@ -116,3 +116,36 @@ codice della baseline riceve P(corretto dopo | corretto prima), con lo stesso ca
   stesse celle di prima (`tests/unit/test_metrics_conditional_compat.py`).
 - Il valore di ACW sulla catena finta resta identico (`test_metrics_compat.py`).
 - `mcss` e `multimark` la ricevono (`tests/unit/test_posthoc_smoke.py`).
+
+## 5. `metrics` nello sweep dell'HPO (pipeline di multimark v1.3.0, 17 novembre 2026)
+
+**Decisione.** `MetricsStage.sweep_roles = ("candidate",)`: con `hpo.grid=<metodo>` la fase
+calcola le metriche di ogni candidato della griglia, come già facevano `watermark`, `execute`,
+`detect` e `calibrate`. Serve ai due punti di sviluppo di `multimark` anticipati dalla pipeline
+v1.3.0 (`configs/hpo/multimark.yaml`), che senza questa riga avrebbero avuto soglia e rilevazione
+ma non Pass@1, ΔPass@1 e le altre metriche.
+
+Due regole tengono ferme le uscite che c'erano:
+
+- `sweep_default_unhashed` (nuovo `ClassVar` di `Stage`, vero solo per `metrics`): il punto della
+  griglia con l'hash del default diventa la cella di default (`config_hash = None`), cioè la
+  stessa cella pianificata senza `hpo.grid`. Stessa chiave, quindi stessi semi del bootstrap
+  (`bootstrap_seed(global_seed, metrica, cell.key())`); se le uscite esistono la pipeline la
+  salta. Senza questa regola il punto di default, calcolato nello sweep con l'hash esplicito,
+  avrebbe scritto nello stesso percorso intervalli con semi diversi.
+- `MetricsStage.sweep_cell`: si espandono solo le celle di sviluppo senza attacco. Il test usa
+  solo la configurazione congelata (ADR-013), le celle sotto attacco restano quelle di prima.
+
+**Effetto sui metodi esistenti.** Nessuno, se non si chiede lo sweep: senza `hpo.grid` il
+pianificatore esce prima di guardare `sweep_roles`, quindi le celle e le metriche dei lanci di
+sempre (anche quelle della configurazione congelata) non cambiano. Con `hpo.grid` si aggiungono
+solo le celle dei candidati richiesti. Lo verificano:
+
+- `tests/unit/test_metrics_sweep_cells.py`: per `multimark`, STONE e MCGMark le celle senza hash
+  dello sweep sono un sottoinsieme di quelle di prima, il test e le celle sotto attacco restano
+  uguali, e le celle in più sono esattamente i candidati di sviluppo (il default escluso);
+- `tests/unit/test_posthoc_smoke.py::test_multimark_sweep_adds_only_the_candidate_metrics`: sulla
+  catena finta, dopo il giro di default lo sweep di `multimark` esegue il codice marcato dei due
+  punti e ne calcola le metriche (Pass@1 compreso); il parquet e il manifest delle metriche di
+  default restano identici byte per byte;
+- i test di retrocompatibilità di questa ADR, invariati.

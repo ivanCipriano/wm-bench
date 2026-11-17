@@ -156,6 +156,10 @@ class Stage(ABC):
     # Sweep dell'HPO (``hpo.grid``): ruoli dei punti della griglia per cui la fase ha una cella
     # per configurazione (``Cell.config_hash``); vuoto = la fase non partecipa allo sweep.
     sweep_roles: ClassVar[tuple[str, ...]] = ()
+    # Nello sweep, il punto con l'hash del default diventa la cella di default
+    # (``config_hash = None``), cioè quella pianificata senza ``hpo.grid``: stessa chiave e quindi
+    # stessi semi del bootstrap (ADR-017 §5). Solo per ``metrics``.
+    sweep_default_unhashed: ClassVar[bool] = False
     # Punti della griglia degli attacchi: tutti (``grid``) o solo quelli con il controllo negativo
     # sulla baseline (``negative_control``, D34).
     attack_points: ClassVar[str] = "grid"
@@ -290,13 +294,19 @@ class CellPlanner:
         from bench.hpo.grid import sweep_points
 
         points = sweep_points(self.config, method, stage.sweep_roles)  # type: ignore[arg-type]
+        default: str | None = None
+        if stage.sweep_default_unhashed:
+            from bench.hpo.grid import resolve
+            from bench.pipeline.stages.watermark import make_adapter
+
+            default = resolve(self.config, make_adapter(self.config, method), None)[1]
         out: list[Cell] = []
         for cell in cells:
             if cell.method is None or not stage.sweep_cell(cell):
                 out.append(cell)
             elif cell.method == method:
                 out.extend(
-                    replace(cell, config_hash=h)
+                    replace(cell, config_hash=None if h == default else h)
                     for h, point in points
                     if point.applies_to(cell.model_id, cell.language)
                 )

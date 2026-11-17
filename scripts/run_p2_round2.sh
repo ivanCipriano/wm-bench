@@ -12,7 +12,8 @@
 #                                                 #    poi lo sweep di multimark (due punti di dev)
 #   bash scripts/run_p2_round2.sh execute_detect  # 4) execute (llm_watermarked) e detect
 #   bash scripts/run_p2_round2.sh calibrate       # 5) soglie provvisorie L1+L2
-#   bash scripts/run_p2_round2.sh metrics         # 6) metriche (celle di default)
+#   bash scripts/run_p2_round2.sh metrics         # 6) metriche: default, poi i due punti di
+#                                                 #    sviluppo di multimark (ADR-017 §5)
 #   bash scripts/run_p2_round2.sh report          # 7) P2_r2_dev.txt: report_metrics.py (con la
 #                                                 #    soglia teorica score >= 2) e report_capacity.py
 #
@@ -83,10 +84,8 @@ stage_done() {  # $1 = fase della pipeline: celle di default e (se ci partecipa)
     no_jobs "wmb-$stage"
     "$BENCH_PY" scripts/check_stage_done.py "stage=$stage" "${DEFAULT[@]}" ${2:+"$2"} \
         || die "$stage not finished (default cells)"
-    if [ "$stage" != metrics ]; then
-        "$BENCH_PY" scripts/check_stage_done.py "stage=$stage" "${SWEEP[@]}" ${2:+"$2"} \
-            || die "$stage not finished (multimark sweep)"
-    fi
+    "$BENCH_PY" scripts/check_stage_done.py "stage=$stage" "${SWEEP[@]}" ${2:+"$2"} \
+        || die "$stage not finished (multimark sweep)"
 }
 
 submit() {  # $@ = argomenti di bench submit; stampa gli ID dei job su stdout (ultima riga)
@@ -152,8 +151,7 @@ case "$PHASE" in
         ;;
     metrics)
         stage_done calibrate
-        echo "##### metrics: default cells of mcss and multimark" >&2
-        submit --jobs 1 "stage=metrics" "${DEFAULT[@]}" >/dev/null
+        submit_default_then_sweep metrics
         ;;
     report)
         stage_done metrics

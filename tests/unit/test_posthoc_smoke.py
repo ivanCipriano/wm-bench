@@ -190,3 +190,40 @@ def test_watermark_execute_detect_calibrate_metrics(facade: BenchmarkFacade) -> 
         )
 
         _check_capacity(facade, method, positives, marked)
+
+
+@needs_library
+def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade) -> None:
+    """ADR-017 §5: con ``hpo.grid=multimark`` le fasi watermark, execute, detect, calibrate e
+    metrics girano sui due punti di sviluppo (execute sul loro codice marcato: c'è Pass@1); la
+    cella di default non si ricalcola e le sue uscite restano identiche, byte per byte."""
+    from bench.pipeline.stage import Cell
+    from bench.pipeline.stages.execute import execution_ref
+
+    for stage in ("generate_baseline", "watermark", "evalplus_groundtruth", "execute", "detect",
+                  "calibrate", "metrics"):  # fmt: skip
+        facade.run_stage(stage)
+    default_hash = DetectStage(facade.cfg).config_hash("multimark")
+    ref = metrics_ref("multimark", MODEL, default_hash, "L1", "python", "dev")
+    before = facade.store.path_of(ref).read_bytes()
+    manifest = facade.store.manifest_of(ref).read_bytes()
+    hpo = {**facade.cfg.hpo.model_dump(mode="json"), "grid": "multimark"}
+    sweep = BenchmarkFacade(rebuild(facade.cfg, hpo=hpo, methods=["multimark"]))
+    for stage in ("watermark", "execute", "detect", "calibrate"):
+        assert sweep.run_stage(stage).ran >= 2, stage
+    report = sweep.run_stage("metrics")
+    assert report.ran == 2 and report.skipped == 1  # i due punti; il default c'era già
+    assert facade.store.path_of(ref).read_bytes() == before
+    assert facade.store.manifest_of(ref).read_bytes() == manifest
+    from bench.hpo.grid import sweep_hashes
+
+    candidates = [
+        h for h in sweep_hashes(sweep.cfg, "multimark", ("candidate",)) if h != default_hash
+    ]
+    assert len(candidates) == 2
+    for h in candidates:
+        cell = Cell(source="llm_watermarked", method="multimark", model_id=MODEL, level="L1",
+                    language="python", split="dev")  # fmt: skip
+        assert facade.store.exists(execution_ref(cell, h))
+        table = facade.store.read_table(metrics_ref("multimark", MODEL, h, "L1", "python", "dev"))
+        assert {"pass_at_1", "delta_pass_at_1_pp", "tpr_at_fpr"} <= set(table["name"])

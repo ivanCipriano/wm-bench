@@ -84,8 +84,8 @@ Note:
 - **Griglie.** `configs/hpo/multimark.yaml` ha la base (§6.4) e, dalla pipeline v1.3.0, due
   punti di §6.3 anticipati su sviluppo (`names.single_letter=extend_except_loop`,
   `names.include_params=true`), ognuno con il suo `config_hash`; si lanciano come sweep
-  (`hpo.grid=multimark`) nelle fasi watermark, execute, detect e calibrate del secondo giro di
-  P2, e la fase `tune` non si lancia finché la scelta non si fa con il criterio di §6.4 (P5).
+  (`hpo.grid=multimark`) nelle fasi watermark, execute, detect, calibrate e metrics (ADR-017
+  §5) del secondo giro di P2, e la fase `tune` non si lancia finché la scelta non si fa con il criterio di §6.4 (P5).
   `configs/hpo/multimark_ablation.yaml` ha i punti di §6.3 che si possono già definire.
 
 ## 4. Linguaggi

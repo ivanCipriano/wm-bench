@@ -15,8 +15,8 @@ Con ``--final`` legge le metriche con le soglie definitive su L1+L2 (``metrics_L
 Con ``--config`` si stampano solo le celle di quelle configurazioni (per esempio quelle del
 secondo giro di P2, con la libreria nuova: ``scripts/posthoc_config_hashes.py``). Una
 configurazione con la rilevazione ma senza le metriche (un punto dello sweep di
-``configs/hpo/<metodo>.yaml``: la fase ``metrics`` non si espande per configurazione) si stampa
-lo stesso, con la soglia calibrata e le righe a soglia fissa calcolate dalla rilevazione.
+``configs/hpo/<metodo>.yaml`` per cui la fase ``metrics`` non è ancora stata lanciata con
+``hpo.grid``, ADR-017 §5) si stampa lo stesso, con la soglia calibrata e le righe a soglia fissa calcolate dalla rilevazione.
 
 **Soglia teorica fissa (pipeline di multimark v1.3.0).** Per ``mcss`` e ``multimark`` il
 punteggio principale è ``-log10 p`` con ``p`` esatto, quindi oltre alla soglia calibrata del

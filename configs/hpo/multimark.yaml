@@ -5,7 +5,8 @@
 # Pipeline v1.3.0 (17 novembre 2026): due punti dell'ablazione di §6.3
 # (configs/hpo/multimark_ablation.yaml) anticipati su sviluppo, L1+L2 dev, per confrontarli con la
 # base nel secondo giro di P2 (sweep con hpo.grid=multimark nelle fasi watermark, execute, detect,
-# calibrate: ognuno ha il suo config_hash, stampato da scripts/posthoc_config_hashes.py). Non sono
+# calibrate, metrics, ADR-017 §5: ognuno ha il suo config_hash, stampato da
+# scripts/posthoc_config_hashes.py). Non sono
 # una scelta: la fase tune non si lancia su multimark finché la scelta non si fa con il criterio
 # di §6.4 (P5).
 method: multimark
