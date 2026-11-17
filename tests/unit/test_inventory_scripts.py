@@ -387,3 +387,47 @@ def test_channels_must_be_explicit(tmp_path: Path) -> None:
 def test_missing_library_is_reported(tmp_path: Path) -> None:
     with pytest.raises(inv.InventoryError, match="apply_patches.sh multimark"):
         inv.import_library(tmp_path)
+
+
+def test_variant_names_with_linking_and_name_variant() -> None:
+    """I default della libreria non cambiano i nomi; ``mcss`` della pipeline v1.3.0 sì."""
+    base = "canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_except_loop"
+    assert inv.variant_name("paper", True, True, True, "extend_except_loop") == base
+    assert (
+        inv.variant_name("paper", True, True, True, "extend_except_loop", "positional", "V1")
+        == base + "_linking-positional_names-V1"
+    )
+
+
+NAME_CODE = "def f(x):\n    count_3 = x + 1\n    total = count_3 * 2\n    return total\n"
+COMP_CODE = "def f(n):\n    g = [[] for _ in range(n + 1)]\n    return g\n"
+
+
+@needs_library
+def test_linking_and_name_variant_are_passed_to_the_library(tmp_path: Path) -> None:
+    """MD20 (``count_3`` non è un sito con V1) e MD23 (``list_comp`` con il legame posizionale)."""
+    inputs = tmp_path / "in.jsonl"
+    _input(inputs, [("humanevalplus", NAME_CODE), ("humanevalplus", COMP_CODE)])
+    base = ["--input", str(inputs), "--out-dir", str(tmp_path), "--library", str(LIBRARY)]
+    base += ["--channels", "mcss8", "--canonical", "paper"]
+    from multimark.linking import LINKING_MODES
+    from multimark.names import NAME_VARIANTS
+
+    assert (LINKING_MODES, NAME_VARIANTS) == (inv.LINKING_MODES, inv.NAME_VARIANTS)
+    rows = {}
+    for extra in ([], ["--linking", "positional", "--name-variant", "V1"]):
+        summary = tmp_path / f"s{len(extra)}.json"
+        assert inv.main([*base, *extra, "--summary-json", str(summary)]) == 0
+        name = inv.variant_name("paper", True, False, False, "exclude", *extra[1::2])
+        with (tmp_path / f"in.{name}.csv").open(encoding="utf-8", newline="") as fh:
+            rows[len(extra)] = list(csv.DictReader(fh))
+        options = json.loads(summary.read_text(encoding="utf-8"))["options"]
+        assert ("linking" in options) == bool(extra) and ("name_variant" in options) == bool(extra)
+    from multimark.inventory import inventory_code  # importato da LIBRARY
+
+    for i, code in enumerate((NAME_CODE, COMP_CODE)):
+        for n, kw in ((0, {}), (4, {"linking": "positional", "name_variant": "V1"})):
+            expected = inventory_code(code, channels="mcss8", canonical="paper", **kw)
+            assert int(rows[n][i]["n_sites_total"]) == expected["n_sites_total"]
+    assert int(rows[4][0]["n_vars"]) < int(rows[0][0]["n_vars"])  # MD20
+    assert int(rows[4][1]["n_sites_structural"]) < int(rows[0][1]["n_sites_structural"])  # MD23

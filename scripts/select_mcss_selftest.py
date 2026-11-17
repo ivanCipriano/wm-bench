@@ -25,7 +25,10 @@ Criteri (pipeline v1.2 e decisioni dell'utente del 13 e del 15 novembre 2026,
   siti strutturali si riportano con lo scostamento da 11,9 e 10,9, senza esito;
 - ``--single-letter``: lettura di ``names.single_letter`` della tabella ``mcss`` (PIPELINE v1.2.7
   §4.2 punto 9: ``extend_except_loop`` per ``mcss``), solo per il riepilogo; con ``exclude`` il
-  riepilogo resta quello di prima.
+  riepilogo resta quello di prima;
+- ``--linking`` e ``--name-variant``: legame e variante dei nomi con cui è stata letta la tabella
+  ``mcss`` (``positional`` e ``V1`` per le tabelle della pipeline v1.3.0, regole MD20 e MD23 della
+  libreria), solo per il riepilogo; con i default il riepilogo resta quello di prima.
 
 Gira nell'ambiente **posthoc** (Python >= 3.9, libreria standard e ``bench_contracts``). Uscite:
 
@@ -198,6 +201,17 @@ def _criterion(value: float) -> str:
     return f"{_rel(value, PAPER_BITS)}: {'PASS' if ok else 'FAIL'} (±{BITS_TOLERANCE:.0%})"
 
 
+def profile_suffix(
+    single_letter: str = "exclude", linking: str = "function_channel", name_variant: str = "V2"
+) -> str:
+    """Opzioni di lettura della tabella ``mcss`` diverse dal default, per le intestazioni."""
+    return (
+        ("" if single_letter == "exclude" else f", single_letter={single_letter}")
+        + ("" if linking == "function_channel" else f", linking={linking}")
+        + ("" if name_variant == "V2" else f", name_variant={name_variant}")
+    )
+
+
 def report(
     pool: dict[str, dict[str, Any]],
     mcss: dict[str, dict[str, str]],
@@ -205,6 +219,8 @@ def report(
     sel: dict[str, Any],
     seed: int,
     single_letter: str = "exclude",
+    linking: str = "function_channel",
+    name_variant: str = "V2",
 ) -> str:
     """Testo del riepilogo (vedi docstring del modulo)."""
     ids, excluded = sel["eligible"], sel["excluded"]
@@ -216,7 +232,7 @@ def report(
     lines = [
         "MCSS self-test selection (PIPELINE_metodo.md v1.2 §4.4 point 2)",
         "mcss profile: canonical paper, params on, module-level variables on, channels mcss8"
-        + ("" if single_letter == "exclude" else f", single_letter={single_letter}"),
+        + profile_suffix(single_letter, linking, name_variant),
         f"order: derive_seed({seed}, {SEED_LABEL!r}, sample_id); max {MAX_FILES} files, "
         f"minimum {MIN_FILES}",
         "",
@@ -330,6 +346,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         default="exclude",
         help="names.single_letter reading of the mcss table (report only)",
     )
+    p.add_argument(
+        "--linking",
+        choices=("function_channel", "function_single_run", "positional"),
+        default="function_channel",
+        help="bit linking of the mcss table (report only; v1.3.0 tables: positional)",
+    )
+    p.add_argument(
+        "--name-variant",
+        choices=("V0", "V1", "V1b", "V2", "V2b"),
+        default="V2",
+        help="names variant of the mcss table (report only; v1.3.0 tables: V1)",
+    )
     args = p.parse_args(argv)
     try:
         pool = read_pool(args.pool)
@@ -349,7 +377,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             "one_per_problem": one_per_problem,
         }
         write_if_new(args.out, selection_bytes(pool, mcss, base, chosen))
-        text = report(pool, mcss, base, sel, seed, args.single_letter)
+        text = report(
+            pool, mcss, base, sel, seed, args.single_letter, args.linking, args.name_variant
+        )
         if args.report:
             write_if_new(args.report, text.encode("utf-8"))
         else:

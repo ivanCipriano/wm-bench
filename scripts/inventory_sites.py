@@ -24,7 +24,11 @@ Uscite, in ``--out-dir``:
 
 ``<variante>`` riassume le opzioni (``canonical-kind_guards-on_params-off`` per la base di
 multimark; con ``--module-level on`` si aggiunge ``_modlevel-on``, con ``--single-letter``
-diverso da ``exclude`` si aggiunge ``_singleletter-<valore>``, PIPELINE v1.2.6 §4.2 punto 9).
+diverso da ``exclude`` si aggiunge ``_singleletter-<valore>``, PIPELINE v1.2.6 §4.2 punto 9;
+con ``--linking`` diverso da ``function_channel`` si aggiunge ``_linking-<valore>``, con
+``--name-variant`` diverso da ``V2`` si aggiunge ``_names-<valore>``: sono le condizioni del
+lettore che dipendono dal legame e dalla variante dei nomi, MD20 e MD23 della libreria, per
+contare i siti di ``mcss`` con le regole della pipeline v1.3.0).
 ``--channels`` (``mcss8``: canali 1-8 di MCSS; ``extended``: canali 1-14 della base di multimark)
 è obbligatorio, perché il default della libreria è cambiato in P1 (14 canali): non entra nel
 nome della variante ma nel riepilogo, e ``scripts/inventory_sites.sh`` separa le uscite per commit
@@ -115,6 +119,12 @@ CHANNEL_SETS = ("mcss8", "extended")
 # Valori di ``names.single_letter`` (multimark ``names.SINGLE_LETTER_MODES``, PIPELINE v1.2.6
 # §4.2 punto 9); ``exclude`` è il default della libreria e non entra nel nome della variante.
 SINGLE_LETTER_MODES = ("exclude", "extend_except_loop", "extend_all")
+# Legame dei bit e variante dei nomi (multimark ``linking.LINKING_MODES`` e
+# ``names.NAME_VARIANTS``, libreria 4ea0d43, MD20 e MD23): servono solo alle condizioni del lettore
+# che ne dipendono. I default sono quelli della libreria e non entrano nel nome della variante.
+LINKING_MODES = ("function_channel", "function_single_run", "positional")
+NAME_VARIANTS = ("V0", "V1", "V1b", "V2", "V2b")
+DEFAULT_LINKING, DEFAULT_NAME_VARIANT = "function_channel", "V2"
 
 
 def variant_name(
@@ -123,14 +133,19 @@ def variant_name(
     include_params: bool,
     module_level: bool = False,
     single_letter: str = "exclude",
+    linking: str = DEFAULT_LINKING,
+    name_variant: str = DEFAULT_NAME_VARIANT,
 ) -> str:
-    """Nome della variante delle opzioni dell'inventario (``_modlevel-on`` e
-    ``_singleletter-<valore>`` solo se attivi: con i default i nomi restano quelli di P0/P1)."""
+    """Nome della variante delle opzioni dell'inventario (``_modlevel-on``,
+    ``_singleletter-<valore>``, ``_linking-<valore>`` e ``_names-<valore>`` solo se diversi dal
+    default: con i default i nomi restano quelli di P0/P1)."""
     return (
         f"canonical-{canonical}_guards-{'on' if guards else 'off'}"
         f"_params-{'on' if include_params else 'off'}"
         + ("_modlevel-on" if module_level else "")
         + ("" if single_letter == "exclude" else f"_singleletter-{single_letter}")
+        + ("" if linking == DEFAULT_LINKING else f"_linking-{linking}")
+        + ("" if name_variant == DEFAULT_NAME_VARIANT else f"_names-{name_variant}")
     )
 
 
@@ -280,6 +295,18 @@ def build_parser() -> argparse.ArgumentParser:
         default="exclude",
         help="one-letter variables as name sites (names.single_letter, default: exclude)",
     )
+    p.add_argument(
+        "--linking",
+        choices=LINKING_MODES,
+        default=DEFAULT_LINKING,
+        help="bit linking, for the reader conditions that depend on it (mcss: positional)",
+    )
+    p.add_argument(
+        "--name-variant",
+        choices=NAME_VARIANTS,
+        default=DEFAULT_NAME_VARIANT,
+        help="names channel variant, for the reader conditions that depend on it (mcss: V1)",
+    )
     return p
 
 
@@ -298,19 +325,32 @@ def main(argv: Sequence[str] | None = None) -> int:
         # prima (stesse uscite, anche con una libreria senza l'opzione).
         if args.single_letter != "exclude":
             options["single_letter"] = args.single_letter
+        # Come sopra: solo se diversi dal default (la libreria li accetta dal commit 4ea0d43).
+        if args.linking != DEFAULT_LINKING:
+            options["linking"] = args.linking
+        if args.name_variant != DEFAULT_NAME_VARIANT:
+            options["name_variant"] = args.name_variant
         variant = variant_name(
             args.canonical,
             not args.no_guards,
             args.include_params,
             args.module_level == "on",
             args.single_letter,
+            args.linking,
+            args.name_variant,
         )
         columns = [*INPUT_FIELDS, LOC_FIELD, "parse_ok", "error", *inventory.STAT_COLUMNS]
         commit = source_commit(args.library.resolve())
         text = [
             f"multimark source commit: {commit}",
             f"options: {variant}, channels={args.channels}"
-            + ("" if args.single_letter == "exclude" else f", single_letter={args.single_letter}"),
+            + ("" if args.single_letter == "exclude" else f", single_letter={args.single_letter}")
+            + ("" if args.linking == DEFAULT_LINKING else f", linking={args.linking}")
+            + (
+                ""
+                if args.name_variant == DEFAULT_NAME_VARIANT
+                else f", name_variant={args.name_variant}"
+            ),
             "loc bands: " + ", ".join(band_label("loc", b) for b in LOC_BANDS),
             "site bands: " + ", ".join(band_label("n_sites_total", b) for b in SITE_BANDS),
             "",

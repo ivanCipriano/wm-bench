@@ -56,6 +56,18 @@
 #       nuove mcss_selftest_eel_$EEL_TABLES.* (la selezione precedente resta) e
 #       mcss_band_detail.py; nel log anche gli sha256 delle tabelle.
 #
+#   LOG=docs/milestone_logs/P2_mcss_selftest_r2.txt bash scripts/inventory_sites.sh selftest_r2
+#       secondo giro di P2 (pipeline v1.3.0, libreria con MD20-MD26): sul pool allargato
+#       L2_codenet_pool_extra già esportato (nessun export) due inventari con la libreria
+#       corrente: la tabella mcss con le regole nuove (variante mcss_r2: --channels mcss8
+#       --canonical paper --include-params --module-level on --single-letter extend_except_loop
+#       --linking positional --name-variant V1) e la base di multimark (variante base, come le
+#       selezioni precedenti); poi la selezione (select_mcss_selftest.py: fascia 32-39, una
+#       sottomissione per problema) e il dettaglio della fascia con il criterio della Tabella 3
+#       (mcss_band_detail.py). Uscite nuove: pool_tables/<c>/ e mcss_selftest_r2_<c>.* (<c> =
+#       commit della libreria); le tabelle e le selezioni del primo giro restano. Si ferma se le
+#       uscite esistono già.
+#
 #   bash scripts/inventory_sites.sh candidates        # LOG di default: P0_candidates.txt
 #       canali candidati (P0-bis): `python -m multimark.cli.candidates` sugli stessi JSONL
 #       dell'inventario (tutti i gruppi di inputs/: L1 dev canoniche e baseline dei modelli, L2
@@ -78,7 +90,7 @@ cd "$REPO_ROOT"
 
 MODE=inventory
 case "${1:-}" in
-    selftest|selftest_extra|single_letter|selftest_eel|candidates) MODE="$1"; shift ;;
+    selftest|selftest_extra|single_letter|selftest_eel|selftest_r2|candidates) MODE="$1"; shift ;;
 esac
 if [ "$MODE" = candidates ] && [ -z "${LOG:-}" ]; then
     LOG=docs/milestone_logs/P0_candidates.txt
@@ -124,6 +136,7 @@ variant() {  # $1 = variante -> "FLAGS|NOME"
         mcss_mod_all) echo "--channels mcss8 --canonical paper --include-params --module-level on --single-letter extend_all|canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_all" ;;
         base_mod_eel) echo "--channels extended --module-level on --single-letter extend_except_loop|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_except_loop" ;;
         base_mod_all) echo "--channels extended --module-level on --single-letter extend_all|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_all" ;;
+        mcss_r2)  echo "--channels mcss8 --canonical paper --include-params --module-level on --single-letter extend_except_loop --linking positional --name-variant V1|canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_except_loop_linking-positional_names-V1" ;;
         *) return 1 ;;
     esac
 }
@@ -134,6 +147,8 @@ if [ "$MODE" != inventory ] && [ "$#" -gt 0 ]; then
 fi
 if [ "$MODE" = selftest ] || [ "$MODE" = selftest_extra ]; then
     VARIANTS=(base mcss_mod)
+elif [ "$MODE" = selftest_r2 ]; then
+    VARIANTS=(mcss_r2 base)
 elif [ "$MODE" = single_letter ]; then
     # VARIANTS sul pool allargato, BASE_INPUTS sui gruppi di inputs/.
     VARIANTS=(mcss_mod mcss_mod_eel mcss_mod_all base_mod base_mod_eel base_mod_all)
@@ -150,7 +165,7 @@ NAMES=()
 for v in ${VARIANTS[@]+"${VARIANTS[@]}"}; do
     if ! spec="$(variant "$v")"; then
         echo "unknown variant '$v' (base, base_mod, mcss, mcss_mod, params, noguards," \
-            "mcss_mod_eel, mcss_mod_all, base_mod_eel, base_mod_all)" >&2
+            "mcss_mod_eel, mcss_mod_all, base_mod_eel, base_mod_all, mcss_r2)" >&2
         exit 2
     fi
     FLAGS+=("${spec%%|*}")
@@ -210,6 +225,28 @@ elif [ "$MODE" = selftest_eel ]; then
     EXPORT=": no export and no inventory: existing tables"
     SELECTION="$OUT/mcss_selftest_eel_$EEL_TABLES"
     for f in "$SELECTION.jsonl" "${SELECTION}_report.txt" "${SELECTION}_band_detail.txt"; do
+        if [ -e "$f" ]; then
+            echo "$f already exists: move it away first (outputs are never overwritten)" >&2
+            exit 1
+        fi
+    done
+elif [ "$MODE" = selftest_r2 ]; then
+    PGROUP=L2_codenet_pool_extra
+    POOL="$OUT/pool/$PGROUP.jsonl"
+    for f in "$POOL" "${POOL%.jsonl}.test_clusters.json"; do
+        if [ ! -f "$f" ]; then
+            echo "missing $f (run the selftest_extra mode first)" >&2
+            exit 1
+        fi
+    done
+    EXPORT=": no export: the pool exported for selftest_extra"
+    INPUT="$POOL"
+    TABLES="$OUT/pool_tables/$C"
+    SUMMARY="$OUT/pool_r2_summary_$C"
+    SELECTION="$OUT/mcss_selftest_r2_$C"
+    MCSS_TABLE="$TABLES/$PGROUP.${NAMES[0]}.csv"
+    BASE_TABLE="$TABLES/$PGROUP.${NAMES[1]}.csv"
+    for f in "$MCSS_TABLE" "$SELECTION.jsonl" "${SELECTION}_report.txt" "${SELECTION}_band_detail.txt"; do
         if [ -e "$f" ]; then
             echo "$f already exists: move it away first (outputs are never overwritten)" >&2
             exit 1
@@ -287,6 +324,36 @@ SBATCH
         echo "  cat ${SELECTION}_band_detail.txt"
         echo "} > $LOG"
         echo "echo \"[OK] $LOG\""
+    elif [ "$MODE" = selftest_r2 ]; then
+        RULES="--single-letter extend_except_loop --linking positional --name-variant V1"
+        cat <<SBATCH
+$POSTHOC_PY scripts/inventory_sites.py --input $INPUT --out-dir $TABLES ${FLAGS[0]} --summary $SUMMARY.${NAMES[0]}.txt --summary-json $SUMMARY.${NAMES[0]}.json &
+P1=\$!
+$POSTHOC_PY scripts/inventory_sites.py --input $INPUT --out-dir $TABLES ${FLAGS[1]} --summary $SUMMARY.${NAMES[1]}.txt --summary-json $SUMMARY.${NAMES[1]}.json &
+P2=\$!
+wait \$P1
+wait \$P2
+$POSTHOC_PY scripts/select_mcss_selftest.py --pool $POOL --mcss-table $MCSS_TABLE --base-table $BASE_TABLE $RULES --out $SELECTION.jsonl --report ${SELECTION}_report.txt
+$POSTHOC_PY scripts/mcss_band_detail.py --pool $POOL --mcss-table $MCSS_TABLE $RULES --report ${SELECTION}_band_detail.txt
+{
+  echo "# selftest_r2 of mcss (scripts/inventory_sites.sh selftest_r2; PIPELINE v1.3.0, library rules MD20-MD26)"
+  echo "# date \$(date -Iseconds), host \$(hostname), wm-bench \$(git rev-parse HEAD), multimark $LINK"
+  echo "# mcss table: ${VARIANTS[0]} (${FLAGS[0]})"
+  echo "# base table: ${VARIANTS[1]} (${FLAGS[1]})"
+  echo "# tables: $TABLES"
+  echo "# input $POOL sha256 \$(sha256sum $POOL | cut -d' ' -f1)"
+  echo "# selection: $SELECTION.jsonl"; echo
+  echo "pool manifest ($POOL.manifest.json):"; cat $POOL.manifest.json; echo
+  cat ${SELECTION}_report.txt
+  echo; echo "######## band detail (scripts/mcss_band_detail.py)"; echo
+  cat ${SELECTION}_band_detail.txt
+  echo; echo "######## pool variant ${VARIANTS[0]} (${NAMES[0]})"; echo
+  cat $SUMMARY.${NAMES[0]}.txt
+  echo; echo "######## pool variant ${VARIANTS[1]} (${NAMES[1]})"; echo
+  cat $SUMMARY.${NAMES[1]}.txt
+} > $LOG
+echo "[OK] $LOG"
+SBATCH
     elif [ "$MODE" = single_letter ]; then
         MCSS_PREFIX="$TABLES/$PGROUP.canonical-paper_guards-on_params-on_modlevel-on"
         cat <<SBATCH
@@ -371,6 +438,8 @@ SBATCH
 TIME=60
 if [ "$MODE" = selftest_eel ]; then
     TIME=20  # solo selezione e dettaglio della fascia
+elif [ "$MODE" = selftest_r2 ]; then
+    TIME=120  # due inventari in parallelo sul pool allargato, poi selezione e dettaglio
 elif [ "$MODE" = single_letter ]; then
     TIME=240  # nove inventari, sei sul pool allargato (circa 28 mila file)
 fi

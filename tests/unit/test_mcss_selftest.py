@@ -410,3 +410,27 @@ def test_band_detail_reports_band_and_eligible(tmp_path: Path) -> None:
     assert "channels with no sites in either set: ternary" in text
     assert ": PASS (±10%)" in text and text.startswith("# mcss band detail")
     assert detail.main([*argv, "--report", str(report)]) == 1  # il log esiste già
+
+
+def test_reading_options_go_only_in_the_headers(tmp_path: Path) -> None:
+    """Pipeline v1.3.0: tabelle ``mcss`` lette con ``positional`` e ``V1`` (MD20, MD23)."""
+    assert sel.profile_suffix() == ""
+    rules = ["--single-letter", "extend_except_loop", "--linking", "positional"]
+    rules += ["--name-variant", "V1"]
+    suffix = ", single_letter=extend_except_loop, linking=positional, name_variant=V1"
+    pool = _pool(130)
+    sids = sorted(pool)
+    path = _write_pool(tmp_path, pool, same_cluster=[])
+    _csv(tmp_path / "mcss.csv", [_row(s, 33 + i % 3, vars_=12, structural=10)
+                                 for i, s in enumerate(sids)])  # fmt: skip
+    _csv(tmp_path / "base.csv", [_row(s, 0, vars_=3, structural=9) for s in sids])
+    assert sel.main(_argv(tmp_path, path)) == 0
+    plain = (tmp_path / "rep.txt").read_text(encoding="utf-8")
+    argv = _argv(tmp_path, path)
+    argv[argv.index("--report") + 1] = str(tmp_path / "rep2.txt")
+    assert sel.main([*argv, *rules]) == 0  # stessa selezione: il JSONL resta uguale
+    text = (tmp_path / "rep2.txt").read_text(encoding="utf-8")
+    assert text.replace(suffix, "") == plain and suffix in text
+    argv = ["--pool", str(path), "--mcss-table", str(tmp_path / "mcss.csv")]
+    assert detail.main([*argv, "--report", str(tmp_path / "d.txt"), *rules]) == 0
+    assert "channels mcss8)" + suffix in (tmp_path / "d.txt").read_text(encoding="utf-8")

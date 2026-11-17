@@ -15,7 +15,12 @@ Uso::
     <posthoc>/bin/python scripts/mcss_band_detail.py --pool L2_codenet_pool.jsonl \\
         --mcss-table L2_codenet_pool.canonical-paper_guards-on_params-on_modlevel-on.csv \\
         [--test-clusters L2_codenet_pool.test_clusters.json] [--report REP.txt] \\
-        [--single-letter exclude|extend_except_loop|extend_all]
+        [--single-letter exclude|extend_except_loop|extend_all] \\
+        [--linking positional] [--name-variant V1]
+
+``--single-letter``, ``--linking`` e ``--name-variant`` dicono come è stata letta la tabella (per
+le tabelle della pipeline v1.3.0: ``extend_except_loop``, ``positional``, ``V1``) e finiscono solo
+nell'intestazione.
 """
 
 from __future__ import annotations
@@ -64,6 +69,8 @@ def detail(
     cluster_pids: set[str],
     channels: Sequence[str],
     single_letter: str = "exclude",
+    linking: str = "function_channel",
+    name_variant: str = "V2",
 ) -> str:
     """Testo del riepilogo (vedi docstring del modulo); ``single_letter`` è la lettura di
     ``names.single_letter`` della tabella (PIPELINE v1.2.6 §4.2 punto 9), solo per
@@ -75,7 +82,7 @@ def detail(
     head = f"{'':<{width}}" + "".join(f"{name:>14}" for name, _ in sets) + f"{'MCSS T3':>14}"
     lines = [
         "MCSS profile (mcss_mod: canonical paper, params on, module-level on, channels mcss8)"
-        + ("" if single_letter == "exclude" else f", single_letter={single_letter}"),
+        + sel.profile_suffix(single_letter, linking, name_variant),
         f"pool files: {len(pool)}; excluded split == test: {excluded['split_test']}, "
         f"same cluster as a test problem: {excluded['test_cluster']}, "
         f"parse errors: {excluded['parse_error']}",
@@ -151,6 +158,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         default="exclude",
         help="names.single_letter reading of the table (header only)",
     )
+    p.add_argument(
+        "--linking",
+        choices=("function_channel", "function_single_run", "positional"),
+        default="function_channel",
+        help="bit linking of the mcss table (header only; v1.3.0 tables: positional)",
+    )
+    p.add_argument(
+        "--name-variant",
+        choices=("V0", "V1", "V1b", "V2", "V2b"),
+        default="V2",
+        help="names variant of the mcss table (header only; v1.3.0 tables: V1)",
+    )
     args = p.parse_args(argv)
     try:
         if args.report is not None and args.report.exists():
@@ -161,7 +180,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise sel.SelectionError("pool and table do not contain the same sample_id")
         clusters_path = args.test_clusters or sel.default_test_clusters(args.pool)
         clusters = sel.read_test_clusters(clusters_path)
-        text = detail(pool, mcss, clusters, channel_columns(args.mcss_table), args.single_letter)
+        columns = channel_columns(args.mcss_table)
+        text = detail(
+            pool, mcss, clusters, columns, args.single_letter, args.linking, args.name_variant
+        )
         text = header([args.pool, args.mcss_table, clusters_path]) + text
     except sel.SelectionError as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
