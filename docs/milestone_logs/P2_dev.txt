@@ -1,0 +1,374 @@
+
+##### mcss deepseek_coder_6p7b python (L1 dev, config d68986489777)
+threshold 1.2621119296336116  achieved FPR dev 0.0070  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.1072099696478683  achieved FPR dev 0.0095
+  secondary nreg1024: threshold 3.3417402418982496  achieved FPR dev 0.0080
+  secondary decode: threshold 0.4166666666666667  achieved FPR dev 0.0060
+  tpr_at_fpr                          0.5087  [0.4201, 0.6076]  n=576  cluster_bootstrap
+  fpr_human                           0.0025  [0.0008, 0.0058]  n=2000  clopper_pearson
+  fpr_llm                             0.0035  [0.0004, 0.0125]  n=576  clopper_pearson
+  auroc                               0.9845  [0.9791, 0.9893]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.3819  [0.2881, 0.4740]  n=576  cluster_bootstrap
+  auroc_nreg16                        0.8932  [0.8686, 0.9155]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.1285  [0.0712, 0.1944]  n=576  cluster_bootstrap
+  auroc_nreg1024                      0.8482  [0.8222, 0.8766]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.1146  [0.0590, 0.1788]  n=576  cluster_bootstrap
+  auroc_decode                        0.9045  [0.8821, 0.9261]  n=2576  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0172]  n=220  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0493]  n=74  wilson
+  pass_at_1                           0.6580  [0.5642, 0.7396]  n=96  cluster_bootstrap
+  pass_at_1_baseline                  0.6580  [0.5556, 0.7517]  n=96  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=96  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9900, 1.0000]  n=379  wilson
+  message_accuracy                    0.0000  [0.0000, 0.0066]  n=576  wilson
+  bit_accuracy                        0.1901  [0.1639, 0.2160]  n=576  cluster_bootstrap
+  embedding_success_rate              0.0000  [0.0000, 0.0066]  n=576  wilson
+  message_accuracy_detected           0.0000  [0.0000, 0.0129]  n=293  wilson
+  embed_success_rate 0.0000  n_sites {"n": 576, "mean": 6.137, "median": 5.0, "min": 2.0, "max": 25.0}
+
+##### mcss qwen25_coder_7b python (L1 dev, config d68986489777)
+threshold 1.2621119296336116  achieved FPR dev 0.0065  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.1072099696478683  achieved FPR dev 0.0100
+  secondary nreg1024: threshold 3.3417402418982496  achieved FPR dev 0.0080
+  secondary decode: threshold 0.375  achieved FPR dev 0.0095
+  tpr_at_fpr                          0.6042  [0.5121, 0.6945]  n=576  cluster_bootstrap
+  fpr_human                           0.0030  [0.0011, 0.0065]  n=2000  clopper_pearson
+  fpr_llm                             0.0017  [0.0000, 0.0096]  n=576  clopper_pearson
+  auroc                               0.9886  [0.9841, 0.9925]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.4080  [0.3073, 0.5053]  n=576  cluster_bootstrap
+  auroc_nreg16                        0.9179  [0.8950, 0.9391]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.1840  [0.1198, 0.2639]  n=576  cluster_bootstrap
+  auroc_nreg1024                      0.8733  [0.8501, 0.8973]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.1840  [0.1111, 0.2691]  n=576  cluster_bootstrap
+  auroc_decode                        0.9282  [0.9075, 0.9468]  n=2576  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0161]  n=235  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0350]  n=106  wilson
+  pass_at_1                           0.7743  [0.6892, 0.8490]  n=96  cluster_bootstrap
+  pass_at_1_baseline                  0.7743  [0.6927, 0.8490]  n=96  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=96  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9915, 1.0000]  n=446  wilson
+  message_accuracy                    0.0000  [0.0000, 0.0066]  n=576  wilson
+  bit_accuracy                        0.2179  [0.1889, 0.2471]  n=576  cluster_bootstrap
+  embedding_success_rate              0.0000  [0.0000, 0.0066]  n=576  wilson
+  message_accuracy_detected           0.0000  [0.0000, 0.0109]  n=348  wilson
+  embed_success_rate 0.0000  n_sites {"n": 576, "mean": 6.927, "median": 6.0, "min": 2.0, "max": 21.0}
+
+##### mcss deepseek_coder_6p7b python (L2 dev, config d68986489777)
+threshold 1.2621119296336116  achieved FPR dev 0.0070  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.1072099696478683  achieved FPR dev 0.0095
+  secondary nreg1024: threshold 3.3417402418982496  achieved FPR dev 0.0080
+  secondary decode: threshold 0.4166666666666667  achieved FPR dev 0.0060
+  tpr_at_fpr                          0.9067  [0.8267, 0.9733]  n=300  cluster_bootstrap
+  fpr_human                           0.0080  [0.0010, 0.0286]  n=250  clopper_pearson
+  fpr_llm                             0.0067  [0.0008, 0.0239]  n=300  clopper_pearson
+  auroc                               0.9882  [0.9736, 0.9983]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.6833  [0.5599, 0.8033]  n=300  cluster_bootstrap
+  auroc_nreg16                        0.9580  [0.9266, 0.9842]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.4033  [0.2867, 0.5401]  n=300  cluster_bootstrap
+  auroc_nreg1024                      0.8690  [0.8225, 0.9112]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.3833  [0.2700, 0.5067]  n=300  cluster_bootstrap
+  auroc_decode                        0.9364  [0.9034, 0.9649]  n=550  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0184]  n=205  wilson
+  wrong_attribution_rate_nreg1024     0.0248  [0.0085, 0.0704]  n=121  wilson
+  pass_at_1                           0.6067  [0.4832, 0.7201]  n=50  cluster_bootstrap
+  pass_at_1_baseline                  0.6233  [0.4999, 0.7267]  n=50  cluster_bootstrap
+  delta_pass_at_1_pp                  1.6667  [0.0000, 5.0000]  n=50  cluster_bootstrap
+  conditional_preservation            0.9733  [0.9389, 0.9885]  n=187  wilson
+  message_accuracy                    0.0600  [0.0383, 0.0928]  n=300  wilson
+  bit_accuracy                        0.3724  [0.3126, 0.4347]  n=300  cluster_bootstrap
+  embedding_success_rate              0.0333  [0.0182, 0.0603]  n=300  wilson
+  message_accuracy_detected           0.0662  [0.0423, 0.1022]  n=272  wilson
+  embed_success_rate 0.0333  n_sites {"n": 300, "mean": 11.807, "median": 9.0, "min": 2.0, "max": 41.0}
+
+##### mcss qwen25_coder_7b python (L2 dev, config d68986489777)
+threshold 1.2621119296336116  achieved FPR dev 0.0065  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.1072099696478683  achieved FPR dev 0.0100
+  secondary nreg1024: threshold 3.3417402418982496  achieved FPR dev 0.0080
+  secondary decode: threshold 0.375  achieved FPR dev 0.0095
+  tpr_at_fpr                          0.9567  [0.8967, 1.0000]  n=300  cluster_bootstrap
+  fpr_human                           0.0120  [0.0025, 0.0347]  n=250  clopper_pearson
+  fpr_llm                             0.0133  [0.0036, 0.0338]  n=300  clopper_pearson
+  auroc                               0.9929  [0.9844, 0.9995]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.8233  [0.7133, 0.9201]  n=300  cluster_bootstrap
+  auroc_nreg16                        0.9768  [0.9533, 0.9957]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.5400  [0.4133, 0.6700]  n=300  cluster_bootstrap
+  auroc_nreg1024                      0.9214  [0.8837, 0.9559]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.5433  [0.4198, 0.6700]  n=300  cluster_bootstrap
+  auroc_decode                        0.9622  [0.9350, 0.9835]  n=550  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0153]  n=247  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0232]  n=162  wilson
+  pass_at_1                           0.6967  [0.5833, 0.8100]  n=50  cluster_bootstrap
+  pass_at_1_baseline                  0.6967  [0.5766, 0.8200]  n=50  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=50  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9820, 1.0000]  n=209  wilson
+  message_accuracy                    0.1167  [0.0851, 0.1579]  n=300  wilson
+  bit_accuracy                        0.4911  [0.4154, 0.5714]  n=300  cluster_bootstrap
+  embedding_success_rate              0.0267  [0.0136, 0.0517]  n=300  wilson
+  message_accuracy_detected           0.1220  [0.0890, 0.1649]  n=287  wilson
+  embed_success_rate 0.0267  n_sites {"n": 299, "mean": 15.298, "median": 14.0, "min": 2.0, "max": 47.0}
+# capacity by number of sites (scripts/report_capacity.py; PIPELINE §5.6), 2026-11-17T09:56:13+01:00, tnode01
+# method mcss, config d68986489777, threshold levels L1 L2; tables in /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/capacity
+
+### mcss_qwen25_coder_7b_L1_python_dev (config d68986489777, threshold 1.26211, 24 bit, 576 samples)
+by n_sites:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-7                360     0.367 [0.32,0.42]     0.000 [0.00,0.01]     0.128 [0.11,0.14]     0.814 [0.77,0.85]
+  8-12               143     1.000 [0.97,1.00]     0.000 [0.00,0.03]     0.298 [0.28,0.32]     0.706 [0.63,0.77]
+  13-19               70     1.000 [0.95,1.00]     0.000 [0.00,0.05]     0.499 [0.46,0.54]     0.743 [0.63,0.83]
+  20-31                3     1.000 [0.44,1.00]     0.000 [0.00,0.56]     0.694 [0.69,0.69]     0.000 [0.00,0.56]
+  32-55                0                     -                     -                     -                     -
+  56+                  0                     -                     -                     -                     -
+  n_sites=0/none       0                     -                     -                     -                     -
+by loc_to_generate:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-5                408     0.478 [0.43,0.53]     0.000 [0.00,0.01]     0.176 [0.15,0.21]     0.819 [0.78,0.85]
+  6-10               126     0.881 [0.81,0.93]     0.000 [0.00,0.03]     0.295 [0.25,0.35]     0.611 [0.52,0.69]
+  11-20               42     1.000 [0.92,1.00]     0.000 [0.00,0.08]     0.397 [0.32,0.47]     0.833 [0.69,0.92]
+  21-40                0                     -                     -                     -                     -
+  41+                  0                     -                     -                     -                     -
+  loc_to_generate=0/none     0                     -                     -                     -                     -
+
+### mcss_qwen25_coder_7b_L2_python_dev (config d68986489777, threshold 1.26211, 24 bit, 300 samples)
+by n_sites:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-7                 56     0.786 [0.66,0.87]     0.000 [0.00,0.06]     0.164 [0.13,0.20]     0.982 [0.91,1.00]
+  8-12                83     1.000 [0.96,1.00]     0.000 [0.00,0.04]     0.279 [0.26,0.30]     0.831 [0.74,0.90]
+  13-19               58     1.000 [0.94,1.00]     0.000 [0.00,0.06]     0.527 [0.49,0.56]     0.759 [0.63,0.85]
+  20-31               94     1.000 [0.96,1.00]     0.287 [0.21,0.39]     0.812 [0.77,0.86]     0.426 [0.33,0.53]
+  32-55                8     1.000 [0.68,1.00]     1.000 [0.68,1.00]     1.000 [1.00,1.00]     0.125 [0.02,0.47]
+  56+                  0                     -                     -                     -                     -
+  n_sites=0/none       1     0.000 [0.00,0.79]     0.000 [0.00,0.79]     0.000 [0.00,0.00]     0.000 [0.00,0.79]
+by loc_to_generate:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-5                 60     0.800 [0.68,0.88]     0.000 [0.00,0.06]     0.224 [0.15,0.30]     0.967 [0.89,0.99]
+  6-10               114     1.000 [0.97,1.00]     0.035 [0.01,0.09]     0.401 [0.31,0.51]     0.754 [0.67,0.82]
+  11-20               90     0.989 [0.94,1.00]     0.144 [0.09,0.23]     0.648 [0.55,0.74]     0.500 [0.40,0.60]
+  21-40               24     1.000 [0.86,1.00]     0.458 [0.28,0.65]     0.795 [0.60,0.97]     0.542 [0.35,0.72]
+  41+                 12     1.000 [0.76,1.00]     0.583 [0.32,0.81]     0.892 [0.78,1.00]     0.583 [0.32,0.81]
+  loc_to_generate=0/none     0                     -                     -                     -                     -
+
+### mcss_deepseek_coder_6p7b_L1_python_dev (config d68986489777, threshold 1.26211, 24 bit, 576 samples)
+by n_sites:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-7                390     0.274 [0.23,0.32]     0.000 [0.00,0.01]     0.115 [0.10,0.13]     0.731 [0.68,0.77]
+  8-12               120     1.000 [0.97,1.00]     0.000 [0.00,0.03]     0.272 [0.26,0.29]     0.442 [0.36,0.53]
+  13-19               59     1.000 [0.94,1.00]     0.000 [0.00,0.06]     0.460 [0.44,0.49]     0.661 [0.53,0.77]
+  20-31                7     1.000 [0.65,1.00]     0.000 [0.00,0.35]     0.720 [0.71,0.72]     0.286 [0.08,0.64]
+  32-55                0                     -                     -                     -                     -
+  56+                  0                     -                     -                     -                     -
+  n_sites=0/none       0                     -                     -                     -                     -
+by loc_to_generate:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-5                408     0.355 [0.31,0.40]     0.000 [0.00,0.01]     0.148 [0.12,0.18]     0.743 [0.70,0.78]
+  6-10               126     0.841 [0.77,0.89]     0.000 [0.00,0.03]     0.256 [0.22,0.30]     0.460 [0.38,0.55]
+  11-20               42     1.000 [0.92,1.00]     0.000 [0.00,0.08]     0.399 [0.33,0.47]     0.429 [0.29,0.58]
+  21-40                0                     -                     -                     -                     -
+  41+                  0                     -                     -                     -                     -
+  loc_to_generate=0/none     0                     -                     -                     -                     -
+
+### mcss_deepseek_coder_6p7b_L2_python_dev (config d68986489777, threshold 1.26211, 24 bit, 300 samples)
+by n_sites:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-7                117     0.778 [0.69,0.84]     0.000 [0.00,0.03]     0.177 [0.15,0.20]     0.863 [0.79,0.91]
+  8-12                66     0.970 [0.90,0.99]     0.000 [0.00,0.06]     0.259 [0.24,0.28]     0.621 [0.50,0.73]
+  13-19               69     1.000 [0.95,1.00]     0.000 [0.00,0.05]     0.499 [0.47,0.53]     0.377 [0.27,0.49]
+  20-31               38     1.000 [0.91,1.00]     0.211 [0.11,0.36]     0.775 [0.73,0.83]     0.184 [0.09,0.33]
+  32-55               10     1.000 [0.72,1.00]     1.000 [0.72,1.00]     1.000 [1.00,1.00]     0.700 [0.40,0.89]
+  56+                  0                     -                     -                     -                     -
+  n_sites=0/none       0                     -                     -                     -                     -
+by loc_to_generate:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-5                 60     0.617 [0.49,0.73]     0.000 [0.00,0.06]     0.172 [0.12,0.24]     1.000 [0.94,1.00]
+  6-10               114     0.982 [0.94,1.00]     0.000 [0.00,0.03]     0.323 [0.26,0.39]     0.518 [0.43,0.61]
+  11-20               90     0.967 [0.91,0.99]     0.033 [0.01,0.09]     0.422 [0.34,0.50]     0.556 [0.45,0.65]
+  21-40               24     1.000 [0.86,1.00]     0.375 [0.21,0.57]     0.698 [0.38,0.93]     0.250 [0.12,0.45]
+  41+                 12     1.000 [0.76,1.00]     0.500 [0.25,0.75]     0.823 [0.65,1.00]     0.583 [0.32,0.81]
+  loc_to_generate=0/none     0                     -                     -                     -                     -
+
+
+##### multimark deepseek_coder_6p7b python (L1 dev, config 194b0aa80f9f)
+threshold 1.2621119296336116  achieved FPR dev 0.0100  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.2321487062561687  achieved FPR dev 0.0070
+  secondary nreg1024: threshold 3.3113299523037933  achieved FPR dev 0.0085
+  secondary decode: threshold 0.3333333333333333  achieved FPR dev 0.0070
+  tpr_at_fpr                          0.2552  [0.1753, 0.3351]  n=576  cluster_bootstrap
+  fpr_human                           0.0020  [0.0005, 0.0051]  n=2000  clopper_pearson
+  fpr_llm                             0.0052  [0.0011, 0.0151]  n=576  clopper_pearson
+  auroc                               0.7098  [0.6428, 0.7769]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.0469  [0.0174, 0.0868]  n=576  cluster_bootstrap
+  auroc_nreg16                        0.5944  [0.5251, 0.6568]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.0208  [0.0017, 0.0486]  n=576  cluster_bootstrap
+  auroc_nreg1024                      0.5599  [0.4964, 0.6209]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.0052  [0.0000, 0.0139]  n=576  cluster_bootstrap
+  auroc_decode                        0.6361  [0.5695, 0.7025]  n=2576  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.1246]  n=27  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.2425]  n=12  wilson
+  pass_at_1                           0.6580  [0.5746, 0.7500]  n=96  cluster_bootstrap
+  pass_at_1_baseline                  0.6580  [0.5660, 0.7466]  n=96  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=96  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9900, 1.0000]  n=379  wilson
+  message_accuracy                    0.0000  [0.0000, 0.0066]  n=576  wilson
+  bit_accuracy                        0.0758  [0.0618, 0.0917]  n=576  cluster_bootstrap
+  embedding_success_rate              0.0000  [0.0000, 0.0066]  n=576  wilson
+  message_accuracy_detected           0.0000  [0.0000, 0.0255]  n=147  wilson
+  embed_success_rate 0.0000  n_sites {"n": 576, "mean": 2.602, "median": 2.0, "min": 0.0, "max": 13.0}
+
+##### multimark qwen25_coder_7b python (L1 dev, config 194b0aa80f9f)
+threshold 1.2621119296336116  achieved FPR dev 0.0100  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.1891140740309663  achieved FPR dev 0.0080
+  secondary nreg1024: threshold 3.3113299523037933  achieved FPR dev 0.0085
+  secondary decode: threshold 0.3333333333333333  achieved FPR dev 0.0065
+  tpr_at_fpr                          0.2847  [0.1944, 0.3750]  n=576  cluster_bootstrap
+  fpr_human                           0.0045  [0.0021, 0.0085]  n=2000  clopper_pearson
+  fpr_llm                             0.0104  [0.0038, 0.0225]  n=576  clopper_pearson
+  auroc                               0.7791  [0.7197, 0.8391]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.1094  [0.0573, 0.1701]  n=576  cluster_bootstrap
+  auroc_nreg16                        0.6424  [0.5805, 0.7079]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.0382  [0.0069, 0.0764]  n=576  cluster_bootstrap
+  auroc_nreg1024                      0.6081  [0.5488, 0.6710]  n=2576  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.0243  [0.0000, 0.0556]  n=576  cluster_bootstrap
+  auroc_decode                        0.6914  [0.6332, 0.7447]  n=2576  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0575]  n=63  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.1487]  n=22  wilson
+  pass_at_1                           0.7743  [0.6944, 0.8524]  n=96  cluster_bootstrap
+  pass_at_1_baseline                  0.7743  [0.6910, 0.8542]  n=96  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=96  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9915, 1.0000]  n=446  wilson
+  message_accuracy                    0.0000  [0.0000, 0.0066]  n=576  wilson
+  bit_accuracy                        0.0901  [0.0721, 0.1105]  n=576  cluster_bootstrap
+  embedding_success_rate              0.0000  [0.0000, 0.0066]  n=576  wilson
+  message_accuracy_detected           0.0000  [0.0000, 0.0229]  n=164  wilson
+  embed_success_rate 0.0000  n_sites {"n": 576, "mean": 3.076, "median": 2.0, "min": 0.0, "max": 14.0}
+
+##### multimark deepseek_coder_6p7b python (L2 dev, config 194b0aa80f9f)
+threshold 1.2621119296336116  achieved FPR dev 0.0100  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.2321487062561687  achieved FPR dev 0.0070
+  secondary nreg1024: threshold 3.3113299523037933  achieved FPR dev 0.0085
+  secondary decode: threshold 0.3333333333333333  achieved FPR dev 0.0070
+  tpr_at_fpr                          0.4867  [0.3533, 0.6167]  n=300  cluster_bootstrap
+  fpr_human                           0.0200  [0.0065, 0.0461]  n=250  clopper_pearson
+  fpr_llm                             0.0133  [0.0036, 0.0338]  n=300  clopper_pearson
+  auroc                               0.8471  [0.7619, 0.9157]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.2667  [0.1600, 0.3767]  n=300  cluster_bootstrap
+  auroc_nreg16                        0.6808  [0.5923, 0.7669]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.1233  [0.0466, 0.2067]  n=300  cluster_bootstrap
+  auroc_nreg1024                      0.5253  [0.4407, 0.6118]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.1000  [0.0399, 0.1767]  n=300  cluster_bootstrap
+  auroc_decode                        0.6700  [0.5810, 0.7486]  n=550  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0458]  n=80  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0941]  n=37  wilson
+  pass_at_1                           0.6233  [0.5033, 0.7433]  n=50  cluster_bootstrap
+  pass_at_1_baseline                  0.6233  [0.5100, 0.7300]  n=50  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=50  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9799, 1.0000]  n=187  wilson
+  message_accuracy                    0.0033  [0.0006, 0.0186]  n=300  wilson
+  bit_accuracy                        0.1454  [0.1108, 0.1772]  n=300  cluster_bootstrap
+  embedding_success_rate              0.0000  [0.0000, 0.0126]  n=300  wilson
+  message_accuracy_detected           0.0068  [0.0012, 0.0378]  n=146  wilson
+  embed_success_rate 0.0000  n_sites {"n": 300, "mean": 5.41, "median": 4.0, "min": 0.0, "max": 31.0}
+
+##### multimark qwen25_coder_7b python (L2 dev, config 194b0aa80f9f)
+threshold 1.2621119296336116  achieved FPR dev 0.0100  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.1891140740309663  achieved FPR dev 0.0080
+  secondary nreg1024: threshold 3.3113299523037933  achieved FPR dev 0.0085
+  secondary decode: threshold 0.3333333333333333  achieved FPR dev 0.0065
+  tpr_at_fpr                          0.6033  [0.4733, 0.7334]  n=300  cluster_bootstrap
+  fpr_human                           0.0320  [0.0139, 0.0621]  n=250  clopper_pearson
+  fpr_llm                             0.0133  [0.0036, 0.0338]  n=300  clopper_pearson
+  auroc                               0.8728  [0.8006, 0.9352]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.4200  [0.2800, 0.5534]  n=300  cluster_bootstrap
+  auroc_nreg16                        0.7427  [0.6483, 0.8298]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.3167  [0.2166, 0.4300]  n=300  cluster_bootstrap
+  auroc_nreg1024                      0.6184  [0.5206, 0.7084]  n=550  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.1967  [0.1100, 0.2967]  n=300  cluster_bootstrap
+  auroc_decode                        0.7440  [0.6587, 0.8289]  n=550  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0296]  n=126  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0389]  n=95  wilson
+  pass_at_1                           0.6967  [0.5767, 0.8033]  n=50  cluster_bootstrap
+  pass_at_1_baseline                  0.6967  [0.5767, 0.8067]  n=50  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=50  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9820, 1.0000]  n=209  wilson
+  message_accuracy                    0.0000  [0.0000, 0.0126]  n=300  wilson
+  bit_accuracy                        0.1979  [0.1606, 0.2399]  n=300  cluster_bootstrap
+  embedding_success_rate              0.0000  [0.0000, 0.0126]  n=300  wilson
+  message_accuracy_detected           0.0000  [0.0000, 0.0208]  n=181  wilson
+  embed_success_rate 0.0000  n_sites {"n": 299, "mean": 7.274, "median": 5.0, "min": 0.0, "max": 27.0}
+# capacity by number of sites (scripts/report_capacity.py; PIPELINE §5.6), 2026-11-17T09:56:20+01:00, tnode01
+# method multimark, config 194b0aa80f9f, threshold levels L1 L2; tables in /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/capacity
+
+### multimark_qwen25_coder_7b_L1_python_dev (config 194b0aa80f9f, threshold 1.26211, 24 bit, 576 samples)
+by n_sites:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-7                398     0.249 [0.21,0.29]     0.000 [0.00,0.01]     0.087 [0.07,0.10]     0.764 [0.72,0.80]
+  8-12                62     1.000 [0.94,1.00]     0.000 [0.00,0.06]     0.261 [0.21,0.31]     0.597 [0.47,0.71]
+  13-19                3     1.000 [0.44,1.00]     0.000 [0.00,0.56]     0.333 [0.29,0.42]     1.000 [0.44,1.00]
+  20-31                0                     -                     -                     -                     -
+  32-55                0                     -                     -                     -                     -
+  56+                  0                     -                     -                     -                     -
+  n_sites=0/none     113     0.000 [0.00,0.03]     0.000 [0.00,0.03]     0.000 [0.00,0.00]     0.903 [0.83,0.94]
+by loc_to_generate:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-5                408     0.150 [0.12,0.19]     0.000 [0.00,0.01]     0.062 [0.04,0.08]     0.819 [0.78,0.85]
+  6-10               126     0.556 [0.47,0.64]     0.000 [0.00,0.03]     0.164 [0.13,0.20]     0.611 [0.52,0.69]
+  11-20               42     0.786 [0.64,0.88]     0.000 [0.00,0.08]     0.137 [0.08,0.20]     0.833 [0.69,0.92]
+  21-40                0                     -                     -                     -                     -
+  41+                  0                     -                     -                     -                     -
+  loc_to_generate=0/none     0                     -                     -                     -                     -
+
+### multimark_qwen25_coder_7b_L2_python_dev (config 194b0aa80f9f, threshold 1.26211, 24 bit, 300 samples)
+by n_sites:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-7                151     0.364 [0.29,0.44]     0.000 [0.00,0.02]     0.112 [0.09,0.14]     0.848 [0.78,0.90]
+  8-12                65     1.000 [0.94,1.00]     0.000 [0.00,0.06]     0.276 [0.25,0.30]     0.615 [0.49,0.72]
+  13-19               52     1.000 [0.93,1.00]     0.000 [0.00,0.07]     0.382 [0.34,0.42]     0.327 [0.22,0.46]
+  20-31                9     1.000 [0.70,1.00]     0.000 [0.00,0.30]     0.519 [0.42,0.62]     0.667 [0.35,0.88]
+  32-55                0                     -                     -                     -                     -
+  56+                  0                     -                     -                     -                     -
+  n_sites=0/none      23     0.000 [0.00,0.14]     0.000 [0.00,0.14]     0.000 [0.00,0.00]     0.783 [0.58,0.90]
+by loc_to_generate:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-5                 60     0.117 [0.06,0.22]     0.000 [0.00,0.06]     0.083 [0.03,0.15]     0.967 [0.89,0.99]
+  6-10               114     0.535 [0.44,0.62]     0.000 [0.00,0.03]     0.153 [0.10,0.21]     0.754 [0.67,0.82]
+  11-20               90     0.922 [0.85,0.96]     0.000 [0.00,0.04]     0.274 [0.23,0.33]     0.500 [0.40,0.60]
+  21-40               24     0.750 [0.55,0.88]     0.000 [0.00,0.14]     0.337 [0.14,0.47]     0.542 [0.35,0.72]
+  41+                 12     1.000 [0.76,1.00]     0.000 [0.00,0.24]     0.358 [0.29,0.42]     0.583 [0.32,0.81]
+  loc_to_generate=0/none     0                     -                     -                     -                     -
+
+### multimark_deepseek_coder_6p7b_L1_python_dev (config 194b0aa80f9f, threshold 1.26211, 24 bit, 576 samples)
+by n_sites:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-7                376     0.309 [0.26,0.36]     0.000 [0.00,0.01]     0.097 [0.08,0.11]     0.580 [0.53,0.63]
+  8-12                29     1.000 [0.88,1.00]     0.000 [0.00,0.12]     0.223 [0.16,0.27]     0.621 [0.44,0.77]
+  13-19                2     1.000 [0.34,1.00]     0.000 [0.00,0.66]     0.354 [0.21,0.50]     0.000 [0.00,0.66]
+  20-31                0                     -                     -                     -                     -
+  32-55                0                     -                     -                     -                     -
+  56+                  0                     -                     -                     -                     -
+  n_sites=0/none     169     0.000 [0.00,0.02]     0.000 [0.00,0.02]     0.000 [0.00,0.00]     0.846 [0.78,0.89]
+by loc_to_generate:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-5                408     0.115 [0.09,0.15]     0.000 [0.00,0.01]     0.049 [0.04,0.07]     0.743 [0.70,0.78]
+  6-10               126     0.500 [0.41,0.59]     0.000 [0.00,0.03]     0.146 [0.11,0.18]     0.460 [0.38,0.55]
+  11-20               42     0.881 [0.75,0.95]     0.000 [0.00,0.08]     0.123 [0.07,0.18]     0.429 [0.29,0.58]
+  21-40                0                     -                     -                     -                     -
+  41+                  0                     -                     -                     -                     -
+  loc_to_generate=0/none     0                     -                     -                     -                     -
+
+### multimark_deepseek_coder_6p7b_L2_python_dev (config 194b0aa80f9f, threshold 1.26211, 24 bit, 300 samples)
+by n_sites:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-7                190     0.347 [0.28,0.42]     0.000 [0.00,0.02]     0.105 [0.09,0.13]     0.679 [0.61,0.74]
+  8-12                50     1.000 [0.93,1.00]     0.000 [0.00,0.07]     0.220 [0.19,0.26]     0.360 [0.24,0.50]
+  13-19               24     1.000 [0.86,1.00]     0.000 [0.00,0.14]     0.373 [0.32,0.43]     0.333 [0.18,0.53]
+  20-31                6     1.000 [0.61,1.00]     0.167 [0.03,0.56]     0.611 [0.47,0.71]     0.333 [0.10,0.70]
+  32-55                0                     -                     -                     -                     -
+  56+                  0                     -                     -                     -                     -
+  n_sites=0/none      30     0.000 [0.00,0.11]     0.000 [0.00,0.11]     0.000 [0.00,0.00]     1.000 [0.89,1.00]
+by loc_to_generate:
+                       n            tpr_at_fpr      message_accuracy          bit_accuracy             pass_at_1
+  1-5                 60     0.050 [0.02,0.14]     0.000 [0.00,0.06]     0.045 [0.01,0.10]     1.000 [0.94,1.00]
+  6-10               114     0.439 [0.35,0.53]     0.000 [0.00,0.03]     0.110 [0.08,0.14]     0.561 [0.47,0.65]
+  11-20               90     0.700 [0.60,0.78]     0.011 [0.00,0.06]     0.189 [0.15,0.23]     0.556 [0.45,0.65]
+  21-40               24     0.750 [0.55,0.88]     0.000 [0.00,0.14]     0.290 [0.14,0.44]     0.250 [0.12,0.45]
+  41+                 12     1.000 [0.76,1.00]     0.000 [0.00,0.24]     0.368 [0.34,0.40]     0.583 [0.32,0.81]
+  loc_to_generate=0/none     0                     -                     -                     -                     -
+

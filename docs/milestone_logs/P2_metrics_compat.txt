@@ -1,0 +1,1049 @@
+# P2 common changes: metrics of existing methods recomputed vs metrics*/ parquet (scripts/check_metrics_compat.py, ADR-017)
+# date 2026-11-16T17:22:46+01:00, host tnode01, wm-bench b887234ac4246e56e1ccde9c70d18988271c2545
+# artifacts /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts; methods sweet acw stone promptmark mcgmark; tolerance 1e-09
+# bench from /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench; cells from the parquet manifests
+
+[OK] metrics/acw/deepseek_coder_6p7b/1a28456b87b9/L1_python_dev.parquet: 8 rows identical
+[OK] metrics/acw/qwen25_coder_7b/1a28456b87b9/L1_python_dev.parquet: 8 rows identical
+[OK+] metrics/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_dev.parquet: 12 rows identical; new: message_accuracy_detected
+[OK+] metrics/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_dev.parquet: 12 rows identical; new: message_accuracy_detected
+[OK] metrics/promptmark/deepseek_coder_6p7b/ed50b87e6e09/L1_python_dev.parquet: 9 rows identical
+[OK] metrics/promptmark/qwen25_coder_7b/ed50b87e6e09/L1_python_dev.parquet: 9 rows identical
+[OK] metrics/stone/deepseek_coder_6p7b/d0105c864648/L1_cpp_dev.parquet: 9 rows identical
+[OK] metrics/stone/deepseek_coder_6p7b/d0105c864648/L1_java_dev.parquet: 9 rows identical
+[OK] metrics/stone/deepseek_coder_6p7b/d0105c864648/L1_python_dev.parquet: 9 rows identical
+[OK] metrics/stone/qwen25_coder_7b/d0105c864648/L1_cpp_dev.parquet: 9 rows identical
+[OK] metrics/stone/qwen25_coder_7b/d0105c864648/L1_java_dev.parquet: 9 rows identical
+[OK] metrics/stone/qwen25_coder_7b/d0105c864648/L1_python_dev.parquet: 9 rows identical
+[OK] metrics/sweet/deepseek_coder_6p7b/356dd3cf78ee/L1_cpp_dev.parquet: 7 rows identical
+[OK] metrics/sweet/deepseek_coder_6p7b/356dd3cf78ee/L1_java_dev.parquet: 7 rows identical
+[OK] metrics/sweet/deepseek_coder_6p7b/356dd3cf78ee/L1_javascript_dev.parquet: 7 rows identical
+[OK] metrics/sweet/deepseek_coder_6p7b/356dd3cf78ee/L1_python_dev.parquet: 7 rows identical
+[OK] metrics/sweet/qwen25_coder_7b/356dd3cf78ee/L1_cpp_dev.parquet: 7 rows identical
+[OK] metrics/sweet/qwen25_coder_7b/356dd3cf78ee/L1_java_dev.parquet: 7 rows identical
+[OK] metrics/sweet/qwen25_coder_7b/356dd3cf78ee/L1_javascript_dev.parquet: 7 rows identical
+[OK] metrics/sweet/qwen25_coder_7b/356dd3cf78ee/L1_python_dev.parquet: 7 rows identical
+[OK] metrics_L1L2/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 8 rows identical
+[OK] metrics_L1L2/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 8 rows identical
+[OK] metrics_L1L2/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 20 rows identical
+[OK] metrics_L1L2/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 8 rows identical
+[OK] metrics_L1L2/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 8 rows identical
+[OK] metrics_L1L2/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 20 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.1/64c5926a3776/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.1/64c5926a3776/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.1__attack_params_hash=64c5926a3776: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.1/64c5926a3776/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.1/64c5926a3776/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.1__attack_params_hash=64c5926a3776: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.1/64c5926a3776/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.2/099e4625be84/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.2/099e4625be84/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.2__attack_params_hash=099e4625be84: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.2/099e4625be84/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.2/099e4625be84/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.2__attack_params_hash=099e4625be84: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.2/099e4625be84/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[ERROR] metrics_L1L2/attacked/T1.2/d029403011c8/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.2__attack_params_hash=d029403011c8: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[ERROR] metrics_L1L2/attacked/T1.2/d029403011c8/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.2__attack_params_hash=d029403011c8: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.2/d029403011c8/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/d029403011c8/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/d029403011c8/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/d029403011c8/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/d029403011c8/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/d029403011c8/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/d029403011c8/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.2/d029403011c8/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.3/9c5c9c818076/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.3/9c5c9c818076/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.3__attack_params_hash=9c5c9c818076: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.3/9c5c9c818076/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.3/9c5c9c818076/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.3__attack_params_hash=9c5c9c818076: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/9c5c9c818076/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.3/cf94035eb2cc/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.3/cf94035eb2cc/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.3__attack_params_hash=cf94035eb2cc: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.3/cf94035eb2cc/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.3/cf94035eb2cc/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.3__attack_params_hash=cf94035eb2cc: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.3/cf94035eb2cc/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.4/0ad38d8e9413/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/0ad38d8e9413/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=0ad38d8e9413: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.4/0ad38d8e9413/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/0ad38d8e9413/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=0ad38d8e9413: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0ad38d8e9413/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.4/0e5ca5d90163/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/0e5ca5d90163/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=0e5ca5d90163: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.4/0e5ca5d90163/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/0e5ca5d90163/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=0e5ca5d90163: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/0e5ca5d90163/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.4/23f6be2801c3/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/23f6be2801c3/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=23f6be2801c3: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.4/23f6be2801c3/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/23f6be2801c3/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=23f6be2801c3: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/23f6be2801c3/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.4/2980f994225b/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/2980f994225b/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=2980f994225b: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.4/2980f994225b/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/2980f994225b/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=2980f994225b: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2980f994225b/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.4/2a4beca18363/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/2a4beca18363/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=2a4beca18363: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.4/2a4beca18363/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/2a4beca18363/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=2a4beca18363: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/2a4beca18363/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.4/90a2b392574c/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/90a2b392574c/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=90a2b392574c: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.4/90a2b392574c/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/90a2b392574c/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=90a2b392574c: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/90a2b392574c/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.4/a6134274dc08/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/a6134274dc08/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=a6134274dc08: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.4/a6134274dc08/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/a6134274dc08/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=a6134274dc08: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/a6134274dc08/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.4/e2770ff72bae/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/e2770ff72bae/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=e2770ff72bae: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.4/e2770ff72bae/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.4/e2770ff72bae/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.4__attack_params_hash=e2770ff72bae: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.4/e2770ff72bae/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.5/22e881a50348/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.5/22e881a50348/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.5__attack_params_hash=22e881a50348: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.5/22e881a50348/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.5/22e881a50348/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.5__attack_params_hash=22e881a50348: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/22e881a50348/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.5/705d07d343b2/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.5/705d07d343b2/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.5__attack_params_hash=705d07d343b2: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.5/705d07d343b2/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.5/705d07d343b2/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.5__attack_params_hash=705d07d343b2: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/705d07d343b2/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T1.5/cf35cfccc99a/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.5/cf35cfccc99a/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.5__attack_params_hash=cf35cfccc99a: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/attacked/T1.5/cf35cfccc99a/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[ERROR] metrics_L1L2/attacked/T1.5/cf35cfccc99a/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38__attack_id=T1.5__attack_params_hash=cf35cfccc99a: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T1.5/cf35cfccc99a/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/289415acd804/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/289415acd804/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/289415acd804/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/289415acd804/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.1/3abebad80f94/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.1/3abebad80f94/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/3abebad80f94/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/4cfbe044a955/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/4cfbe044a955/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/4cfbe044a955/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/4cfbe044a955/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/5626c2b32e67/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/5626c2b32e67/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/5626c2b32e67/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/5626c2b32e67/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/6b2ea56a1b09/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/6b2ea56a1b09/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/6b2ea56a1b09/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/6b2ea56a1b09/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/7c2ef655fc0c/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.1/ccf8c478420f/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.1/ccf8c478420f/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/ccf8c478420f/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.1/f39d410e0723/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.1/f39d410e0723/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.1/f39d410e0723/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.2/1d0f993b3c76/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.2/1d0f993b3c76/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/1d0f993b3c76/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.2/4cbc6372efdb/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.2/4cbc6372efdb/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.2/4cbc6372efdb/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4/214ddb2cb794/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4/214ddb2cb794/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/214ddb2cb794/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4/3ce510a0199e/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4/3ce510a0199e/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4/3ce510a0199e/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/1504a65ed908/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/1504a65ed908/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/1504a65ed908/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/1504a65ed908/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1504a65ed908/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/1bca60e72e7d/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/30c93a7dcf56/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/4507c4ca4936/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/4507c4ca4936/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/4507c4ca4936/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/4507c4ca4936/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/4507c4ca4936/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/5fe2d9e7cffc/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/8719411a1283/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/8719411a1283/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/8719411a1283/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/8719411a1283/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/8719411a1283/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ab2b269ef1e9/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/bb568508cfd6/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/bb568508cfd6/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/bb568508cfd6/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/bb568508cfd6/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/bb568508cfd6/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/caddd8b29336/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/caddd8b29336/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/caddd8b29336/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/caddd8b29336/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/caddd8b29336/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/acw/deepseek_coder_6p7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/acw/deepseek_coder_6p7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/acw/qwen25_coder_7b/86851261a344/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/acw/qwen25_coder_7b/86851261a344/L3_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T2.4k/ea8e987332ea/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/ea8e987332ea/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/ea8e987332ea/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T2.4k/ea8e987332ea/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T2.4k/ea8e987332ea/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T3.1/0b0f5086dab1/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T3.1/0b0f5086dab1/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T3.1/0b0f5086dab1/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T4.1/47969295f471/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T4.1/47969295f471/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/47969295f471/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/acw/deepseek_coder_6p7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/acw/qwen25_coder_7b/86851261a344/L1_python_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/attacked/T4.1/fe396d74371a/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK+] metrics_L1L2/attacked/T4.1/fe396d74371a/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 11 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.1/fe396d74371a/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.2/4e309c07bb95/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 9 rows identical
+[OK] metrics_L1L2/attacked/T4.2/4e309c07bb95/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 9 rows identical
+[OK+] metrics_L1L2/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L1_python_test.parquet: 12 rows identical; new: message_accuracy_detected
+[OK+] metrics_L1L2/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L2_python_test.parquet: 12 rows identical; new: message_accuracy_detected
+[OK+] metrics_L1L2/mcgmark/deepseek_coder_6p7b/6c30ca18a68e/L3_python_test.parquet: 24 rows identical; new: message_accuracy_detected
+[ERROR] metrics_L1L2/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=deepseek_coder_6p7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38: config 9df49d3f4f38 is not the frozen one (6c30ca18a68e)
+[OK+] metrics_L1L2/mcgmark/qwen25_coder_7b/697c5eb78b23/L1_python_test.parquet: 12 rows identical; new: message_accuracy_detected
+[OK+] metrics_L1L2/mcgmark/qwen25_coder_7b/697c5eb78b23/L2_python_test.parquet: 12 rows identical; new: message_accuracy_detected
+[OK+] metrics_L1L2/mcgmark/qwen25_coder_7b/697c5eb78b23/L3_python_test.parquet: 24 rows identical; new: message_accuracy_detected
+[ERROR] metrics_L1L2/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: ConfigError: bench.domain.errors.ConfigError: method=mcgmark__model_id=qwen25_coder_7b__language=python__level=L1__split=test__config_hash=9df49d3f4f38: config 9df49d3f4f38 is not the frozen one (697c5eb78b23)
+[OK] metrics_L1L2/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/promptmark/deepseek_coder_6p7b/a9253bfc9fbf/L3_python_test.parquet: 21 rows identical
+[OK] metrics_L1L2/promptmark/qwen25_coder_7b/a9253bfc9fbf/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/promptmark/qwen25_coder_7b/a9253bfc9fbf/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/promptmark/qwen25_coder_7b/a9253bfc9fbf/L3_python_test.parquet: 21 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/371d7425483f/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/371d7425483f/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/371d7425483f/L3_cpp_test.parquet: 18 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/8aca8150359d/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/8aca8150359d/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/8aca8150359d/L3_python_test.parquet: 21 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/9f7859eded9c/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/9f7859eded9c/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/deepseek_coder_6p7b/9f7859eded9c/L3_java_test.parquet: 18 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/516ede2a875c/L1_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/516ede2a875c/L1_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/516ede2a875c/L2_cpp_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/516ede2a875c/L2_java_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/516ede2a875c/L3_cpp_test.parquet: 18 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/516ede2a875c/L3_java_test.parquet: 18 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/8de321b62de6/L1_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/8de321b62de6/L2_python_test.parquet: 9 rows identical
+[OK] metrics_L1L2/stone/qwen25_coder_7b/8de321b62de6/L3_python_test.parquet: 21 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/11e7f6c8edde/L1_cpp_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/11e7f6c8edde/L2_cpp_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/11e7f6c8edde/L3_cpp_test.parquet: 16 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/5dea927e685a/L1_javascript_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/5dea927e685a/L2_javascript_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/5dea927e685a/L3_javascript_test.parquet: 16 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_java_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/c31d20315a9d/L1_python_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_java_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/c31d20315a9d/L2_python_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_java_test.parquet: 16 rows identical
+[OK] metrics_L1L2/sweet/deepseek_coder_6p7b/c31d20315a9d/L3_python_test.parquet: 19 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/05877f819f63/L1_python_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/05877f819f63/L2_python_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/05877f819f63/L3_python_test.parquet: 19 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/887251018a09/L1_javascript_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/887251018a09/L2_javascript_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/887251018a09/L3_javascript_test.parquet: 16 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/c31d20315a9d/L1_java_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/c31d20315a9d/L2_java_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/c31d20315a9d/L3_java_test.parquet: 16 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/ff5452dcffaa/L1_cpp_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/ff5452dcffaa/L2_cpp_test.parquet: 7 rows identical
+[OK] metrics_L1L2/sweet/qwen25_coder_7b/ff5452dcffaa/L3_cpp_test.parquet: 16 rows identical
+
+cells compared: 1036 in 3973 s
+  identical: 902
+  with_new_rows: 100
+  different: 0
+  error: 34
+  skipped: 0
+outcome: FAIL
