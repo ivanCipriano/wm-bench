@@ -142,3 +142,55 @@ def test_missing_manifest_is_an_error(script: ModuleType, chain: Path, tmp_path:
         assert script.main(argv) == 1
     text = report.read_text(encoding="utf-8")
     assert "[ERROR]" in text and "no usable manifest" in text
+
+
+def test_test_cells_skip_only_the_freeze_check(
+    script: ModuleType, monkeypatch: pytest.MonkeyPatch, cfg: Any
+) -> None:
+    """Sul test il ricalcolo salta ``_check_test`` (in memoria, nessuna scrittura); la fase no."""
+    from bench.domain.errors import ConfigError
+    from bench.pipeline.stage import Cell
+    from bench.pipeline.stages.metrics import MetricsStage
+
+    def strict(self: Any, *args: Any) -> None:
+        raise ConfigError("config x is not the frozen one (y)")
+
+    def run(self: Any, cell: Any, ctx: Any) -> None:
+        self._check_test(ctx, cell, None, None)
+        self._write(ctx, cell, ["row"])
+
+    monkeypatch.setattr(MetricsStage, "_check_test", strict)
+    monkeypatch.setattr(MetricsStage, "run", run)
+    cell = Cell(method="mcgmark", model_id="m", level="L1", language="python", split="test")
+    assert script.recompute(cfg, cell) == ["row"]
+    with pytest.raises(ConfigError, match="frozen"):  # la fase resta com'era
+        MetricsStage(cfg)._check_test(None, cell, None, None)
+
+
+def test_only_errors_from_redoes_the_error_cells(script: ModuleType, chain: Path) -> None:
+    art = chain / "artifacts"
+    cells = sorted(p.relative_to(art).as_posix() for p in (art / "metrics").rglob("*.parquet"))
+    previous = chain.parent / "compat_previous.txt"
+    previous.write_text(
+        "# P2 common changes: ... (scripts/check_metrics_compat.py, ADR-017)\n"
+        f"[OK] {cells[1]}: 10 rows identical\n"
+        f"[ERROR] {cells[0]}: ConfigError: config x is not the frozen one (y)\n",
+        encoding="utf-8",
+    )
+    report = chain.parent / "compat_only.txt"
+    argv = ["--only-errors-from", str(previous), "--report", str(report), "paths=local"]
+    assert script.main(argv) == 0
+    text = report.read_text(encoding="utf-8")
+    assert "cells compared: 1 " in text and f"[OK] {cells[0]}" in text and cells[1] not in text
+    assert "test cells recomputed without the freeze check: 0" in text
+    # una cella del vecchio riepilogo che non c'è più resta un errore
+    previous.write_text(previous.read_text(encoding="utf-8") + "[ERROR] metrics/x/y.parquet: E\n",
+                        encoding="utf-8")  # fmt: skip
+    report2 = chain.parent / "compat_only2.txt"
+    argv2 = ["--only-errors-from", str(previous), "--report", str(report2), "paths=local"]
+    assert script.main(argv2) == 1
+    assert "[ERROR] metrics/x/y.parquet: not found" in report2.read_text(encoding="utf-8")
+    bogus = chain.parent / "bogus.txt"
+    bogus.write_text("hello\n", encoding="utf-8")
+    argv3 = ["--only-errors-from", str(bogus), "--report", str(chain.parent / "r3.txt")]
+    assert script.main(argv3) == 1

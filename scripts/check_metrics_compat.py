@@ -21,6 +21,17 @@ e ``ci_high`` (primo tentativo sul cluster, 16 novembre 2026). Il percorso serve
 controllare che il manifest sia della stessa cella; anche ``detection.n_bootstrap`` deve essere
 quello del manifest.
 
+**Celle di test.** ``MetricsStage.run`` sul test controlla che la configurazione e la soglia
+siano quelle congelate (``_check_test``, ADR-013). Una cella di test calcolata con un
+congelamento precedente (per esempio MCGMark L1 con la configurazione ``9df49d3f4f38``) oggi non
+passerebbe quel controllo. Lo script vuole solo rifare il calcolo e non scrive nulla, quindi qui
+il controllo si salta: soltanto in questo script, solo per il ricalcolo in memoria, con una nota
+``freeze check skipped`` sulla riga della cella e un conteggio nel riepilogo. Il comportamento
+della fase ``metrics`` non cambia.
+
+``--only-errors-from REPORT`` rifà solo le celle segnate ``[ERROR]`` in un riepilogo precedente
+dello stesso script.
+
 Nota: il parquet è stato scritto dal codice del momento in cui la cella è stata calcolata. Una
 differenza può quindi venire anche da una modifica precedente a P2; in quel caso si rilancia lo
 stesso controllo dal commit di prima delle modifiche comuni (``955ab01``) per attribuirla.
@@ -159,7 +170,8 @@ def manifest_cell(path: Path, info: dict[str, Any], n_bootstrap: int) -> Any:
 
 
 def recompute(cfg: Any, cell: Any) -> list[Any]:
-    """Metriche della cella ricalcolate in memoria (``MetricsStage._write`` sostituito)."""
+    """Metriche della cella ricalcolate in memoria (``MetricsStage._write`` sostituito; sul test
+    senza il controllo di congelamento, ``_check_test``: in sola lettura non serve)."""
     from bench.pipeline.facade import BenchmarkFacade
     from bench.pipeline.stage import StageContext
     from bench.pipeline.stages.metrics import MetricsStage
@@ -172,8 +184,24 @@ def recompute(cfg: Any, cell: Any) -> list[Any]:
     facade = BenchmarkFacade(cfg)
     stage = MetricsStage(cfg)
     stage._write = collect  # type: ignore[method-assign,assignment]
+    stage._check_test = lambda *a, **k: None  # type: ignore[method-assign]
     stage.run(cell, StageContext(cfg, facade.store, facade.provenance, "metrics", cell))
     return captured
+
+
+ERROR_LINE = re.compile(r"^\[ERROR\] (\S+): ")
+
+
+def error_cells(report: Path) -> set[str]:
+    """Celle (percorsi relativi agli artefatti) segnate ``[ERROR]`` in un riepilogo precedente.
+
+    Raises:
+        ValueError: se il file non è un riepilogo di questo script.
+    """
+    text = report.read_text(encoding="utf-8")
+    if "scripts/check_metrics_compat.py" not in text.splitlines()[0]:
+        raise ValueError(f"{report} is not a check_metrics_compat.py report")
+    return {m.group(1) for line in text.splitlines() if (m := ERROR_LINE.match(line))}
 
 
 def main(argv: Sequence[str] | None = None) -> int:  # noqa: PLR0915
@@ -181,11 +209,19 @@ def main(argv: Sequence[str] | None = None) -> int:  # noqa: PLR0915
     p.add_argument("--methods", nargs="+", default=list(EXISTING), choices=EXISTING)
     p.add_argument("--max-cells", type=int, default=None, help="stop after N cells (trial run)")
     p.add_argument("--report", type=Path, required=True, help="log file (must not exist)")
+    p.add_argument("--only-errors-from", type=Path, help="redo only the [ERROR] cells of a report")
     p.add_argument("overrides", nargs="*", help="Hydra overrides (default paths=cluster)")
     args = p.parse_args(argv)
     if args.report.exists():
         print(f"[ERROR] {args.report} already exists (logs are never overwritten)", file=sys.stderr)
         return 1
+    only: set[str] | None = None
+    if args.only_errors_from is not None:
+        try:
+            only = error_cells(args.only_errors_from)
+        except (OSError, ValueError, IndexError) as exc:
+            print(f"[ERROR] --only-errors-from: {exc}", file=sys.stderr)
+            return 1
 
     import bench
     from bench.config.builder import load_experiment
@@ -211,9 +247,17 @@ def main(argv: Sequence[str] | None = None) -> int:  # noqa: PLR0915
         f"host {socket.gethostname()}, wm-bench {commit}",
         f"# artifacts {root}; methods {' '.join(args.methods)}; tolerance {TOL}",
         f"# bench from {Path(bench.__file__).resolve().parent}; cells from the parquet manifests",
-        "",
+        "# test cells: recomputed read-only without the freeze check (MetricsStage._check_test)",
     ]
+    if only is not None:
+        lines.append(f"# only the {len(only)} [ERROR] cells of {args.only_errors_from}")
+        found = {p.relative_to(root).as_posix() for p in paths}
+        lines += [f"[ERROR] {rel}: not found under the artifacts" for rel in sorted(only - found)]
+        paths = [p for p in paths if p.relative_to(root).as_posix() in only]
+    lines.append("")
     counts = {"identical": 0, "with_new_rows": 0, "different": 0, "error": 0, "skipped": 0}
+    counts["error"] += sum(line.startswith("[ERROR]") for line in lines)
+    n_freeze = 0
     n_cells = 0
     start = time.time()
     for path in paths:
@@ -231,6 +275,8 @@ def main(argv: Sequence[str] | None = None) -> int:  # noqa: PLR0915
             captured = recompute(cfg, cell)
             old = pd.read_parquet(path)
             diffs, added = compare(old, captured, info["attack_id"] is not None)
+            note = " (test: freeze check skipped)" if cell.split == "test" else ""
+            n_freeze += bool(note)
         except Exception as exc:  # una cella che non si ricalcola si conta e si mostra
             counts["error"] += 1
             last = traceback.format_exc().strip().splitlines()[-1]
@@ -238,18 +284,19 @@ def main(argv: Sequence[str] | None = None) -> int:  # noqa: PLR0915
             continue
         if diffs:
             counts["different"] += 1
-            lines.append(f"[DIFF] {rel}")
+            lines.append(f"[DIFF] {rel}{note}")
             lines += [f"    {d}" for d in diffs]
         elif added:
             counts["with_new_rows"] += 1
-            lines.append(f"[OK+] {rel}: {len(old)} rows identical; new: {', '.join(added)}")
+            lines.append(f"[OK+] {rel}: {len(old)} rows identical; new: {', '.join(added)}{note}")
         else:
             counts["identical"] += 1
-            lines.append(f"[OK] {rel}: {len(old)} rows identical")
+            lines.append(f"[OK] {rel}: {len(old)} rows identical{note}")
     lines += [
         "",
         f"cells compared: {n_cells} in {time.time() - start:.0f} s",
         *(f"  {k}: {v}" for k, v in counts.items()),
+        f"  test cells recomputed without the freeze check: {n_freeze}",
         "outcome: " + ("PASS" if counts["different"] == 0 and counts["error"] == 0 else "FAIL"),
     ]
     text = "\n".join(lines) + "\n"
