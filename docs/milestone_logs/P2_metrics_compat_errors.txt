@@ -1,0 +1,50 @@
+# P2 common changes: metrics of existing methods recomputed vs metrics*/ parquet (scripts/check_metrics_compat.py, ADR-017)
+# date 2026-11-17T09:54:41+01:00, host tnode01, wm-bench 0608a41b3f58ef86b128124a7556945a70e0f710
+# artifacts /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts; methods sweet acw stone promptmark mcgmark; tolerance 1e-09
+# bench from /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench/src/bench; cells from the parquet manifests
+# test cells: recomputed read-only without the freeze check (MetricsStage._check_test)
+# only the 34 [ERROR] cells of docs/milestone_logs/P2_metrics_compat.txt
+
+[OK+] metrics_L1L2/attacked/T1.1/64c5926a3776/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.1/64c5926a3776/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.2/099e4625be84/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.2/099e4625be84/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.2/d029403011c8/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.2/d029403011c8/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.3/9c5c9c818076/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.3/9c5c9c818076/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.3/cf94035eb2cc/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.3/cf94035eb2cc/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/0ad38d8e9413/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/0ad38d8e9413/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/0e5ca5d90163/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/0e5ca5d90163/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/23f6be2801c3/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/23f6be2801c3/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/2980f994225b/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/2980f994225b/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/2a4beca18363/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/2a4beca18363/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/90a2b392574c/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/90a2b392574c/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/a6134274dc08/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/a6134274dc08/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/e2770ff72bae/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.4/e2770ff72bae/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.5/22e881a50348/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.5/22e881a50348/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.5/705d07d343b2/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.5/705d07d343b2/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.5/cf35cfccc99a/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/attacked/T1.5/cf35cfccc99a/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 9 rows identical; new: bit_accuracy, embedding_success_rate, message_accuracy, message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/mcgmark/deepseek_coder_6p7b/9df49d3f4f38/L1_python_test.parquet: 12 rows identical; new: message_accuracy_detected (test: freeze check skipped)
+[OK+] metrics_L1L2/mcgmark/qwen25_coder_7b/9df49d3f4f38/L1_python_test.parquet: 12 rows identical; new: message_accuracy_detected (test: freeze check skipped)
+
+cells compared: 34 in 65 s
+  identical: 0
+  with_new_rows: 34
+  different: 0
+  error: 0
+  skipped: 0
+  test cells recomputed without the freeze check: 34
+outcome: PASS
