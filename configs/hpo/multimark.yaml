@@ -1,6 +1,18 @@
-# Griglia HPO di multimark (PIPELINE_metodo.md di multimark §6.4): un solo punto, la configurazione
-# di base di configs/method/multimark.yaml. Il solo fattore scelto fuori dall'HPO è il canale dei
-# nomi (§6.4); la scelta aggiornerà questo punto (deviazione D4x, ADR-021).
+# Griglia HPO di multimark (PIPELINE_metodo.md di multimark §6.4): la configurazione di base di
+# configs/method/multimark.yaml ({}). Il solo fattore scelto fuori dall'HPO è il canale dei nomi
+# (§6.4); la scelta aggiornerà questo punto (deviazione D4x, ADR-021).
+#
+# Pipeline v1.3.0 (17 novembre 2026): due punti dell'ablazione di §6.3
+# (configs/hpo/multimark_ablation.yaml) anticipati su sviluppo, L1+L2 dev, per confrontarli con la
+# base nel secondo giro di P2 (sweep con hpo.grid=multimark nelle fasi watermark, execute, detect,
+# calibrate: ognuno ha il suo config_hash, stampato da scripts/posthoc_config_hashes.py). Non sono
+# una scelta: la fase tune non si lancia su multimark finché la scelta non si fa con il criterio
+# di §6.4 (P5).
 method: multimark
+# config_hash con la libreria 475d4cc (scripts/posthoc_config_hashes.py; il test
+# tests/unit/test_posthoc_config_hashes.py li ricontrolla). Primo giro, libreria 488fb5a: base
+# 194b0aa80f9f.
 include:
-  - {}
+  - {}                                          # 59a04735824c
+  - {names.single_letter: extend_except_loop}   # 94847adacd77
+  - {names.include_params: true}                # acac071d50d5
