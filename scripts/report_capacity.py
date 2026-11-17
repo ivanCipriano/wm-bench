@@ -28,9 +28,13 @@ Versione da riga di comando, per i controlli su dev. La funzione ``capacity_by_s
 Lo stesso si fa per fascia di ``loc_to_generate`` (1–5, 6–10, 11–20, 21–40, 41+, le fasce
 dell'inventario).
 
-Uscite in ``--out-dir`` (default ``<artifacts>/_runs/diagnostics/capacity``):
-``capacity_by_sites_<metodo>_<modello>_<livello>[_<attacco>_<params>].csv`` e
-``capacity_by_loc_…csv``. Il riepilogo va su stdout o in ``--report`` (che non deve esistere).
+Uscite in ``--out-dir`` (default ``<artifacts>/_runs/diagnostics/capacity/<config_hash>``; fino
+al primo giro di P2 il default era la cartella ``capacity`` senza l'hash, e lì restano le tabelle
+di quel giro): ``capacity_by_sites_<metodo>_<modello>_<livello>[_<attacco>_<params>].csv`` e
+``capacity_by_loc_…csv``. Una tabella che esiste già con lo stesso contenuto non si riscrive; con
+contenuto diverso lo script si ferma senza toccarla (il nome non contiene l'hash della
+configurazione: due giri con la stessa cartella si scontrerebbero). Il riepilogo va su stdout o
+in ``--report`` (che non deve esistere).
 Gira in **bench-core**, solo lettura degli artefatti.
 
 Uso::
@@ -165,6 +169,25 @@ def _fmt(row: dict[str, Any]) -> str:
             + f("bit_accuracy") + f("pass_at_1"))  # fmt: skip
 
 
+class CapacityError(RuntimeError):
+    """Tabella già presente con contenuto diverso."""
+
+
+def write_table(path: Path, rows: list[dict[str, Any]]) -> None:
+    """Scrive la tabella; la lascia com'è se c'è già uguale.
+
+    Raises:
+        CapacityError: se esiste con contenuto diverso (non si sovrascrive).
+    """
+    data = pd.DataFrame(rows).to_csv(index=False).encode("utf-8")
+    if path.exists():
+        if path.read_bytes() != data:
+            raise CapacityError(f"{path} exists with different content: use another --out-dir")
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data)
+
+
 def report_cell(
     store: Any, info: dict[str, Any], message_bits: int, tau: float, seed: int, out_dir: Path
 ) -> list[str]:
@@ -180,8 +203,7 @@ def report_cell(
     for kind, column, bands in (("sites", "n_sites", SITE_BANDS),
                                 ("loc", "loc_to_generate", LOC_BANDS)):  # fmt: skip
         rows = band_rows(table, column, bands, message_bits, tau, seed)
-        out_dir.mkdir(parents=True, exist_ok=True)
-        pd.DataFrame(rows).to_csv(out_dir / f"capacity_by_{kind}_{name}.csv", index=False)
+        write_table(out_dir / f"capacity_by_{kind}_{name}.csv", rows)
         lines += [f"by {column}:", head, *(_fmt(r) for r in rows)]
     return [*lines, ""]
 
@@ -228,7 +250,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     bits = stage._message_bits(args.method)
     h = args.config_hash or stage.config_hash(args.method)
     store = ArtifactStore(Path(cfg.paths.artifacts))
-    out_dir = args.out_dir or Path(cfg.paths.artifacts) / "_runs" / "diagnostics" / "capacity"
+    out_dir = args.out_dir or Path(cfg.paths.artifacts) / "_runs" / "diagnostics" / "capacity" / h
     t_levels = args.threshold_levels or args.levels
     lines = [
         f"# capacity by number of sites (scripts/report_capacity.py; PIPELINE §5.6), "
@@ -251,7 +273,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 cells += [{**base, "attack_id": a, "attack_params_hash": ph} for a, ph in found]
             for info in cells:
                 seed = derive_seed(cfg.global_seed, "capacity", *sorted(map(str, info.values())))
-                lines += report_cell(store, info, bits, thresholds.threshold, seed, out_dir)
+                try:
+                    lines += report_cell(store, info, bits, thresholds.threshold, seed, out_dir)
+                except CapacityError as exc:
+                    print(f"[ERROR] {exc}", file=sys.stderr)
+                    return 1
     text = "\n".join(lines) + "\n"
     if args.report is None:
         sys.stdout.write(text)
