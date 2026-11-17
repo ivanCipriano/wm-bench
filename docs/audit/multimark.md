@@ -81,7 +81,11 @@ Note:
 - **Modulo, adapter contro libreria.** `names.module_level` vale `true` nell'adapter ma `false`
   nel default della libreria (`multimark_base()`), che resta quello di prima della decisione O.
   `tests/unit/test_posthoc_adapters.py` verifica che sia l'unica differenza fra i due profili.
-- **Griglie.** `configs/hpo/multimark.yaml` ha un solo punto, la base (§6.4).
+- **Griglie.** `configs/hpo/multimark.yaml` ha la base (§6.4) e, dalla pipeline v1.3.0, due
+  punti di §6.3 anticipati su sviluppo (`names.single_letter=extend_except_loop`,
+  `names.include_params=true`), ognuno con il suo `config_hash`; si lanciano come sweep
+  (`hpo.grid=multimark`) nelle fasi watermark, execute, detect e calibrate del secondo giro di
+  P2, e la fase `tune` non si lancia finché la scelta non si fa con il criterio di §6.4 (P5).
   `configs/hpo/multimark_ablation.yaml` ha i punti di §6.3 che si possono già definire.
 
 ## 4. Linguaggi
@@ -168,3 +172,29 @@ Le scelte del metodo che lo distinguono dalla reimplementazione (§0.1, §3) son
 Ogni scelta ha un punto di ablazione (§6.3). Le regole comuni di lettura e scrittura (MD1, MD6,
 MD9–MD17 dell'audit di `mcss`) valgono anche qui. T1.4 rinomina solo nomi negli scope di funzione:
 le variabili di modulo (decisione O) non sono colpite da T1.4 ma lo saranno da T1.6 (§5.5).
+
+## Secondo giro di P2 (pipeline v1.3.0, 17 novembre 2026)
+
+La libreria `4ea0d43` (submodule a `475d4cc`) corregge i casi del criterio (a) del primo giro
+(MD20–MD26 di `docs/mcss_deviations.md` della libreria). Il giro si rifà senza toccare il primo:
+
+- **Celle distinte.** Il `config_hash` contiene il commit della copia patchata
+  (`build/patched/multimark.source_commit`, ADR-003): con la libreria nuova `mcss` passa da
+  `d68986489777` a `1d0c64c5124e`, `multimark` da `194b0aa80f9f` a `59a04735824c`, quindi tutti i
+  percorsi di `watermarked/`, `execution/`, `detection/`, `thresholds/` e `metrics_L1L2/` sono
+  nuovi. La pipeline salta solo le celle con tutte le uscite già presenti e nessuna fase scrive su
+  un'uscita esistente. Il controllo che conta è che submodule, copia patchata e commit atteso
+  coincidano (con la copia vecchia gli hash tornerebbero quelli del primo giro e la pipeline
+  salterebbe tutto): `scripts/run_p2_round2.sh` lo fa prima di ogni fase.
+- **Inventario e selezione.** `scripts/inventory_sites.sh selftest_r2`: tabella `mcss` con
+  `--linking positional --name-variant V1` (le condizioni del lettore di MD20 e MD23 dipendono dal
+  legame e dalla variante dei nomi), selezione e dettaglio della fascia in uscite separate per
+  commit (`mcss_selftest_r2_<c>.*`).
+- **Uscite non separate per hash.** Le tabelle di `scripts/report_capacity.py` avevano un nome
+  senza l'hash e venivano riscritte: ora il default è `capacity/<config_hash>/` e una tabella
+  diversa da quella esistente ferma lo script. `scripts/report_metrics.py --config` stampa solo
+  le celle del secondo giro.
+- **Soglia teorica fissa.** `report_metrics.py` riporta per `mcss` e `multimark`, accanto alla
+  soglia calibrata del benchmark (che resta la regola), TPR, FPR umano e FPR LLM con
+  `score >= 2` (p ≤ 0,01), per livello. È una riga in più del riepilogo, non una metrica della
+  fase `metrics`.
