@@ -319,7 +319,13 @@ def _check_round3_report(facade: BenchmarkFacade, default_hash: str, candidates:
     assert "no detection of the attacked samples" in text3[: text3.index("### T1.5 k=5")]
     crit = text3[text3.index("## selection criterion") : text3.index("## attribution curve")]
     assert "max ΔPass@1 pp" in crit and "FPR_2 L1" in crit and "incomplete" in crit
+    assert "renames/sample" in crit and f"renames {MODEL} L1 " in crit
+    assert "(n=0)" not in crit  # results.jsonl dell'inserimento letti per ogni configurazione
     curve = text3[text3.index("### attribution vs K") :]
+    attacked = curve[
+        curve.index("### attribution vs K (§5.11), T1.4 name_kind=natural ratio=1.0") :
+    ]
+    assert "no detection" in attacked  # T1.4 non è nella catena dello smoke test
     assert f"base {default_hash}" in curve and f"dev0 {candidates[0]}" in curve
     assert f"dev1 {candidates[1]}" not in curve and "dec16" in curve
     assert script3.main(argv3) == 1  # il report esiste già

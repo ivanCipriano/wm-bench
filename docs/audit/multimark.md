@@ -220,9 +220,10 @@ toccare i precedenti (`scripts/run_p2_round3.sh`, log `P2_round3.txt`):
 - **Attacchi.** Insieme S di v1.3.3 (T1.4 natural r = 1,0; T1.4 random r = 0,5; T1.5 k = 5; T2.1
   b = all; T2.4 p = 0,5; T4.1 rename = true): si lanciano le griglie intere di T1.4, T1.5, T2.1,
   T2.4 e T4.1 (19 punti) perché la pipeline non sceglie singoli punti; il report usa solo S.
-- **Report** (`scripts/report_round3.py`): TPR alla soglia calibrata (nuova, L1+L2) e alla
-  soglia teorica per condizione di S e fascia di siti; il criterio di v1.3.3 (media su S del TPR
-  calibrato, ogni condizione su tutti i campioni di L1+L2 e dei due modelli) con i vincoli
-  ΔPass@1 ≤ 3 pp per cella e FPR umano alla soglia teorica ≤ 1% per livello (impercettibilità in
-  P5); la curva in K di §5.11 per `mcss`, base e C, con il controllo sulle esche `nreg16` e
-  `nreg1024`.
+- **Report** (`scripts/report_round3.py`, pipeline v1.3.4): TPR alla soglia calibrata (nuova,
+  L1+L2) e alla soglia teorica per condizione di S e fascia di siti; il criterio (media su S del
+  TPR calibrato; ogni condizione è la media semplice delle quattro celle modello × livello) con i
+  vincoli ΔPass@1 ≤ 3 pp per cella e FPR umano alla soglia teorica ≤ 1% per livello
+  (impercettibilità in P5); numero medio di nomi rinominati per campione (`n_renamed` degli extra
+  dell'inserimento) per la regola di parità; la curva in K di §5.11 per `mcss`, base e C, senza
+  attacco e sotto T1.4 natural r = 1,0, con il controllo sulle esche `nreg16` e `nreg1024`.

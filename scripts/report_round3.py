@@ -1,4 +1,4 @@
-"""Giro di capacità su sviluppo (pipeline di multimark v1.3.3): criterio di scelta e curva in K.
+"""Giro di capacità su sviluppo (pipeline di multimark v1.3.4): criterio di scelta e curva in K.
 
 Per ogni configurazione (``--config metodo:hash[:etichetta]``: ``mcss``, ``multimark`` base e i
 punti di sviluppo di ``configs/hpo/multimark.yaml``), su L1 e L2 dev e per ogni modello, lo
@@ -12,18 +12,24 @@ script legge gli artefatti delle fasi ``detect``, ``calibrate`` e ``metrics`` e 
    configurazione (``thresholds/.../L1L2/<hash>``) e ``tpr_2`` con la soglia teorica fissa
    ``score >= 2`` (p ≤ 0,01), con la decisione della fase ``metrics``
    (``bench.metrics.calibration.detected``).
-2. **Criterio di scelta di v1.3.3.** Per ogni configurazione la media su S del TPR alla soglia
-   calibrata; il TPR di ogni condizione è quello di tutti i campioni di L1+L2 e dei due modelli
-   insieme (somma dei rilevati diviso somma dei campioni). Vincoli:
+2. **Criterio di scelta (v1.3.3, aggregazione di v1.3.4).** Per ogni configurazione la media su
+   S del TPR alla soglia calibrata; il TPR di ogni condizione è la **media semplice delle quattro
+   celle** modello × livello (L1 e L2 pesano uguale, qualunque sia il numero di campioni).
+   Vincoli:
    - ``ΔPass@1`` (``delta_pass_at_1_pp`` della fase ``metrics``, baseline − marcato, in punti
      percentuali) ≤ 3 su ogni cella (modello, livello) senza attacco;
    - FPR su codice umano (``neg_human``) alla soglia teorica ≤ 1% su ogni livello (i due modelli
      insieme; si stampano anche i valori per modello);
    - impercettibilità (``adversarial_logreg``): si misura in P5, qui ``n/d``.
-   A parità entro 0,01 vince la configurazione con meno rinomine: lo script segnala le parità,
-   il numero di rinomine non è fra gli artefatti letti.
+   **Rinomine**: numero medio di nomi rinominati per campione, da ``n_renamed`` negli ``extra``
+   dell'inserimento (``_runs/watermark/<metodo>/<modello>/<hash>/<livello>_<ling>_<split>/
+   results.jsonl``; inserimento ``FAILED`` o senza il campo = 0: il codice resta quello della
+   baseline), media delle quattro celle come per il TPR. A parità entro 0,01 dalla prima
+   configurazione che rispetta i vincoli vince quella con meno rinomine: la classifica mette
+   prima il gruppo in parità ordinato per rinomine, poi le altre.
 3. **Curva di attribuzione in K (§5.11)** per le configurazioni di ``--curve`` (default:
-   ``mcss``, ``multimark``, ``C``), sui marcati senza attacco: con p = 10^(−score) (il punteggio
+   ``mcss``, ``multimark``, ``C``), sui marcati senza attacco e sotto T1.4 natural r = 1,0
+   (``CURVE_POINT``, v1.3.4): con p = 10^(−score) (il punteggio
    principale è il p-value esatto P[Bin(N, 1/2) ≥ A] di ``(A, N)``), ``score_K = −log10(1 − (1 −
    p)^K)`` (Šidák) e TPR con ``score_K >= 2`` per K ∈ {1, 16, 256, 4.096, 65.536, 2^20, 2^24},
    per fascia di siti. Controllo con le esche vere: per K = 16 e K = 1.024 la frazione dei
@@ -76,6 +82,9 @@ NO_ATTACK = "no attack"
 K_VALUES = (1, 16, 256, 4096, 65536, 2**20, 2**24)
 CONTROL_K = (16, 1024)
 DEFAULT_CURVE = ("mcss", "multimark", "C")
+# Condizione attaccata della curva in K (v1.3.4), oltre ai marcati senza attacco.
+CURVE_POINT = ("T1.4", {"ratio": 1.0, "name_kind": "natural"})
+EMBEDDED = ("OK", "PARTIAL")
 
 
 def _load(name: str) -> Any:
@@ -190,21 +199,41 @@ def curve_stats(table: pd.DataFrame, cap: Any, bands: Sequence[Any]) -> dict[str
 
 
 @dataclass
-class Pooled:
-    """Rilevati e campioni sommati su più celle."""
+class CellMean:
+    """Media semplice di un valore sulle celle (modello, livello): ogni cella pesa uguale."""
 
-    hits: float = 0.0
-    n: int = 0
+    values: list[float] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)
 
-    def add(self, rate: float, n: int) -> None:
-        if n and not math.isnan(rate):
-            self.hits += rate * n
-            self.n += n
+    def add(self, value: float, where: str) -> None:
+        if math.isnan(value):
+            self.missing.append(where)
+        else:
+            self.values.append(value)
 
     @property
     def rate(self) -> float:
-        return self.hits / self.n if self.n and not self.missing else math.nan
+        if not self.values or self.missing:
+            return math.nan
+        return sum(self.values) / len(self.values)
+
+
+def renames_per_sample(run_dir: Path) -> tuple[float, int]:
+    """(media di ``n_renamed`` per campione, campioni) dai ``results.jsonl`` dell'inserimento;
+    inserimento non riuscito o campo assente = 0. ``(nan, 0)`` se il file manca."""
+    path = run_dir / "results.jsonl"
+    if not path.is_file():
+        return math.nan, 0
+    values = []
+    with path.open(encoding="utf-8") as fh:
+        for line in fh:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            extra = row.get("extra") or {}
+            ok = row.get("status") in EMBEDDED
+            values.append(float(extra.get("n_renamed") or 0) if ok else 0.0)
+    return (sum(values) / len(values), len(values)) if values else (math.nan, 0)
 
 
 def _rate(table: pd.DataFrame, threshold: float) -> tuple[int, int]:
@@ -223,7 +252,9 @@ class Round3:
         self.configs = list(configs)
         self.points = list(points)
         self.conditions = [NO_ATTACK, *(p.label for p in points)]
-        self.pooled = {c.name: {cond: Pooled() for cond in self.conditions} for c in configs}
+        self.pooled = {c.name: {cond: CellMean() for cond in self.conditions} for c in configs}
+        self.renames = {c.name: CellMean() for c in configs}
+        self.renames_cells: dict[str, dict[str, tuple[float, int]]] = {c.name: {} for c in configs}
         self.delta_pass: dict[str, dict[str, float]] = {c.name: {} for c in configs}
         self.fpr: dict[str, dict[str, list[tuple[str, int, int]]]] = {c.name: {} for c in configs}
 
@@ -245,6 +276,13 @@ class Round3:
             return 0, 0
         return _rate(self.rep.store.read_table(ref), THEORETICAL_THRESHOLD)
 
+    def run_dir(self, c: Any, model: str, level: str, lang: str, split: str) -> Path:
+        """Cartella del worker dell'inserimento (``WatermarkStage``)."""
+        root = Path(self.rep.cfg.paths.artifacts)
+        cell = f"{level}_{lang}_{split}"
+        out: Path = root / "_runs" / "watermark" / str(c.method) / model / str(c.config_hash) / cell
+        return out
+
     def cell_block(self, model: str, level: str, lang: str, split: str) -> list[str]:
         """Tabelle di S per una cella (modello, livello); accumula criterio e vincoli."""
         rep = self.rep
@@ -265,6 +303,9 @@ class Round3:
             self.delta_pass[c.name][f"{model} {level}"] = dp
             k, n = self.fpr_human(c, model, level, lang, split)
             self.fpr[c.name].setdefault(level, []).append((model, k, n))
+            mean, n_samples = renames_per_sample(self.run_dir(c, model, level, lang, split))
+            self.renames[c.name].add(mean, f"{model} {level}")
+            self.renames_cells[c.name][f"{model} {level}"] = (mean, n_samples)
         out = head
         labels = band_labels(rep.cap, rep.bands)
         for cond, point in [(NO_ATTACK, None), *((p.label, p) for p in self.points)]:
@@ -281,7 +322,7 @@ class Round3:
                     out.append(f"  {c.name:<34}no detection of the attacked samples")
                     self.pooled[c.name][cond].missing.append(f"{model} {level}")
                     continue
-                self.pooled[c.name][cond].add(stats["all"]["tpr_cal"], int(stats["all"]["n"]))
+                self.pooled[c.name][cond].add(stats["all"]["tpr_cal"], f"{model} {level}")
                 for label in labels:
                     row = stats[label]
                     if row["n"] == 0:
@@ -309,11 +350,12 @@ class Round3:
                 fprs[level] = k / n if n else math.nan
             ok_dp = not math.isnan(dp_max) and dp_max <= DELTA_PASS_MAX_PP
             ok_fpr = bool(fprs) and all(not math.isnan(f) and f <= FPR_MAX for f in fprs.values())
-            rows.append((c, mean, rates, dp_max, fprs, ok_dp and ok_fpr))
-        levels = sorted({lv for _, _, _, _, f, _ in rows for lv in f})
+            rows.append((c, mean, rates, dp_max, fprs, ok_dp and ok_fpr, self.renames[c.name].rate))
+        levels = sorted({lv for _, _, _, _, f, _, _ in rows for lv in f})
         out = [
             "## selection criterion (v1.3.3): mean over S of the TPR at the calibrated threshold",
-            "# TPR of each condition on all samples of L1+L2 and both models; constraints: "
+            "# TPR of each condition = simple mean of the 4 cells model x level (v1.3.4); "
+            "constraints: "
             f"ΔPass@1 <= {DELTA_PASS_MAX_PP:g} pp on every cell without attack, FPR on human code "
             f"at score >= {THEORETICAL_THRESHOLD:g} <= {FPR_MAX:.0%} on every level, "
             "imperceptibility in P5 (n/d)",
@@ -325,11 +367,11 @@ class Round3:
             out.append(f"  {c.name:<34}{_v(mean):>8}" + "".join(f"{_v(r):>26}" for r in rates))
         out += ["", "  " + f"{'config':<34}{'max ΔPass@1 pp':>16}"
                 + "".join(f"{'FPR_2 ' + lv:>12}" for lv in levels)
-                + f"{'imperc.':>9}{'constraints':>13}"]  # fmt: skip
-        for c, _, _, dp_max, fprs, ok in rows:
+                + f"{'imperc.':>9}{'constraints':>13}{'renames/sample':>16}"]  # fmt: skip
+        for c, _, _, dp_max, fprs, ok, ren in rows:
             fpr_txt = "".join(f"{_v(fprs.get(lv, math.nan)):>12}" for lv in levels)
             out.append(f"  {c.name:<34}{_v(dp_max):>16}{fpr_txt}{'n/d':>9}"
-                       f"{('ok' if ok else 'FAIL'):>13}")  # fmt: skip
+                       f"{('ok' if ok else 'FAIL'):>13}{_v(ren):>16}")  # fmt: skip
         out.append("  per cell:")
         for c, *_ in rows:
             dp_txt = " ".join(f"{cell} {_v(v)}" for cell, v in self.delta_pass[c.name].items())
@@ -338,14 +380,16 @@ class Round3:
                 for lv, vals in sorted(self.fpr[c.name].items())
                 for m, k, n in vals
             )
-            out.append(f"    {c.name}: ΔPass@1 pp {dp_txt}; FPR_2 {fpr_cells}")
-        valid = sorted((r for r in rows if r[5] and not math.isnan(r[1])), key=lambda r: -r[1])
-        out += ["", "  ranking (constraints met, imperceptibility pending until P5):"]
-        for i, (c, mean, *_rest) in enumerate(valid, 1):
-            tie = valid and valid[0][1] - mean <= TIE and i > 1
-            note = f"  tie with {valid[0][0].label} within {TIE}: fewer renames wins" if tie else ""
-            out.append(f"    {i}. {c.name}  mean_S {_v(mean)}{note}")
-        if not valid:
+            ren_txt = " ".join(
+                f"{cell} {_v(m)} (n={n})" for cell, (m, n) in self.renames_cells[c.name].items()
+            )
+            out.append(f"    {c.name}: ΔPass@1 pp {dp_txt}; FPR_2 {fpr_cells}; renames {ren_txt}")
+        out += ["", "  ranking (constraints met, imperceptibility pending until P5; within "
+                f"{TIE} of the best mean_S, fewer renames first):"]  # fmt: skip
+        for i, (c, mean, ren, tied) in enumerate(ranking(rows), 1):
+            note = "  [tie group: fewer renames wins]" if tied else ""
+            out.append(f"    {i}. {c.name}  mean_S {_v(mean)}  renames/sample {_v(ren)}{note}")
+        if not ranking(rows):
             out.append("    none")
         for c, *_ in rows:
             missing = sorted({m for p in self.pooled[c.name].values() for m in p.missing})
@@ -354,15 +398,36 @@ class Round3:
         return [*out, ""]
 
 
+def ranking(rows: Sequence[tuple[Any, ...]]) -> list[tuple[Any, float, float, bool]]:
+    """(config, mean_S, rinomine, in parità) delle configurazioni che rispettano i vincoli: prima
+    il gruppo entro ``TIE`` dalla media migliore, ordinato per rinomine (poi per media), poi le
+    altre per media decrescente."""
+    valid = sorted((r for r in rows if r[5] and not math.isnan(r[1])), key=lambda r: -r[1])
+    if not valid:
+        return []
+    best = valid[0][1]
+    tied = [r for r in valid if best - r[1] <= TIE]
+    rest = [r for r in valid if best - r[1] > TIE]
+    tied.sort(key=lambda r: (math.isnan(r[6]), r[6] if not math.isnan(r[6]) else 0.0, -r[1]))
+    multi = len(tied) > 1
+    return [(r[0], r[1], r[6], multi) for r in tied] + [(r[0], r[1], r[6], False) for r in rest]
+
+
 def curve_lines(rep: Any, cells: Sequence[Any], model: str, level: str, lang: str,
-                split: str) -> list[str]:  # fmt: skip
-    """Curva in K (§5.11) e controllo con le esche, per fascia di siti."""
+                split: str, point: Any = None) -> list[str]:  # fmt: skip
+    """Curva in K (§5.11) e controllo con le esche, per fascia di siti; con ``point`` sui
+    campioni attaccati di quel punto (``n_sites`` del genitore)."""
     ks = "".join(f"{f'2^{int(math.log2(k))}' if k > 1 else 'K=1':>9}" for k in K_VALUES)
     ctrl = "".join(f"{f'K{k}':>8}{f'dec{k}':>8}{'gap':>8}" for k in CONTROL_K)
-    out = [f"### attribution vs K (§5.11), marked without attack  {model} {level} {lang} {split}",
+    what = "marked without attack" if point is None else f"{point.label} [{point.params_hash}]"
+    out = [f"### attribution vs K (§5.11), {what}  {model} {level} {lang} {split}",
            f"  {'config':<34}{'band':<16}{'n':>6}{ks}   control:{ctrl}"]  # fmt: skip
     for d in cells:
-        table = rep.table(rep.info(d.config, model, level, lang, split))
+        try:
+            table = rep.table(rep.info(d.config, model, level, lang, split, point))
+        except Exception as exc:  # rilevazione mancante: si segnala
+            out.append(f"  {d.config.name:<34}no detection ({type(exc).__name__})")
+            continue
         stats = curve_stats(table, rep.cap, rep.bands)
         for label, row in stats.items():
             if row["n"] == 0:
@@ -415,6 +480,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     points = s_points(args.language)
     r3 = Round3(rep, args.config, points)
     curve_configs = [c for c in args.config if c.label in args.curve]
+    curve_point = next(q for q in points if q.attack_id == CURVE_POINT[0]
+                       and CURVE_POINT[1].items() <= q.params.items())  # fmt: skip
     lines = [
         "# capacity round on development (scripts/report_round3.py), "
         f"{datetime.now().astimezone().isoformat(timespec='seconds')}, {socket.gethostname()}",
@@ -437,6 +504,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 except Exception as exc:  # cella mancante: si segnala nella curva
                     curves.append(f"  {c.name} {model} {level}: missing ({type(exc).__name__})")
             curves += curve_lines(rep, cells, model, level, args.language, args.split)
+            curves += curve_lines(rep, cells, model, level, args.language, args.split, curve_point)
     lines += r3.criterion_lines()
     lines += ["## attribution curve in K (§5.11): TPR with score_K >= 2, "
               f"score_K = -log10(1 - (1 - p)^K); control with decoys (gap > {CONTROL_GAP} = !)",

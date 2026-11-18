@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import math
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -66,14 +67,46 @@ def test_curve_stats_and_decoy_control() -> None:
     assert stats["n_sites=0/none"]["n"] == 1 and stats["n_sites=0/none"]["K1"] == 0.0
 
 
-def test_pooled_rate_and_missing_cells() -> None:
-    p = script.Pooled()
-    p.add(0.5, 10)
-    p.add(1.0, 30)
-    p.add(math.nan, 5)
-    assert p.rate == pytest.approx(35 / 40)
-    p.missing.append("M L2")
-    assert math.isnan(p.rate)
+def test_cell_mean_weights_every_cell_the_same() -> None:
+    """v1.3.4: media semplice delle celle, senza pesare per numero di campioni."""
+    p = script.CellMean()
+    p.add(0.5, "M L1")  # per esempio 400 campioni
+    p.add(1.0, "M L2")  # per esempio 50 campioni
+    assert p.rate == pytest.approx(0.75)
+    p.add(math.nan, "Q L2")
+    assert math.isnan(p.rate) and p.missing == ["Q L2"]
+
+
+def test_renames_per_sample(tmp_path: Path) -> None:
+    rows = [
+        {"item_id": "a", "status": "OK", "extra": {"n_renamed": 3}},
+        {"item_id": "b", "status": "PARTIAL", "extra": {"n_renamed": 1}},
+        {"item_id": "c", "status": "FAILED", "extra": {"n_renamed": 9}},  # codice della baseline
+        {"item_id": "d", "status": "OK", "extra": {}},
+    ]
+    (tmp_path / "results.jsonl").write_text(
+        "".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8"
+    )
+    assert script.renames_per_sample(tmp_path) == (pytest.approx(1.0), 4)
+    mean, n = script.renames_per_sample(tmp_path / "missing")
+    assert math.isnan(mean) and n == 0
+
+
+def test_ranking_tie_group_by_renames() -> None:
+    def row(label: str, mean: float, ok: bool, renames: float) -> tuple[object, ...]:
+        return (label, mean, [], 0.0, {}, ok, renames)
+
+    rows = [
+        row("X", 0.700, True, 5.0),
+        row("Y", 0.695, True, 2.0),  # in parità con X, meno rinomine: prima
+        row("Z", 0.650, True, 0.5),  # fuori dalla parità
+        row("W", 0.900, False, 0.0),  # vincoli non rispettati
+        row("V", 0.692, True, math.nan),  # in parità, rinomine sconosciute: ultima del gruppo
+    ]
+    got = script.ranking(rows)
+    assert [r[0] for r in got] == ["Y", "X", "V", "Z"]
+    assert [r[3] for r in got] == [True, True, True, False]
+    assert script.ranking([row("A", 0.5, True, 1.0)])[0][3] is False
 
 
 def test_refuses_test_split_and_existing_report(tmp_path) -> None:  # type: ignore[no-untyped-def]
