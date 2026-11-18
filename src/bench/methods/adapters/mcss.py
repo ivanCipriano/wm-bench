@@ -33,6 +33,8 @@ class McssAdapter(PosthocMultibitAdapter):
         "names.module_level": True,  # §3.6.1: true per mcss in ogni caso
         "code.matrix": "random",  # MD18: fedeltà, «random by construction»
         "names.single_letter": "extend_except_loop",  # §4.2 punto 9, esito v1.2.7 (MD19)
+        "names.bits_per_name": 1,  # un nome, uno stile (v1.3.2, MD27)
+        "canonical.same_kind": "off",  # forme del paper (v1.3.2, MD28)
         "voting": "simple",
         "channel_weights": None,
     }

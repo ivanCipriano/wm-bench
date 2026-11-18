@@ -26,5 +26,7 @@ default_hparams:
   names.module_level: true
   code.matrix: random               # MD18
   names.single_letter: extend_except_loop   # §4.2 punto 9, esito v1.2.7 (MD19)
+  names.bits_per_name: 1            # libreria a4e6972 (MD27)
+  canonical.same_kind: "off"        # libreria a4e6972 (MD28)
   voting: simple
   channel_weights: null

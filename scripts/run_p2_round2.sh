@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Campagna chiusa (log scritti). Da a4e6972 l'adapter ha due iperparametri in più e gli hash qui
+# sotto non si ricalcolano: per rilanciarla serve wm-bench 48df7da (giro di capacità:
+# scripts/run_p2_round3.sh).
 # Secondo giro di P2 (pipeline di multimark v1.3.0): mcss e multimark con la libreria corretta
 # (MultiMark 475d4cc, regole MD20-MD26), senza toccare i risultati del primo giro (libreria
 # 488fb5a). Si lancia dal nodo di login, una fase alla volta:

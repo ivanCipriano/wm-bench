@@ -195,8 +195,9 @@ def test_watermark_execute_detect_calibrate_metrics(facade: BenchmarkFacade) -> 
 @needs_library
 def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade) -> None:
     """ADR-017 §5: con ``hpo.grid=multimark`` le fasi watermark, execute, detect, calibrate e
-    metrics girano sui due punti di sviluppo (execute sul loro codice marcato: c'è Pass@1); la
+    metrics girano sui punti di sviluppo (execute sul loro codice marcato: c'è Pass@1); la
     cella di default non si ricalcola e le sue uscite restano identiche, byte per byte."""
+    from bench.hpo.grid import load_grid
     from bench.pipeline.stage import Cell
     from bench.pipeline.stages.execute import execution_ref
 
@@ -212,7 +213,8 @@ def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade
     for stage in ("watermark", "execute", "detect", "calibrate"):
         assert sweep.run_stage(stage).ran >= 2, stage
     report = sweep.run_stage("metrics")
-    assert report.ran == 2 and report.skipped == 1  # i due punti; il default c'era già
+    n_dev = len(load_grid("multimark").points) - 1
+    assert report.ran == n_dev and report.skipped == 1  # i punti di sviluppo; il default c'era già
     assert facade.store.path_of(ref).read_bytes() == before
     assert facade.store.manifest_of(ref).read_bytes() == manifest
     from bench.hpo.grid import sweep_hashes
@@ -220,7 +222,7 @@ def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade
     candidates = [
         h for h in sweep_hashes(sweep.cfg, "multimark", ("candidate",)) if h != default_hash
     ]
-    assert len(candidates) == 2
+    assert len(candidates) == n_dev
     for h in candidates:
         cell = Cell(source="llm_watermarked", method="multimark", model_id=MODEL, level="L1",
                     language="python", split="dev")  # fmt: skip
@@ -236,7 +238,7 @@ def test_multimark_attacked_sweep_keeps_the_default_cells(facade: BenchmarkFacad
     non si ricalcolano e le loro uscite restano identiche, byte per byte. Poi
     ``scripts/report_attacks_dev.py`` sulla stessa catena."""
     from bench.attacks.base import grid_attacks
-    from bench.hpo.grid import sweep_hashes
+    from bench.hpo.grid import load_grid, sweep_hashes
     from tests.unit.test_inventory_scripts import _load
 
     for stage in ("generate_baseline", "watermark", "evalplus_groundtruth", "execute", "detect",
@@ -260,15 +262,16 @@ def test_multimark_attacked_sweep_keeps_the_default_cells(facade: BenchmarkFacad
     for stage in ("watermark", "execute", "detect", "calibrate", "metrics"):  # secondo giro
         assert clean.run_stage(stage).ran >= 2, stage
     sweep = BenchmarkFacade(rebuild(attacked.cfg, hpo=hpo, methods=["multimark"]))
+    n_dev = len(load_grid("multimark").points) - 1
     for stage in ("attack", "execute", "detect"):
-        assert sweep.run_stage(stage).ran == 6, stage  # 2 punti × 3 punti di T1.5
+        assert sweep.run_stage(stage).ran == 3 * n_dev, stage  # punti di sviluppo × 3 di T1.5
     report = sweep.run_stage("metrics")
-    assert report.ran == 6 and report.skipped == 3  # il default c'era già
+    assert report.ran == 3 * n_dev and report.skipped == 3  # il default c'era già
     assert [(facade.store.path_of(r).read_bytes(), facade.store.manifest_of(r).read_bytes())
             for r in refs] == before  # fmt: skip
     candidates = [h for h in sweep_hashes(sweep.cfg, "multimark", ("candidate",))
                   if h != default_hash]  # fmt: skip
-    assert len(candidates) == 2
+    assert len(candidates) == n_dev
     for h in candidates:
         for p in points:
             table = facade.store.read_table(
@@ -294,3 +297,29 @@ def test_multimark_attacked_sweep_keeps_the_default_cells(facade: BenchmarkFacad
     assert f"base {default_hash}" in t15 and "all" in t15
     assert "no detection" not in t15 and "no metrics" not in t15
     assert script.main(argv) == 1  # il report esiste già
+    _check_round3_report(facade, default_hash, candidates)
+
+
+def _check_round3_report(facade: BenchmarkFacade, default_hash: str, candidates: list[str]) -> None:
+    """Giro di capacità (v1.3.3): criterio su S e curva in K sulla catena dello smoke test; dei
+    punti di S qui c'è solo T1.5 k=5, gli altri risultano mancanti e il criterio incompleto."""
+    from tests.unit.test_inventory_scripts import _load
+
+    script3 = _load("report_round3")
+    out3 = facade.cfg.paths.artifacts.parent / "round3.txt"
+    configs3 = [f"multimark:{default_hash}:base",
+                *(f"multimark:{h}:dev{i}" for i, h in enumerate(candidates))]  # fmt: skip
+    argv3 = ["--levels", "L1", "--models", MODEL, "--curve", "base", "dev0",
+             "--report", str(out3), "paths=local"]  # fmt: skip
+    argv3 += [a for c in configs3 for a in ("--config", c)]
+    assert script3.main(argv3) == 0
+    text3 = out3.read_text(encoding="utf-8")
+    t15 = text3[text3.index("### T1.5 k=5") : text3.index("### T2.1 b=all")]
+    assert f"base {default_hash}" in t15 and "tpr_cal" in t15 and "no detection" not in t15
+    assert "no detection of the attacked samples" in text3[: text3.index("### T1.5 k=5")]
+    crit = text3[text3.index("## selection criterion") : text3.index("## attribution curve")]
+    assert "max ΔPass@1 pp" in crit and "FPR_2 L1" in crit and "incomplete" in crit
+    curve = text3[text3.index("### attribution vs K") :]
+    assert f"base {default_hash}" in curve and f"dev0 {candidates[0]}" in curve
+    assert f"dev1 {candidates[1]}" not in curve and "dec16" in curve
+    assert script3.main(argv3) == 1  # il report esiste già

@@ -89,10 +89,10 @@ def test_choices_and_names_match_the_library() -> None:
     sys.path.insert(0, str(LIBRARY))
     try:
         from multimark import config as mc
-        from multimark.channels import CANONICAL_MODES, CHANNEL_SET_NAMES
+        from multimark.channels import CANONICAL_MODES, CHANNEL_SET_NAMES, SAME_KIND_MODES
         from multimark.codec import MATRICES
         from multimark.linking import LINKING_MODES
-        from multimark.names import NAME_VARIANTS, SINGLE_LETTER_MODES
+        from multimark.names import BITS_PER_NAME, NAME_VARIANTS, SINGLE_LETTER_MODES
     finally:
         sys.path.remove(str(LIBRARY))
     assert CHOICES["t"] == mc.T_VALUES and CHOICES["mask"] == mc.MASK_MODES
@@ -100,16 +100,18 @@ def test_choices_and_names_match_the_library() -> None:
     assert CHOICES["linking"] == LINKING_MODES and CHOICES["canonical"] == CANONICAL_MODES
     assert CHOICES["names.variant"] == NAME_VARIANTS
     assert CHOICES["names.single_letter"] == SINGLE_LETTER_MODES
+    assert CHOICES["names.bits_per_name"] == BITS_PER_NAME
+    assert CHOICES["canonical.same_kind"] == SAME_KIND_MODES
     assert CHOICES["channels"] == CHANNEL_SET_NAMES and CHOICES["code.matrix"] == MATRICES
     fields = set(mc.Config.__dataclass_fields__)
     assert set(NATIVE_NAMES.values()) | {"message_bits", "registry_seed"} == fields
-    # i profili dell'adapter sono quelli della libreria (salvo il modulo, decisione O)
+    # i profili dell'adapter sono quelli della libreria (da a4e6972 anche il modulo: decisione O
+    # chiusa con true)
     a_mm = {NATIVE_NAMES[k]: v for k, v in MultimarkAdapter.PROFILE.items()}
     a_mc = {NATIVE_NAMES[k]: v for k, v in McssAdapter.PROFILE.items()}
     lib_mm, lib_mc = vars(mc.multimark_base()), vars(mc.mcss_profile())
     assert {k: lib_mc[k] for k in a_mc} == a_mc
-    diff = {k for k in a_mm if lib_mm[k] != a_mm[k]}
-    assert diff == {"names_module_level"}  # decisione O provvisoria: true nel benchmark
+    assert {k: lib_mm[k] for k in a_mm} == a_mm
 
 
 def test_native_hparams_and_validation(cfg: ExperimentConfig) -> None:

@@ -7,7 +7,8 @@ messaggio atteso. Audit: ``docs/audit/multimark.md`` e ``docs/audit/mcss.md``.
 
 - **Iperparametri** (§3.11, nomi del protocollo → nomi della libreria, 1:1): ``t``, ``linking``,
   ``mask``, ``canonical``, ``names.variant``, ``names.proposer``, ``names.include_params``,
-  ``channels``, ``names.module_level``, ``code.matrix``, ``names.single_letter``, ``voting``,
+  ``channels``, ``names.module_level``, ``code.matrix``, ``names.single_letter``,
+  ``names.bits_per_name``, ``canonical.same_kind`` (libreria a4e6972, v1.3.2), ``voting``,
   ``channel_weights``.
   - Una configurazione indica solo le chiavi che cambiano rispetto al profilo del metodo
     (``PROFILE``); le altre restano quelle del profilo.
@@ -66,6 +67,8 @@ CHOICES: dict[str, tuple[Any, ...]] = {
     "names.module_level": (False, True),
     "code.matrix": ("random", "dmin4"),
     "names.single_letter": ("exclude", "extend_except_loop", "extend_all"),
+    "names.bits_per_name": (1, 2),
+    "canonical.same_kind": ("off", "binding_order"),
     "voting": ("simple", "weighted", "weighted_erasure"),
 }
 # Nomi del protocollo → campi di ``multimark.config.Config`` (1:1, §3.11).
@@ -81,6 +84,8 @@ NATIVE_NAMES: dict[str, str] = {
     "names.module_level": "names_module_level",
     "code.matrix": "code_matrix",
     "names.single_letter": "names_single_letter",
+    "names.bits_per_name": "names_bits_per_name",
+    "canonical.same_kind": "canonical_same_kind",
     "voting": "voting",
     "channel_weights": "channel_weights",
 }
@@ -143,6 +148,10 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
             ok = value in allowed and (isinstance(value, bool) == isinstance(allowed[0], bool))
             if not ok:
                 raise ConfigError(f"{self.name}: {key} must be one of {list(allowed)}: {value!r}")
+        if merged["names.bits_per_name"] != 1 and merged["names.variant"] != "V2":
+            raise ConfigError(f"{self.name}: names.bits_per_name=2 requires names.variant=V2")
+        if merged["canonical.same_kind"] != "off" and merged["canonical"] != "kind":
+            raise ConfigError(f"{self.name}: canonical.same_kind requires canonical=kind")
         if merged["names.proposer"] == "neural":
             raise ConfigError(f"{self.name}: names.proposer=neural arrives in P3 (static until P2)")
         weights = merged.get("channel_weights")
@@ -234,9 +243,11 @@ class MultimarkAdapter(PosthocMultibitAdapter):
         "names.proposer": "static",  # neural da P3 (§3.11)
         "names.include_params": False,  # decisione C (chiusa il 13 novembre)
         "channels": "extended",
-        "names.module_level": True,  # decisione O, provvisoria (v1.2.4): conferma a fine P2
+        "names.module_level": True,  # decisione O, chiusa con true (v1.3.1)
         "code.matrix": "dmin4",  # MD18, superato il controllo di §3.8
         "names.single_letter": "exclude",  # decisione R in P5
+        "names.bits_per_name": 1,  # MD27: 2 solo nell'ablazione (v1.3.2)
+        "canonical.same_kind": "off",  # MD28: binding_order solo nell'ablazione (v1.3.2)
         "voting": "simple",
         "channel_weights": None,
     }

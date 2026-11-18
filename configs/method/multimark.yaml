@@ -23,8 +23,10 @@ default_hparams:
   names.proposer: static            # neural da P3: fino ad allora gpu_for_embed = False
   names.include_params: false       # decisione C
   channels: extended
-  names.module_level: true          # decisione O, provvisoria (v1.2.4): conferma a fine P2
+  names.module_level: true          # decisione O, chiusa con true (v1.3.1)
   code.matrix: dmin4                # MD18
   names.single_letter: exclude      # decisione R in P5
+  names.bits_per_name: 1            # MD27 (libreria a4e6972): 2 solo nell'ablazione
+  canonical.same_kind: "off"        # MD28 (libreria a4e6972): binding_order solo nell'ablazione
   voting: simple
   channel_weights: null

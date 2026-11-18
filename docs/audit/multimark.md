@@ -198,3 +198,31 @@ La libreria `4ea0d43` (submodule a `475d4cc`) corregge i casi del criterio (a) d
   soglia calibrata del benchmark (che resta la regola), TPR, FPR umano e FPR LLM con
   `score >= 2` (p ≤ 0,01), per livello. È una riga in più del riepilogo, non una metrica della
   fase `metrics`.
+
+## Giro di capacità su sviluppo (pipeline v1.3.3, 18 novembre 2026)
+
+Libreria `a4e6972` (pipeline v1.3.3; opzioni `names.bits_per_name` e `canonical.same_kind`, MD27
+e MD28; `names.module_level=true` anche nel default della libreria). Il giro si rifà senza
+toccare i precedenti (`scripts/run_p2_round3.sh`, log `P2_round3.txt`):
+
+- **Iperparametri nuovi.** L'adapter passa anche `names.bits_per_name` (1, 2) e
+  `canonical.same_kind` (`off`, `binding_order`), 1:1 con `Config.names_bits_per_name` e
+  `Config.canonical_same_kind`; tutti e due i profili hanno 1 e `off` (come la libreria).
+  L'adapter rifiuta, come la libreria, `bits_per_name=2` senza `names.variant=V2` e
+  `binding_order` senza `canonical=kind`. Le due chiavi entrano negli iperparametri nativi, quindi
+  nel `config_hash`: gli hash dei giri precedenti scritti nei log non si ricalcolano più con il
+  codice attuale (per rilanciare quei giri serve wm-bench `48df7da`).
+- **Configurazioni.** `mcss` b521002e09f5; `multimark` base 3c1bd11758fc; punti di
+  `configs/hpo/multimark.yaml`: `single_letter=extend_except_loop` 4937d9ddd78a, A
+  (`canonical.same_kind=binding_order`) 770f999adefb, B (`names.bits_per_name=2`) cb79b2fcb4e6, C
+  (single_letter + binding_order + bits_per_name=2) cf7e4c9f106e, D (C + `include_params=true`)
+  37400fdcd589. Il punto `include_params=true` da solo non si rimisura.
+- **Attacchi.** Insieme S di v1.3.3 (T1.4 natural r = 1,0; T1.4 random r = 0,5; T1.5 k = 5; T2.1
+  b = all; T2.4 p = 0,5; T4.1 rename = true): si lanciano le griglie intere di T1.4, T1.5, T2.1,
+  T2.4 e T4.1 (19 punti) perché la pipeline non sceglie singoli punti; il report usa solo S.
+- **Report** (`scripts/report_round3.py`): TPR alla soglia calibrata (nuova, L1+L2) e alla
+  soglia teorica per condizione di S e fascia di siti; il criterio di v1.3.3 (media su S del TPR
+  calibrato, ogni condizione su tutti i campioni di L1+L2 e dei due modelli) con i vincoli
+  ΔPass@1 ≤ 3 pp per cella e FPR umano alla soglia teorica ≤ 1% per livello (impercettibilità in
+  P5); la curva in K di §5.11 per `mcss`, base e C, con il controllo sulle esche `nreg16` e
+  `nreg1024`.

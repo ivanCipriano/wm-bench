@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from bench.hpo.grid import load_grid
 from bench.methods.base import MethodAdapter
 from bench.store.artifact_store import ArtifactStore
 from tests.unit.test_inventory_scripts import _load
@@ -29,10 +30,11 @@ def test_missing_outputs_mean_not_done(
     out = capsys.readouterr().out
     assert out.count("[MISSING]") == 2 and "... and 6 more" in out
     assert "watermark: 0/8 cells complete: NOT DONE" in out
-    # sweep di multimark: base e i due punti di sviluppo, per 2 modelli e 2 livelli
+    # sweep di multimark: base e punti di sviluppo di configs/hpo, 2 modelli, 2 livelli
     sweep = [a for a in ARGS if not a.startswith("methods=")]
     assert script.main(["methods=[multimark]", "hpo.grid=multimark", *sweep]) == 1  # type: ignore[attr-defined]
-    assert "watermark: 0/12 cells complete" in capsys.readouterr().out
+    n = 4 * len(load_grid("multimark").points)
+    assert f"watermark: 0/{n} cells complete" in capsys.readouterr().out
     monkeypatch.setattr(ArtifactStore, "exists", lambda self, ref: True)
     assert script.main(ARGS) == 0  # type: ignore[attr-defined]
     assert "8/8 cells complete: DONE" in capsys.readouterr().out

@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Campagna chiusa (log scritti). Da a4e6972 l'adapter ha due iperparametri in più e gli hash qui
+# sotto non si ricalcolano: per rilanciarla serve wm-bench 48df7da (giro di capacità:
+# scripts/run_p2_round3.sh).
 # Controllo di robustezza su sviluppo prima di P3 (decisioni dell'utente del 18 novembre 2026):
 # attacchi sul codice marcato del secondo giro di P2 (libreria 475d4cc) per mcss (1d0c64c5124e),
 # multimark (59a04735824c) e i due punti di sviluppo di multimark (94847adacd77 single_letter

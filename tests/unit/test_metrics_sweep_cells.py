@@ -59,15 +59,23 @@ def test_metrics_sweep_adds_only_candidates(method: str, languages: str) -> None
     assert hashes == set(sweep_hashes(cfg, method, ("candidate",))) - {default}
 
 
+def _n_points(method: str = "multimark") -> int:
+    """Punti della griglia ``configs/hpo/<metodo>.yaml`` (default compreso)."""
+    from bench.hpo.grid import load_grid
+
+    return len(load_grid(method).points)
+
+
 def test_existing_stages_and_plain_runs_are_unchanged() -> None:
     """Senza ``hpo.grid`` nessuna fase cambia; ``execute`` nello sweep resta come prima
-    (il default con l'hash esplicito, sui campioni marcati: Pass@1 dei due punti)."""
+    (il default con l'hash esplicito, sui campioni marcati: Pass@1 dei punti di sviluppo)."""
     common = ["methods=[mcss,multimark,stone]", "languages=[python]"]
     for stage in (MetricsStage, ExecuteStage):
         assert all(c.config_hash is None for c in _cells(stage, *common))
     ex = _cells(ExecuteStage, "methods=[multimark]", "languages=[python]", "splits=[dev]",
                 "execution.sources=[llm_watermarked]", "hpo.grid=multimark")  # fmt: skip
-    assert len(ex) == 12 and len({c.config_hash for c in ex}) == 3
+    n = _n_points()
+    assert len(ex) == 4 * n and len({c.config_hash for c in ex}) == n  # 2 modelli × 2 livelli
     assert all(c.source == "llm_watermarked" and c.config_hash for c in ex)
 
 
@@ -125,6 +133,7 @@ def test_sweep_without_attacks_is_unchanged_in_every_stage() -> None:
     common = ["methods=[multimark]", "languages=[python]", "splits=[dev]", "hpo.grid=multimark"]
     assert _cells(AttackStage, *common) == []
     det = _cells(DetectStage, *common)
-    assert len(det) == 12 and all(c.config_hash and c.attack_id is None for c in det)
+    n = 4 * _n_points()  # 2 modelli × 2 livelli × punti della griglia
+    assert len(det) == n and all(c.config_hash and c.attack_id is None for c in det)
     ex = _cells(ExecuteStage, *common, "execution.sources=[llm_watermarked,attacked]")
-    assert len(ex) == 12 and all(c.source == "llm_watermarked" for c in ex)
+    assert len(ex) == n and all(c.source == "llm_watermarked" for c in ex)
