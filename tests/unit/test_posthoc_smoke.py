@@ -227,3 +227,70 @@ def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade
         assert facade.store.exists(execution_ref(cell, h))
         table = facade.store.read_table(metrics_ref("multimark", MODEL, h, "L1", "python", "dev"))
         assert {"pass_at_1", "delta_pass_at_1_pp", "tpr_at_fpr"} <= set(table["name"])
+
+
+@needs_library
+def test_multimark_attacked_sweep_keeps_the_default_cells(facade: BenchmarkFacade) -> None:
+    """ADR-017 §6: con ``hpo.grid=multimark`` e un attacco, le fasi attack, execute, detect e
+    metrics girano sul codice marcato dei due punti di sviluppo; le celle attaccate del default
+    non si ricalcolano e le loro uscite restano identiche, byte per byte. Poi
+    ``scripts/report_attacks_dev.py`` sulla stessa catena."""
+    from bench.attacks.base import grid_attacks
+    from bench.hpo.grid import sweep_hashes
+    from tests.unit.test_inventory_scripts import _load
+
+    for stage in ("generate_baseline", "watermark", "evalplus_groundtruth", "execute", "detect",
+                  "calibrate", "metrics"):  # fmt: skip
+        facade.run_stage(stage)
+    sources = [*facade.cfg.execution.sources, "attacked"]
+    execution = {**facade.cfg.execution.model_dump(), "sources": sources}
+    attacked = BenchmarkFacade(rebuild(facade.cfg, attacks=["T1.5"], execution=execution))
+    for stage in ("attack", "execute", "detect", "metrics"):
+        assert attacked.run_stage(stage).ran >= 3, stage
+    default_hash = DetectStage(facade.cfg).config_hash("multimark")
+    points = sorted(grid_attacks("T1.5", language="python"))
+    refs = [
+        metrics_ref("multimark", MODEL, default_hash, "L1", "python", "dev", ("L1",), ("T1.5", h))
+        for h in points
+    ]
+    before = [(facade.store.path_of(r).read_bytes(), facade.store.manifest_of(r).read_bytes())
+              for r in refs]  # fmt: skip
+    hpo = {**facade.cfg.hpo.model_dump(mode="json"), "grid": "multimark"}
+    clean = BenchmarkFacade(rebuild(facade.cfg, hpo=hpo, methods=["multimark"]))
+    for stage in ("watermark", "execute", "detect", "calibrate", "metrics"):  # secondo giro
+        assert clean.run_stage(stage).ran >= 2, stage
+    sweep = BenchmarkFacade(rebuild(attacked.cfg, hpo=hpo, methods=["multimark"]))
+    for stage in ("attack", "execute", "detect"):
+        assert sweep.run_stage(stage).ran == 6, stage  # 2 punti × 3 punti di T1.5
+    report = sweep.run_stage("metrics")
+    assert report.ran == 6 and report.skipped == 3  # il default c'era già
+    assert [(facade.store.path_of(r).read_bytes(), facade.store.manifest_of(r).read_bytes())
+            for r in refs] == before  # fmt: skip
+    candidates = [h for h in sweep_hashes(sweep.cfg, "multimark", ("candidate",))
+                  if h != default_hash]  # fmt: skip
+    assert len(candidates) == 2
+    for h in candidates:
+        for p in points:
+            table = facade.store.read_table(
+                metrics_ref("multimark", MODEL, h, "L1", "python", "dev", ("L1",), ("T1.5", p))
+            )
+            assert {"tpr_at_fpr", "bit_accuracy", "pass_at_1"} <= set(table["name"])
+
+    script = _load("report_attacks_dev")
+    out = facade.cfg.paths.artifacts.parent / "attacks_dev.txt"
+    configs = [f"multimark:{default_hash}:base", *(f"multimark:{h}:dev" for h in candidates)]
+    argv = ["--levels", "L1", "--models", MODEL, "--report", str(out), "paths=local"]
+    argv += [a for c in configs for a in ("--config", c)]
+    assert script.main(argv) == 0
+    text = out.read_text(encoding="utf-8")
+    assert "### T1.5 k=1" in text and "tpr_2" in text and "wa_nreg16" in text
+    first_chosen, other = (
+        text.index("### T1.4 name_kind=random ratio=0.5"),
+        text.index("## other points of the full grids"),
+    )
+    assert first_chosen < other < text.index("### T1.4 name_kind=random ratio=0.25")
+    assert "### T1.4 TPR by r" in text
+    t15 = text[text.index("### T1.5 k=1") : text.index("### T2.1")]
+    assert f"base {default_hash}" in t15 and "all" in t15
+    assert "no detection" not in t15 and "no metrics" not in t15
+    assert script.main(argv) == 1  # il report esiste già

@@ -113,6 +113,15 @@ class AttackStage(Stage):
         "split",
         "attack_id",
     )
+    # Sweep (``hpo.grid``): attacchi sul codice marcato dei candidati, solo su sviluppo; il punto
+    # di default resta la cella di default (ADR-017 §6).
+    sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
+
+    @classmethod
+    def sweep_cell(cls, cell: Cell) -> bool:
+        """Nello sweep si espandono solo le celle di sviluppo: il test usa solo la configurazione
+        congelata (ADR-013)."""
+        return cell.split != "test"
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config

@@ -109,6 +109,13 @@ class DetectStage(Stage):
         "attack_id",
     )
     sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
+
+    @classmethod
+    def sweep_cell(cls, cell: Cell) -> bool:
+        """Nello sweep le celle con attacco si espandono solo su sviluppo, come la fase ``attack``
+        che le produce (ADR-017 §6); le altre come prima."""
+        return not (cell.attack_id and cell.split == "test")
+
     key_id: ClassVar[str] = KEY_ID  # chiave della rilevazione (k2: fasi ``detect_k2``, T3.1)
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:

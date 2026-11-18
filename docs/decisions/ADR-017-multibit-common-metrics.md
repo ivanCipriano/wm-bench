@@ -134,7 +134,8 @@ Due regole tengono ferme le uscite che c'erano:
   salta. Senza questa regola il punto di default, calcolato nello sweep con l'hash esplicito,
   avrebbe scritto nello stesso percorso intervalli con semi diversi.
 - `MetricsStage.sweep_cell`: si espandono solo le celle di sviluppo senza attacco. Il test usa
-  solo la configurazione congelata (ADR-013), le celle sotto attacco restano quelle di prima.
+  solo la configurazione congelata (ADR-013), le celle sotto attacco restano quelle di prima
+  (esteso alle celle attaccate di sviluppo dal §6).
 
 **Effetto sui metodi esistenti.** Nessuno, se non si chiede lo sweep: senza `hpo.grid` il
 pianificatore esce prima di guardare `sweep_roles`, quindi le celle e le metriche dei lanci di
@@ -149,3 +150,41 @@ solo le celle dei candidati richiesti. Lo verificano:
   punti e ne calcola le metriche (Pass@1 compreso); il parquet e il manifest delle metriche di
   default restano identici byte per byte;
 - i test di retrocompatibilità di questa ADR, invariati.
+
+## 6. Celle con attacco nello sweep dell'HPO (controllo di robustezza su sviluppo, 18 novembre 2026)
+
+**Decisione** (decisione dell'utente del 18 novembre 2026). Il controllo di robustezza su sviluppo
+prima di P3 (`scripts/run_p2_attacks_dev.sh`) attacca anche i due punti di sviluppo di
+`multimark`, che esistono solo nello sweep (`hpo.grid=multimark`). Prima di questa modifica una
+cella con attacco non si espandeva per configurazione: `AttackStage` non partecipava allo sweep, e
+`ExecuteStage.sweep_cell` e `MetricsStage.sweep_cell` escludevano le celle attaccate. Ora:
+
+- `AttackStage.sweep_roles = ("candidate",)`, con `sweep_cell` vero solo fuori dal test;
+- `ExecuteStage.sweep_cell`: anche `source=attacked` fuori dal test (Pass@1 degli attaccati, che
+  le metriche delle celle attaccate leggono);
+- `DetectStage.sweep_cell` (nuovo): le celle con attacco si espandono solo fuori dal test, come la
+  fase `attack` che le produce; le celle senza attacco come prima (tutte);
+- `MetricsStage.sweep_cell`: tutte le celle fuori dal test, con o senza attacco;
+- in ogni fase il punto della griglia con l'hash del default, **per le celle con attacco**, diventa
+  la cella di default (`config_hash = None`), come `sweep_default_unhashed` del §5 per `metrics`.
+  I percorsi delle uscite dipendono dall'hash risolto, non dalla chiave, quindi sono gli stessi;
+  la chiave uguale dà alle metriche gli stessi semi del bootstrap. Le celle senza attacco di
+  `attack`, `execute` e `detect` restano come prima (il default con l'hash esplicito).
+
+Nessuna nuova calibrazione: le celle attaccate usano la soglia della loro configurazione, quella
+calibrata nello sweep senza attacchi (come per le celle di default, SPEC §13).
+
+**Effetto sui metodi esistenti.** Senza `hpo.grid` nulla cambia (il pianificatore esce prima di
+guardare `sweep_roles`). Con `hpo.grid` e senza attacchi le celle sono quelle di prima. Con
+`hpo.grid` e attacchi si aggiungono solo le celle attaccate di sviluppo dei candidati richiesti.
+Lo verificano:
+
+- `tests/unit/test_metrics_sweep_cells.py::test_attacked_sweep_adds_only_dev_candidates`: per
+  `attack`, `execute` (`source=attacked`), `detect` e `metrics`, con `multimark`, STONE e MCGMark,
+  le celle senza hash dello sweep sono un sottoinsieme di quelle senza griglia, quelle di test
+  restano, e le celle in più sono le celle attaccate di sviluppo dei candidati (il default
+  escluso), con gli stessi attacchi e parametri del default;
+- `tests/unit/test_metrics_sweep_cells.py::test_sweep_without_attacks_is_unchanged_in_every_stage`;
+- `tests/unit/test_posthoc_smoke.py::test_multimark_attacked_sweep_keeps_the_default_cells`: sulla
+  catena finta, con T1.5, lo sweep attacca, esegue, rileva e misura il codice marcato dei due
+  punti; le metriche attaccate del default non si ricalcolano e restano identiche byte per byte.

@@ -181,15 +181,16 @@ class MetricsStage(Stage):
         "attack_id",
     )
     # Sweep (``hpo.grid``): metriche per ogni candidato della griglia, solo se richiesto in modo
-    # esplicito; il punto di default resta la cella di default (ADR-017 §5).
+    # esplicito, anche sulle celle attaccate di sviluppo; il punto di default resta la cella di
+    # default (ADR-017 §5, §6).
     sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
     sweep_default_unhashed: ClassVar[bool] = True
 
     @classmethod
     def sweep_cell(cls, cell: Cell) -> bool:
-        """Nello sweep si espandono solo le celle di sviluppo senza attacco: il test usa solo la
-        configurazione congelata (ADR-013)."""
-        return cell.split != "test" and cell.attack_id is None
+        """Nello sweep si espandono solo le celle di sviluppo, con o senza attacco (ADR-017 §5,
+        §6): il test usa solo la configurazione congelata (ADR-013)."""
+        return cell.split != "test"
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config

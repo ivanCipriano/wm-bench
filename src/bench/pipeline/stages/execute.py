@@ -170,7 +170,10 @@ class ExecuteStage(Stage):
 
     @classmethod
     def sweep_cell(cls, cell: Cell) -> bool:
-        """Nello sweep dell'HPO si eseguono per configurazione solo i campioni marcati."""
+        """Nello sweep dell'HPO si eseguono per configurazione solo i campioni marcati e, su
+        sviluppo, quelli attaccati (ADR-017 §6)."""
+        if cell.source == "attacked":
+            return cell.split != "test"
         return cell.source == "llm_watermarked"
 
     def _cfg(self) -> ExperimentConfig:
