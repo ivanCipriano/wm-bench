@@ -354,3 +354,65 @@ def _check_round3_report(facade: BenchmarkFacade, default_hash: str, candidates:
     assert f"base {default_hash}" in curve and f"dev0 {candidates[0]}" in curve
     assert f"dev1 {candidates[1]}" not in curve and "dec16" in curve
     assert script3.main(argv3) == 1  # il report esiste già
+
+
+@needs_library
+def test_t16_adds_cells_without_touching_the_others(facade: BenchmarkFacade) -> None:
+    """ADR-018: T1.6 è un'aggiunta. Sulla catena dello smoke test le celle attaccate di T1.5 già
+    calcolate restano identiche, byte per byte, dopo attack, execute, detect e metrics di T1.6
+    (default e sweep dei punti di sviluppo); poi ``scripts/report_snake_dev.py``."""
+    from bench.attacks.base import grid_attacks
+    from bench.hpo.grid import load_grid, sweep_hashes
+    from tests.unit.test_inventory_scripts import _load
+
+    for stage in ("generate_baseline", "watermark", "evalplus_groundtruth", "execute", "detect",
+                  "calibrate", "metrics"):  # fmt: skip
+        facade.run_stage(stage)
+    sources = [*facade.cfg.execution.sources, "attacked"]
+    execution = {**facade.cfg.execution.model_dump(), "sources": sources}
+    t15 = BenchmarkFacade(rebuild(facade.cfg, attacks=["T1.5"], execution=execution))
+    for stage in ("attack", "execute", "detect", "metrics"):
+        t15.run_stage(stage)
+    default_hash = DetectStage(facade.cfg).config_hash("multimark")
+    refs = [
+        metrics_ref("multimark", MODEL, default_hash, "L1", "python", "dev", ("L1",), ("T1.5", h))
+        for h in sorted(grid_attacks("T1.5", language="python"))
+    ]
+    before = [(facade.store.path_of(r).read_bytes(), facade.store.manifest_of(r).read_bytes())
+              for r in refs]  # fmt: skip
+    hpo = {**facade.cfg.hpo.model_dump(mode="json"), "grid": "multimark"}
+    clean = BenchmarkFacade(rebuild(facade.cfg, hpo=hpo, methods=["multimark"]))
+    for stage in ("watermark", "execute", "detect", "calibrate", "metrics"):
+        clean.run_stage(stage)
+    t16 = BenchmarkFacade(rebuild(facade.cfg, attacks=["T1.6"], execution=execution))
+    sweep = BenchmarkFacade(rebuild(t16.cfg, hpo=hpo, methods=["multimark"]))
+    n_dev = len(load_grid("multimark").points) - 1
+    for stage in ("attack", "execute", "detect", "metrics"):
+        assert t16.run_stage(stage).ran == 2 * len(METHODS), stage  # 2 punti × 2 metodi
+        assert sweep.run_stage(stage).ran == 2 * n_dev, stage
+    assert [(facade.store.path_of(r).read_bytes(), facade.store.manifest_of(r).read_bytes())
+            for r in refs] == before  # fmt: skip
+    for stage in ("attack", "execute", "detect", "metrics"):  # rilancio: nulla da rifare
+        assert t15.run_stage(stage).ran == 0, stage
+
+    candidates = [h for h in sweep_hashes(sweep.cfg, "multimark", ("candidate",))
+                  if h != default_hash]  # fmt: skip
+    mcss_hash = DetectStage(facade.cfg).config_hash("mcss")
+    script = _load("report_snake_dev")
+    out = facade.cfg.paths.artifacts.parent / "snake_dev.txt"
+    configs = [f"mcss:{mcss_hash}:mcss", f"multimark:{default_hash}:base",
+               *(f"multimark:{h}:dev{i}" for i, h in enumerate(candidates))]  # fmt: skip
+    argv = ["--levels", "L1", "--models", MODEL, "--report", str(out), "paths=local"]
+    argv += [a for c in configs for a in ("--config", c)]
+    assert script.main(argv) == 0
+    text = out.read_text(encoding="utf-8")
+    convert = text[text.index("### T1.6 caps=convert") : text.index("### T1.6 caps=keep")]
+    assert f"mcss {mcss_hash}" in convert and f"dev0 {candidates[0]}" in convert
+    assert "no detection" not in text and "missing" not in text
+    summary = text[text.index("## summary") :]
+    assert "T1.6 caps=convert" in summary and "T1.6 caps=keep" in summary
+    assert "caps_kept" in summary and "incomplete" not in summary
+    assert "Δscore%" in summary and "## expectations of PIPELINE §P3" in summary
+    rows = [ln for ln in summary.splitlines() if ln.startswith(f"  mcss {mcss_hash}")]
+    assert len(rows) == 4 and all(" - " not in r.split("T1.6", 1)[1][:60] for r in rows[:2])
+    assert script.main(argv) == 1  # il report esiste già

@@ -66,9 +66,11 @@ def test_round3_hashes_differ_and_match_the_grid_comments(
     assert "apply_patches.sh multimark" in capsys.readouterr().err
 
 
-def test_round3_script_checks_the_same_hashes() -> None:
-    """``scripts/run_p2_round3.sh`` controlla il commit e gli hash di questo test."""
-    text = (REPO_ROOT / "scripts" / "run_p2_round3.sh").read_text(encoding="utf-8")
+@pytest.mark.parametrize("script_name", ["run_p2_round3.sh", "run_p2_snake_dev.sh"])
+def test_round3_script_checks_the_same_hashes(script_name: str) -> None:
+    """``scripts/run_p2_round3.sh`` e ``scripts/run_p2_snake_dev.sh`` (T1.6 sulle stesse
+    configurazioni) controllano il commit e gli hash di questo test."""
+    text = (REPO_ROOT / "scripts" / script_name).read_text(encoding="utf-8")
     assert f"EXPECTED={ROUND3}" in text
     for name, var in (("mcss", "MCSS"), ("multimark", "MM"), ("single_letter", "MM_SL"),
                       ("A", "MM_A"), ("B", "MM_B"), ("C", "MM_C"), ("D", "MM_D")):  # fmt: skip

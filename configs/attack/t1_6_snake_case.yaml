@@ -1,0 +1,6 @@
+# T1.6 nomi uniformati in snake_case (ADR-018; PIPELINE di multimark §5.5): solo Python.
+# caps=convert: tutto in snake_case, costanti di modulo comprese; caps=keep: i nomi di modulo in
+# ALL_CAPS restano (PEP 8), quelli dentro le funzioni si convertono comunque.
+attack_id: T1.6
+space:
+  caps: [convert, keep]
