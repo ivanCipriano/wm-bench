@@ -1,0 +1,92 @@
+# rename check of the dev marked samples (scripts/check_rename_dev.py), 2026-11-19T18:10:18+01:00, tnode16
+# multimark.rename_check from /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_multimark at commit 3c47a1fee86f4f37535e45aa6ca09787d56881be; wm-bench d25bfd9fa4c2afb86802c906228be8182a01d5ad; submodule third_party/multimark not touched
+# configs: mcss b521002e09f5, multimark 3c1bd11758fc, single_letter 4937d9ddd78a, A 770f999adefb, B cb79b2fcb4e6, C cf7e4c9f106e, D 37400fdcd589; split dev, language python; marked without attack vs the parent baseline sample
+# share of violations on the checked samples; unpaired = variables only in rewritten subtrees (not checked); fail_vs_base = violations whose tests fail while the parent passes
+
+  config                            model                   lvl  samples  checked  skipped  viol   viol %  unpaired smp_unp  fail_vs_base
+  mcss b521002e09f5                 qwen25_coder_7b         L1       576      576        0     0    0.00%        22       7             0
+  mcss b521002e09f5                 qwen25_coder_7b         L2       300      299        1     1    0.33%        38      16             0
+      codenet/p03695 sample 8022880bf2bb (parent be82e9a83cac), fails tests while parent passes: no
+        original min_max_colors:max_colors -> marked <module>:MAX_COLORS, min_max_colors:max_colors
+        original min_max_colors:min_colors -> marked <module>:MIN_COLORS, min_max_colors:minColors
+        marked <module>:MAX_COLORS <- original <module>:max_colors, min_max_colors:max_colors
+        marked <module>:MIN_COLORS <- original <module>:min_colors, min_max_colors:min_colors
+      (1 samples not analysable by the check)
+  mcss b521002e09f5                 deepseek_coder_6p7b     L1       576      576        0     0    0.00%         0       0             0
+  mcss b521002e09f5                 deepseek_coder_6p7b     L2       300      300        0     5    1.67%        71      35             5
+      codenet/p02467 sample ed90dc8bf185 (parent 93dfd81dd929), fails tests while parent passes: yes
+        original prime_factors:n -> marked <module>:NCount, prime_factors:NVal
+        marked <module>:NCount <- original <module>:n, prime_factors:n
+      codenet/p02467 sample 02408ca08275 (parent 4fc5f69cfb69), fails tests while parent passes: yes
+        original prime_factors:n -> marked <module>:N_COUNT, prime_factors:N_VAL
+        marked <module>:N_COUNT <- original <module>:n, prime_factors:n
+      codenet/p02467 sample 7d2908b168ff (parent 4d453849abe7), fails tests while parent passes: yes
+        original prime_factors:n -> marked <module>:nCount, prime_factors:nVal
+        marked <module>:nCount <- original <module>:n, prime_factors:n
+  multimark 3c1bd11758fc            qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  multimark 3c1bd11758fc            qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  multimark 3c1bd11758fc            deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  multimark 3c1bd11758fc            deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  single_letter 4937d9ddd78a        qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  single_letter 4937d9ddd78a        qwen25_coder_7b         L2       300      299        1     1    0.33%        94      22             0
+      codenet/p03695 sample 4bbdaac44194 (parent be82e9a83cac), fails tests while parent passes: no
+        original min_max_colors:max_colors -> marked <module>:max_colors_value, min_max_colors:max_colors
+        marked <module>:max_colors_value <- original <module>:max_colors, min_max_colors:max_colors
+      (1 samples not analysable by the check)
+  single_letter 4937d9ddd78a        deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  single_letter 4937d9ddd78a        deepseek_coder_6p7b     L2       300      300        0     1    0.33%       176      42             1
+      codenet/p02467 sample 28688b3247b6 (parent 93dfd81dd929), fails tests while parent passes: yes
+        original prime_factors:n -> marked <module>:num, prime_factors:n
+        marked <module>:num <- original <module>:n, prime_factors:n
+  A 770f999adefb                    qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  A 770f999adefb                    qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  A 770f999adefb                    deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  A 770f999adefb                    deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  B cb79b2fcb4e6                    qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  B cb79b2fcb4e6                    qwen25_coder_7b         L2       300      299        1     1    0.33%        94      22             0
+      codenet/p03695 sample a35155d1d885 (parent be82e9a83cac), fails tests while parent passes: no
+        original min_max_colors:max_colors -> marked <module>:max_colors_value, min_max_colors:max_colors_val
+        original min_max_colors:min_colors -> marked <module>:min_colors_item, min_max_colors:min_colors
+        marked <module>:max_colors_value <- original <module>:max_colors, min_max_colors:max_colors
+        marked <module>:min_colors_item <- original <module>:min_colors, min_max_colors:min_colors
+      (1 samples not analysable by the check)
+  B cb79b2fcb4e6                    deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  B cb79b2fcb4e6                    deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  C cf7e4c9f106e                    qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  C cf7e4c9f106e                    qwen25_coder_7b         L2       300      299        1     1    0.33%        94      22             0
+      codenet/p03695 sample 8bc9bad3ac39 (parent be82e9a83cac), fails tests while parent passes: no
+        original min_max_colors:min_colors -> marked <module>:min_colors_value, min_max_colors:min_colors
+        marked <module>:min_colors_value <- original <module>:min_colors, min_max_colors:min_colors
+      (1 samples not analysable by the check)
+  C cf7e4c9f106e                    deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  C cf7e4c9f106e                    deepseek_coder_6p7b     L2       300      300        0     2    0.67%       176      42             2
+      codenet/p02467 sample ee8c46b4cffb (parent 93dfd81dd929), fails tests while parent passes: yes
+        original prime_factors:n -> marked <module>:num, prime_factors:n
+        marked <module>:num <- original <module>:n, prime_factors:n
+      codenet/p02467 sample 434ae95d1ae8 (parent 4d453849abe7), fails tests while parent passes: yes
+        original prime_factors:n -> marked <module>:total, prime_factors:n
+        marked <module>:total <- original <module>:n, prime_factors:n
+  D 37400fdcd589                    qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  D 37400fdcd589                    qwen25_coder_7b         L2       300      299        1     1    0.33%        94      22             0
+      codenet/p03695 sample c80085d0e9f7 (parent be82e9a83cac), fails tests while parent passes: no
+        original min_max_colors:min_colors -> marked <module>:min_colors_value, min_max_colors:min_colors
+        marked <module>:min_colors_value <- original <module>:min_colors, min_max_colors:min_colors
+      (1 samples not analysable by the check)
+  D 37400fdcd589                    deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  D 37400fdcd589                    deepseek_coder_6p7b     L2       300      300        0     1    0.33%       176      42             1
+      codenet/p02467 sample e13222627ba8 (parent 93dfd81dd929), fails tests while parent passes: yes
+        original prime_factors:n -> marked <module>:num, prime_factors:n
+        marked <module>:num <- original <module>:n, prime_factors:n
+
+## summary: max share of samples with violations over the cells (threshold 1%: if every cell is <= 1% the dev rounds are not redone)
+  mcss b521002e09f5                 max    1.67% (deepseek_coder_6p7b L2)  ABOVE 1%
+  multimark 3c1bd11758fc            max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  single_letter 4937d9ddd78a        max    0.33% (qwen25_coder_7b L2)  ok (<= 1%)
+  A 770f999adefb                    max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  B cb79b2fcb4e6                    max    0.33% (qwen25_coder_7b L2)  ok (<= 1%)
+  C cf7e4c9f106e                    max    0.67% (deepseek_coder_6p7b L2)  ok (<= 1%)
+  D 37400fdcd589                    max    0.33% (qwen25_coder_7b L2)  ok (<= 1%)
+  -> at least one cell above 1%
+
