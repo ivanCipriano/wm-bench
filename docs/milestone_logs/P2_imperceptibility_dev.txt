@@ -1,0 +1,133 @@
+# P2 imperceptibility on dev (scripts/run_p2_imperceptibility_dev.sh report): 2026-11-19T15:13:15+01:00
+# wm-bench ede6e88fca18f7a20441d288f11f01b841ebd970, multimark a4e6972b1ee5cc1027cd4fdadf0fd41f67a67d4c
+# imperceptibility on development (scripts/report_imperceptibility_dev.py), 2026-11-19T15:13:07+01:00, tnode16
+# configs: mcss b521002e09f5, multimark 3c1bd11758fc, single_letter 4937d9ddd78a, A 770f999adefb, B cb79b2fcb4e6, C cf7e4c9f106e, D 37400fdcd589; base multimark 3c1bd11758fc
+# split dev, language python; classifiers trained out-of-fold within each dev cell (5 folds grouped by problem), nothing trained or read on test
+
+## qwen25_coder_7b L1
+### classifiers (AUROC out-of-fold; chg = changed code only)
+  config                                logreg [CI] (constraint)   Δbase     chg   |    unixcoder [CI] (SECONDARY)   Δbase     chg
+  mcss b521002e09f5                          0.958 [0.939,0.975]  +0.325   0.958   |           0.999 [0.998,1.000]  +0.425   0.999
+  multimark 3c1bd11758fc                     0.634 [0.599,0.673]  +0.000   0.698   |           0.575 [0.554,0.599]  +0.000   0.617
+  single_letter 4937d9ddd78a                 0.642 [0.608,0.682]  +0.009   0.701   |           0.586 [0.562,0.613]  +0.011   0.636
+  A 770f999adefb                             0.637 [0.601,0.673]  +0.004   0.701   |           0.575 [0.555,0.602]  +0.000   0.616
+  B cb79b2fcb4e6                             0.680 [0.642,0.718]  +0.047   0.743   |           0.666 [0.629,0.705]  +0.091   0.764
+  C cf7e4c9f106e                             0.685 [0.650,0.726]  +0.051   0.750   |           0.686 [0.649,0.727]  +0.111   0.782
+  D 37400fdcd589                             0.837 [0.803,0.868]  +0.204   0.856   |           0.922 [0.898,0.941]  +0.347   0.943
+### paired measures (metrics_imperceptibility)
+  config                                            codebleu  codebleu_minus_natural          codebleu_exact          delta_nll_mean         delta_nll_exact
+  mcss b521002e09f5                                    0.647                  -0.172                   0.746                   0.252                   0.252
+  multimark 3c1bd11758fc                               0.747                  -0.072                   0.872                   0.054                   0.054
+  single_letter 4937d9ddd78a                           0.743                  -0.076                   0.868                   0.057                   0.057
+  A 770f999adefb                                       0.746                  -0.073                   0.870                   0.056                   0.056
+  B cb79b2fcb4e6                                       0.734                  -0.085                   0.854                   0.069                   0.069
+  C cf7e4c9f106e                                       0.728                  -0.091                   0.847                   0.076                   0.076
+  D 37400fdcd589                                       0.666                  -0.153                   0.769                   0.141                   0.141
+### code edits vs the parent baseline sample (all samples | changed code only)
+  config                                 nident_frac ident_abs       lev  lev_norm  renames   |     nident_frac ident_abs       lev  lev_norm
+  mcss b521002e09f5                    576     0.417     2.457    45.905     0.161    2.467   |   576     0.417     2.457    45.905     0.161
+  multimark 3c1bd11758fc               576     0.071     0.495    17.078     0.052    0.495   |   347     0.117     0.821    28.349     0.086
+  single_letter 4937d9ddd78a           576     0.080     0.569    18.005     0.054    0.569   |   349     0.133     0.940    29.716     0.089
+  A 770f999adefb                       576     0.071     0.495    17.344     0.053    0.495   |   350     0.116     0.814    28.543     0.087
+  B cb79b2fcb4e6                       576     0.110     0.769    22.582     0.068    0.769   |   381     0.166     1.163    34.139     0.103
+  C cf7e4c9f106e                       576     0.126     0.885    24.771     0.073    0.885   |   384     0.189     1.328    37.156     0.109
+  D 37400fdcd589                       576     0.327     1.951    38.585     0.134    1.962   |   541     0.348     2.078    41.081     0.142
+
+## qwen25_coder_7b L2
+### classifiers (AUROC out-of-fold; chg = changed code only)
+  config                                logreg [CI] (constraint)   Δbase     chg   |    unixcoder [CI] (SECONDARY)   Δbase     chg
+  mcss b521002e09f5                          0.970 [0.949,0.989]  +0.260   0.971   |           1.000 [0.999,1.000]  +0.196   1.000
+  multimark 3c1bd11758fc                     0.711 [0.658,0.775]  +0.000   0.725   |           0.804 [0.747,0.859]  +0.000   0.825
+  single_letter 4937d9ddd78a                 0.834 [0.786,0.882]  +0.123   0.841   |           0.949 [0.925,0.972]  +0.145   0.956
+  A 770f999adefb                             0.706 [0.653,0.767]  -0.004   0.720   |           0.821 [0.769,0.874]  +0.017   0.838
+  B cb79b2fcb4e6                             0.761 [0.696,0.823]  +0.051   0.775   |           0.903 [0.854,0.945]  +0.099   0.923
+  C cf7e4c9f106e                             0.870 [0.821,0.918]  +0.160   0.870   |           0.977 [0.964,0.987]  +0.173   0.978
+  D 37400fdcd589                             0.893 [0.851,0.935]  +0.182   0.892   |           0.980 [0.967,0.990]  +0.175   0.980
+### paired measures (metrics_imperceptibility)
+  config                                            codebleu  codebleu_minus_natural          codebleu_exact          delta_nll_mean         delta_nll_exact
+  mcss b521002e09f5                                    0.526                  -0.275                   0.611                   0.314                   0.314
+  multimark 3c1bd11758fc                               0.684                  -0.117                   0.803                   0.130                   0.130
+  single_letter 4937d9ddd78a                           0.619                  -0.182                   0.730                   0.245                   0.245
+  A 770f999adefb                                       0.680                  -0.121                   0.799                   0.131                   0.131
+  B cb79b2fcb4e6                                       0.656                  -0.146                   0.765                   0.151                   0.151
+  C cf7e4c9f106e                                       0.575                  -0.227                   0.673                   0.307                   0.307
+  D 37400fdcd589                                       0.560                  -0.241                   0.650                   0.315                   0.315
+### code edits vs the parent baseline sample (all samples | changed code only)
+  config                                 nident_frac ident_abs       lev  lev_norm  renames   |     nident_frac ident_abs       lev  lev_norm
+  mcss b521002e09f5                    300     0.340     4.917   101.050     0.293    5.527   |   299     0.341     4.933   101.388     0.294
+  multimark 3c1bd11758fc               300     0.082     1.327    38.403     0.095    1.427   |   257     0.096     1.549    44.829     0.111
+  single_letter 4937d9ddd78a           300     0.162     2.220    49.903     0.148    2.553   |   291     0.167     2.289    51.447     0.152
+  A 770f999adefb                       300     0.082     1.327    38.917     0.097    1.427   |   262     0.094     1.519    44.561     0.111
+  B cb79b2fcb4e6                       300     0.123     2.030    51.213     0.126    2.187   |   263     0.141     2.316    58.418     0.143
+  C cf7e4c9f106e                       300     0.238     3.333    71.297     0.214    3.847   |   298     0.240     3.356    71.775     0.215
+  D 37400fdcd589                       300     0.258     3.693    78.227     0.229    4.280   |   298     0.260     3.718    78.752     0.230
+
+## deepseek_coder_6p7b L1
+### classifiers (AUROC out-of-fold; chg = changed code only)
+  config                                logreg [CI] (constraint)   Δbase     chg   |    unixcoder [CI] (SECONDARY)   Δbase     chg
+  mcss b521002e09f5                          0.948 [0.920,0.973]  +0.285   0.947   |           0.999 [0.996,1.000]  +0.369   0.999
+  multimark 3c1bd11758fc                     0.663 [0.623,0.703]  +0.000   0.746   |           0.630 [0.596,0.666]  +0.000   0.723
+  single_letter 4937d9ddd78a                 0.662 [0.624,0.701]  -0.000   0.744   |           0.583 [0.559,0.612]  -0.047   0.647
+  A 770f999adefb                             0.666 [0.622,0.710]  +0.003   0.746   |           0.633 [0.598,0.671]  +0.003   0.727
+  B cb79b2fcb4e6                             0.672 [0.632,0.717]  +0.009   0.755   |           0.693 [0.652,0.733]  +0.063   0.744
+  C cf7e4c9f106e                             0.667 [0.625,0.709]  +0.004   0.748   |           0.713 [0.671,0.754]  +0.083   0.762
+  D 37400fdcd589                             0.806 [0.768,0.846]  +0.143   0.830   |           0.922 [0.900,0.942]  +0.292   0.949
+### paired measures (metrics_imperceptibility)
+  config                                            codebleu  codebleu_minus_natural          codebleu_exact          delta_nll_mean         delta_nll_exact
+  mcss b521002e09f5                                    0.555                  -0.268                   0.632                   0.285                   0.285
+  multimark 3c1bd11758fc                               0.738                  -0.085                   0.855                   0.076                   0.076
+  single_letter 4937d9ddd78a                           0.734                  -0.089                   0.850                   0.078                   0.078
+  A 770f999adefb                                       0.735                  -0.088                   0.851                   0.079                   0.079
+  B cb79b2fcb4e6                                       0.722                  -0.101                   0.834                   0.085                   0.085
+  C cf7e4c9f106e                                       0.715                  -0.108                   0.825                   0.094                   0.094
+  D 37400fdcd589                                       0.590                  -0.234                   0.672                   0.165                   0.165
+### code edits vs the parent baseline sample (all samples | changed code only)
+  config                                 nident_frac ident_abs       lev  lev_norm  renames   |     nident_frac ident_abs       lev  lev_norm
+  mcss b521002e09f5                    576     0.394     2.196    40.203     0.222    2.210   |   574     0.395     2.204    40.343     0.223
+  multimark 3c1bd11758fc               576     0.047     0.345    12.896     0.054    0.347   |   328     0.083     0.607    22.646     0.096
+  single_letter 4937d9ddd78a           576     0.055     0.408    13.700     0.057    0.410   |   329     0.096     0.714    23.985     0.099
+  A 770f999adefb                       576     0.047     0.345    13.340     0.056    0.347   |   332     0.082     0.599    23.145     0.098
+  B cb79b2fcb4e6                       576     0.073     0.528    16.733     0.069    0.531   |   345     0.122     0.881    27.936     0.116
+  C cf7e4c9f106e                       576     0.083     0.609    18.684     0.076    0.613   |   348     0.138     1.009    30.925     0.125
+  D 37400fdcd589                       576     0.302     1.686    33.762     0.182    1.700   |   534     0.326     1.818    36.418     0.196
+
+## deepseek_coder_6p7b L2
+### classifiers (AUROC out-of-fold; chg = changed code only)
+  config                                logreg [CI] (constraint)   Δbase     chg   |    unixcoder [CI] (SECONDARY)   Δbase     chg
+  mcss b521002e09f5                          0.974 [0.952,0.994]  +0.290   0.974   |           0.998 [0.995,1.000]  +0.294   0.998
+  multimark 3c1bd11758fc                     0.684 [0.637,0.735]  +0.000   0.737   |           0.704 [0.653,0.763]  +0.000   0.759
+  single_letter 4937d9ddd78a                 0.822 [0.785,0.863]  +0.138   0.847   |           0.908 [0.874,0.941]  +0.204   0.933
+  A 770f999adefb                             0.692 [0.643,0.741]  +0.007   0.743   |           0.705 [0.653,0.766]  +0.001   0.752
+  B cb79b2fcb4e6                             0.712 [0.659,0.771]  +0.028   0.749   |           0.753 [0.696,0.816]  +0.049   0.804
+  C cf7e4c9f106e                             0.888 [0.855,0.924]  +0.204   0.894   |           0.939 [0.910,0.964]  +0.235   0.946
+  D 37400fdcd589                             0.898 [0.865,0.929]  +0.214   0.904   |           0.954 [0.933,0.972]  +0.250   0.961
+### paired measures (metrics_imperceptibility)
+  config                                            codebleu  codebleu_minus_natural          codebleu_exact          delta_nll_mean         delta_nll_exact
+  mcss b521002e09f5                                    0.493                  -0.230                   0.596                   0.357                   0.357
+  multimark 3c1bd11758fc                               0.651                  -0.071                   0.810                   0.104                   0.104
+  single_letter 4937d9ddd78a                           0.581                  -0.141                   0.720                   0.256                   0.256
+  A 770f999adefb                                       0.646                  -0.076                   0.805                   0.105                   0.105
+  B cb79b2fcb4e6                                       0.632                  -0.090                   0.780                   0.120                   0.120
+  C cf7e4c9f106e                                       0.535                  -0.187                   0.656                   0.338                   0.338
+  D 37400fdcd589                                       0.525                  -0.198                   0.637                   0.349                   0.349
+### code edits vs the parent baseline sample (all samples | changed code only)
+  config                                 nident_frac ident_abs       lev  lev_norm  renames   |     nident_frac ident_abs       lev  lev_norm
+  mcss b521002e09f5                    300     0.287     3.720    82.240     0.273    4.260   |   300     0.287     3.720    82.240     0.273
+  multimark 3c1bd11758fc               300     0.051     0.783    33.783     0.087    0.863   |   241     0.063     0.975    42.054     0.109
+  single_letter 4937d9ddd78a           300     0.139     1.783    46.373     0.141    2.037   |   278     0.150     1.924    50.043     0.152
+  A 770f999adefb                       300     0.051     0.783    34.163     0.089    0.863   |   246     0.062     0.955    41.663     0.108
+  B cb79b2fcb4e6                       300     0.079     1.213    42.487     0.111    1.323   |   246     0.096     1.480    51.813     0.135
+  C cf7e4c9f106e                       300     0.204     2.580    62.920     0.209    2.940   |   296     0.206     2.615    63.770     0.212
+  D 37400fdcd589                       300     0.216     2.800    67.570     0.222    3.290   |   296     0.219     2.838    68.483     0.225
+
+## constraint of v1.3.3: adversarial_logreg AUROC <= base + 0.1 on every cell (unixcoder is secondary, not in the constraint)
+  config                               max Δ   cells  per cell
+  mcss b521002e09f5                    0.325    FAIL  qwen25_coder_7b L1 +0.325 qwen25_coder_7b L2 +0.260 deepseek_coder_6p7b L1 +0.285 deepseek_coder_6p7b L2 +0.290
+  multimark 3c1bd11758fc               0.000      ok  qwen25_coder_7b L1 +0.000 qwen25_coder_7b L2 +0.000 deepseek_coder_6p7b L1 +0.000 deepseek_coder_6p7b L2 +0.000
+  single_letter 4937d9ddd78a           0.138    FAIL  qwen25_coder_7b L1 +0.009 qwen25_coder_7b L2 +0.123 deepseek_coder_6p7b L1 -0.000 deepseek_coder_6p7b L2 +0.138
+  A 770f999adefb                       0.007      ok  qwen25_coder_7b L1 +0.004 qwen25_coder_7b L2 -0.004 deepseek_coder_6p7b L1 +0.003 deepseek_coder_6p7b L2 +0.007
+  B cb79b2fcb4e6                       0.051      ok  qwen25_coder_7b L1 +0.047 qwen25_coder_7b L2 +0.051 deepseek_coder_6p7b L1 +0.009 deepseek_coder_6p7b L2 +0.028
+  C cf7e4c9f106e                       0.204    FAIL  qwen25_coder_7b L1 +0.051 qwen25_coder_7b L2 +0.160 deepseek_coder_6p7b L1 +0.004 deepseek_coder_6p7b L2 +0.204
+  D 37400fdcd589                       0.214    FAIL  qwen25_coder_7b L1 +0.204 qwen25_coder_7b L2 +0.182 deepseek_coder_6p7b L1 +0.143 deepseek_coder_6p7b L2 +0.214
+  decision R (single_letter 4937d9ddd78a vs base, L2 dev, limit +0.05): qwen25_coder_7b +0.123 deepseek_coder_6p7b +0.138
+
