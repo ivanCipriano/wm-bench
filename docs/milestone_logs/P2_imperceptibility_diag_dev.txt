@@ -1,0 +1,2130 @@
+# adversarial_logreg diagnosis on development (scripts/diag_imperceptibility_dev.py), 2026-11-19T16:56:43+01:00, tnode16
+# wm-bench f1f33b422b24e7fa7469af831e6b1c97109ed1ef; configs: mcss b521002e09f5, B cb79b2fcb4e6, C cf7e4c9f106e, D 37400fdcd589; split dev, language python; read-only, nothing written to the store
+# (a) model on the whole cell, C from the inner CV of the stage run on the whole cell; weight = coefficient towards 'marked' (explicit features scaled by MaxAbsScaler); marked/baseline = mean value (fraction for name/node, TF-IDF for ngram)
+# (b) out-of-fold scores of the stage; diff baseline -> marked (parent_id)
+# (c) new names = identifiers of the marked code missing from the parent, no builtins
+
+## mcss b521002e09f5  qwen25_coder_7b L1 python dev
+  (a) C on the whole cell 1 (inner AUROC 0.961); C of the stage per fold: 1.0, 1.0, 1.0, 1.0, 1.0; n = 576 marked + 576 baseline
+        # kind     weight    marked  baseline  feature
+        1 name      6.485    0.1579    0.0000  'name_camel'
+        2 name      6.230    6.9243    5.1388  'name_len_mean'
+        3 name      5.466    0.1044    0.0060  'name_pascal'
+        4 ngram     1.538    0.0146    0.0000  'N_VAL'
+        5 ngram     1.509    0.0138    0.0000  'NVal'
+        6 name      1.463    0.2414    0.1983  'name_snake'
+        7 ngram     1.015    0.0136    0.0000  'n_val'
+        8 ngram     0.955    0.0041    0.0000  'SVal'
+        9 ngram     0.775    0.0048    0.0000  'RES_VAL'
+       10 name      0.773    0.0612    0.0607  'initial_a'
+       11 node      0.762    0.0018    0.0011  'node_>'
+       12 ngram     0.742    0.0054    0.0000  'NUMS_VAL'
+       13 ngram     0.723    0.0076    0.0000  'nums_val'
+       14 ngram     0.716    0.0064    0.0000  '( N_VAL'
+       15 ngram     0.705    0.0047    0.0000  's_val'
+       16 ngram     0.664    0.0093    0.0000  'arr_val'
+       17 node      0.628    0.0045    0.0043  'node_for_statement'
+       18 ngram     0.622    0.0035    0.0000  'B_VAL'
+       19 ngram     0.616    0.0031    0.0000  'AVal'
+       20 node      0.600    0.0007    0.0004  'node_>='
+       21 name      0.598    0.0926    0.0927  'initial_i'
+       22 ngram     0.581    0.0064    0.0000  'ARR_VAL'
+       23 ngram     0.579    0.0025    0.0000  '( SVal'
+       24 ngram     0.569    0.0057    0.0000  'NVal )'
+       25 name      0.568    0.0175    0.0175  'initial_x'
+       26 ngram     0.552    0.0045    0.0000  '( NVal'
+       27 node      0.549    0.0014    0.0013  'node_//'
+       28 ngram     0.547    0.0051    0.0000  'N_VAL )'
+       29 ngram     0.540    0.0027    0.0000  'SUM_COUNT'
+       30 name      0.538    0.0130    0.0131  'initial_k'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- mbpp/762 sample de070d8eb3e8 score 1.0000 (parent 7dd8443d3d30)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+    -def check_monthnumber_number(month_number):
+    +def check_monthnumber_number(MonthNumber):
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month_number == 4 or month_number == 6 or month_number == 9 or month_number == 11:
+    +    if MonthNumber == 4 or MonthNumber == 6 or 9 == MonthNumber or 11 == MonthNumber:
+             return True
+    --- mbpp/762 sample fd9b97d6c3a3 score 0.9997 (parent e6c66b1ec7d2)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+    -def check_monthnumber_number(month):
+    +def check_monthnumber_number(monthVal):
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month == 4 or month == 6 or month == 9 or month == 11:
+    +    if 4 == monthVal or 6 == monthVal or monthVal == 9 or 11 == monthVal:
+             return True
+    --- mbpp/762 sample 8a803b505333 score 0.9997 (parent 863ef9e2747b)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+    -def check_monthnumber_number(month):
+    +def check_monthnumber_number(monthVal):
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month == 4 or month == 6 or month == 9 or month == 11:
+    +    if 4 == monthVal or 6 == monthVal or monthVal == 9 or 11 == monthVal:
+             return True
+    --- humaneval/56 sample a0cfa777fff7 score 0.9993 (parent 0cc2b188cb18)
+    --- baseline
+    +++ marked
+    @@ -1,10 +1,10 @@
+    -def correct_bracketing(brackets: str) -> bool:
+    -    balance = 0
+    -    for bracket in brackets:
+    -        if bracket == '<':
+    -            balance += 1
+    -        elif bracket == '>':
+    -            balance -= 1
+    -        if balance < 0:
+    +def correct_bracketing(BRACKETS_VAL: str) -> bool:
+    +    balanceCount = 0
+    +    for bracketVal in BRACKETS_VAL:
+    +        if bracketVal == '<':
+    +            balanceCount = balanceCount + 1
+    +        elif '>' == bracketVal:
+    +            balanceCount = balanceCount - 1
+    +        if balanceCount < 0:
+                 return False
+    -    return balance == 0
+    +    return 0 == balanceCount
+    --- humaneval/56 sample 2768de10ac4c score 0.9990 (parent 5e9b6fe08296)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -def correct_bracketing(brackets: str) -> bool:
+    +def correct_bracketing(bracketsVal: str) -> bool:
+         """ brackets is a string of "<" and ">".
+    @@ -13,10 +13,10 @@
+         """
+    -    balance = 0
+    -    for bracket in brackets:
+    -        if bracket == '<':
+    -            balance += 1
+    -        elif bracket == '>':
+    -            balance -= 1
+    -        if balance < 0:
+    +    balanceCount = 0
+    +    for BRACKET_VAL in bracketsVal:
+    +        if '<' == BRACKET_VAL:
+    +            balanceCount = balanceCount + 1
+    +        elif '>' == BRACKET_VAL:
+    +            balanceCount -= 1
+    +        if 0 > balanceCount:
+                 return False
+    -    return balance == 0
+    +    return 0 == balanceCount
+
+## B cb79b2fcb4e6  qwen25_coder_7b L1 python dev
+  (a) C on the whole cell 10 (inner AUROC 0.676); C of the stage per fold: 100.0, 100.0, 10.0, 100.0, 100.0; n = 576 marked + 576 baseline
+        # kind     weight    marked  baseline  feature
+        1 name      7.344    5.6929    5.1388  'name_len_mean'
+        2 ngram     3.815    0.0043    0.0000  '1 +'
+        3 name      3.471    0.0175    0.0062  'initial_o'
+        4 name      2.892    0.2436    0.1983  'name_snake'
+        5 ngram     2.876    0.0048    0.0000  '0 ='
+        6 ngram     2.876    0.0048    0.0000  '0 = ='
+        7 ngram     2.787    0.0051    0.0000  'if 0'
+        8 ngram     2.629    0.0037    0.0006  '* 2'
+        9 ngram     2.626    0.0048    0.0018  '= n'
+       10 node      2.544    0.0008    0.0004  'node_>='
+       11 ngram     2.518    0.0028    0.0000  '= = n'
+       12 ngram     2.517    0.0067    0.0000  'outcome'
+       13 ngram     2.412    0.0027    0.0000  '+ n'
+       14 name      2.387    0.0640    0.0607  'initial_a'
+       15 ngram     2.242    0.0028    0.0000  ', 1 +'
+       16 ngram     2.099    0.0035    0.0010  '( 0 ,'
+       17 ngram     2.099    0.0035    0.0010  'range ( 0'
+       18 ngram     2.084    0.0036    0.0000  'if 0 ='
+       19 ngram     2.048    0.0027    0.0000  '2 +'
+       20 ngram     1.925    0.0037    0.0013  '( 0'
+       21 node      1.852    0.0010    0.0011  'node_while_statement'
+       22 node      1.852    0.0010    0.0011  'node_while'
+       23 ngram     1.838    0.0025    0.0000  'count_idx'
+       24 ngram     1.771    0.0015    0.0000  '( 1 +'
+       25 ngram     1.763    0.0023    0.0000  '1 + n'
+       26 ngram     1.725    0.0064    0.0015  'output'
+       27 ngram     1.713    0.0032    0.0018  'n :'
+       28 ngram     1.651    0.0025    0.0000  'middle'
+       29 ngram     1.610    0.0016    0.0000  'motif'
+       30 ngram     1.583    0.0007    0.0000  'regex'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- mbpp/264 sample 6d862c6eff0a score 1.0000 (parent e85b1e955dc4)
+    --- baseline
+    +++ marked
+    @@ -2,10 +2,10 @@
+         # Check if the input age is negative
+    -    if human_years < 0:
+    +    if 0 > human_years:
+             exit()
+         # For the first two years, a dog year is equal to 10.5 human years
+    -    elif human_years <= 2:
+    -        dog_years = human_years * 10.5
+    +    elif 2 >= human_years:
+    +        dog_years_value = human_years * 10.5
+         # After two years, each dog year is equal to 4 human years
+         else:
+    -        dog_years = 21 + (human_years - 2) * 4
+    -    return dog_years
+    +        dog_years_value = 21 + (human_years - 2) * 4
+    +    return dog_years_value
+    --- mbpp/264 sample 3e6df5df1bd3 score 1.0000 (parent 7f9eefa6ad61)
+    --- baseline
+    +++ marked
+    @@ -2,10 +2,10 @@
+         # Check if the input age is negative
+    -    if human_years < 0:
+    +    if 0 > human_years:
+             exit()
+         # For the first two years, a dog year is equal to 10.5 human years
+    -    elif human_years <= 2:
+    -        dog_years = human_years * 10.5
+    +    elif 2 >= human_years:
+    +        dog_years_val = human_years * 10.5
+         # After two years, each dog year is equal to 4 human years
+         else:
+    -        dog_years = 21 + (human_years - 2) * 4
+    -    return dog_years
+    +        dog_years_val = 21 + (human_years - 2) * 4
+    +    return dog_years_val
+    --- mbpp/264 sample dfdc19c71437 score 1.0000 (parent e4b996260c8e)
+    --- baseline
+    +++ marked
+    @@ -2,10 +2,10 @@
+         # Check if the input age is negative
+    -    if human_years < 0:
+    +    if 0 > human_years:
+             exit()
+         # For the first two years, a dog year is equal to 10.5 human years
+    -    elif human_years <= 2:
+    -        dog_years = human_years * 10.5
+    +    elif 2 >= human_years:
+    +        dog_years_val = 10.5 * human_years
+         # After two years, each dog year is equal to 4 human years
+         else:
+    -        dog_years = 21 + (human_years - 2) * 4
+    -    return dog_years
+    +        dog_years_val = 21 + (human_years - 2) * 4
+    +    return dog_years_val
+    --- mbpp/264 sample 2b1fe74f487a score 1.0000 (parent a1b33eba053a)
+    --- baseline
+    +++ marked
+    @@ -2,10 +2,10 @@
+         # Check if the input age is negative
+    -    if human_years < 0:
+    +    if 0 > human_years:
+             exit()
+         # For the first two years, a dog year is equal to 10.5 human years
+    -    elif human_years <= 2:
+    -        dog_years = human_years * 10.5
+    +    elif 2 >= human_years:
+    +        dog_years_val = 10.5 * human_years
+         # After two years, each dog year is equal to 4 human years
+         else:
+    -        dog_years = 21 + (human_years - 2) * 4
+    -    return dog_years
+    +        dog_years_val = 21 + (human_years - 2) * 4
+    +    return dog_years_val
+    --- mbpp/762 sample 7c4509299138 score 1.0000 (parent 7dd8443d3d30)
+    --- baseline
+    +++ marked
+    @@ -2,3 +2,3 @@
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month_number == 4 or month_number == 6 or month_number == 9 or month_number == 11:
+    +    if 4 == month_number or month_number == 6 or month_number == 9 or month_number == 11:
+             return True
+  (c) new names 451 (changed samples): EXTRA_SUFFIXES 0.040, digit 0.000, either 0.040; base suffixes 0.541, prefixes 0.016
+      most frequent last segments: (one word) 176, value 62, val 49, item 46, list 36, count 18, idx 16, res 10, tmp 7, data 6
+
+## C cf7e4c9f106e  qwen25_coder_7b L1 python dev
+  (a) C on the whole cell 10 (inner AUROC 0.677); C of the stage per fold: 100.0, 10.0, 10.0, 100.0, 100.0; n = 576 marked + 576 baseline
+        # kind     weight    marked  baseline  feature
+        1 name      7.281    5.7571    5.1388  'name_len_mean'
+        2 ngram     3.767    0.0042    0.0000  '1 +'
+        3 name      3.528    0.0175    0.0062  'initial_o'
+        4 ngram     3.480    0.0037    0.0000  'pos'
+        5 name      3.266    0.2498    0.1983  'name_snake'
+        6 ngram     3.057    0.0047    0.0000  '0 = ='
+        7 ngram     3.057    0.0047    0.0000  '0 ='
+        8 ngram     2.771    0.0050    0.0000  'if 0'
+        9 ngram     2.488    0.0025    0.0000  '= = n'
+       10 ngram     2.435    0.0067    0.0000  'outcome'
+       11 ngram     2.393    0.0027    0.0000  '+ n'
+       12 ngram     2.392    0.0036    0.0006  '* 2'
+       13 name      2.316    0.0632    0.0607  'initial_a'
+       14 ngram     2.198    0.0028    0.0000  ', 1 +'
+       15 ngram     2.136    0.0036    0.0000  'if 0 ='
+       16 ngram     2.109    0.0034    0.0010  '( 0 ,'
+       17 ngram     2.109    0.0034    0.0010  'range ( 0'
+       18 ngram     1.944    0.0037    0.0013  '( 0'
+       19 ngram     1.874    0.0026    0.0000  '2 +'
+       20 ngram     1.843    0.0015    0.0000  '( 1 +'
+       21 ngram     1.833    0.0029    0.0008  'space'
+       22 ngram     1.790    0.0024    0.0000  'count_idx'
+       23 node      1.749    0.0010    0.0011  'node_while'
+       24 node      1.749    0.0010    0.0011  'node_while_statement'
+       25 ngram     1.731    0.0023    0.0000  '1 + n'
+       26 ngram     1.700    0.0064    0.0015  'output'
+       27 ngram     1.683    0.0016    0.0000  'motif'
+       28 ngram     1.678    0.0024    0.0000  'col'
+       29 ngram     1.654    0.0037    0.0019  '= n'
+       30 ngram     1.650    0.0007    0.0000  'regex'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- mbpp/762 sample 0fa63ef45f3a score 1.0000 (parent 7dd8443d3d30)
+    --- baseline
+    +++ marked
+    @@ -2,3 +2,3 @@
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month_number == 4 or month_number == 6 or month_number == 9 or month_number == 11:
+    +    if 4 == month_number or month_number == 6 or month_number == 9 or month_number == 11:
+             return True
+    --- mbpp/762 sample 14437939f6df score 1.0000 (parent 981b4fcd9fab)
+    --- baseline
+    +++ marked
+    @@ -2,5 +2,4 @@
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month_number == 4 or month_number == 6 or month_number == 9 or month_number == 11:
+    +    if month_number == 4 or month_number == 6 or 9 == month_number or 11 == month_number:
+             return True
+    -    else:
+    -        return False
+    +    return False
+    --- mbpp/264 sample 8a879b4ba358 score 1.0000 (parent e85b1e955dc4)
+    --- baseline
+    +++ marked
+    @@ -2,10 +2,10 @@
+         # Check if the input age is negative
+    -    if human_years < 0:
+    +    if 0 > human_years:
+             exit()
+         # For the first two years, a dog year is equal to 10.5 human years
+    -    elif human_years <= 2:
+    -        dog_years = human_years * 10.5
+    +    elif 2 >= human_years:
+    +        dog_years_value = human_years * 10.5
+         # After two years, each dog year is equal to 4 human years
+         else:
+    -        dog_years = 21 + (human_years - 2) * 4
+    -    return dog_years
+    +        dog_years_value = 21 + (human_years - 2) * 4
+    +    return dog_years_value
+    --- mbpp/264 sample aa4b14c11786 score 1.0000 (parent 7f9eefa6ad61)
+    --- baseline
+    +++ marked
+    @@ -2,10 +2,10 @@
+         # Check if the input age is negative
+    -    if human_years < 0:
+    +    if 0 > human_years:
+             exit()
+         # For the first two years, a dog year is equal to 10.5 human years
+    -    elif human_years <= 2:
+    -        dog_years = human_years * 10.5
+    +    elif 2 >= human_years:
+    +        dog_years_val = human_years * 10.5
+         # After two years, each dog year is equal to 4 human years
+         else:
+    -        dog_years = 21 + (human_years - 2) * 4
+    -    return dog_years
+    +        dog_years_val = 21 + (human_years - 2) * 4
+    +    return dog_years_val
+    --- mbpp/264 sample ed13b8a088d1 score 1.0000 (parent a1b33eba053a)
+    --- baseline
+    +++ marked
+    @@ -2,10 +2,10 @@
+         # Check if the input age is negative
+    -    if human_years < 0:
+    +    if 0 > human_years:
+             exit()
+         # For the first two years, a dog year is equal to 10.5 human years
+    -    elif human_years <= 2:
+    -        dog_years = human_years * 10.5
+    +    elif 2 >= human_years:
+    +        dog_years_val = 10.5 * human_years
+         # After two years, each dog year is equal to 4 human years
+         else:
+    -        dog_years = 21 + (human_years - 2) * 4
+    -    return dog_years
+    +        dog_years_val = 21 + (human_years - 2) * 4
+    +    return dog_years_val
+  (c) new names 518 (changed samples): EXTRA_SUFFIXES 0.035, digit 0.000, either 0.035; base suffixes 0.510, prefixes 0.015
+      most frequent last segments: (one word) 222, value 69, item 54, val 50, list 33, count 17, idx 16, res 16, tmp 9, data 6
+
+## D 37400fdcd589  qwen25_coder_7b L1 python dev
+  (a) C on the whole cell 10 (inner AUROC 0.860); C of the stage per fold: 1.0, 10.0, 10.0, 1.0, 10.0; n = 576 marked + 576 baseline
+        # kind     weight    marked  baseline  feature
+        1 name      9.949    6.7720    5.1388  'name_len_mean'
+        2 name      8.978    0.3910    0.1983  'name_snake'
+        3 name      3.551    0.0216    0.0062  'initial_o'
+        4 ngram     3.321    0.0154    0.0025  'total'
+        5 ngram     3.010    0.0093    0.0027  'array'
+        6 name      2.865    0.0354    0.0374  'initial_b'
+        7 ngram     2.826    0.0017    0.0000  'body'
+        8 node      2.706    0.0008    0.0004  'node_>='
+        9 ngram     2.693    0.0032    0.0000  'rhs'
+       10 node      2.655    0.0017    0.0011  'node_>'
+       11 name      2.454    0.0889    0.0483  'initial_t'
+       12 ngram     2.437    0.0041    0.0000  '1 +'
+       13 node      2.260    0.0010    0.0011  'node_while'
+       14 node      2.260    0.0010    0.0011  'node_while_statement'
+       15 ngram     2.200    0.0036    0.0000  'lhs'
+       16 name      2.103    0.0138    0.0036  'initial_v'
+       17 ngram     2.027    0.0050    0.0000  'array ['
+       18 ngram     1.847    0.0073    0.0015  'output'
+       19 ngram     1.837    0.0011    0.0000  '+ n'
+       20 name      1.801    0.0130    0.0131  'initial_k'
+       21 ngram     1.762    0.0042    0.0000  'test_list_value'
+       22 ngram     1.753    0.0040    0.0000  'pos'
+       23 ngram     1.716    0.0057    0.0000  'total )'
+       24 ngram     1.704    0.0005    0.0000  'symbol'
+       25 name      1.698    0.0650    0.0696  'initial_r'
+       26 ngram     1.691    0.0046    0.0000  '0 ='
+       27 ngram     1.691    0.0046    0.0000  '0 = ='
+       28 ngram     1.661    0.0177    0.0149  'num'
+       29 ngram     1.612    0.0035    0.0000  'test_list_val'
+       30 ngram     1.590    0.0049    0.0000  'if 0'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- mbpp/762 sample 8fba359cbeab score 1.0000 (parent 7dd8443d3d30)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+    -def check_monthnumber_number(month_number):
+    +def check_monthnumber_number(month_number_value):
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month_number == 4 or month_number == 6 or month_number == 9 or month_number == 11:
+    +    if 4 == month_number_value or month_number_value == 6 or month_number_value == 9 or month_number_value == 11:
+             return True
+    --- mbpp/762 sample 32af2521ac43 score 1.0000 (parent e6c66b1ec7d2)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+    -def check_monthnumber_number(month):
+    +def check_monthnumber_number(month_count):
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month == 4 or month == 6 or month == 9 or month == 11:
+    +    if month_count == 4 or month_count == 6 or month_count == 9 or month_count == 11:
+             return True
+    --- mbpp/762 sample ddc16f6f1856 score 1.0000 (parent 981b4fcd9fab)
+    --- baseline
+    +++ marked
+    @@ -2,5 +2,4 @@
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month_number == 4 or month_number == 6 or month_number == 9 or month_number == 11:
+    +    if month_number == 4 or month_number == 6 or 9 == month_number or 11 == month_number:
+             return True
+    -    else:
+    -        return False
+    +    return False
+    --- mbpp/762 sample f1f9ff749604 score 1.0000 (parent 863ef9e2747b)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+    -def check_monthnumber_number(month):
+    +def check_monthnumber_number(month_res):
+         # Check if the month number is 4, 6, 9, or 11
+    -    if month == 4 or month == 6 or month == 9 or month == 11:
+    +    if month_res == 4 or month_res == 6 or 9 == month_res or month_res == 11:
+             return True
+    --- mbpp/264 sample 16a9d21136c4 score 1.0000 (parent e85b1e955dc4)
+    --- baseline
+    +++ marked
+    @@ -1,11 +1,11 @@
+    -def dog_age(human_years):
+    +def dog_age(human_years_val):
+         # Check if the input age is negative
+    -    if human_years < 0:
+    +    if 0 > human_years_val:
+             exit()
+         # For the first two years, a dog year is equal to 10.5 human years
+    -    elif human_years <= 2:
+    -        dog_years = human_years * 10.5
+    +    elif 2 >= human_years_val:
+    +        dog_years_val = human_years_val * 10.5
+         # After two years, each dog year is equal to 4 human years
+         else:
+    -        dog_years = 21 + (human_years - 2) * 4
+    -    return dog_years
+    +        dog_years_val = 21 + (human_years_val - 2) * 4
+    +    return dog_years_val
+  (c) new names 1137 (changed samples): EXTRA_SUFFIXES 0.025, digit 0.004, either 0.028; base suffixes 0.548, prefixes 0.015
+      most frequent last segments: (one word) 461, value 143, item 132, val 113, list 68, res 61, count 51, idx 31, tmp 24, l 7
+
+## mcss b521002e09f5  qwen25_coder_7b L2 python dev
+  (a) C on the whole cell 1 (inner AUROC 0.984); C of the stage per fold: 10.0, 0.1, 100.0, 10.0, 1.0; n = 300 marked + 300 baseline
+        # kind     weight    marked  baseline  feature
+        1 name      5.353    5.8957    3.9862  'name_len_mean'
+        2 name      4.841    0.1337    0.0000  'name_camel'
+        3 name      2.666    0.0588    0.0009  'name_pascal'
+        4 name      1.885    0.1370    0.0723  'name_snake'
+        5 ngram     0.799    0.0151    0.0000  'NCount'
+        6 ngram     0.785    0.0140    0.0000  'N_COUNT'
+        7 ngram     0.753    0.0166    0.0000  'A_VAL'
+        8 node      0.712    0.0093    0.0076  'node_+'
+        9 ngram     0.672    0.0159    0.0000  'DATA_VAL'
+       10 ngram     0.659    0.0115    0.0000  'AVal'
+       11 ngram     0.579    0.0108    0.0000  'N_VAL'
+       12 ngram     0.578    0.0107    0.0000  'n_val'
+       13 ngram     0.557    0.0088    0.0000  'B_VAL'
+       14 ngram     0.538    0.0084    0.0000  'NVal'
+       15 ngram     0.504    0.0119    0.0000  'DATA_VAL ['
+       16 ngram     0.502    0.0138    0.0000  'n_count'
+       17 ngram     0.475    0.0148    0.0000  'DataVal'
+       18 ngram     0.459    0.0093    0.0000  'S_VAL'
+       19 ngram     0.456    0.0128    0.0000  'data_val'
+       20 ngram     0.455    0.0112    0.0000  's_val'
+       21 node      0.435    0.0042    0.0042  'node_pattern_list'
+       22 name      0.432    0.1702    0.1708  'initial_i'
+       23 ngram     0.420    0.0166    0.0000  'dataVal'
+       24 ngram     0.403    0.0076    0.0000  'BVal'
+       25 ngram     0.397    0.0067    0.0000  'SVal'
+       26 ngram     0.390    0.0089    0.0000  '( DATA_VAL ['
+       27 ngram     0.390    0.0089    0.0000  '( DATA_VAL'
+       28 ngram     0.387    0.0081    0.0000  'b_val'
+       29 ngram     0.385    0.0087    0.0000  'int ( DATA_VAL'
+       30 ngram     0.347    0.0088    0.0000  'input_val'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- codenet/p04001 sample a95b340962c4 score 1.0000 (parent 20f5c7a9ca5f)
+    --- baseline
+    +++ marked
+    @@ -5,18 +5,18 @@
+     
+    -def generate_expressions(s, index, current_expression, expressions):
+    -    if index == len(s):
+    -        expressions.append(current_expression)
+    +def generate_expressions(sVal, IndexVal, CURRENT_EXPRESSION, EXPRESSIONS_VAL):
+    +    if len(sVal) == IndexVal:
+    +        EXPRESSIONS_VAL.append(CURRENT_EXPRESSION)
+             return
+    -    generate_expressions(s, index + 1, current_expression + s[index], expressions)
+    -    if current_expression and current_expression[-1] != '+':
+    -        generate_expressions(s, index + 1, current_expression + '+' + s[index], expressions)
+    +    generate_expressions(sVal, IndexVal + 1, CURRENT_EXPRESSION + sVal[IndexVal], EXPRESSIONS_VAL)
+    +    if CURRENT_EXPRESSION and CURRENT_EXPRESSION[-1] != '+':
+    +        generate_expressions(sVal, IndexVal + 1, CURRENT_EXPRESSION + '+' + sVal[IndexVal], EXPRESSIONS_VAL)
+     
+     def main():
+    -    s = sys.stdin.read().strip()
+    -    expressions = []
+    -    generate_expressions(s, 0, '', expressions)
+    -    result = sum(evaluate_expression(expr) for expr in expressions)
+    -    print(result)
+    +    S_VAL = sys.stdin.read().strip()
+    +    expressionsList = []
+    +    generate_expressions(S_VAL, 0, '', expressionsList)
+    +    result_val = sum(evaluate_expression(expr) for expr in expressionsList)
+    +    print(result_val)
+     
+    -if __name__ == "__main__":
+    +if "__main__" == __name__:
+         main()
+    --- codenet/p04001 sample 4947a3d8b152 score 1.0000 (parent dc66343708e6)
+    --- baseline
+    +++ marked
+    @@ -5,16 +5,16 @@
+     
+    -def generate_expressions(s, index, current, expressions):
+    -    if index == len(s):
+    -        expressions.append(current)
+    +def generate_expressions(S_VAL, IndexVal, CURRENT_VAL, expressions_val):
+    +    if IndexVal == len(S_VAL):
+    +        expressions_val.append(CURRENT_VAL)
+             return
+    -    generate_expressions(s, index + 1, current + s[index], expressions)
+    -    if index + 1 < len(s):
+    -        generate_expressions(s, index + 2, current + '+' + s[index:index + 2], expressions)
+    +    generate_expressions(S_VAL, IndexVal + 1, CURRENT_VAL + S_VAL[IndexVal], expressions_val)
+    +    if len(S_VAL) > 1 + IndexVal:
+    +        generate_expressions(S_VAL, 2 + IndexVal, CURRENT_VAL + '+' + S_VAL[IndexVal:IndexVal + 2], expressions_val)
+     
+     def main():
+    -    s = sys.stdin.read().strip()
+    -    expressions = []
+    -    generate_expressions(s, 0, '', expressions)
+    -    result = sum(evaluate_expression(expr) for expr in expressions)
+    -    print(result)
+    +    sVal = sys.stdin.read().strip()
+    +    expressionsList = []
+    +    generate_expressions(sVal, 0, '', expressionsList)
+    +    ResultVal = sum(evaluate_expression(expr) for expr in expressionsList)
+    +    print(ResultVal)
+     
+    --- codenet/p03081 sample 2bb0a4d374a9 score 1.0000 (parent f85fc54f6c1a)
+    --- baseline
+    +++ marked
+    @@ -2,23 +2,23 @@
+     
+    -input = sys.stdin.read
+    -data = input().split()
+    +input_val = sys.stdin.read
+    +DATA_VAL = input_val().split()
+     
+    -N = int(data[0])
+    -Q = int(data[1])
+    -s = data[2]
+    -spells = [(data[2 * i + 3], data[2 * i + 4]) for i in range(Q)]
+    +nCount = int(DATA_VAL[0])
+    +Q_COUNT = int(DATA_VAL[1])
+    +sVal = DATA_VAL[2]
+    +SPELLS_LIST = [(DATA_VAL[2 * i + 3], DATA_VAL[i * 2 + 4]) for i in range(Q_COUNT)]
+     
+    -golem_positions = [i for i in range(N)]
+    +GolemPositions = [i for i in range(nCount)]
+     
+    -for t, d in spells:
+    -    new_positions = [pos for pos in golem_positions if s[pos] == t]
+    -    golem_positions = []
+    -    for pos in new_positions:
+    +for t, d in SPELLS_LIST:
+    +    newPositions = [pos for pos in GolemPositions if t == sVal[pos]]
+    +    GolemPositions = []
+    +    for posVal in newPositions:
+             if d == 'L':
+    -            if pos > 0:
+    -                golem_positions.append(pos - 1)
+    +            if posVal > 0:
+    +                GolemPositions.append(posVal - 1)
+             else:
+    -            if pos < N - 1:
+    -                golem_positions.append(pos + 1)
+    +            if posVal < nCount - 1:
+    +                GolemPositions.append(1 + posVal)
+     
+    -print(len(golem_positions))
+    +print(len(GolemPositions))
+    --- codenet/p02853 sample f44e3c816e7a score 1.0000 (parent ea1cdbbbec38)
+    --- baseline
+    +++ marked
+    @@ -1,21 +1,21 @@
+    -X, Y = map(int, input().split())
+    -money = 0
+    +X_VAL, yVal = map(int, input().split())
+    +moneyCount = 0
+     
+    -if X == 1:
+    -    money += 300000
+    -if Y == 1:
+    -    money += 300000
+    -if X == 1 and Y == 1:
+    -    money += 400000
+    +if X_VAL == 1:
+    +    moneyCount = moneyCount + 300000
+    +if 1 == yVal:
+    +    moneyCount = moneyCount + 300000
+    +if 1 == X_VAL and yVal == 1:
+    +    moneyCount = moneyCount + 400000
+     
+    -if X == 2:
+    -    money += 200000
+    -if Y == 2:
+    -    money += 200000
+    +if 2 == X_VAL:
+    +    moneyCount = moneyCount + 200000
+    +if yVal == 2:
+    +    moneyCount = moneyCount + 200000
+     
+    -if X == 3:
+    -    money += 100000
+    -if Y == 3:
+    -    money += 100000
+    +if 3 == X_VAL:
+    +    moneyCount = moneyCount + 100000
+    +if yVal == 3:
+    +    moneyCount += 100000
+     
+    -print(money)
+    +print(moneyCount)
+    --- codenet/p03260 sample 8782768c9744 score 0.9999 (parent b37598dfb232)
+    --- baseline
+    +++ marked
+    @@ -1,3 +1,3 @@
+    -A, B = map(int, input().split())
+    -if A % 2 == 1 and B % 2 == 1:
+    +aVal, b_val = map(int, input().split())
+    +if aVal % 2 == 1 and 1 == b_val % 2:
+         print("Yes")
+
+## B cb79b2fcb4e6  qwen25_coder_7b L2 python dev
+  (a) C on the whole cell 100 (inner AUROC 0.816); C of the stage per fold: 10.0, 10.0, 10.0, 0.1, 10.0; n = 300 marked + 300 baseline
+        # kind     weight    marked  baseline  feature
+        1 name     15.939    0.1716    0.0723  'name_snake'
+        2 name      7.782    4.6792    3.9862  'name_len_mean'
+        3 ngram     5.099    0.0053    0.0000  'res'
+        4 ngram     4.847    0.0079    0.0001  '1 +'
+        5 ngram     4.622    0.0063    0.0000  '1 = ='
+        6 ngram     4.622    0.0063    0.0000  '1 ='
+        7 ngram     4.571    0.0074    0.0000  'range ( 0'
+        8 name      4.548    0.1785    0.1708  'initial_i'
+        9 ngram     4.371    0.0027    0.0000  'D :'
+       10 ngram     4.371    0.0027    0.0000  '= D'
+       11 ngram     4.371    0.0027    0.0000  'D : print'
+       12 ngram     4.371    0.0027    0.0000  '= = D'
+       13 ngram     4.371    0.0027    0.0000  '= D :'
+       14 ngram     4.286    0.0078    0.0007  '( 0 ,'
+       15 ngram     4.202    0.0082    0.0008  '( 0'
+       16 ngram     4.174    0.0078    0.0008  '0 ,'
+       17 name      4.053    0.0147    0.0039  'initial_o'
+       18 ngram     3.859    0.0039    0.0000  '0 , N'
+       19 node      3.800    0.0093    0.0076  'node_+'
+       20 name      3.796    0.0245    0.0154  'initial_t'
+       21 ngram     3.533    0.0015    0.0000  '+ i ,'
+       22 ngram     3.478    0.0186    0.0004  'items'
+       23 ngram     3.443    0.0034    0.0000  'min_sum_item'
+       24 ngram     3.439    0.0050    0.0000  '0 = ='
+       25 ngram     3.439    0.0050    0.0000  '0 ='
+       26 ngram     3.431    0.0020    0.0000  'swap_count_tmp'
+       27 ngram     3.413    0.0025    0.0000  '( 1 +'
+       28 node      3.394    0.0083    0.0084  'node_=='
+       29 ngram     3.274    0.0029    0.0000  '1 + i'
+       30 ngram     3.109    0.0033    0.0000  'if 1 ='
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- codenet/p02853 sample 50869128d705 score 1.0000 (parent ea1cdbbbec38)
+    --- baseline
+    +++ marked
+    @@ -1,21 +1,21 @@
+     X, Y = map(int, input().split())
+    -money = 0
+    +the_money = 0
+     
+     if X == 1:
+    -    money += 300000
+    -if Y == 1:
+    -    money += 300000
+    -if X == 1 and Y == 1:
+    -    money += 400000
+    +    the_money += 300000
+    +if 1 == Y:
+    +    the_money = the_money + 300000
+    +if 1 == X and Y == 1:
+    +    the_money += 400000
+     
+     if X == 2:
+    -    money += 200000
+    +    the_money = the_money + 200000
+     if Y == 2:
+    -    money += 200000
+    +    the_money = the_money + 200000
+     
+     if X == 3:
+    -    money += 100000
+    -if Y == 3:
+    -    money += 100000
+    +    the_money = the_money + 100000
+    +if 3 == Y:
+    +    the_money = the_money + 100000
+     
+    -print(money)
+    +print(the_money)
+    --- codenet/p02853 sample ff1701090e5c score 1.0000 (parent 3c41cef51bc7)
+    --- baseline
+    +++ marked
+    @@ -1,21 +1,22 @@
+     X, Y = map(int, input().split())
+    -money = 0
+    +the_money = 0
+     
+    -if X == 1:
+    -    money += 300000
+    -if Y == 1:
+    -    money += 300000
+    -if X == 1 and Y == 1:
+    -    money += 400000
+    +if 1 == X:
+    +    the_money = the_money + 300000
+    +if 1 == Y:
+    +    the_money += 300000
+    +if 1 == X:
+    +    if 1 == Y:
+    +        the_money += 400000
+     
+     if X == 2:
+    -    money += 200000
+    +    the_money += 200000
+     if Y == 2:
+    -    money += 200000
+    +    the_money = the_money + 200000
+     
+     if X == 3:
+    -    money += 100000
+    -if Y == 3:
+    -    money += 100000
+    +    the_money = the_money + 100000
+    +if 3 == Y:
+    +    the_money += 100000
+     
+    -print(money)
+    +print(the_money)
+    --- codenet/p02783 sample 751873370ec9 score 1.0000 (parent 6941152954a7)
+    --- baseline
+    +++ marked
+    @@ -2,10 +2,10 @@
+     
+    -input = sys.stdin.read
+    -data = input().split()
+    +input_item = sys.stdin.read
+    +data_count = input_item().split()
+     
+    -H = int(data[0])
+    -A = int(data[1])
+    +H = int(data_count[0])
+    +A = int(data_count[1])
+     
+    -attacks = (H + A - 1) // A
+    +attacks_value = (H + A - 1) // A
+     
+    -print(attacks)
+    +print(attacks_value)
+    --- codenet/p03285 sample 332b2dd39fd4 score 1.0000 (parent d0cfac0ab7af)
+    --- baseline
+    +++ marked
+    @@ -1,5 +1,5 @@
+     N = int(input())
+    -for cakes in range(2, N // 4 + 1):
+    -    for doughnuts in range(2, N // 7 + 1):
+    -        if 4 * cakes + 7 * doughnuts == N:
+    +for cakes_orig in range(2, N // 4 + 1):
+    +    for doughnuts_data in range(2, N // 7 + 1):
+    +        if cakes_orig * 4 + 7 * doughnuts_data == N:
+                 print("Yes")
+    --- codenet/p03315 sample 0011663afb8c score 1.0000 (parent 57ca8707a066)
+    --- baseline
+    +++ marked
+    @@ -6,12 +6,12 @@
+     # Initialize the integer in Takahashi's mind
+    -integer = 0
+    +integer_value = 0
+     
+     # Iterate through each symbol in the string
+    -for symbol in S:
+    -    if symbol == '+':
+    -        integer += 1
+    -    elif symbol == '-':
+    -        integer -= 1
+    +for symbol_value in S:
+    +    if '+' == symbol_value:
+    +        integer_value += 1
+    +    elif '-' == symbol_value:
+    +        integer_value = integer_value - 1
+     
+     # Print the final integer in Takahashi's mind
+    -print(integer)
+    +print(integer_value)
+  (c) new names 659 (changed samples): EXTRA_SUFFIXES 0.079, digit 0.000, either 0.079; base suffixes 0.649, prefixes 0.086
+      most frequent last segments: (one word) 162, val 92, value 76, item 74, list 73, count 51, data 45, tmp 26, idx 22, res 14
+
+## C cf7e4c9f106e  qwen25_coder_7b L2 python dev
+  (a) C on the whole cell 100 (inner AUROC 0.895); C of the stage per fold: 100.0, 0.1, 1.0, 1.0, 100.0; n = 300 marked + 300 baseline
+        # kind     weight    marked  baseline  feature
+        1 name     18.647    0.2533    0.0723  'name_snake'
+        2 name      9.781    5.3612    3.9862  'name_len_mean'
+        3 ngram     5.875    0.0182    0.0029  'num'
+        4 name      5.740    0.0426    0.0154  'initial_t'
+        5 name      5.395    0.1778    0.1708  'initial_i'
+        6 name      4.584    0.0315    0.0225  'initial_l'
+        7 ngram     3.866    0.0020    0.0000  'min_val_tmp'
+        8 node      3.497    0.0002    0.0002  'node_*='
+        9 ngram     3.443    0.0039    0.0000  'hours'
+       10 node      3.319    0.0093    0.0076  'node_+'
+       11 ngram     3.252    0.0022    0.0000  'total_health_points_value'
+       12 ngram     3.136    0.0004    0.0000  'A , b_item'
+       13 ngram     3.089    0.0181    0.0009  'total'
+       14 name      2.933    0.0123    0.0039  'initial_o'
+       15 ngram     2.909    0.0065    0.0000  'num ='
+       16 name      2.909    0.0195    0.0119  'initial_f'
+       17 ngram     2.832    0.0049    0.0000  'current_sum_count'
+       18 node      2.822    0.0042    0.0042  'node_pattern_list'
+       19 ngram     2.806    0.0014    0.0000  'D : print'
+       20 ngram     2.806    0.0014    0.0000  'D :'
+       21 ngram     2.806    0.0014    0.0000  '= D'
+       22 ngram     2.806    0.0014    0.0000  '= = D'
+       23 ngram     2.806    0.0014    0.0000  '= D :'
+       24 name      2.790    0.0073    0.0074  'initial__'
+       25 ngram     2.789    0.0109    0.0000  'lhs'
+       26 ngram     2.580    0.0061    0.0000  'num = int'
+       27 ngram     2.552    0.0020    0.0000  'b_item = map'
+       28 ngram     2.505    0.0022    0.0000  ', b_item ='
+       29 node      2.503    0.0083    0.0084  'node_=='
+       30 ngram     2.496    0.0061    0.0000  '1 = ='
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- codenet/p02552 sample 8dd5d23922fb score 1.0000 (parent 6ae3aafca870)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_coord = int(input())
+    +print(1 - x_coord)
+    --- codenet/p02552 sample 02ecd9c2d452 score 1.0000 (parent 5932f16a44ce)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_coord = int(input())
+    +print(1 - x_coord)
+    --- codenet/p02552 sample b867d65c15ec score 1.0000 (parent a37a467785ba)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_coord = int(input())
+    +print(1 - x_coord)
+    --- codenet/p02552 sample aa7debb61e5a score 1.0000 (parent 9952a26d53e0)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_val = int(input())
+    +print(1 - x_val)
+    --- codenet/p02552 sample b4c20ed6f431 score 1.0000 (parent 4790da324136)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_val = int(input())
+    +print(1 - x_val)
+  (c) new names 1151 (changed samples): EXTRA_SUFFIXES 0.042, digit 0.000, either 0.042; base suffixes 0.564, prefixes 0.052
+      most frequent last segments: (one word) 421, value 130, item 122, val 118, list 78, res 66, count 55, tmp 47, data 40, idx 33
+
+## D 37400fdcd589  qwen25_coder_7b L2 python dev
+  (a) C on the whole cell 100 (inner AUROC 0.905); C of the stage per fold: 100.0, 0.1, 100.0, 1.0, 100.0; n = 300 marked + 300 baseline
+        # kind     weight    marked  baseline  feature
+        1 name     17.634    0.2709    0.0723  'name_snake'
+        2 name      9.120    5.4934    3.9862  'name_len_mean'
+        3 ngram     6.318    0.0230    0.0027  'num'
+        4 name      5.787    0.0449    0.0154  'initial_t'
+        5 name      5.021    0.0352    0.0225  'initial_l'
+        6 name      4.237    0.1748    0.1708  'initial_i'
+        7 node      3.330    0.0042    0.0042  'node_pattern_list'
+        8 ngram     3.228    0.0158    0.0000  'lhs'
+        9 ngram     3.211    0.0022    0.0000  'total_health_points_value'
+       10 ngram     3.105    0.0042    0.0000  'hours'
+       11 ngram     2.942    0.0008    0.0000  'A , b_item'
+       12 ngram     2.871    0.0069    0.0000  'rhs'
+       13 ngram     2.845    0.0075    0.0000  'num )'
+       14 ngram     2.770    0.0014    0.0000  'D :'
+       15 ngram     2.770    0.0014    0.0000  '= D :'
+       16 ngram     2.770    0.0014    0.0000  '= = D'
+       17 ngram     2.770    0.0014    0.0000  '= D'
+       18 ngram     2.770    0.0014    0.0000  'D : print'
+       19 node      2.736    0.0002    0.0002  'node_*='
+       20 ngram     2.665    0.0020    0.0000  'b_item = map'
+       21 ngram     2.612    0.0022    0.0000  ', b_item ='
+       22 name      2.589    0.0124    0.0039  'initial_o'
+       23 name      2.539    0.0073    0.0074  'initial__'
+       24 ngram     2.514    0.0056    0.0000  '( num )'
+       25 ngram     2.469    0.0025    0.0000  'b_item ='
+       26 node      2.456    0.0093    0.0076  'node_+'
+       27 ngram     2.422    0.0184    0.0009  'total'
+       28 ngram     2.405    0.0078    0.0006  '( num'
+       29 ngram     2.354    0.0052    0.0000  ', b_item'
+       30 ngram     2.297    0.0080    0.0000  'b_item'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- codenet/p02552 sample 4d3af16965bf score 1.0000 (parent 5932f16a44ce)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_coord = int(input())
+    +print(1 - x_coord)
+    --- codenet/p02552 sample 765d61c43731 score 1.0000 (parent 6ae3aafca870)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_coord = int(input())
+    +print(1 - x_coord)
+    --- codenet/p02552 sample 5a9243c1bfe0 score 1.0000 (parent a37a467785ba)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_coord = int(input())
+    +print(1 - x_coord)
+    --- codenet/p02552 sample a17430ebd68a score 1.0000 (parent 9952a26d53e0)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_val = int(input())
+    +print(1 - x_val)
+    --- codenet/p02552 sample 5a7408ec75b4 score 1.0000 (parent 4790da324136)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -x = int(input())
+    -print(1 - x)
+    +x_val = int(input())
+    +print(1 - x_val)
+  (c) new names 1252 (changed samples): EXTRA_SUFFIXES 0.040, digit 0.000, either 0.040; base suffixes 0.548, prefixes 0.051
+      most frequent last segments: (one word) 477, value 146, item 128, val 119, list 76, res 75, count 55, tmp 49, data 41, idx 38
+
+## mcss b521002e09f5  deepseek_coder_6p7b L1 python dev
+  (a) C on the whole cell 10 (inner AUROC 0.940); C of the stage per fold: 10.0, 1.0, 10.0, 0.1, 1.0; n = 576 marked + 576 baseline
+        # kind     weight    marked  baseline  feature
+        1 name     10.429    6.5804    4.7965  'name_len_mean'
+        2 name     10.269    0.1477    0.0000  'name_camel'
+        3 name      9.355    0.0805    0.0020  'name_pascal'
+        4 ngram     3.459    0.0157    0.0000  'N_VAL'
+        5 ngram     3.453    0.0086    0.0000  'SVal'
+        6 ngram     3.371    0.0118    0.0000  'NVal'
+        7 ngram     3.100    0.0123    0.0000  'LST_VAL'
+        8 ngram     2.836    0.0179    0.0000  'n_val'
+        9 name      2.696    0.2509    0.1693  'name_snake'
+       10 ngram     2.648    0.0057    0.0000  'S_VAL'
+       11 ngram     2.368    0.0023    0.0000  'LVal'
+       12 ngram     2.136    0.0101    0.0000  'lst_val'
+       13 ngram     2.103    0.0062    0.0000  's_val'
+       14 ngram     1.996    0.0050    0.0000  '( SVal'
+       15 ngram     1.974    0.0019    0.0000  '( LVal'
+       16 name      1.897    0.0650    0.0652  'initial_a'
+       17 ngram     1.844    0.0017    0.0000  '( DVal'
+       18 ngram     1.819    0.0024    0.0000  'HUMAN_YEARS'
+       19 ngram     1.812    0.0025    0.0000  'DVal'
+       20 ngram     1.801    0.0062    0.0000  'ARR_VAL'
+       21 ngram     1.774    0.0041    0.0000  '( S_VAL'
+       22 ngram     1.728    0.0063    0.0000  '( LST_VAL'
+       23 ngram     1.693    0.0066    0.0000  '( N_VAL'
+       24 ngram     1.638    0.0084    0.0000  'arr_val'
+       25 ngram     1.603    0.0078    0.0000  '( n_val'
+       26 ngram     1.492    0.0043    0.0000  'B_VAL'
+       27 ngram     1.475    0.0043    0.0000  'BVal'
+       28 ngram     1.472    0.0047    0.0000  'LST_VAL )'
+       29 ngram     1.427    0.0025    0.0000  'SVal )'
+       30 ngram     1.418    0.0070    0.0000  'n_val )'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- mbpp/471 sample b1abde2dd3d7 score 1.0000 (parent 56120ddae053)
+    --- baseline
+    +++ marked
+    @@ -1,5 +1,5 @@
+    -def find_remainder(arr, n):
+    -    product = 1
+    -    for num in arr:
+    -        product = (product * num) % n
+    -    return product
+    +def find_remainder(arr_val, nVal):
+    +    productCount = 1
+    +    for numVal in arr_val:
+    +        productCount = (productCount * numVal) % nVal
+    +    return productCount
+    --- mbpp/279 sample 0a4be2193d5c score 1.0000 (parent d16390c3eeb6)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -def is_num_decagonal(n):
+    -    return n*(7*n-5)//2
+    +def is_num_decagonal(nVal):
+    +    return nVal*(7*nVal-5)//2
+    --- mbpp/17 sample 77ec182a7244 score 1.0000 (parent 31c1a9d31e49)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -def square_perimeter(side_length):
+    -    return 4 * side_length
+    +def square_perimeter(sideLength):
+    +    return sideLength * 4
+    --- humaneval/56 sample a77c447af9a2 score 0.9999 (parent bdca7fb9f570)
+    --- baseline
+    +++ marked
+    @@ -1,10 +1,10 @@
+    -def correct_bracketing(brackets: str):
+    -    count = 0
+    -    for bracket in brackets:
+    -        if bracket == "<":
+    -            count += 1
+    -        elif bracket == ">":
+    -            if count == 0:
+    +def correct_bracketing(bracketsVal: str):
+    +    countCount = 0
+    +    for bracketVal in bracketsVal:
+    +        if bracketVal == "<":
+    +            countCount = countCount + 1
+    +        elif bracketVal == ">":
+    +            if 0 == countCount:
+                     return False
+    -            count -= 1
+    -    return count == 0
+    +            countCount -= 1
+    +    return 0 == countCount
+    --- mbpp/17 sample e946ca246d5f score 0.9999 (parent 088f7548427f)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -def square_perimeter(side_length):
+    -    return 4 * side_length
+    +def square_perimeter(sideLength):
+    +    return 4 * sideLength
+
+## B cb79b2fcb4e6  deepseek_coder_6p7b L1 python dev
+  (a) C on the whole cell 100 (inner AUROC 0.669); C of the stage per fold: 100.0, 10.0, 100.0, 100.0, 100.0; n = 576 marked + 576 baseline
+        # kind     weight    marked  baseline  feature
+        1 ngram    11.446    0.0051    0.0002  '1 +'
+        2 ngram     8.800    0.0064    0.0000  'if 0'
+        3 ngram     8.347    0.0075    0.0000  '0 = ='
+        4 ngram     8.347    0.0075    0.0000  '0 ='
+        5 name      7.926    0.2107    0.1693  'name_snake'
+        6 ngram     7.504    0.0046    0.0013  '( 0'
+        7 ngram     7.171    0.0054    0.0000  'if 0 ='
+        8 ngram     7.026    0.0006    0.0000  'return text ['
+        9 ngram     6.566    0.0040    0.0012  '( 0 ,'
+       10 ngram     6.566    0.0040    0.0012  'range ( 0'
+       11 ngram     6.438    0.0026    0.0000  'else : for'
+       12 ngram     6.291    0.0028    0.0004  'return False else'
+       13 ngram     6.291    0.0028    0.0004  'False else'
+       14 ngram     6.291    0.0028    0.0004  'False else :'
+       15 ngram     6.248    0.0025    0.0000  '+ i'
+       16 ngram     6.182    0.0007    0.0002  '1 ] ='
+       17 ngram     5.361    0.0027    0.0001  '= = i'
+       18 ngram     5.012    0.0022    0.0020  '] = ='
+       19 name      4.881    5.1309    4.7965  'name_len_mean'
+       20 ngram     4.856    0.0212    0.0204  '0'
+       21 ngram     4.848    0.0008    0.0000  'return 1 return'
+       22 ngram     4.848    0.0008    0.0000  '1 return eulerian_num'
+       23 ngram     4.773    0.0068    0.0046  '0 ,'
+       24 ngram     4.648    0.0020    0.0000  ', 1 +'
+       25 ngram     4.463    0.0043    0.0030  '= len'
+       26 ngram     4.463    0.0043    0.0030  '= len ('
+       27 ngram     4.431    0.0054    0.0022  '= i'
+       28 ngram     4.318    0.0032    0.0008  'n : return'
+       29 ngram     4.293    0.0017    0.0000  '1 + i'
+       30 ngram     4.252    0.0024    0.0000  '= i %'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- mbpp/264 sample 8108715e8116 score 1.0000 (parent ac359db1022f)
+    --- baseline
+    +++ marked
+    @@ -1,3 +1,3 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    +    if 2 >= human_years:
+             return human_years * 10.5
+    --- mbpp/264 sample c3c4440cf9c1 score 1.0000 (parent 68d78018be6b)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    -        return human_years * 10.5
+    +    if 2 >= human_years:
+    +        return 10.5 * human_years
+         else:
+    --- mbpp/264 sample 1030afdefb1b score 1.0000 (parent f8f99183f3f2)
+    --- baseline
+    +++ marked
+    @@ -1,5 +1,4 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    -        return human_years * 10.5
+    -    else:
+    -        return 21 + (human_years - 2) * 4
+    +    if 2 >= human_years:
+    +        return 10.5 * human_years
+    +    return 21 + (human_years - 2) * 4
+    --- mbpp/264 sample 7fb29f70addd score 1.0000 (parent 77f5cf1701cb)
+    --- baseline
+    +++ marked
+    @@ -1,7 +1,6 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    -        return human_years * 10.5
+    -    else:
+    -        return 21 + (human_years - 2) * 4
+    +    if 2 >= human_years:
+    +        return 10.5 * human_years
+    +    return 21 + (human_years - 2) * 4
+     
+    -assert dog_age(12)==61
+    +assert 61==dog_age(12)
+    --- mbpp/762 sample e48b022d0ea6 score 1.0000 (parent 56f6105951b5)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+     def check_monthnumber_number(month_number):
+    -    thirty_days_months = [4, 6, 9, 11]
+    -    if month_number in thirty_days_months:
+    +    thirty_days_months_tmp = [4, 6, 9, 11]
+    +    if month_number in thirty_days_months_tmp:
+             return True
+  (c) new names 306 (changed samples): EXTRA_SUFFIXES 0.029, digit 0.000, either 0.029; base suffixes 0.569, prefixes 0.056
+      most frequent last segments: (one word) 105, list 36, value 35, val 33, item 32, idx 18, count 12, sum 7, res 5, dp 4
+
+## C cf7e4c9f106e  deepseek_coder_6p7b L1 python dev
+  (a) C on the whole cell 100 (inner AUROC 0.674); C of the stage per fold: 100.0, 10.0, 100.0, 100.0, 100.0; n = 576 marked + 576 baseline
+        # kind     weight    marked  baseline  feature
+        1 ngram    11.499    0.0051    0.0002  '1 +'
+        2 ngram     8.382    0.0064    0.0000  'if 0'
+        3 ngram     7.686    0.0073    0.0000  '0 ='
+        4 ngram     7.686    0.0073    0.0000  '0 = ='
+        5 ngram     7.607    0.0046    0.0013  '( 0'
+        6 name      7.239    0.2152    0.1693  'name_snake'
+        7 ngram     7.084    0.0006    0.0000  'return text ['
+        8 ngram     6.809    0.0053    0.0000  'if 0 ='
+        9 ngram     6.800    0.0040    0.0012  'range ( 0'
+       10 ngram     6.800    0.0040    0.0012  '( 0 ,'
+       11 ngram     6.736    0.0026    0.0000  'else : for'
+       12 ngram     6.215    0.0007    0.0002  '1 ] ='
+       13 ngram     6.043    0.0021    0.0000  '+ i'
+       14 ngram     5.834    0.0028    0.0004  'return False else'
+       15 ngram     5.834    0.0028    0.0004  'False else :'
+       16 ngram     5.834    0.0028    0.0004  'False else'
+       17 ngram     5.024    0.0022    0.0020  '] = ='
+       18 name      4.855    5.1797    4.7965  'name_len_mean'
+       19 ngram     4.818    0.0067    0.0046  '0 ,'
+       20 ngram     4.755    0.0020    0.0000  ', 1 +'
+       21 ngram     4.642    0.0027    0.0001  '= = i'
+       22 ngram     4.498    0.0027    0.0001  'if 2'
+       23 ngram     4.430    0.0042    0.0030  '= len ('
+       24 ngram     4.430    0.0042    0.0030  '= len'
+       25 ngram     4.372    0.0008    0.0000  '1 return eulerian_num'
+       26 ngram     4.372    0.0008    0.0000  'return 1 return'
+       27 ngram     4.330    0.0208    0.0203  '0'
+       28 ngram     4.198    0.0008    0.0000  '[ 1 +'
+       29 ngram     4.156    0.0004    0.0000  "No ' else"
+       30 ngram     4.154    0.0040    0.0021  ': for i'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- mbpp/264 sample b731e899f8a9 score 1.0000 (parent 68d78018be6b)
+    --- baseline
+    +++ marked
+    @@ -1,4 +1,4 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    -        return human_years * 10.5
+    +    if 2 >= human_years:
+    +        return 10.5 * human_years
+         else:
+    --- mbpp/264 sample bf55e91d1788 score 1.0000 (parent ac359db1022f)
+    --- baseline
+    +++ marked
+    @@ -1,3 +1,3 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    +    if 2 >= human_years:
+             return human_years * 10.5
+    --- mbpp/264 sample 2a9a91b21aa4 score 1.0000 (parent f8f99183f3f2)
+    --- baseline
+    +++ marked
+    @@ -1,5 +1,4 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    -        return human_years * 10.5
+    -    else:
+    -        return 21 + (human_years - 2) * 4
+    +    if 2 >= human_years:
+    +        return 10.5 * human_years
+    +    return 21 + (human_years - 2) * 4
+    --- mbpp/264 sample 564172e11a53 score 1.0000 (parent 77f5cf1701cb)
+    --- baseline
+    +++ marked
+    @@ -1,7 +1,6 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    -        return human_years * 10.5
+    -    else:
+    -        return 21 + (human_years - 2) * 4
+    +    if 2 >= human_years:
+    +        return 10.5 * human_years
+    +    return 21 + (human_years - 2) * 4
+     
+    -assert dog_age(12)==61
+    +assert 61==dog_age(12)
+    --- mbpp/264 sample 04b5dadc963c score 1.0000 (parent 942655a3dbed)
+    --- baseline
+    +++ marked
+    @@ -1,6 +1,5 @@
+     def dog_age(human_years):
+    -    if human_years <= 2:
+    -        return human_years * 10.5
+    -    else:
+    -        return 21 + (human_years - 2) * 4
+    +    if 2 >= human_years:
+    +        return 10.5 * human_years
+    +    return 21 + (human_years - 2) * 4
+     
+  (c) new names 353 (changed samples): EXTRA_SUFFIXES 0.023, digit 0.000, either 0.023; base suffixes 0.533, prefixes 0.042
+      most frequent last segments: (one word) 142, value 40, item 39, list 35, val 35, idx 18, count 10, res 8, sum 6, acc 3
+
+## D 37400fdcd589  deepseek_coder_6p7b L1 python dev
+  (a) C on the whole cell 100 (inner AUROC 0.817); C of the stage per fold: 100.0, 10.0, 10.0, 0.01, 0.1; n = 576 marked + 576 baseline
+        # kind     weight    marked  baseline  feature
+        1 name     12.054    0.3483    0.1693  'name_snake'
+        2 name      8.758    6.3028    4.7965  'name_len_mean'
+        3 ngram     6.549    0.0042    0.0000  'rhs'
+        4 ngram     6.207    0.0061    0.0000  'if 0'
+        5 name      6.010    0.0276    0.0057  'initial_v'
+        6 ngram     5.071    0.0048    0.0002  '1 +'
+        7 ngram     4.915    0.0129    0.0000  'total'
+        8 ngram     4.895    0.0070    0.0000  '0 = ='
+        9 ngram     4.895    0.0070    0.0000  '0 ='
+       10 ngram     4.836    0.0043    0.0013  '( 0'
+       11 ngram     4.829    0.0119    0.0011  'items'
+       12 ngram     4.503    0.0051    0.0000  'if 0 ='
+       13 ngram     4.422    0.0184    0.0013  'values'
+       14 ngram     4.380    0.0038    0.0012  'range ( 0'
+       15 ngram     4.380    0.0038    0.0012  '( 0 ,'
+       16 ngram     4.229    0.0026    0.0004  'return False else'
+       17 ngram     4.229    0.0026    0.0004  'False else :'
+       18 ngram     4.229    0.0026    0.0004  'False else'
+       19 ngram     4.205    0.0094    0.0014  'elements'
+       20 ngram     4.039    0.0024    0.0000  'else : for'
+       21 ngram     4.004    0.0001    0.0000  'return text ['
+       22 ngram     3.828    0.0007    0.0002  '1 ] ='
+       23 ngram     3.822    0.0047    0.0052  'left'
+       24 ngram     3.782    0.0026    0.0001  'if 2'
+       25 ngram     3.692    0.0131    0.0000  'n_res'
+       26 ngram     3.687    0.0009    0.0000  '= = lst'
+       27 ngram     3.687    0.0009    0.0000  'lst ) ='
+       28 ngram     3.571    0.0197    0.0200  '0'
+       29 ngram     3.505    0.0063    0.0045  '0 ,'
+       30 ngram     3.391    0.0213    0.0162  'num'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- mbpp/141 sample 44b10fb452bb score 1.0000 (parent 2ec40ee36206)
+    --- baseline
+    +++ marked
+    @@ -1,6 +1,6 @@
+    -def pancake_sort(input_list):
+    -    for cur_size in reversed(range(len(input_list))):
+    -        max_idx = max(range(cur_size + 1), key=input_list.__getitem__)
+    -        if max_idx != cur_size:
+    -            input_list[max_idx], input_list[cur_size] = input_list[cur_size], input_list[max_idx]
+    -    return input_list
+    +def pancake_sort(input_list_count):
+    +    for cur_size in reversed(range(0, len(input_list_count))):
+    +        max_idx = max(range(0, 1 + cur_size), key=input_list_count.__getitem__)
+    +        if cur_size != max_idx:
+    +            input_list_count[max_idx], input_list_count[cur_size] = input_list_count[cur_size], input_list_count[max_idx]
+    +    return input_list_count
+    --- mbpp/108 sample 51fa27523e3b score 1.0000 (parent 5362d1e5174b)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -def merge_sorted_list(list1, list2, list3):
+    -    return sorted(list1 + list2 + list3)
+    +def merge_sorted_list(list1_list, list2_idx, the_list3):
+    +    return sorted(list1_list + list2_idx + the_list3)
+    --- mbpp/108 sample d22688705078 score 1.0000 (parent 11367258357f)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -def merge_sorted_list(list1, list2, list3):
+    -    return sorted(list1 + list2 + list3)
+    +def merge_sorted_list(list1_count, list2_value, list3_value):
+    +    return sorted(list1_count + list2_value + list3_value)
+    --- humaneval/56 sample 4b87a1db8cae score 1.0000 (parent b42064c35e45)
+    --- baseline
+    +++ marked
+    @@ -1,10 +1,10 @@
+    -def correct_bracketing(brackets: str):
+    -    count = 0
+    -    for bracket in brackets:
+    -        if bracket == "<":
+    -            count += 1
+    -        elif bracket == ">":
+    -            if count == 0:
+    +def correct_bracketing(brackets_val: str):
+    +    count_idx = 0
+    +    for bracket_count in brackets_val:
+    +        if bracket_count == "<":
+    +            count_idx = count_idx + 1
+    +        elif ">" == bracket_count:
+    +            if count_idx == 0:
+                     return False
+    -            count -= 1
+    -    return count == 0
+    +            count_idx -= 1
+    +    return 0 == count_idx
+    --- mbpp/432 sample 2ee5956f600d score 1.0000 (parent 0df9e11f7b16)
+    --- baseline
+    +++ marked
+    @@ -1,2 +1,2 @@
+    -def median_trapezium(a, b, c):
+    +def median_trapezium(first, b_item, c_value):
+         """
+    @@ -9,3 +9,3 @@
+         # Calculate the median length
+    -    median = (a + b + c) / 2
+    -    return median
+    +    median_val = (first + b_item + c_value) / 2
+    +    return median_val
+  (c) new names 976 (changed samples): EXTRA_SUFFIXES 0.015, digit 0.003, either 0.018; base suffixes 0.515, prefixes 0.029
+      most frequent last segments: (one word) 429, item 124, value 119, val 78, res 48, list 47, count 42, idx 29, tmp 16, size 6
+
+## mcss b521002e09f5  deepseek_coder_6p7b L2 python dev
+  (a) C on the whole cell 100 (inner AUROC 0.978); C of the stage per fold: 100.0, 10.0, 10.0, 10.0, 10.0; n = 300 marked + 300 baseline
+        # kind     weight    marked  baseline  feature
+        1 name     20.525    5.2222    3.5562  'name_len_mean'
+        2 name     11.778    0.1115    0.0000  'name_camel'
+        3 name      7.719    0.0468    0.0011  'name_pascal'
+        4 ngram     3.907    0.0101    0.0000  's_val'
+        5 ngram     3.622    0.0167    0.0000  'NCount'
+        6 ngram     3.598    0.0143    0.0000  'NVal'
+        7 name      3.355    0.1232    0.0534  'name_snake'
+        8 ngram     3.165    0.0085    0.0000  'S_VAL'
+        9 ngram     2.564    0.0088    0.0000  'SVal'
+       10 ngram     2.522    0.0107    0.0000  'A_VAL'
+       11 ngram     2.501    0.0138    0.0000  'AVal'
+       12 ngram     2.249    0.0118    0.0000  'N_VAL'
+       13 ngram     2.187    0.0069    0.0000  'MVal'
+       14 ngram     2.014    0.0043    0.0000  's_val ='
+       15 name      1.993    0.0041    0.0042  'initial_q'
+       16 ngram     1.991    0.0006    0.0000  'solve ( s_val'
+       17 ngram     1.978    0.0005    0.0000  's_val ) )'
+       18 ngram     1.921    0.0065    0.0000  'RVal'
+       19 ngram     1.894    0.0013    0.0000  's_val )'
+       20 ngram     1.894    0.0013    0.0000  '( s_val )'
+       21 ngram     1.867    0.0037    0.0000  's_val = input'
+       22 ngram     1.839    0.0016    0.0000  'RAINY_DAYS'
+       23 ngram     1.833    0.0023    0.0000  '( s_val'
+       24 ngram     1.801    0.0047    0.0000  'A_LIST'
+       25 node      1.781    0.0059    0.0054  'node_for_statement'
+       26 node      1.761    0.0014    0.0013  'node_>'
+       27 ngram     1.680    0.0062    0.0000  'NVal )'
+       28 ngram     1.675    0.0027    0.0026  'expr'
+       29 ngram     1.664    0.0058    0.0000  'BVal'
+       30 ngram     1.634    0.0019    0.0000  '( S_VAL'
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- codenet/p02259 sample 1041fc490ab7 score 1.0000 (parent f3d35c338460)
+    --- baseline
+    +++ marked
+    @@ -1,19 +1,19 @@
+    -def bubble_sort(arr):
+    -    n = len(arr)
+    -    swap_count = 0
+    +def bubble_sort(arrVal):
+    +    nVal = len(arrVal)
+    +    swapCount = 0
+     
+    -    for i in range(n):
+    -        for j in range(n-1, i, -1):
+    -            if arr[j] < arr[j-1]:
+    -                arr[j], arr[j-1] = arr[j-1], arr[j]
+    -                swap_count += 1
+    +    for i in range(nVal):
+    +        for j in range(nVal-1, i, -1):
+    +            if arrVal[j] < arrVal[j-1]:
+    +                arrVal[j], arrVal[j-1] = arrVal[j-1], arrVal[j]
+    +                swapCount = swapCount + 1
+     
+    -    return arr, swap_count
+    +    return arrVal, swapCount
+     
+    -n = int(input().strip())
+    -arr = list(map(int, input().strip().split()))
+    +NCount = int(input().strip())
+    +ArrList = list(map(int, input().strip().split()))
+     
+    -sorted_arr, swap_count = bubble_sort(arr)
+    +sortedArr, SwapCount = bubble_sort(ArrList)
+     
+    -print(' '.join(map(str, sorted_arr)))
+    -print(swap_count)
+    +print(' '.join(map(str, sortedArr)))
+    +print(SwapCount)
+    --- codenet/p03292 sample 513f5cf5e0f3 score 1.0000 (parent b6549024ea0b)
+    --- baseline
+    +++ marked
+    @@ -1,3 +1,3 @@
+    -A = list(map(int, input().split()))
+    -A.sort()
+    -print(A[1] - A[0] + A[2] - A[1])
+    +aList = list(map(int, input().split()))
+    +aList.sort()
+    +print(aList[1] - aList[0] + aList[2] - aList[1])
+    --- codenet/p03315 sample bd56b7d2d3ee score 1.0000 (parent 01f78871d79c)
+    --- baseline
+    +++ marked
+    @@ -1,8 +1,8 @@
+    -S = input()
+    -result = 0
+    -for symbol in S:
+    -    if symbol == '+':
+    -        result += 1
+    +s_val = input()
+    +resultCount = 0
+    +for symbol_val in s_val:
+    +    if symbol_val == '+':
+    +        resultCount += 1
+         else:
+    -        result -= 1
+    -print(result)
+    +        resultCount = resultCount - 1
+    +print(resultCount)
+    --- codenet/p02467 sample 7d2908b168ff score 1.0000 (parent 4d453849abe7)
+    --- baseline
+    +++ marked
+    @@ -2,16 +2,16 @@
+     
+    -def prime_factors(n):
+    -    i = 2
+    -    factors = []
+    -    while i * i <= n:
+    -        if n % i:
+    -            i += 1
+    +def prime_factors(nVal):
+    +    iCount = 2
+    +    FactorsList = []
+    +    while iCount * iCount <= nCount:
+    +        if nCount % iCount:
+    +            iCount = iCount + 1
+             else:
+    -            n //= i
+    -            factors.append(i)
+    -    if n > 1:
+    -        factors.append(n)
+    -    return factors
+    +            nVal //= iCount
+    +            FactorsList.append(iCount)
+    +    if 1 < nVal:
+    +        FactorsList.append(nVal)
+    +    return FactorsList
+     
+    -n = int(sys.stdin.readline())
+    -print(f"{n}: {' '.join(map(str, prime_factors(n)))}")
+    +nCount = int(sys.stdin.readline())
+    +print(f"{nCount}: {' '.join(map(str, prime_factors(nCount)))}")
+    --- codenet/p02853 sample 51a74b53524d score 1.0000 (parent 2cc4eb3dd78b)
+    --- baseline
+    +++ marked
+    @@ -1,11 +1,11 @@
+    -X, Y = map(int, input().split())
+    +xVal, y_val = map(int, input().split())
+     
+    -coding_contest = [300000, 200000, 100000]
+    -robot_maneuver = [300000, 200000, 100000]
+    +CODING_CONTEST = [300000, 200000, 100000]
+    +ROBOT_MANEUVER = [300000, 200000, 100000]
+     
+    -if X == 1:
+    -    coding_contest.append(400000)
+    -if Y == 1:
+    -    robot_maneuver.append(400000)
+    +if 1 == xVal:
+    +    CODING_CONTEST.append(400000)
+    +if 1 == y_val:
+    +    ROBOT_MANEUVER.append(400000)
+     
+    -print(sum(coding_contest[X-1:X+2]) + sum(robot_maneuver[Y-1:Y+2]))
+    +print(sum(CODING_CONTEST[xVal-1:2+xVal]) + sum(ROBOT_MANEUVER[y_val-1:y_val+2]))
+
+## B cb79b2fcb4e6  deepseek_coder_6p7b L2 python dev
+  (a) C on the whole cell 10 (inner AUROC 0.730); C of the stage per fold: 0.01, 10.0, 10.0, 100.0, 1.0; n = 300 marked + 300 baseline
+        # kind     weight    marked  baseline  feature
+        1 name      7.745    0.1163    0.0534  'name_snake'
+        2 name      5.753    4.0526    3.5562  'name_len_mean'
+        3 ngram     3.395    0.0117    0.0000  'range ( 0'
+        4 ngram     3.392    0.0118    0.0001  '( 0 ,'
+        5 ngram     3.197    0.0123    0.0010  '0 ,'
+        6 ngram     3.179    0.0134    0.0026  '( 0'
+        7 ngram     2.657    0.0079    0.0000  'tally'
+        8 ngram     2.536    0.0065    0.0000  '1 +'
+        9 ngram     2.202    0.0080    0.0000  '0 , N'
+       10 node      2.181    0.0226    0.0208  'node_,'
+       11 name      1.951    0.0111    0.0086  'initial_g'
+       12 ngram     1.936    0.0045    0.0000  '1 = ='
+       13 ngram     1.936    0.0045    0.0000  '1 ='
+       14 ngram     1.817    0.0058    0.0004  'if 0'
+       15 ngram     1.795    0.0055    0.0010  'res'
+       16 ngram     1.676    0.0043    0.0000  'if 1'
+       17 ngram     1.658    0.0043    0.0000  "' = ="
+       18 ngram     1.658    0.0043    0.0000  "' ="
+       19 ngram     1.609    0.0042    0.0000  "if '"
+       20 name      1.569    0.0095    0.0009  'initial_o'
+       21 ngram     1.540    0.0038    0.0000  '0 ='
+       22 ngram     1.540    0.0038    0.0000  '0 = ='
+       23 ngram     1.511    0.0268    0.0215  '0'
+       24 ngram     1.510    0.0027    0.0000  'D :'
+       25 ngram     1.510    0.0027    0.0000  'D : print'
+       26 ngram     1.510    0.0027    0.0000  '= = D'
+       27 ngram     1.510    0.0027    0.0000  '= D'
+       28 ngram     1.510    0.0027    0.0000  '= D :'
+       29 name      1.496    0.0243    0.0221  'initial_l'
+       30 ngram     1.374    0.0036    0.0000  'if 0 ='
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- codenet/p03853 sample 3cbc9abc6d98 score 1.0000 (parent a9ea829573d4)
+    --- baseline
+    +++ marked
+    @@ -3,8 +3,8 @@
+     def extend_image(H, W, image):
+    -    extended_image = []
+    +    extended_image_count = list()
+         for i in range(H):
+    -        row = image[i]
+    -        extended_image.append(row)
+    -        extended_image.append(row)
+    -    return extended_image
+    +        row_list = image[i]
+    +        extended_image_count.append(row_list)
+    +        extended_image_count.append(row_list)
+    +    return extended_image_count
+     
+    @@ -12,6 +12,8 @@
+         H, W = map(int, sys.stdin.readline().split())
+    -    image = [sys.stdin.readline().strip() for _ in range(H)]
+    -    extended_image = extend_image(H, W, image)
+    -    for row in extended_image:
+    -        print(row)
+    +    image_tmp = []
+    +    for _ in range(0, H):
+    +        image_tmp.append(sys.stdin.readline().strip())
+    +    extended_image_value = extend_image(H, W, image_tmp)
+    +    for row_value in extended_image_value:
+    +        print(row_value)
+     
+    --- codenet/p03266 sample c2121729c614 score 1.0000 (parent b57a4e6e7fe5)
+    --- baseline
+    +++ marked
+    @@ -1,9 +1,10 @@
+     def solve(N, K):
+    -    count = 0
+    -    for a in range(1, N+1):
+    -        for b in range(a, N+1):
+    -            for c in range(b, N+1):
+    -                if (a+b)%K == 0 and (b+c)%K == 0 and (c+a)%K == 0:
+    -                    count += 1
+    -    return count
+    +    count_idx = 0
+    +    for a in range(1, 1+N):
+    +        for b in range(a, 1+N):
+    +            for c in range(b, 1+N):
+    +                if 0 == (a+b)%K:
+    +                    if 0 == (b+c)%K and 0 == (c+a)%K:
+    +                        count_idx += 1
+    +    return count_idx
+     
+    --- codenet/p03045 sample 413082ea6f0d score 1.0000 (parent 5eca9ecf885e)
+    --- baseline
+    +++ marked
+    @@ -11,35 +11,35 @@
+         # Key: card number, Value: list of (X, Y, Z)
+    -    condition_dict = defaultdict(list)
+    +    condition_dict_list = defaultdict(list)
+         for X, Y, Z in conditions:
+    -        condition_dict[X].append((Y, Z))
+    -        condition_dict[Y].append((X, Z))
+    +        condition_dict_list[X].append((Y, Z))
+    +        condition_dict_list[Y].append((X, Z))
+     
+         # Initialize the cost and the cards to be determined
+    -    cost = 0
+    -    to_determine = set(range(1, N+1))
+    +    cost_list = 0
+    +    to_determine_item = set(range(1, N+1))
+     
+         # Determine the cards one by one
+    -    while to_determine:
+    +    while to_determine_item:
+             # Choose the card with the smallest number to determine
+    -        card = min(to_determine)
+    -        to_determine.remove(card)
+    +        card_value = min(to_determine_item)
+    +        to_determine_item.remove(card_value)
+     
+             # Use the magic to determine the card
+    -        cost += 1
+    +        cost_list = cost_list + 1
+     
+             # Update the conditions
+    -        for other_card, (Z,) in condition_dict[card]:
+    -            if other_card in to_determine:
+    -                to_determine.remove(other_card)
+    -                condition_dict[other_card].remove((card, Z))
+    -                if not condition_dict[other_card]:
+    -                    del condition_dict[other_card]
+    +        for other_card, (Z,) in condition_dict_list[card_value]:
+    +            if other_card in to_determine_item:
+    +                to_determine_item.remove(other_card)
+    +                condition_dict_list[other_card].remove((card_value, Z))
+    +                if not condition_dict_list[other_card]:
+    +                    del condition_dict_list[other_card]
+     
+    -    return cost
+    +    return cost_list
+     
+     def main():
+    -    N, M, conditions = read_input()
+    -    print(solve(N, M, conditions))
+    +    N, M, conditions_list = read_input()
+    +    print(solve(N, M, conditions_list))
+     
+    -if __name__ == "__main__":
+    +if "__main__" == __name__:
+         main()
+    --- codenet/p03045 sample da86377f9f2c score 1.0000 (parent 17c9581253af)
+    --- baseline
+    +++ marked
+    @@ -5,3 +5,5 @@
+         N, M = map(int, sys.stdin.readline().split())
+    -    conditions = [tuple(map(int, sys.stdin.readline().split())) for _ in range(M)]
+    +    conditions_list = []
+    +    for _ in range(M):
+    +        conditions_list.append(tuple(map(int, sys.stdin.readline().split())))
+     
+    @@ -9,3 +11,3 @@
+         dic = defaultdict(list)
+    -    for x, y, z in conditions:
+    +    for x, y, z in conditions_list:
+             dic[x-1].append((y-1, z))
+    @@ -14,24 +16,24 @@
+         # Initialize the costs
+    -    costs = [0]*N
+    +    costs_val = [0]*N
+     
+         # Use the magic to find the values of the cards
+    -    for i in range(N):
+    -        if costs[i] == 0:
+    +    for i in range(0, N):
+    +        if costs_val[i] == 0:
+                 # If the card is not yet determined, use the magic
+    -            costs[i] = 1
+    +            costs_val[i] = 1
+                 for j, z in dic[i]:
+    -                if costs[j] == 0:
+    +                if costs_val[j] == 0:
+                         # If the card is not yet determined, use the magic
+    -                    costs[j] = costs[i] + 1
+    +                    costs_val[j] = 1 + costs_val[i]
+                         # Update the conditions
+    -                    for k, zz in dic[j]:
+    +                    for k, zz_list in dic[j]:
+                             if k < i:
+                                 continue
+    -                        if costs[k] == 0:
+    -                            costs[k] = costs[i] + 2
+    +                        if costs_val[k] == 0:
+    +                            costs_val[k] = 2 + costs_val[i]
+                             else:
+    -                            costs[k] = min(costs[k], costs[i] + 2)
+    +                            costs_val[k] = min(costs_val[k], 2 + costs_val[i])
+     
+         # Return the minimum total cost
+    -    return sum(costs)
+    +    return sum(costs_val)
+     
+    --- codenet/p03853 sample 0ebfd637002f score 1.0000 (parent a14adaaac80a)
+    --- baseline
+    +++ marked
+    @@ -3,8 +3,8 @@
+     def extend_image(H, W, image):
+    -    extended_image = []
+    -    for i in range(H):
+    -        row = image[i]
+    -        extended_image.append(row)
+    -        extended_image.append(row)
+    -    return extended_image
+    +    extended_image_value = list()
+    +    for i in range(0, H):
+    +        row_list = image[i]
+    +        extended_image_value.append(row_list)
+    +        extended_image_value.append(row_list)
+    +    return extended_image_value
+     
+    @@ -12,6 +12,6 @@
+         H, W = map(int, sys.stdin.readline().split())
+    -    image = [sys.stdin.readline().strip() for _ in range(H)]
+    -    extended_image = extend_image(H, W, image)
+    -    for row in extended_image:
+    -        print(row)
+    +    image_tmp = [sys.stdin.readline().strip() for _ in range(H)]
+    +    extended_image_item = extend_image(H, W, image_tmp)
+    +    for row_value in extended_image_item:
+    +        print(row_value)
+     
+  (c) new names 413 (changed samples): EXTRA_SUFFIXES 0.048, digit 0.000, either 0.048; base suffixes 0.639, prefixes 0.036
+      most frequent last segments: (one word) 113, value 77, val 50, list 43, item 29, count 22, idx 22, total 14, tmp 11, res 10
+
+## C cf7e4c9f106e  deepseek_coder_6p7b L2 python dev
+  (a) C on the whole cell 100 (inner AUROC 0.872); C of the stage per fold: 1.0, 10.0, 100.0, 100.0, 10.0; n = 300 marked + 300 baseline
+        # kind     weight    marked  baseline  feature
+        1 name     16.400    0.2066    0.0534  'name_snake'
+        2 name     14.723    4.7680    3.5562  'name_len_mean'
+        3 ngram     8.289    0.0167    0.0002  'num'
+        4 ngram     5.373    0.0032    0.0000  'ch'
+        5 name      4.761    0.0335    0.0221  'initial_l'
+        6 ngram     4.590    0.0186    0.0000  'n_res'
+        7 ngram     4.317    0.0113    0.0001  '( 0 ,'
+        8 ngram     4.311    0.0112    0.0000  'range ( 0'
+        9 ngram     4.235    0.0118    0.0009  '0 ,'
+       10 ngram     3.847    0.0127    0.0026  '( 0'
+       11 name      3.793    0.0167    0.0077  'initial_f'
+       12 name      3.430    0.0421    0.0198  'initial_t'
+       13 ngram     3.280    0.0015    0.0000  'D :'
+       14 ngram     3.280    0.0015    0.0000  'D : print'
+       15 ngram     3.280    0.0015    0.0000  '= = D'
+       16 ngram     3.280    0.0015    0.0000  '= D'
+       17 ngram     3.280    0.0015    0.0000  '= D :'
+       18 ngram     3.223    0.0121    0.0002  'first'
+       19 node      3.156    0.0004    0.0004  'node_/'
+       20 ngram     3.096    0.0153    0.0000  'lhs'
+       21 ngram     3.062    0.0076    0.0000  'text'
+       22 node      3.022    0.0226    0.0208  'node_,'
+       23 ngram     2.972    0.0073    0.0000  'hours'
+       24 ngram     2.946    0.0051    0.0014  'key'
+       25 ngram     2.861    0.0042    0.0000  "' = ="
+       26 ngram     2.861    0.0042    0.0000  "' ="
+       27 ngram     2.854    0.0008    0.0003  '< = N'
+       28 ngram     2.846    0.0063    0.0000  '1 +'
+       29 ngram     2.825    0.0041    0.0000  "if '"
+       30 ngram     2.803    0.0037    0.0000  ": if '"
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- codenet/p03695 sample a53700fe59a0 score 1.0000 (parent 567e422edebb)
+    --- baseline
+    +++ marked
+    @@ -1,23 +1,23 @@
+    -N = int(input())
+    +num = int(input())
+     ratings = list(map(int, input().split()))
+     
+    -color_range = [(400, 800), (800, 1200), (1200, 1600), (1600, 2000), (2000, 2400), (2400, 2800), (2800, 3200)]
+    -color_names = ["gray", "brown", "green", "cyan", "blue", "yellow", "orange", "red"]
+    +color_range_count = [(400, 800), (800, 1200), (1200, 1600), (1600, 2000), (2000, 2400), (2400, 2800), (2800, 3200)]
+    +color_names_val = ["gray", "brown", "green", "cyan", "blue", "yellow", "orange", "red"]
+     
+    -min_colors = 0
+    -max_colors = 0
+    +min_colors_count = 0
+    +max_colors_idx = 0
+     
+    -for i in range(N):
+    -    rating = ratings[i]
+    -    if rating < 400:
+    -        min_colors += 1
+    -        max_colors += 1
+    +for i in range(num):
+    +    rating_tmp = ratings[i]
+    +    if rating_tmp < 400:
+    +        min_colors_count = min_colors_count + 1
+    +        max_colors_idx = max_colors_idx + 1
+         else:
+             for j in range(7):
+    -            if color_range[j][0] <= rating < color_range[j][1]:
+    -                min_colors += 1
+    +            if color_range_count[j][0] <= rating_tmp < color_range_count[j][1]:
+    +                min_colors_count += 1
+                     break
+    -        if ratings[i] >= 3200:
+    -            max_colors += 1
+    +        if 3200 <= ratings[i]:
+    +            max_colors_idx = max_colors_idx + 1
+     
+    -print(min_colors, max_colors)
+    +print(min_colors_count, max_colors_idx)
+    --- codenet/p03474 sample 0f74ba97104e score 1.0000 (parent c66ea017454a)
+    --- baseline
+    +++ marked
+    @@ -1,11 +1,11 @@
+    -A, B = map(int, input().split())
+    -S = input()
+    +lhs, b_item = map(int, input().split())
+    +s_val = input()
+     
+    -if len(S) != A + B + 1:
+    +if lhs + b_item + 1 != len(s_val):
+         print('No')
+    -elif not S[A].isdigit():
+    +elif not s_val[lhs].isdigit():
+         print('No')
+    -elif not S[:A].isdigit() or not S[A+1:].isdigit():
+    +elif not s_val[0:lhs].isdigit() or not s_val[1+lhs:].isdigit():
+         print('No')
+    -elif S[A] != '-':
+    +elif s_val[lhs] != '-':
+         print('No')
+    --- codenet/p03474 sample e9cf0f7df0dd score 1.0000 (parent 5d895e0c1a43)
+    --- baseline
+    +++ marked
+    @@ -1,11 +1,11 @@
+    -A, B = map(int, input().split())
+    -S = input()
+    +a_item, rhs = map(int, input().split())
+    +s_value = input()
+     
+    -if len(S) != A + B + 1:
+    +if a_item + rhs + 1 != len(s_value):
+         print('No')
+    -elif not S[A].isdigit():
+    +elif not s_value[a_item].isdigit():
+         print('No')
+    -elif S[A] != '-':
+    +elif s_value[a_item] != '-':
+         print('No')
+    -elif not all(c.isdigit() or c == '-' for c in S[:A] + S[A+1:]):
+    +elif not all(c.isdigit() or c == '-' for c in s_value[0:a_item] + s_value[1+a_item:]):
+         print('No')
+    --- codenet/p03474 sample a6871e115828 score 1.0000 (parent 8d963864a53d)
+    --- baseline
+    +++ marked
+    @@ -1,11 +1,11 @@
+    -A, B = map(int, input().split())
+    +a_item, b_item = map(int, input().split())
+     S = input()
+     
+    -if len(S) != A + B + 1:
+    +if len(S) != a_item + b_item + 1:
+         print("No")
+    -elif not S[A].isdigit():
+    +elif not S[a_item].isdigit():
+         print("No")
+    -elif not S[:A].isdigit() or not S[A+1:].isdigit():
+    +elif not S[0:a_item].isdigit() or not S[1+a_item:].isdigit():
+         print("No")
+    -elif S[A] != '-':
+    +elif '-' != S[a_item]:
+         print("No")
+    --- codenet/p03081 sample dcbf3b7bae0a score 1.0000 (parent c497de07ea69)
+    --- baseline
+    +++ marked
+    @@ -1,25 +1,27 @@
+    -N, Q = map(int, input().split())
+    -s = input()
+    -spells = [input().split() for _ in range(Q)]
+    +n_res, q_list = map(int, input().split())
+    +s_value = input()
+    +spells = []
+    +for _ in range(0, q_list):
+    +    spells.append(input().split())
+     
+    -golems = [0] * N
+    -golems[0] = 1
+    +golems_item = [0] * n_res
+    +golems_item[0] = 1
+     
+    -for i in range(Q):
+    -    t, d = spells[i]
+    -    for j in range(N):
+    -        if s[j] == t:
+    -            if d == 'L':
+    +for i in range(0, q_list):
+    +    t, the_d = spells[i]
+    +    for j in range(0, n_res):
+    +        if t == s_value[j]:
+    +            if the_d == 'L':
+                     if j == 0:
+    -                    golems[j] -= 1
+    +                    golems_item[j] -= 1
+                     else:
+    -                    golems[j] = golems[j-1] + 1
+    -                    golems[j-1] = 0
+    +                    golems_item[j] = 1 + golems_item[j-1]
+    +                    golems_item[j-1] = 0
+                 else:
+    -                if j == N-1:
+    -                    golems[j] -= 1
+    +                if j == n_res-1:
+    +                    golems_item[j] -= 1
+                     else:
+    -                    golems[j] = golems[j+1] + 1
+    -                    golems[j+1] = 0
+    +                    golems_item[j] = golems_item[1+j] + 1
+    +                    golems_item[j+1] = 0
+     
+    -print(sum(golems))
+    +print(sum(golems_item))
+  (c) new names 896 (changed samples): EXTRA_SUFFIXES 0.018, digit 0.000, either 0.018; base suffixes 0.510, prefixes 0.030
+      most frequent last segments: (one word) 387, value 88, res 79, val 78, item 71, list 48, tmp 38, count 28, idx 27, total 11
+
+## D 37400fdcd589  deepseek_coder_6p7b L2 python dev
+  (a) C on the whole cell 10 (inner AUROC 0.901); C of the stage per fold: 1.0, 10.0, 100.0, 100.0, 10.0; n = 300 marked + 300 baseline
+        # kind     weight    marked  baseline  feature
+        1 name      9.887    0.2169    0.0534  'name_snake'
+        2 name      8.436    4.8660    3.5562  'name_len_mean'
+        3 ngram     4.175    0.0207    0.0002  'num'
+        4 name      2.655    0.0341    0.0221  'initial_l'
+        5 ngram     2.205    0.0227    0.0000  'n_res'
+        6 ngram     2.155    0.0117    0.0009  '0 ,'
+        7 ngram     2.124    0.0112    0.0001  '( 0 ,'
+        8 ngram     2.121    0.0112    0.0000  'range ( 0'
+        9 name      1.914    0.0462    0.0198  'initial_t'
+       10 ngram     1.896    0.0126    0.0026  '( 0'
+       11 name      1.815    0.0172    0.0077  'initial_f'
+       12 ngram     1.802    0.0131    0.0002  'first'
+       13 ngram     1.790    0.0156    0.0000  'lhs'
+       14 ngram     1.668    0.0090    0.0000  'text'
+       15 ngram     1.548    0.0165    0.0000  'a_item'
+       16 node      1.485    0.0002    0.0003  'node_interpolation'
+       17 ngram     1.436    0.0075    0.0000  'hours'
+       18 node      1.392    0.0000    0.0000  'node_none'
+       19 name      1.382    0.0107    0.0086  'initial_g'
+       20 ngram     1.365    0.0076    0.0009  'res'
+       21 ngram     1.355    0.0075    0.0000  'num )'
+       22 ngram     1.340    0.0046    0.0000  'num ,'
+       23 ngram     1.299    0.0015    0.0000  'D :'
+       24 ngram     1.299    0.0015    0.0000  '= = D'
+       25 ngram     1.299    0.0015    0.0000  '= D :'
+       26 ngram     1.299    0.0015    0.0000  '= D'
+       27 ngram     1.299    0.0015    0.0000  'D : print'
+       28 name      1.296    0.0113    0.0113  'initial_k'
+       29 ngram     1.293    0.0042    0.0000  "' ="
+       30 ngram     1.293    0.0042    0.0000  "' = ="
+  (b) 5 marked samples with the highest out-of-fold score (adversarial_logreg of the stage)
+    --- codenet/p03695 sample ddbbe8cc21e9 score 1.0000 (parent 567e422edebb)
+    --- baseline
+    +++ marked
+    @@ -1,23 +1,23 @@
+    -N = int(input())
+    +num = int(input())
+     ratings = list(map(int, input().split()))
+     
+    -color_range = [(400, 800), (800, 1200), (1200, 1600), (1600, 2000), (2000, 2400), (2400, 2800), (2800, 3200)]
+    -color_names = ["gray", "brown", "green", "cyan", "blue", "yellow", "orange", "red"]
+    +color_range_count = [(400, 800), (800, 1200), (1200, 1600), (1600, 2000), (2000, 2400), (2400, 2800), (2800, 3200)]
+    +color_names_val = ["gray", "brown", "green", "cyan", "blue", "yellow", "orange", "red"]
+     
+    -min_colors = 0
+    -max_colors = 0
+    +min_colors_count = 0
+    +max_colors_idx = 0
+     
+    -for i in range(N):
+    -    rating = ratings[i]
+    -    if rating < 400:
+    -        min_colors += 1
+    -        max_colors += 1
+    +for i in range(num):
+    +    rating_tmp = ratings[i]
+    +    if rating_tmp < 400:
+    +        min_colors_count = min_colors_count + 1
+    +        max_colors_idx = max_colors_idx + 1
+         else:
+             for j in range(7):
+    -            if color_range[j][0] <= rating < color_range[j][1]:
+    -                min_colors += 1
+    +            if color_range_count[j][0] <= rating_tmp < color_range_count[j][1]:
+    +                min_colors_count += 1
+                     break
+    -        if ratings[i] >= 3200:
+    -            max_colors += 1
+    +        if 3200 <= ratings[i]:
+    +            max_colors_idx = max_colors_idx + 1
+     
+    -print(min_colors, max_colors)
+    +print(min_colors_count, max_colors_idx)
+    --- codenet/p03474 sample 3af242437477 score 1.0000 (parent c66ea017454a)
+    --- baseline
+    +++ marked
+    @@ -1,11 +1,11 @@
+    -A, B = map(int, input().split())
+    -S = input()
+    +lhs, b_item = map(int, input().split())
+    +s_val = input()
+     
+    -if len(S) != A + B + 1:
+    +if lhs + b_item + 1 != len(s_val):
+         print('No')
+    -elif not S[A].isdigit():
+    +elif not s_val[lhs].isdigit():
+         print('No')
+    -elif not S[:A].isdigit() or not S[A+1:].isdigit():
+    +elif not s_val[0:lhs].isdigit() or not s_val[1+lhs:].isdigit():
+         print('No')
+    -elif S[A] != '-':
+    +elif s_val[lhs] != '-':
+         print('No')
+    --- codenet/p03474 sample 573745d6f391 score 1.0000 (parent 5d895e0c1a43)
+    --- baseline
+    +++ marked
+    @@ -1,11 +1,11 @@
+    -A, B = map(int, input().split())
+    -S = input()
+    +a_item, rhs = map(int, input().split())
+    +s_value = input()
+     
+    -if len(S) != A + B + 1:
+    +if a_item + rhs + 1 != len(s_value):
+         print('No')
+    -elif not S[A].isdigit():
+    +elif not s_value[a_item].isdigit():
+         print('No')
+    -elif S[A] != '-':
+    +elif s_value[a_item] != '-':
+         print('No')
+    -elif not all(c.isdigit() or c == '-' for c in S[:A] + S[A+1:]):
+    +elif not all(c.isdigit() or c == '-' for c in s_value[0:a_item] + s_value[1+a_item:]):
+         print('No')
+    --- codenet/p03695 sample 095fee46659e score 1.0000 (parent 5b11746bd67f)
+    --- baseline
+    +++ marked
+    @@ -1,26 +1,26 @@
+    -N = int(input())
+    -ratings = list(map(int, input().split()))
+    +num = int(input())
+    +ratings_value = list(map(int, input().split()))
+     
+    -colors = [0]*8
+    -for rating in ratings:
+    -    if rating < 400:
+    -        colors[0] += 1
+    -    elif rating < 800:
+    -        colors[1] += 1
+    -    elif rating < 1200:
+    -        colors[2] += 1
+    -    elif rating < 1600:
+    -        colors[3] += 1
+    -    elif rating < 2000:
+    -        colors[4] += 1
+    -    elif rating < 2400:
+    -        colors[5] += 1
+    -    elif rating < 2800:
+    -        colors[6] += 1
+    -    elif rating < 3200:
+    -        colors[7] += 1
+    +colors_count = [0]*8
+    +for rating_value in ratings_value:
+    +    if 400 > rating_value:
+    +        colors_count[0] += 1
+    +    elif 800 > rating_value:
+    +        colors_count[1] += 1
+    +    elif rating_value < 1200:
+    +        colors_count[2] += 1
+    +    elif rating_value < 1600:
+    +        colors_count[3] += 1
+    +    elif rating_value < 2000:
+    +        colors_count[4] += 1
+    +    elif rating_value < 2400:
+    +        colors_count[5] += 1
+    +    elif rating_value < 2800:
+    +        colors_count[6] += 1
+    +    elif 3200 > rating_value:
+    +        colors_count[7] += 1
+     
+    -min_colors = max(1, colors.count(0))
+    -max_colors = colors.count(0) + colors.count(1)
+    +min_colors_value = max(1, colors_count.count(0))
+    +max_colors_value = colors_count.count(0) + colors_count.count(1)
+     
+    -print(min_colors, max_colors)
+    +print(min_colors_value, max_colors_value)
+    --- codenet/p03474 sample 69b04df065c8 score 1.0000 (parent 8d963864a53d)
+    --- baseline
+    +++ marked
+    @@ -1,11 +1,11 @@
+    -A, B = map(int, input().split())
+    +a_item, b_item = map(int, input().split())
+     S = input()
+     
+    -if len(S) != A + B + 1:
+    +if len(S) != a_item + b_item + 1:
+         print("No")
+    -elif not S[A].isdigit():
+    +elif not S[a_item].isdigit():
+         print("No")
+    -elif not S[:A].isdigit() or not S[A+1:].isdigit():
+    +elif not S[0:a_item].isdigit() or not S[1+a_item:].isdigit():
+         print("No")
+    -elif S[A] != '-':
+    +elif '-' != S[a_item]:
+         print("No")
+  (c) new names 973 (changed samples): EXTRA_SUFFIXES 0.018, digit 0.000, either 0.018; base suffixes 0.509, prefixes 0.030
+      most frequent last segments: (one word) 421, res 93, value 91, item 82, val 77, list 50, tmp 44, idx 32, count 26, total 11
+
+## features in the top 30 of at least 3 cells
+  mcss b521002e09f5: name:'name_camel' (4), name:'name_len_mean' (4), name:'name_pascal' (4), name:'name_snake' (4), ngram:'NVal' (4), ngram:'N_VAL' (4), ngram:'SVal' (4), ngram:'s_val' (4), ngram:'AVal' (3), ngram:'BVal' (3), ngram:'B_VAL' (3), ngram:'S_VAL' (3), ngram:'n_val' (3)
+  B cb79b2fcb4e6: name:'name_len_mean' (4), name:'name_snake' (4), ngram:'( 0' (4), ngram:'( 0 ,' (4), ngram:'0 =' (4), ngram:'0 = =' (4), ngram:'1 +' (4), ngram:'range ( 0' (4), name:'initial_o' (3), ngram:'0 ,' (3), ngram:'if 0' (3), ngram:'if 0 =' (3)
+  C cf7e4c9f106e: name:'name_len_mean' (4), name:'name_snake' (4), ngram:'( 0' (3), ngram:'( 0 ,' (3), ngram:'1 +' (3), ngram:'range ( 0' (3)
+  D 37400fdcd589: name:'name_len_mean' (4), name:'name_snake' (4), ngram:'num' (4), name:'initial_t' (3), ngram:'lhs' (3), ngram:'rhs' (3), ngram:'total' (3)
+
