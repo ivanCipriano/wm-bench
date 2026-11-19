@@ -1,0 +1,6 @@
+##### nodo tnode01, commit cd0f98c
+##### attacchi T1.6  sulle canoniche di L1 (repo /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench)
+
+########## python: 542 canoniche, 542 passano senza attacco (esecuzione delle canoniche della M4)
+T1.6 {"caps": "convert"}: passano 542/542, rotte 0, stati {'UNCHANGED': 508, 'APPLIED': 34}, modificate 34/542, 1-CodeBLEU 0.0666
+T1.6 {"caps": "keep"}: passano 542/542, rotte 0, stati {'UNCHANGED': 509, 'APPLIED': 33}, modificate 33/542, 1-CodeBLEU 0.0684
