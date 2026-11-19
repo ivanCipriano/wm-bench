@@ -11,7 +11,10 @@
   campioni vuoti per parte (``bench.metrics.imperceptibility``).
 
 Output sotto ``imperceptibility/`` negli artefatti. Celle sulla parte di test con la
-configurazione congelata del metodo (``hpo.use_selected``, ADR-013).
+configurazione congelata del metodo (``hpo.use_selected``, ADR-013). Con ``hpo.grid`` le quattro
+fasi si espandono per i candidati della griglia **solo sulle celle di sviluppo** (ADR-017 §7,
+impercettibilità di sviluppo di mcss e multimark): il punto di default resta la cella di default;
+senza ``hpo.grid`` nulla cambia.
 """
 
 from __future__ import annotations
@@ -110,6 +113,16 @@ class _MethodStage(Stage):
     """Base delle fasi con una cella per (metodo, modello, livello, linguaggio, parte)."""
 
     cell_axes: ClassVar[tuple[str, ...]] = ("method", "model_id", "level", "language", "split")
+    # Sweep (``hpo.grid``, ADR-017 §7): una cella per candidato della griglia, solo su sviluppo;
+    # il default resta la cella di default (stessa chiave, stessi semi del bootstrap).
+    sweep_roles: ClassVar[tuple[str, ...]] = ("candidate",)
+    sweep_default_unhashed: ClassVar[bool] = True
+
+    @classmethod
+    def sweep_cell(cls, cell: Cell) -> bool:
+        """Nello sweep si espandono solo le celle di sviluppo: il test usa solo la configurazione
+        congelata (ADR-013)."""
+        return cell.split != "test"
 
     def __init__(self, config: ExperimentConfig | None = None) -> None:
         self.config = config
@@ -172,6 +185,11 @@ class PerplexityStage(_MethodStage):
     cell_axes: ClassVar[tuple[str, ...]] = (
         "source", "method", "model_id", "level", "language", "split",
     )  # fmt: skip
+
+    @classmethod
+    def sweep_cell(cls, cell: Cell) -> bool:
+        """Solo i marcati di sviluppo (la baseline non ha metodo, la gemella resta fuori)."""
+        return cell.source == "llm_watermarked" and cell.split != "test"
 
     @classmethod
     def normalize_cell(cls, cell: Cell) -> Cell | None:

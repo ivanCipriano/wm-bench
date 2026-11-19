@@ -229,6 +229,31 @@ def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade
         assert facade.store.exists(execution_ref(cell, h))
         table = facade.store.read_table(metrics_ref("multimark", MODEL, h, "L1", "python", "dev"))
         assert {"pass_at_1", "delta_pass_at_1_pp", "tpr_at_fpr"} <= set(table["name"])
+    _check_imperceptibility_report(facade, default_hash, candidates)
+
+
+def _check_imperceptibility_report(
+    facade: BenchmarkFacade, default_hash: str, candidates: list[str]
+) -> None:
+    """``scripts/report_imperceptibility_dev.py`` sui marcati dello sweep (ADR-017 §7): le
+    modifiche al codice ci sono per ogni configurazione; le fasi dell'impercettibilità non sono
+    girate, quindi AUROC e misure accoppiate sono ``-``."""
+    from tests.unit.test_inventory_scripts import _load
+
+    script = _load("report_imperceptibility_dev")
+    out = facade.cfg.paths.artifacts.parent / "imperceptibility_dev.txt"
+    configs = [f"multimark:{default_hash}:multimark",
+               *(f"multimark:{h}:dev{i}" for i, h in enumerate(candidates))]  # fmt: skip
+    argv = ["--levels", "L1", "--models", MODEL, "--report", str(out), "paths=local"]
+    argv += [a for c in configs for a in ("--config", c)]
+    assert script.main(argv) == 0
+    text = out.read_text(encoding="utf-8")
+    edits = text[text.index("### code edits") : text.index("## constraint")]
+    assert "no marked samples" not in edits
+    for i, h in enumerate(candidates):
+        assert f"dev{i} {h}" in edits
+    assert "(SECONDARY)" in text and "constraint of v1.3.3" in text
+    assert script.main(argv) == 1  # il report esiste già
 
 
 @needs_library

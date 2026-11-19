@@ -188,3 +188,35 @@ Lo verificano:
 - `tests/unit/test_posthoc_smoke.py::test_multimark_attacked_sweep_keeps_the_default_cells`: sulla
   catena finta, con T1.5, lo sweep attacca, esegue, rileva e misura il codice marcato dei due
   punti; le metriche attaccate del default non si ricalcolano e restano identiche byte per byte.
+
+## 7. Fasi dell'impercettibilità nello sweep dell'HPO (impercettibilità su sviluppo, 19 novembre 2026)
+
+**Decisione** (decisione dell'utente del 19 novembre 2026, pipeline di multimark v1.3.5). Per
+chiudere la scelta della configurazione di `multimark` (D provvisoria, C seconda) serve
+l'impercettibilità, anticipata a ora su L1 e L2 dev (`scripts/run_p2_imperceptibility_dev.sh`).
+C, D e gli altri punti di sviluppo esistono solo nello sweep (`hpo.grid=multimark`), e le fasi
+dell'impercettibilità (ADR-015) non vi partecipavano. Ora la base comune `_MethodStage` di
+`perplexity`, `adversarial_logreg`, `adversarial_unixcoder` (e delle varianti `_fmtfree`, che
+restano limitate ad ACW) e `metrics_imperceptibility` ha:
+
+- `sweep_roles = ("candidate",)`, con `sweep_cell` vero solo fuori dal test; per `perplexity`
+  solo `source=llm_watermarked` (la baseline non ha metodo e resta com'è; la gemella resta fuori);
+- `sweep_default_unhashed = True`: il punto con l'hash del default diventa la cella di default
+  (`config_hash = None`), quindi stessa chiave e stessi semi del bootstrap di
+  `metrics_imperceptibility`; i percorsi delle uscite dipendono dall'hash risolto e sono gli
+  stessi.
+
+Nessun filtro per hash: con `hpo.grid=multimark` si misurano tutti i punti della griglia (decisione
+dell'utente). I classificatori si addestrano out-of-fold dentro ogni cella (5 fold raggruppati per
+problema), quindi su sviluppo niente viene addestrato o letto sul test.
+
+**Effetto sui metodi esistenti.** Senza `hpo.grid` nulla cambia; le celle di test (comprese quelle
+L1 test della M12) non cambiano nemmeno con `hpo.grid`. Lo verificano:
+
+- `tests/unit/test_imperceptibility_sweep_cells.py::test_without_grid_nothing_changes`: per le
+  quattro fasi, con `multimark`, STONE e MCGMark, le celle senza `hpo.grid` sono identiche a quelle
+  di prima (fase con `sweep_roles` vuoto), tutte senza hash;
+- `tests/unit/test_imperceptibility_sweep_cells.py::test_grid_adds_only_dev_candidates`: con
+  `hpo.grid`, le celle senza hash sono un sottoinsieme di quelle di prima, quelle di test e quelle
+  della baseline restano, e le celle in più sono solo di sviluppo, con gli hash dei candidati
+  meno il default (per `perplexity` solo marcati).

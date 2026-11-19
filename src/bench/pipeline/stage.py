@@ -158,8 +158,8 @@ class Stage(ABC):
     sweep_roles: ClassVar[tuple[str, ...]] = ()
     # Nello sweep, il punto con l'hash del default diventa la cella di default
     # (``config_hash = None``), cioè quella pianificata senza ``hpo.grid``: stessa chiave e quindi
-    # stessi semi del bootstrap (ADR-017 §5). Per ``metrics``; le celle con attacco lo fanno in
-    # ogni fase (ADR-017 §6).
+    # stessi semi del bootstrap (ADR-017 §5). Per ``metrics`` e le fasi dell'impercettibilità
+    # (ADR-017 §7); le celle con attacco lo fanno in ogni fase (ADR-017 §6).
     sweep_default_unhashed: ClassVar[bool] = False
     # Punti della griglia degli attacchi: tutti (``grid``) o solo quelli con il controllo negativo
     # sulla baseline (``negative_control``, D34).
