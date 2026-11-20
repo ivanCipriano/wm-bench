@@ -75,3 +75,41 @@ def test_round3_script_checks_the_same_hashes(script_name: str) -> None:
     for name, var in (("mcss", "MCSS"), ("multimark", "MM"), ("single_letter", "MM_SL"),
                       ("A", "MM_A"), ("B", "MM_B"), ("C", "MM_C"), ("D", "MM_D")):  # fmt: skip
         assert f"{var}={ROUND3_HASHES[name]}" in text
+
+
+# Rifacimento di mcss con la libreria corretta (scripts/run_p2_mcssfix.sh li controlla).
+MCSSFIX = "3c47a1fee86f4f37535e45aa6ca09787d56881be"
+MCSSFIX_HASHES = {"mcss": "ae63f16de28f", "multimark": "614c0c80c5c5"}
+MCSS_ROUND2 = "1d0c64c5124e"
+
+
+def test_mcssfix_hashes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Con 3c47a1f cambiano gli hash di mcss **e** di multimark: multimark non si rilancia (il
+    suo nuovo default non deve comparire negli script), mcss sì."""
+    monkeypatch.setenv("WMB_LOCAL_ROOT", str(tmp_path))
+    monkeypatch.setenv("SOURCERY_TOKEN", "fake-token-for-tests")
+    script = _load("posthoc_config_hashes")
+    rows = _hashes(script, monkeypatch, MCSSFIX, capsys)
+    assert [h for _, h, _ in rows[:2]] == list(MCSSFIX_HASHES.values())
+    assert not {h for _, h, _ in rows} & set(ROUND3_HASHES.values())
+
+
+def test_mcssfix_script_launches_only_mcss() -> None:
+    """``scripts/run_p2_mcssfix.sh``: libreria e hash giusti, configurazioni lette con i vecchi
+    hash, ogni invio solo per mcss (``methods=[mcss]``, mai ``hpo.grid``) e solo su dev."""
+    text = (REPO_ROOT / "scripts" / "run_p2_mcssfix.sh").read_text(encoding="utf-8")
+    assert f"EXPECTED={MCSSFIX}" in text and f"MCSS_NEW={MCSSFIX_HASHES['mcss']}" in text
+    assert f"MCSS={ROUND3_HASHES['mcss']}" in text and f"MCSS_R2={MCSS_ROUND2}" in text
+    for name, var in (("multimark", "MM"), ("single_letter", "MM_SL"), ("A", "MM_A"),
+                      ("B", "MM_B"), ("C", "MM_C"), ("D", "MM_D")):  # fmt: skip
+        assert f"{var}={ROUND3_HASHES[name]}" in text
+    code = "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
+    assert re.findall(r'"methods=\[[^\]]*\]"', code) == ['"methods=[mcss]"']
+    assert "hpo.grid" not in code and MCSSFIX_HASHES["multimark"] not in text
+    assert re.findall(r'"splits=\[[^\]]*\]"', code) == ['"splits=[dev]"']
+    # ogni invio parte da CLEAN, ATTACKED o IMP (tutti derivati da CLEAN)
+    submits = [ln for ln in code.splitlines() if ln.strip().startswith("submit --jobs")]
+    assert submits and all(re.search(r'"\$\{(CLEAN|ATTACKED|IMP)\[@\]\}"', s) for s in submits)
+    assert 'ATTACKED=("${CLEAN[@]}"' in code and 'IMP=("${CLEAN[@]}"' in code
