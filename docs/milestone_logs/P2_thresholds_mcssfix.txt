@@ -1,0 +1,18 @@
+# P2 mcss thresholds, old vs new (scripts/run_p2_mcssfix.sh metrics): 2026-11-20T10:58:07+01:00
+# wm-bench 70e1b44763edddf65b96344280f7608b62a1a467, multimark 3c47a1fee86f4f37535e45aa6ca09787d56881be
+srun: job 822883 queued and waiting for resources
+srun: job 822883 has been allocated resources
+# compare mcss b521002e09f5 (old) vs ae63f16de28f (new): negatives and thresholds
+[SAME] qwen25_coder_7b neg_human L1: 2000 samples identical
+[SAME] qwen25_coder_7b neg_human L2: 250 samples identical
+[SAME] qwen25_coder_7b neg_integration L2: 1540 samples identical
+[SAME] qwen25_coder_7b neg_llm L1: 576 samples identical
+[SAME] qwen25_coder_7b neg_llm L2: 300 samples identical
+[SAME] qwen25_coder_7b threshold 1.2621119296336116, secondary {"decode": {"achieved_fpr_dev": 0.0095, "threshold": 0.375}, "nreg1024": {"achieved_fpr_dev": 0.008, "threshold": 3.3417402418982496}, "nreg16": {"achieved_fpr_dev": 0.01, "threshold": 2.1072099696478683}}
+[SAME] deepseek_coder_6p7b neg_human L1: 2000 samples identical
+[SAME] deepseek_coder_6p7b neg_human L2: 250 samples identical
+[SAME] deepseek_coder_6p7b neg_integration L2: 1540 samples identical
+[SAME] deepseek_coder_6p7b neg_llm L1: 576 samples identical
+[SAME] deepseek_coder_6p7b neg_llm L2: 300 samples identical
+[SAME] deepseek_coder_6p7b threshold 1.2621119296336116, secondary {"decode": {"achieved_fpr_dev": 0.006, "threshold": 0.4166666666666667}, "nreg1024": {"achieved_fpr_dev": 0.008, "threshold": 3.3417402418982496}, "nreg16": {"achieved_fpr_dev": 0.0095, "threshold": 2.1072099696478683}}
+[OK] negatives and thresholds identical

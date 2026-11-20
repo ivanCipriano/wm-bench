@@ -1,0 +1,1418 @@
+# rename check of the T1.4 attacked samples (scripts/check_rename_t1_4.py), 2026-11-20T10:52:05+01:00, tnode02
+# multimark.rename_check from /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_multimark at commit 3c47a1fee86f4f37535e45aa6ca09787d56881be; wm-bench 70e1b44763edddf65b96344280f7608b62a1a467; read-only, T1.4 not corrected
+# 448 T1.4 cells of Python under /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/attacked/T1.4; each attacked sample vs its marked parent; violations on the checked (APPLIED) samples; fail_vs_marked = violations whose tests fail while the marked sample passes
+
+  method     splitmodel                   lvl point                         config         samples applied checked  viol   viol % fail_vs_marked
+  acw        test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   86851261a344      2676    2660    2660     3    0.11%              0
+      mbpp/765 sample 73f9b9862633 (marked 3367b42a2e4a), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked is_polite.find_next_power_of_two:n, is_polite:qxq9fn5n
+        marked is_polite:qxq9fn5n <- original is_polite.find_next_power_of_two:n, is_polite:n
+      mbpp/765 sample 70e88338a9d3 (marked d87cf486164f), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked is_polite.find_next_power_of_two:n, is_polite:i91ixqck
+        marked is_polite:i91ixqck <- original is_polite.find_next_power_of_two:n, is_polite:n
+      mbpp/765 sample 87fb955be71d (marked 479753143b84), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked is_polite.find_next_power_of_two:n, is_polite:atocwgvq
+        marked is_polite:atocwgvq <- original is_polite.find_next_power_of_two:n, is_polite:n
+  acw        test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  86851261a344      2676    2660    2660     5    0.19%              0
+      mbpp/123 sample c569a8383a71 (marked 12313678376d), fails tests while the marked passes: no
+        original amicable_numbers_sum.sum_divisors:i -> marked amicable_numbers_sum.sum_divisors:i, amicable_numbers_sum:usecols
+        marked amicable_numbers_sum:usecols <- original amicable_numbers_sum.sum_divisors:i, amicable_numbers_sum:i
+      mbpp/765 sample 3fd997175077 (marked 8649fd720412), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked <free>:path_itemersion_parts, is_polite.find_next_power_of_two:path_item
+        free name changed: is_polite.find_next_power_of_two:n -> <free>:path_itemersion_parts
+      mbpp/765 sample b60a9fd20aa8 (marked 3367b42a2e4a), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked <free>:fasta_file_nameont_size, is_polite.find_next_power_of_two:font_size
+        free name changed: is_polite.find_next_power_of_two:n -> <free>:fasta_file_nameont_size
+  acw        test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   86851261a344      2676    2660    2660     6    0.23%              0
+      mbpp/123 sample 9a0087ba97ac (marked 12313678376d), fails tests while the marked passes: no
+        original amicable_numbers_sum.sum_divisors:i -> marked <free>:genype_name, amicable_numbers_sum.sum_divisors:gen
+        free name changed: amicable_numbers_sum.sum_divisors:i -> <free>:genype_name
+      mbpp/765 sample 159a62bf8827 (marked 8649fd720412), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked <free>:ffilterdict, is_polite.find_next_power_of_two:ffilter
+        free name changed: is_polite.find_next_power_of_two:n -> <free>:ffilterdict
+      mbpp/765 sample c38fd030c70a (marked 3367b42a2e4a), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked <free>:sequence_nameignbit, is_polite.find_next_power_of_two:signbit
+        free name changed: is_polite.find_next_power_of_two:n -> <free>:sequence_nameignbit
+  acw        test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   86851261a344      2676    2660    2660     2    0.08%              0
+      mbpp/123 sample 51dbd148b6fb (marked 12313678376d), fails tests while the marked passes: no
+        original amicable_numbers_sum.sum_divisors:i -> marked <free>:surface1orkunit, amicable_numbers_sum.sum_divisors:workunit
+        free name changed: amicable_numbers_sum.sum_divisors:i -> <free>:surface1orkunit
+      mbpp/765 sample e5c10c224f57 (marked 479753143b84), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked is_polite.find_next_power_of_two:n, is_polite:tick_fontsize
+        marked is_polite:tick_fontsize <- original is_polite.find_next_power_of_two:n, is_polite:n
+  acw        test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   86851261a344      2676    2660    2660     0    0.00%              0
+  acw        test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    86851261a344      2676    2660    2660     6    0.23%              0
+      mbpp/123 sample 5210f1b3593a (marked 12313678376d), fails tests while the marked passes: no
+        original amicable_numbers_sum.sum_divisors:i -> marked <free>:n8v9r6fhk5f979k, amicable_numbers_sum.sum_divisors:nk5f979k
+        free name changed: amicable_numbers_sum.sum_divisors:i -> <free>:n8v9r6fhk5f979k
+      mbpp/765 sample 28218290eb64 (marked 8649fd720412), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked <free>:m99zsjw0f0f58td, is_polite.find_next_power_of_two:m99zsjw0
+        free name changed: is_polite.find_next_power_of_two:n -> <free>:m99zsjw0f0f58td
+      mbpp/765 sample 9f11570db3f9 (marked 3367b42a2e4a), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked <free>:aua85s3g3sfuume, is_polite.find_next_power_of_two:aua85s3g
+        free name changed: is_polite.find_next_power_of_two:n -> <free>:aua85s3g3sfuume
+  acw        test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  86851261a344      2676    2660    2660     1    0.04%              0
+      mbpp/765 sample 3485d8c4cdc6 (marked 479753143b84), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked is_polite.find_next_power_of_two:n, is_polite:plot_kwargs
+        marked is_polite:plot_kwargs <- original is_polite.find_next_power_of_two:n, is_polite:n
+  acw        test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    86851261a344      2676    2660    2660     4    0.15%              0
+      mbpp/123 sample b68dc4e2790e (marked 12313678376d), fails tests while the marked passes: no
+        original amicable_numbers_sum.sum_divisors:i -> marked amicable_numbers_sum.sum_divisors:i, amicable_numbers_sum:spwquzdb
+        marked amicable_numbers_sum:spwquzdb <- original amicable_numbers_sum.sum_divisors:i, amicable_numbers_sum:i
+      mbpp/765 sample e742dac6d0ec (marked 3367b42a2e4a), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked <free>:m2t64q6jrk8fj1h, is_polite.find_next_power_of_two:zrk8fj1h
+        free name changed: is_polite.find_next_power_of_two:n -> <free>:m2t64q6jrk8fj1h
+      mbpp/765 sample d15915905424 (marked 479753143b84), fails tests while the marked passes: no
+        original is_polite.find_next_power_of_two:n -> marked <free>:fn3iy4kqbv8s1yf, is_polite.find_next_power_of_two:jbv8s1yf
+        free name changed: is_polite.find_next_power_of_two:n -> <free>:fn3iy4kqbv8s1yf
+  acw        test qwen25_coder_7b         L1  ratio=0.75 name_kind=random   86851261a344      2676    2665    2665     2    0.08%              1
+      humaneval/129 sample c14fcc7a7c1b (marked 4d88821a908d), fails tests while the marked passes: no
+        original minPath.dfs:min_path -> marked minPath.dfs:min_path, minPath:hu2260w5
+        marked minPath:hu2260w5 <- original minPath.dfs:min_path, minPath:min_path
+      humaneval/75 sample 67fbc18cdead (marked cdbca48caa13), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked is_multiply_prime.is_prime:i, is_multiply_prime:ikixua75
+        marked is_multiply_prime:ikixua75 <- original is_multiply_prime.is_prime:i, is_multiply_prime:i
+  acw        test qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  86851261a344      2676    2665    2665     3    0.11%              1
+      humaneval/129 sample 21546ab6e2f4 (marked 4d88821a908d), fails tests while the marked passes: no
+        original minPath.dfs:min_path -> marked <free>:snpds, minPath.dfs:snp
+        free name changed: minPath.dfs:min_path -> <free>:snpds
+      humaneval/75 sample f0399ebdfa2a (marked c30b3a1f369f), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:corrrc_reg_ir, is_multiply_prime.is_prime:src_reg_ir
+        free name changed: is_multiply_prime.is_prime:i -> <free>:corrrc_reg_ir
+      humaneval/75 sample 21f3943a722f (marked bf2173155a99), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:number_of_pointsoot_node, is_multiply_prime.is_prime:number_of_points
+        free name changed: is_multiply_prime.is_prime:i -> <free>:number_of_pointsoot_node
+  acw        test qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   86851261a344      2676    2664    2664     3    0.11%              2
+      humaneval/75 sample a14017d5d03d (marked c30b3a1f369f), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:a_3dx2, is_multiply_prime.is_prime:idx2
+        free name changed: is_multiply_prime.is_prime:i -> <free>:a_3dx2
+      humaneval/75 sample b1f79f625537 (marked bf2173155a99), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:group_infoarticipants, is_multiply_prime.is_prime:participants
+        free name changed: is_multiply_prime.is_prime:i -> <free>:group_infoarticipants
+      humaneval/75 sample b70a92c33955 (marked cdbca48caa13), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:plotterynset_offsets, is_multiply_prime.is_prime:plotter
+        free name changed: is_multiply_prime.is_prime:i -> <free>:plotterynset_offsets
+  acw        test qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   86851261a344      2676    2665    2665     4    0.15%              2
+      humaneval/129 sample b6bd0e1fab40 (marked 4d88821a908d), fails tests while the marked passes: no
+        original minPath.dfs:min_path -> marked minPath.dfs:min_path, minPath:service_key
+        marked minPath:service_key <- original minPath.dfs:min_path, minPath:min_path
+      humaneval/75 sample bec63e302757 (marked c30b3a1f369f), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:source_portarg, is_multiply_prime.is_prime:source_port
+        free name changed: is_multiply_prime.is_prime:i -> <free>:source_portarg
+      humaneval/75 sample 6dac49739300 (marked bf2173155a99), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked is_multiply_prime.is_prime:i, is_multiply_prime:vrn_file
+        marked is_multiply_prime:vrn_file <- original is_multiply_prime.is_prime:i, is_multiply_prime:i
+  acw        test qwen25_coder_7b         L1  ratio=0.25 name_kind=random   86851261a344      2676    2665    2665     1    0.04%              0
+      humaneval/129 sample 4290b60bf084 (marked 4d88821a908d), fails tests while the marked passes: no
+        original minPath.dfs:min_path -> marked minPath.dfs:min_path, minPath:flwgex2r
+        marked minPath:flwgex2r <- original minPath.dfs:min_path, minPath:min_path
+  acw        test qwen25_coder_7b         L1  ratio=1.0 name_kind=random    86851261a344      2676    2665    2665     4    0.15%              2
+      humaneval/129 sample 39008eaec345 (marked 4d88821a908d), fails tests while the marked passes: no
+        original minPath.dfs:min_path -> marked minPath.dfs:lymulp18, minPath:ixa5pj20
+        marked minPath:ixa5pj20 <- original minPath.dfs:min_path, minPath:min_path
+      humaneval/75 sample 1d80cc08434e (marked c30b3a1f369f), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:jsc0qurupozjkad, is_multiply_prime.is_prime:opozjkad
+        free name changed: is_multiply_prime.is_prime:i -> <free>:jsc0qurupozjkad
+      humaneval/75 sample 6a8f35db4256 (marked bf2173155a99), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:kggjp10vbib1l78, is_multiply_prime.is_prime:kggjp10v
+        free name changed: is_multiply_prime.is_prime:i -> <free>:kggjp10vbib1l78
+  acw        test qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  86851261a344      2676    2665    2665     2    0.08%              1
+      humaneval/75 sample a8ee68d57292 (marked c30b3a1f369f), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:applicationm, is_multiply_prime.is_prime:application
+        free name changed: is_multiply_prime.is_prime:i -> <free>:applicationm
+      humaneval/75 sample 649c1a8e0050 (marked bf2173155a99), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:init_kwargspick_data, is_multiply_prime.is_prime:ypick_data
+        free name changed: is_multiply_prime.is_prime:i -> <free>:init_kwargspick_data
+  acw        test qwen25_coder_7b         L1  ratio=0.5 name_kind=random    86851261a344      2676    2665    2665     0    0.00%              0
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   6c30ca18a68e      2676    2147    2147     7    0.33%              0
+      humaneval/108 sample 9d9bf2c5e101 (marked 8d6e575e24d1), fails tests while the marked passes: no
+        original count_nums:c -> marked <free>:c, count_nums:q28rkg7z
+      humaneval/21 sample 37c39c9914a4 (marked c0f863cbee60), fails tests while the marked passes: no
+        original rescale_to_unit:max -> marked <free>:max, rescale_to_unit:fj4og6k2
+      mbpp/256 sample f524e6d339ed (marked 1347152da693), fails tests while the marked passes: no
+        original count_Primes_nums:pr -> marked <free>:pr, count_Primes_nums:vh9xay76
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   9df49d3f4f38      2676    2167    2167     3    0.14%              0
+      humaneval/137 sample 3495bbd1c5f1 (marked 3e6a1cd8f428), fails tests while the marked passes: no
+        original compare_one:try_a_is_b -> marked <free>:try_a_is_b, compare_one:xt9dhim4
+      humaneval/33 sample 8313e9a998b2 (marked bd9a3532fb26), fails tests while the marked passes: no
+        original sort_third:l_new -> marked <free>:l_new, sort_third:r5d7g8eb
+      mbpp/806 sample 7d51779d8e33 (marked b0b7657c0a84), fails tests while the marked passes: no
+        original max_run_uppercase:max_run_upper -> marked <free>:max_run_upper, max_run_uppercase:ytqi9s98
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  6c30ca18a68e      2676    2147    2147     9    0.42%              0
+      humaneval/108 sample eb41e2861b9f (marked 8d6e575e24d1), fails tests while the marked passes: no
+        original count_nums:c -> marked <free>:c, count_nums:fg
+      humaneval/123 sample 749e568f3896 (marked 2fcb3e3d418d), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked get_odd_collatz.collatz:n, get_odd_collatz:source_paths
+        marked get_odd_collatz:source_paths <- original get_odd_collatz.collatz:n, get_odd_collatz:n
+      humaneval/21 sample d6549852c255 (marked c0f863cbee60), fails tests while the marked passes: no
+        original rescale_to_unit:max -> marked <free>:max, rescale_to_unit:sampling_params
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  9df49d3f4f38      2676    2167    2167     3    0.14%              0
+      humaneval/33 sample 3297313e3837 (marked bd9a3532fb26), fails tests while the marked passes: no
+        original sort_third:l_new -> marked <free>:l_new, sort_third:id_str
+      mbpp/587 sample c80254ab6c48 (marked 8be671fb2535), fails tests while the marked passes: no
+        original tuples:tuples_list -> marked <free>:tuples_list, tuples:odir
+      mbpp/806 sample 2793ee6da75e (marked b0b7657c0a84), fails tests while the marked passes: no
+        original max_run_uppercase:max_run_upper -> marked <free>:max_run_upper, max_run_uppercase:optimizer
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   6c30ca18a68e      2676    2147    2147    10    0.47%              0
+      humaneval/108 sample ea7c7191738d (marked 8d6e575e24d1), fails tests while the marked passes: no
+        original count_nums:c -> marked <free>:c, count_nums:cmds
+      humaneval/123 sample d1c48f074474 (marked 2fcb3e3d418d), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked <free>:exposure_keywordsortkey, get_odd_collatz.collatz:sortkey
+        free name changed: get_odd_collatz.collatz:n -> <free>:exposure_keywordsortkey
+      humaneval/21 sample 72e7aa167e31 (marked c0f863cbee60), fails tests while the marked passes: no
+        original rescale_to_unit:max -> marked <free>:max, rescale_to_unit:f_end
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   9df49d3f4f38      2676    2167    2167     4    0.18%              0
+      humaneval/137 sample a263d2d00016 (marked 3e6a1cd8f428), fails tests while the marked passes: no
+        original compare_one:try_a_is_b -> marked <free>:try_a_is_b, compare_one:nbr_cases
+      humaneval/33 sample 544316ab1941 (marked bd9a3532fb26), fails tests while the marked passes: no
+        original sort_third:l_new -> marked <free>:l_new, sort_third:capacity
+      mbpp/587 sample 20d81a110fcc (marked 8be671fb2535), fails tests while the marked passes: no
+        original tuples:tuples_list -> marked <free>:tuples_list, tuples:template_dir
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   6c30ca18a68e      2676    2147    2147     7    0.33%              0
+      humaneval/123 sample d2014d8bd081 (marked 2fcb3e3d418d), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked <free>:css_classesponse_time, get_odd_collatz.collatz:css_class
+        free name changed: get_odd_collatz.collatz:n -> <free>:css_classesponse_time
+      humaneval/21 sample 973b573353f5 (marked c0f863cbee60), fails tests while the marked passes: no
+        original rescale_to_unit:max -> marked <free>:max, rescale_to_unit:send
+      mbpp/256 sample 222aad7ff59c (marked 1347152da693), fails tests while the marked passes: no
+        original count_Primes_nums:pr -> marked <free>:pr, count_Primes_nums:col_names
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   9df49d3f4f38      2676    2167    2167     1    0.05%              0
+      mbpp/587 sample fdf300ea4b56 (marked 8be671fb2535), fails tests while the marked passes: no
+        original tuples:tuples_list -> marked <free>:tuples_list, tuples:modname
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   6c30ca18a68e      2676    2147    2147     2    0.09%              0
+      mbpp/585 sample 71f834b61648 (marked f2981d27c440), fails tests while the marked passes: no
+        original expensive_items:sorted -> marked <free>:sorted, expensive_items:nd51jj41
+      mbpp/598 sample 0236fa6f1c30 (marked 60af83437f2f), fails tests while the marked passes: no
+        original armstrong_number:sum -> marked <free>:sum, armstrong_number:j1kyscd1
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   9df49d3f4f38      2676    2167    2167     2    0.09%              0
+      humaneval/137 sample cda440a69acb (marked 3e6a1cd8f428), fails tests while the marked passes: no
+        original compare_one:try_a_is_b -> marked <free>:try_a_is_b, compare_one:amdxwhh3
+      humaneval/33 sample cba1c06af246 (marked bd9a3532fb26), fails tests while the marked passes: no
+        original sort_third:l_new -> marked <free>:l_new, sort_third:eqgcop04
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    6c30ca18a68e      2676    2147    2147    10    0.47%              0
+      humaneval/108 sample 91fc6eb96859 (marked 8d6e575e24d1), fails tests while the marked passes: no
+        original count_nums:c -> marked <free>:c, count_nums:a2nvlojq
+      humaneval/123 sample b60421c9e4e3 (marked 2fcb3e3d418d), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked <free>:dj0pzgjspfdqw3t, get_odd_collatz.collatz:dj0pzgjs
+        free name changed: get_odd_collatz.collatz:n -> <free>:dj0pzgjspfdqw3t
+      humaneval/21 sample 039fc7fdde8c (marked c0f863cbee60), fails tests while the marked passes: no
+        original rescale_to_unit:max -> marked <free>:max, rescale_to_unit:p4b4n94z
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    9df49d3f4f38      2676    2167    2167     4    0.18%              0
+      humaneval/137 sample 9fc4ce53eef5 (marked 3e6a1cd8f428), fails tests while the marked passes: no
+        original compare_one:try_a_is_b -> marked <free>:try_a_is_b, compare_one:np2ot1qc
+      humaneval/33 sample 3aace59a4b60 (marked bd9a3532fb26), fails tests while the marked passes: no
+        original sort_third:l_new -> marked <free>:l_new, sort_third:ptc86ccn
+      mbpp/587 sample f85b7d4544c2 (marked 8be671fb2535), fails tests while the marked passes: no
+        original tuples:tuples_list -> marked <free>:tuples_list, tuples:mtki7v38
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  6c30ca18a68e      2676    2147    2147     4    0.19%              0
+      mbpp/300 sample b6d170e5be3d (marked 6fd7043f3e9a), fails tests while the marked passes: no
+        original count_binary_seq:count2 -> marked <free>:count2, count_binary_seq:mirror
+      mbpp/559 sample c09ebf55401f (marked 5f2cdcfce213), fails tests while the marked passes: no
+        original max_sub_array_sum:max_so_far -> marked <free>:max_so_far, max_sub_array_sum:effect
+      mbpp/84 sample 93440eba8d6a (marked cb9f5e7eaf6e), fails tests while the marked passes: no
+        original sequence:new_conway -> marked <free>:new_conway, sequence:substitution
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  9df49d3f4f38      2676    2167    2167     1    0.05%              0
+      mbpp/587 sample b0f2df46b365 (marked 8be671fb2535), fails tests while the marked passes: no
+        original tuples:tuples_list -> marked <free>:tuples_list, tuples:sort_order
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    6c30ca18a68e      2676    2147    2147     6    0.28%              0
+      humaneval/108 sample d7c0deee22e6 (marked 8d6e575e24d1), fails tests while the marked passes: no
+        original count_nums:c -> marked <free>:c, count_nums:o8bsp0jm
+      humaneval/21 sample 977af2d737df (marked c0f863cbee60), fails tests while the marked passes: no
+        original rescale_to_unit:max -> marked <free>:max, rescale_to_unit:wxkrn10n
+      mbpp/256 sample cc267bc1da8b (marked 1347152da693), fails tests while the marked passes: no
+        original count_Primes_nums:pr -> marked <free>:pr, count_Primes_nums:l65s43db
+  mcgmark    test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    9df49d3f4f38      2676    2167    2167     0    0.00%              0
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.75 name_kind=random   697c5eb78b23      2676    2063    2063    20    0.97%              0
+      humaneval/123 sample f83636c7a883 (marked dbc996a1de78), fails tests while the marked passes: no
+        original get_odd_collatz.collatzy:n -> marked <free>:cmrw64scxerb7x7, get_odd_collatz.collatzy:cmrw64sc
+        free name changed: get_odd_collatz.collatzy:n -> <free>:cmrw64scxerb7x7
+      humaneval/32 sample 165c070338d4 (marked 7f2ae67cea12), fails tests while the marked passes: no
+        original poly:degree -> marked <free>:degree, poly:j8b9j0lw
+      humaneval/5 sample a43fc76e56b2 (marked 47324f7f0d64), fails tests while the marked passes: no
+        original intersperse:number -> marked <free>:number, intersperse:v8765gky
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.75 name_kind=random   9df49d3f4f38      2676    1793    1793     8    0.45%              0
+      humaneval/123 sample 98241d866789 (marked 64def782eaab), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked get_odd_collatz.collatz:lqbm0l75, get_odd_collatz:n
+        marked get_odd_collatz:n <- original get_odd_collatz.collatz:n, get_odd_collatz:n
+      humaneval/127 sample eab63bde8241 (marked f2a07b83b0b8), fails tests while the marked passes: no
+        original is_prime:i -> marked <free>:i, is_prime:cx5ynzgm
+      humaneval/148 sample 24189f0280fb (marked b349071f5942), fails tests while the marked passes: no
+        original bf:index1 -> marked <free>:index1, bf:zwdri3ck
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  697c5eb78b23      2676    2063    2063    22    1.07%              0
+      humaneval/123 sample f9313a945a05 (marked dbc996a1de78), fails tests while the marked passes: no
+        original get_odd_collatz.collatzy:n -> marked <free>:hfileeperator, get_odd_collatz.collatzy:seperator
+        free name changed: get_odd_collatz.collatzy:n -> <free>:hfileeperator
+      humaneval/32 sample e96ad89131ab (marked 7f2ae67cea12), fails tests while the marked passes: no
+        original poly:degree -> marked <free>:degree, poly:digest_value
+      humaneval/5 sample 51a75ff6f0bf (marked 47324f7f0d64), fails tests while the marked passes: no
+        original intersperse:number -> marked <free>:number, intersperse:dependency
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  9df49d3f4f38      2676    1793    1793    12    0.67%              0
+      humaneval/108 sample 5a3769aea62d (marked 90fb4b8ee826), fails tests while the marked passes: no
+        original count_nums.sum_of_digits:result -> marked count_nums.sum_of_digits:result, count_nums:maxID
+        marked count_nums:maxID <- original count_nums.sum_of_digits:result, count_nums:result
+      humaneval/123 sample 4f3dddb13d93 (marked 64def782eaab), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked <free>:crdsetwork_type, get_odd_collatz.collatz:crds, get_odd_collatz:network_type
+        marked get_odd_collatz:network_type <- original get_odd_collatz.collatz:n, get_odd_collatz:n
+        free name changed: get_odd_collatz.collatz:n -> <free>:crdsetwork_type
+      humaneval/127 sample eacda3b7c9f3 (marked f2a07b83b0b8), fails tests while the marked passes: no
+        original is_prime:i -> marked <free>:i, is_prime:dummy
+  mcgmark    test qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   697c5eb78b23      2676    2063    2063    24    1.16%              0
+      humaneval/123 sample 5316d65ab435 (marked dbc996a1de78), fails tests while the marked passes: no
+        original get_odd_collatz.collatzy:n -> marked <free>:hapars, get_odd_collatz.collatzy:ha
+        free name changed: get_odd_collatz.collatzy:n -> <free>:hapars
+      humaneval/32 sample 254441ca5fb8 (marked 7f2ae67cea12), fails tests while the marked passes: no
+        original poly:degree -> marked <free>:degree, poly:handles
+      humaneval/5 sample 365a3a79bd24 (marked 47324f7f0d64), fails tests while the marked passes: no
+        original intersperse:number -> marked <free>:number, intersperse:clone_mode
+  mcgmark    test qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   9df49d3f4f38      2676    1793    1793    16    0.89%              0
+      humaneval/108 sample babeb4b105a7 (marked d58bee025cb0), fails tests while the marked passes: no
+        original count_nums.has_pos_sum:num -> marked <free>:lastux, count_nums.has_pos_sum:last
+        free name changed: count_nums.has_pos_sum:num -> <free>:lastux
+      humaneval/108 sample 700f6e88339e (marked 90fb4b8ee826), fails tests while the marked passes: no
+        original count_nums.sum_of_digits:result -> marked <free>:lenscaleised, count_nums.sum_of_digits:lenscale
+        free name changed: count_nums.sum_of_digits:result -> <free>:lenscaleised
+      humaneval/123 sample 6916eb252712 (marked 64def782eaab), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked <free>:api_querydx0, get_odd_collatz.collatz:api_query, get_odd_collatz:idx0
+        marked get_odd_collatz:idx0 <- original get_odd_collatz.collatz:n, get_odd_collatz:n
+        free name changed: get_odd_collatz.collatz:n -> <free>:api_querydx0
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   697c5eb78b23      2676    2063    2063    15    0.73%              0
+      humaneval/5 sample f22e496b8378 (marked 47324f7f0d64), fails tests while the marked passes: no
+        original intersperse:number -> marked <free>:number, intersperse:indicator
+      humaneval/59 sample d92b7b3b6036 (marked 5e0745c24bc5), fails tests while the marked passes: no
+        original largest_prime_factor.prime_factors:n -> marked largest_prime_factor.prime_factors:n, largest_prime_factor:vtts
+        marked largest_prime_factor:vtts <- original largest_prime_factor.prime_factors:n, largest_prime_factor:n
+      mbpp/119 sample 009fc950fa3a (marked 3ef1da3cdeab), fails tests while the marked passes: no
+        original search:mid2 -> marked <free>:mid2, search:terminator
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   9df49d3f4f38      2676    1793    1793    11    0.61%              0
+      humaneval/123 sample 67f177b58155 (marked 64def782eaab), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked get_odd_collatz.collatz:n, get_odd_collatz:block1
+        marked get_odd_collatz:block1 <- original get_odd_collatz.collatz:n, get_odd_collatz:n
+      humaneval/127 sample 98d7026f8501 (marked f2a07b83b0b8), fails tests while the marked passes: no
+        original is_prime:i -> marked <free>:i, is_prime:metric_id
+      humaneval/148 sample 06466afca95a (marked b349071f5942), fails tests while the marked passes: no
+        original bf:index1 -> marked <free>:index1, bf:localFile
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.25 name_kind=random   697c5eb78b23      2676    2063    2063     7    0.34%              0
+      mbpp/119 sample 09890e810ae8 (marked 7c500ca8d1cc), fails tests while the marked passes: no
+        original search:mid_even -> marked <free>:mid_even, search:l73u7las
+      mbpp/131 sample 0e36fc50163d (marked 32fa6430bb70), fails tests while the marked passes: no
+        original reverse_vowels:j -> marked <free>:j, reverse_vowels:zfsd6mp7
+      mbpp/256 sample ca7b3291064e (marked ef4af7c164fe), fails tests while the marked passes: no
+        original count_Primes_nums.isPrime:i -> marked count_Primes_nums.isPrime:i, count_Primes_nums:p1ai1vlh
+        marked count_Primes_nums:p1ai1vlh <- original count_Primes_nums.isPrime:i, count_Primes_nums:i
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.25 name_kind=random   9df49d3f4f38      2676    1793    1793     0    0.00%              0
+  mcgmark    test qwen25_coder_7b         L1  ratio=1.0 name_kind=random    697c5eb78b23      2676    2063    2063    24    1.16%              0
+      humaneval/123 sample 079c14a5bb30 (marked dbc996a1de78), fails tests while the marked passes: no
+        original get_odd_collatz.collatzy:n -> marked <free>:coholhi04x2l37c, get_odd_collatz.collatzy:coholhi0
+        free name changed: get_odd_collatz.collatzy:n -> <free>:coholhi04x2l37c
+      humaneval/32 sample db8c2d78c069 (marked 7f2ae67cea12), fails tests while the marked passes: no
+        original poly:degree -> marked <free>:degree, poly:y4wxjgpd
+      humaneval/5 sample 1a5218f2acec (marked 47324f7f0d64), fails tests while the marked passes: no
+        original intersperse:number -> marked <free>:number, intersperse:sh91psaz
+  mcgmark    test qwen25_coder_7b         L1  ratio=1.0 name_kind=random    9df49d3f4f38      2676    1793    1793    16    0.89%              0
+      humaneval/108 sample 01522294caa5 (marked d58bee025cb0), fails tests while the marked passes: no
+        original count_nums.has_pos_sum:num -> marked <free>:d8po9gjv0df31, count_nums.has_pos_sum:d8po9gjv
+        free name changed: count_nums.has_pos_sum:num -> <free>:d8po9gjv0df31
+      humaneval/108 sample 974e2c206e99 (marked 90fb4b8ee826), fails tests while the marked passes: no
+        original count_nums.sum_of_digits:result -> marked <free>:bloh4n5c05, count_nums.sum_of_digits:lgnld105
+        free name changed: count_nums.sum_of_digits:result -> <free>:bloh4n5c05
+      humaneval/123 sample 229c43ba7d2a (marked 64def782eaab), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked <free>:g9ht37q9kvt6kzs, get_odd_collatz.collatz:wkvt6kzs, get_odd_collatz:g9ht37q9
+        marked get_odd_collatz:g9ht37q9 <- original get_odd_collatz.collatz:n, get_odd_collatz:n
+        free name changed: get_odd_collatz.collatz:n -> <free>:g9ht37q9kvt6kzs
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  697c5eb78b23      2676    2063    2063     4    0.19%              0
+      humaneval/123 sample b4233602f2d2 (marked dbc996a1de78), fails tests while the marked passes: no
+        original get_odd_collatz.collatzy:n -> marked get_odd_collatz.collatzy:n, get_odd_collatz:plot_title
+        marked get_odd_collatz:plot_title <- original get_odd_collatz.collatzy:n, get_odd_collatz:n
+      humaneval/32 sample 42ee3b86dabe (marked 7f2ae67cea12), fails tests while the marked passes: no
+        original poly:degree -> marked <free>:degree, poly:xvals
+      mbpp/398 sample ae3e069bd861 (marked 7feac46e3874), fails tests while the marked passes: no
+        original sum_of_digits:xnu -> marked <free>:xnu, sum_of_digits:dot_product
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  9df49d3f4f38      2676    1793    1793     4    0.22%              0
+      humaneval/108 sample 2cb331810a71 (marked 90fb4b8ee826), fails tests while the marked passes: no
+        original count_nums.sum_of_digits:result -> marked count_nums.sum_of_digits:result, count_nums:revs
+        marked count_nums:revs <- original count_nums.sum_of_digits:result, count_nums:result
+      humaneval/123 sample fb12575127ac (marked 64def782eaab), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked get_odd_collatz.collatz:n, get_odd_collatz:noaxis
+        marked get_odd_collatz:noaxis <- original get_odd_collatz.collatz:n, get_odd_collatz:n
+      humaneval/148 sample b84b25083ca2 (marked b349071f5942), fails tests while the marked passes: no
+        original bf:index2 -> marked <free>:index2, bf:be
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.5 name_kind=random    697c5eb78b23      2676    2063    2063     9    0.44%              0
+      mbpp/123 sample 0b5059393866 (marked 4890f7449b7e), fails tests while the marked passes: no
+        original amicable_numbers_sum.sum_proPER:i -> marked amicable_numbers_sum.sum_proPER:i, amicable_numbers_sum:gvmup2aq
+        marked amicable_numbers_sum:gvmup2aq <- original amicable_numbers_sum.sum_proPER:i, amicable_numbers_sum:i
+      mbpp/260 sample 038dcafa34e6 (marked 5e87173dda5c), fails tests while the marked passes: no
+        original newman_prime:c1 -> marked <free>:c1, newman_prime:ywqmu4h3
+      mbpp/398 sample 95427633f52a (marked 7feac46e3874), fails tests while the marked passes: no
+        original sum_of_digits:xnu -> marked <free>:xnu, sum_of_digits:fvk79gtx
+  mcgmark    test qwen25_coder_7b         L1  ratio=0.5 name_kind=random    9df49d3f4f38      2676    1793    1793     8    0.45%              0
+      humaneval/123 sample df7332cfe99e (marked 64def782eaab), fails tests while the marked passes: no
+        original get_odd_collatz.collatz:n -> marked get_odd_collatz.collatz:n, get_odd_collatz:wbsygig7
+        marked get_odd_collatz:wbsygig7 <- original get_odd_collatz.collatz:n, get_odd_collatz:n
+      humaneval/127 sample bee4c78f4022 (marked f2a07b83b0b8), fails tests while the marked passes: no
+        original is_prime:i -> marked <free>:i, is_prime:vb3tkt5z
+      mbpp/119 sample de7591bf098c (marked 5190a1d1d4f6), fails tests while the marked passes: no
+        original search:left_ptr0 -> marked <free>:left_ptr0, search:o6ijj1c4
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   1d0c64c5124e       576     576     576     2    0.35%              0
+      mbpp/286 sample 141c9921d3ad (marked 68d47e53f9c9), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MaxSum -> marked max_sub_array_sum_repeated.kadane:MaxSum, max_sub_array_sum_repeated:suu2b7rv
+        original max_sub_array_sum_repeated.kadane:currSum -> marked <free>:lzj9l10we, max_sub_array_sum_repeated.kadane:lzj9l10w
+        marked max_sub_array_sum_repeated:suu2b7rv <- original max_sub_array_sum_repeated.kadane:MaxSum, max_sub_array_sum_repeated:MaxSum
+        free name changed: max_sub_array_sum_repeated.kadane:currSum -> <free>:lzj9l10we
+      mbpp/286 sample 12b2c36ab8b5 (marked b988194bb2f5), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CURR_SUM -> marked max_sub_array_sum_repeated.kadane:yxp6v0da, max_sub_array_sum_repeated:l97gt96z
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:sewte2sli, max_sub_array_sum_repeated.kadane:t2vn730i
+        marked max_sub_array_sum_repeated:l97gt96z <- original max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:CURR_SUM
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:sewte2sli
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   b521002e09f5       576     576     576     3    0.52%              0
+      mbpp/286 sample 6cf844219f47 (marked 5aa1f7b778cf), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:currSum -> marked max_sub_array_sum_repeated.kadane:currSum, max_sub_array_sum_repeated:vpkvk0fm
+        marked max_sub_array_sum_repeated:vpkvk0fm <- original max_sub_array_sum_repeated.kadane:currSum, max_sub_array_sum_repeated:currSum
+      mbpp/286 sample 7450d38fd01e (marked d35ac1efce86), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:klyujarb1, max_sub_array_sum_repeated.kadane:tfsrhz91
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:klyujarb1
+      mbpp/286 sample 36537a9e3d00 (marked 4f411b40d517), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:a0r4o7xq
+        marked max_sub_array_sum_repeated:a0r4o7xq <- original max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:MAX_SUM
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  1d0c64c5124e       576     574     574     1    0.17%              0
+      mbpp/286 sample ce7f7a339604 (marked b988194bb2f5), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CURR_SUM -> marked max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:new_periodic_callbacks
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:first_char
+        marked max_sub_array_sum_repeated:first_char <- original max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:MAX_SUM
+        marked max_sub_array_sum_repeated:new_periodic_callbacks <- original max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:CURR_SUM
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  b521002e09f5       576     575     575     1    0.17%              0
+      mbpp/286 sample 76ab77fac4fd (marked 5aa1f7b778cf), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MaxSum -> marked max_sub_array_sum_repeated.kadane:MaxSum, max_sub_array_sum_repeated:drive
+        marked max_sub_array_sum_repeated:drive <- original max_sub_array_sum_repeated.kadane:MaxSum, max_sub_array_sum_repeated:MaxSum
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   1d0c64c5124e       576     574     574     1    0.17%              0
+      mbpp/286 sample d16c3318a1b6 (marked 3c9206822709), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CurrSum -> marked <free>:nthts, max_sub_array_sum_repeated.kadane:reactants
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:log_block_sizest, max_sub_array_sum_repeated.kadane:log_block_size
+        free name changed: max_sub_array_sum_repeated.kadane:CurrSum -> <free>:nthts
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:log_block_sizest
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   b521002e09f5       576     574     574     1    0.17%              0
+      mbpp/286 sample 11de5c0fd4e6 (marked 4f411b40d517), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:csvwriterdict, max_sub_array_sum_repeated.kadane:update_dict
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:csvwriterdict
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   1d0c64c5124e       576     576     576     2    0.35%              0
+      mbpp/286 sample a1062c23e924 (marked 68d47e53f9c9), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MaxSum -> marked <free>:file_referenceines, max_sub_array_sum_repeated.kadane:list_lines
+        free name changed: max_sub_array_sum_repeated.kadane:MaxSum -> <free>:file_referenceines
+      mbpp/286 sample fe9e860aa024 (marked b988194bb2f5), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CURR_SUM -> marked max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:rst
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:recipe_dir
+        marked max_sub_array_sum_repeated:recipe_dir <- original max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:MAX_SUM
+        marked max_sub_array_sum_repeated:rst <- original max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:CURR_SUM
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   b521002e09f5       576     576     576     3    0.52%              0
+      mbpp/286 sample cab3371275d2 (marked 5aa1f7b778cf), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MaxSum -> marked <free>:person_lun, max_sub_array_sum_repeated.kadane:person
+        free name changed: max_sub_array_sum_repeated.kadane:MaxSum -> <free>:person_lun
+      mbpp/286 sample 7ec40068c86d (marked d35ac1efce86), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:default_ns_id, max_sub_array_sum_repeated.kadane:request_id
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:default_ns_id
+      mbpp/286 sample dedb45248621 (marked 4f411b40d517), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CurrSum -> marked max_sub_array_sum_repeated.kadane:CurrSum, max_sub_array_sum_repeated:table_width
+        marked max_sub_array_sum_repeated:table_width <- original max_sub_array_sum_repeated.kadane:CurrSum, max_sub_array_sum_repeated:CurrSum
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   1d0c64c5124e       576     576     576     1    0.17%              0
+      mbpp/286 sample ec0b4332fccb (marked 3c9206822709), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:pueez2cg
+        marked max_sub_array_sum_repeated:pueez2cg <- original max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:MAX_SUM
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   b521002e09f5       576     576     576     2    0.35%              0
+      mbpp/286 sample 3ab4b59a6052 (marked 5aa1f7b778cf), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MaxSum -> marked max_sub_array_sum_repeated.kadane:MaxSum, max_sub_array_sum_repeated:s10jkkfx
+        marked max_sub_array_sum_repeated:s10jkkfx <- original max_sub_array_sum_repeated.kadane:MaxSum, max_sub_array_sum_repeated:MaxSum
+      mbpp/286 sample c5edb892ee61 (marked d35ac1efce86), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CURR_SUM -> marked max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:kecuz4tc
+        marked max_sub_array_sum_repeated:kecuz4tc <- original max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:CURR_SUM
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    1d0c64c5124e       576     576     576     3    0.52%              0
+      mbpp/286 sample 9862469a5bd5 (marked 68d47e53f9c9), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MaxSum -> marked <free>:auf23km4p0, max_sub_array_sum_repeated.kadane:auf23km4
+        original max_sub_array_sum_repeated.kadane:currSum -> marked <free>:pqke21lc7, max_sub_array_sum_repeated.kadane:y7skbg47
+        free name changed: max_sub_array_sum_repeated.kadane:MaxSum -> <free>:auf23km4p0
+        free name changed: max_sub_array_sum_repeated.kadane:currSum -> <free>:pqke21lc7
+      mbpp/286 sample c372cf6b4771 (marked b988194bb2f5), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CURR_SUM -> marked max_sub_array_sum_repeated.kadane:sld57rc7, max_sub_array_sum_repeated:nxahaq9c
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:i526mqnmj, max_sub_array_sum_repeated.kadane:i526mqnm
+        marked max_sub_array_sum_repeated:nxahaq9c <- original max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:CURR_SUM
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:i526mqnmj
+      mbpp/286 sample 075233fb22c4 (marked 3c9206822709), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CurrSum -> marked <free>:khuocpo3g, max_sub_array_sum_repeated.kadane:tur2y02g
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:a0rx0074f, max_sub_array_sum_repeated.kadane:a0rx0074
+        free name changed: max_sub_array_sum_repeated.kadane:CurrSum -> <free>:khuocpo3g
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:a0rx0074f
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    b521002e09f5       576     576     576     3    0.52%              0
+      mbpp/286 sample d1d4bf2e381b (marked 5aa1f7b778cf), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MaxSum -> marked <free>:hhrhue4931, max_sub_array_sum_repeated.kadane:hhrhue49
+        original max_sub_array_sum_repeated.kadane:currSum -> marked <free>:gf97detez, max_sub_array_sum_repeated.kadane:gf97dete
+        free name changed: max_sub_array_sum_repeated.kadane:MaxSum -> <free>:hhrhue4931
+        free name changed: max_sub_array_sum_repeated.kadane:currSum -> <free>:gf97detez
+      mbpp/286 sample 1855117eb5d1 (marked d35ac1efce86), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CURR_SUM -> marked max_sub_array_sum_repeated.kadane:lrlw5csm, max_sub_array_sum_repeated:bc74z1yu
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:m4mzxyrz6, max_sub_array_sum_repeated.kadane:w52vert6
+        marked max_sub_array_sum_repeated:bc74z1yu <- original max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:CURR_SUM
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:m4mzxyrz6
+      mbpp/286 sample e375d851bb32 (marked 4f411b40d517), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CurrSum -> marked <free>:byyh60jzi, max_sub_array_sum_repeated.kadane:nwrz6fpi
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked <free>:nyzwbom5u, max_sub_array_sum_repeated.kadane:nyzwbom5
+        free name changed: max_sub_array_sum_repeated.kadane:CurrSum -> <free>:byyh60jzi
+        free name changed: max_sub_array_sum_repeated.kadane:MAX_SUM -> <free>:nyzwbom5u
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  1d0c64c5124e       576     576     576     2    0.35%              0
+      mbpp/286 sample 43f8e35c3098 (marked 68d47e53f9c9), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:currSum -> marked max_sub_array_sum_repeated.kadane:currSum, max_sub_array_sum_repeated:output_layer_name
+        marked max_sub_array_sum_repeated:output_layer_name <- original max_sub_array_sum_repeated.kadane:currSum, max_sub_array_sum_repeated:currSum
+      mbpp/286 sample a7450a510b14 (marked b988194bb2f5), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CURR_SUM -> marked max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:action
+        marked max_sub_array_sum_repeated:action <- original max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:CURR_SUM
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  b521002e09f5       576     576     576     1    0.17%              0
+      mbpp/286 sample 1dad77e33f43 (marked d35ac1efce86), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:paired
+        marked max_sub_array_sum_repeated:paired <- original max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:MAX_SUM
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    1d0c64c5124e       576     576     576     3    0.52%              0
+      mbpp/286 sample ae6bd45cd9d3 (marked 68d47e53f9c9), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:currSum -> marked <free>:q3ujfo114, max_sub_array_sum_repeated.kadane:q3ujfo11
+        free name changed: max_sub_array_sum_repeated.kadane:currSum -> <free>:q3ujfo114
+      mbpp/286 sample 682746d3f052 (marked b988194bb2f5), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CURR_SUM -> marked max_sub_array_sum_repeated.kadane:mma29wrw, max_sub_array_sum_repeated:lrkzulw7
+        marked max_sub_array_sum_repeated:lrkzulw7 <- original max_sub_array_sum_repeated.kadane:CURR_SUM, max_sub_array_sum_repeated:CURR_SUM
+      mbpp/286 sample 2203113d5bca (marked 3c9206822709), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:CurrSum -> marked <free>:ndqk2rf3c, max_sub_array_sum_repeated.kadane:ndqk2rf3
+        free name changed: max_sub_array_sum_repeated.kadane:CurrSum -> <free>:ndqk2rf3c
+  mcss       dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    b521002e09f5       576     576     576     3    0.52%              0
+      mbpp/286 sample 9fc6c6417337 (marked 5aa1f7b778cf), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:currSum -> marked max_sub_array_sum_repeated.kadane:currSum, max_sub_array_sum_repeated:vdv6hh7n
+        marked max_sub_array_sum_repeated:vdv6hh7n <- original max_sub_array_sum_repeated.kadane:currSum, max_sub_array_sum_repeated:currSum
+      mbpp/286 sample 1843b65ca198 (marked d35ac1efce86), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:vkodgn62
+        marked max_sub_array_sum_repeated:vkodgn62 <- original max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:MAX_SUM
+      mbpp/286 sample 5c8e4271947d (marked 4f411b40d517), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:MAX_SUM -> marked max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:lxd8xibz
+        marked max_sub_array_sum_repeated:lxd8xibz <- original max_sub_array_sum_repeated.kadane:MAX_SUM, max_sub_array_sum_repeated:MAX_SUM
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   1d0c64c5124e       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   b521002e09f5       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  1d0c64c5124e       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  b521002e09f5       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   1d0c64c5124e       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   b521002e09f5       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   1d0c64c5124e       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   b521002e09f5       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   1d0c64c5124e       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   b521002e09f5       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    1d0c64c5124e       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    b521002e09f5       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  1d0c64c5124e       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  b521002e09f5       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    1d0c64c5124e       300     108     108     0    0.00%              0
+  mcss       dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    b521002e09f5       300     108     108     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   1d0c64c5124e       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   b521002e09f5       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  1d0c64c5124e       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  b521002e09f5       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   1d0c64c5124e       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   b521002e09f5       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   1d0c64c5124e       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   b521002e09f5       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   1d0c64c5124e       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   b521002e09f5       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    1d0c64c5124e       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    b521002e09f5       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  1d0c64c5124e       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  b521002e09f5       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    1d0c64c5124e       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    b521002e09f5       576     576     576     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   1d0c64c5124e       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   b521002e09f5       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  1d0c64c5124e       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  b521002e09f5       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   1d0c64c5124e       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   b521002e09f5       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   1d0c64c5124e       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   b521002e09f5       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   1d0c64c5124e       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   b521002e09f5       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    1d0c64c5124e       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    b521002e09f5       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  1d0c64c5124e       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  b521002e09f5       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    1d0c64c5124e       300     120     120     0    0.00%              0
+  mcss       dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    b521002e09f5       300     120     120     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   37400fdcd589       576     575     575     2    0.35%              0
+      mbpp/286 sample c8b332a0523e (marked b6a62c37566f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:uk3ebzv1
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:nk1x94ey
+        marked max_sub_array_sum_repeated:nk1x94ey <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+        marked max_sub_array_sum_repeated:uk3ebzv1 <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+      mbpp/286 sample f730ee5687dc (marked 4058f75fa6ad), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:vkiiwzaw, max_sub_array_sum_repeated:irw1sveu
+        marked max_sub_array_sum_repeated:irw1sveu <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   3c1bd11758fc       576     575     575     2    0.35%              0
+      mbpp/286 sample 8740eafe53ee (marked 70ee7a0efb8f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:k1ea3uain, max_sub_array_sum_repeated.kadane:ow2ydtrn
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:k1ea3uain
+      mbpp/286 sample 5abe617fea29 (marked a9a1745b2f69), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:jjpl6bm3
+        marked max_sub_array_sum_repeated:jjpl6bm3 <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   4937d9ddd78a       576     574     574     1    0.17%              0
+      mbpp/286 sample 9f0ea9654b37 (marked 88624f2c20f6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:d6y0aftrd, max_sub_array_sum_repeated.kadane:pzxqnmrd
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:d6y0aftrd
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   59a04735824c       576     574     574     1    0.17%              0
+      mbpp/286 sample fbf4aec68cd6 (marked 1f62a544098e), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:acrtq257
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:tj45vg6v3, max_sub_array_sum_repeated.kadane:vn4oldz3
+        marked max_sub_array_sum_repeated:acrtq257 <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:tj45vg6v3
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   770f999adefb       576     576     576     2    0.35%              0
+      mbpp/286 sample c06d53a78192 (marked 5cfa5311e967), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:ivmmha4sd, max_sub_array_sum_repeated.kadane:ivmmha4s
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:ivmmha4sd
+      mbpp/286 sample 67fb9657e340 (marked 7fcfd71adc97), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:qpfexy4p
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:lrnbfx9v
+        marked max_sub_array_sum_repeated:lrnbfx9v <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+        marked max_sub_array_sum_repeated:qpfexy4p <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   94847adacd77       576     575     575     2    0.35%              0
+      mbpp/286 sample b6ebc9b8ea63 (marked 905223309a3d), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:rld3emrx, max_sub_array_sum_repeated:jih27alw
+        marked max_sub_array_sum_repeated:jih27alw <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+      mbpp/286 sample 2144b3b9a6b7 (marked e31112afe455), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:fvp836te
+        marked max_sub_array_sum_repeated:fvp836te <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   acac071d50d5       576     574     574     1    0.17%              0
+      mbpp/286 sample c801ef2f00bc (marked 08631f2652dd), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:qlyxsbjb
+        marked max_sub_array_sum_repeated:qlyxsbjb <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   cb79b2fcb4e6       576     575     575     1    0.17%              0
+      mbpp/286 sample 18030be08680 (marked 2ecb4e5bc08b), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:best_sum -> marked max_sub_array_sum_repeated.kadane:xvvx5jmn, max_sub_array_sum_repeated:jr8x1ehb
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:uuejvsxv
+        marked max_sub_array_sum_repeated:jr8x1ehb <- original max_sub_array_sum_repeated.kadane:best_sum, max_sub_array_sum_repeated:best_sum
+        marked max_sub_array_sum_repeated:uuejvsxv <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   cf7e4c9f106e       576     574     574     1    0.17%              0
+      mbpp/286 sample e6f79e4cad61 (marked 730a5b0e1f61), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:zlbq1i61
+        marked max_sub_array_sum_repeated:zlbq1i61 <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  37400fdcd589       576     574     574     1    0.17%              0
+      mbpp/286 sample 9e00b1163add (marked 4058f75fa6ad), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:bfastads, max_sub_array_sum_repeated.kadane:bfasta
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:bfastads
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  3c1bd11758fc       576     575     575     1    0.17%              0
+      mbpp/286 sample 3da5439e6408 (marked 70ee7a0efb8f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:mac_bytesocessor, max_sub_array_sum_repeated.kadane:query_processor
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:greenlets
+        marked max_sub_array_sum_repeated:greenlets <- original max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:max_sum
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:mac_bytesocessor
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  4937d9ddd78a       576     573     573     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  59a04735824c       576     574     574     1    0.17%              0
+      mbpp/286 sample 548633e26adb (marked a8b470ec8e9c), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:default_prefix
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:registry
+        marked max_sub_array_sum_repeated:default_prefix <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+        marked max_sub_array_sum_repeated:registry <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  770f999adefb       576     574     574     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  94847adacd77       576     576     576     3    0.52%              0
+      mbpp/286 sample f35e50734098 (marked 905223309a3d), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:thread_pool
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:ecdh
+        marked max_sub_array_sum_repeated:ecdh <- original max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:max_sum
+        marked max_sub_array_sum_repeated:thread_pool <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+      mbpp/286 sample 4359a0882444 (marked 638cee065858), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked <free>:stageNamelues, max_sub_array_sum_repeated.kadane:stageName
+        free name changed: max_sub_array_sum_repeated.kadane:running_sum -> <free>:stageNamelues
+      mbpp/286 sample e5a5c4e5c3c3 (marked e31112afe455), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:cbCtxize, max_sub_array_sum_repeated.kadane:standardize
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked <free>:req_bodye, max_sub_array_sum_repeated.kadane:req_body
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:cbCtxize
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum_val -> <free>:req_bodye
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  acac071d50d5       576     575     575     2    0.35%              0
+      mbpp/286 sample 6a99c5ee81b8 (marked a6d08db00dd9), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked <free>:changed_filesape, max_sub_array_sum_repeated.kadane:changed_files
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum_val -> <free>:changed_filesape
+      mbpp/286 sample 434606be7473 (marked e30a0fe3ec1c), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:logical_block_size
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked <free>:before_statek_dvpgs, max_sub_array_sum_repeated.kadane:get_vnetwork_dvpgs
+        marked max_sub_array_sum_repeated:logical_block_size <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum_val -> <free>:before_statek_dvpgs
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  cb79b2fcb4e6       576     575     575     1    0.17%              0
+      mbpp/286 sample b4c624e700ed (marked 2ecb4e5bc08b), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:best_sum -> marked <free>:method_namee, max_sub_array_sum_repeated.kadane:method_name
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:wildcard, max_sub_array_sum_repeated:section
+        marked max_sub_array_sum_repeated:section <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+        free name changed: max_sub_array_sum_repeated.kadane:best_sum -> <free>:method_namee
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  cf7e4c9f106e       576     574     574     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   37400fdcd589       576     573     573     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   3c1bd11758fc       576     574     574     1    0.17%              0
+      mbpp/286 sample 9931704bfdbb (marked bc14e2c3ba9d), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:client_name, max_sub_array_sum_repeated:all_nbest_json
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked <free>:logzers, max_sub_array_sum_repeated.kadane:logz
+        marked max_sub_array_sum_repeated:all_nbest_json <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+        free name changed: max_sub_array_sum_repeated.kadane:running_sum -> <free>:logzers
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   4937d9ddd78a       576     573     573     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   59a04735824c       576     574     574     1    0.17%              0
+      mbpp/286 sample e1e9fa7bb6c9 (marked 1f62a544098e), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:fmtot, max_sub_array_sum_repeated.kadane:fmto
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:layer_idupdate_callback, max_sub_array_sum_repeated.kadane:status_update_callback
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:fmtot
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:layer_idupdate_callback
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   770f999adefb       576     575     575     2    0.35%              0
+      mbpp/286 sample 5b6eb07e4646 (marked 5cfa5311e967), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:ax3e, max_sub_array_sum_repeated.kadane:ax3
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:_namean, max_sub_array_sum_repeated.kadane:data_mean
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:ax3e
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:_namean
+      mbpp/286 sample a5109fed4054 (marked 0c233a142dc6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:ncolorss, max_sub_array_sum_repeated.kadane:trainings
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:peer_table, max_sub_array_sum_repeated:ErSamps
+        marked max_sub_array_sum_repeated:ErSamps <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:ncolorss
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   94847adacd77       576     574     574     1    0.17%              0
+      mbpp/286 sample 2b74b105fbd3 (marked 638cee065858), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked <free>:current_choiceish, max_sub_array_sum_repeated.kadane:current_choice
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:num_extents, max_sub_array_sum_repeated:name_len
+        marked max_sub_array_sum_repeated:name_len <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum_val -> <free>:current_choiceish
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   acac071d50d5       576     574     574     1    0.17%              0
+      mbpp/286 sample 857a076c176e (marked a6d08db00dd9), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:link_iternt, max_sub_array_sum_repeated.kadane:sufficient
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked <free>:currew, max_sub_array_sum_repeated.kadane:field_val_new
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:link_iternt
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum_val -> <free>:currew
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   cb79b2fcb4e6       576     575     575     2    0.35%              0
+      mbpp/286 sample e03907b26b2f (marked 2ecb4e5bc08b), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:best_sum -> marked <free>:dnaents, max_sub_array_sum_repeated.kadane:dna
+        free name changed: max_sub_array_sum_repeated.kadane:best_sum -> <free>:dnaents
+      mbpp/286 sample 87643ae279f3 (marked f4ab8381615f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:cloudmaps, max_sub_array_sum_repeated.kadane:protocols
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked <free>:minvsh, max_sub_array_sum_repeated.kadane:password_hash
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:cloudmaps
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum_val -> <free>:minvsh
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   cf7e4c9f106e       576     574     574     1    0.17%              0
+      mbpp/286 sample 6887fa9cd6c4 (marked 730a5b0e1f61), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:changedcodeVarint, max_sub_array_sum_repeated.kadane:changed
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:changedcodeVarint
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   37400fdcd589       576     576     576     3    0.52%              0
+      mbpp/286 sample 72c31056b725 (marked b6a62c37566f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:loc_id
+        marked max_sub_array_sum_repeated:loc_id <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+      mbpp/286 sample cdfb66b39ec2 (marked 7ea3a64f5113), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked <free>:proxy_typetance, max_sub_array_sum_repeated.kadane:service_instance
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum_val -> <free>:proxy_typetance
+      mbpp/286 sample 3d60211c0f85 (marked 4058f75fa6ad), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:learning_rate
+        marked max_sub_array_sum_repeated:learning_rate <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   3c1bd11758fc       576     575     575     2    0.35%              0
+      mbpp/286 sample 2d364ad201d0 (marked 70ee7a0efb8f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:fprpe, max_sub_array_sum_repeated.kadane:origshape
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:fprpe
+      mbpp/286 sample a079c32d5abf (marked bc14e2c3ba9d), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:final_file
+        marked max_sub_array_sum_repeated:final_file <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   4937d9ddd78a       576     575     575     2    0.35%              0
+      mbpp/286 sample da3da753f123 (marked 88624f2c20f6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:ptrm_tail
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:periodse_all, max_sub_array_sum_repeated.kadane:retrieve_all
+        marked max_sub_array_sum_repeated:ptrm_tail <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:periodse_all
+      mbpp/286 sample 96101485965c (marked 5be67c14d7e1), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:biomaRt
+        marked max_sub_array_sum_repeated:biomaRt <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   59a04735824c       576     576     576     1    0.17%              0
+      mbpp/286 sample 3fd3802723b6 (marked 991bf3c2b280), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:pdict
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:fun_name
+        marked max_sub_array_sum_repeated:fun_name <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+        marked max_sub_array_sum_repeated:pdict <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   770f999adefb       576     576     576     1    0.17%              0
+      mbpp/286 sample c3e8f1e1848a (marked 7fcfd71adc97), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:block_addr
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:reaction_id
+        marked max_sub_array_sum_repeated:block_addr <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+        marked max_sub_array_sum_repeated:reaction_id <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   94847adacd77       576     575     575     2    0.35%              0
+      mbpp/286 sample 8bb58cea1c9b (marked 905223309a3d), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:el_namet, max_sub_array_sum_repeated.kadane:el_name
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:el_namet
+      mbpp/286 sample 2e95f6c12097 (marked e31112afe455), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:where_params
+        marked max_sub_array_sum_repeated:where_params <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   acac071d50d5       576     576     576     2    0.35%              0
+      mbpp/286 sample 2015971d4d9d (marked 08631f2652dd), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:new_attr
+        marked max_sub_array_sum_repeated:new_attr <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+      mbpp/286 sample f52246587385 (marked e30a0fe3ec1c), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:ref_type, max_sub_array_sum_repeated:layerData
+        marked max_sub_array_sum_repeated:layerData <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   cb79b2fcb4e6       576     575     575     2    0.35%              0
+      mbpp/286 sample cf19d6ef1658 (marked f4ab8381615f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:event_values
+        marked max_sub_array_sum_repeated:event_values <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+      mbpp/286 sample 82398621dbc5 (marked d0fa7a259f10), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:partial_sum -> marked <free>:choosens, max_sub_array_sum_repeated.kadane:query_options
+        free name changed: max_sub_array_sum_repeated.kadane:partial_sum -> <free>:choosens
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   cf7e4c9f106e       576     576     576     3    0.52%              0
+      mbpp/286 sample 0efae468c105 (marked 730a5b0e1f61), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:best_sum -> marked max_sub_array_sum_repeated.kadane:best_sum, max_sub_array_sum_repeated:only_simple
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:gexponents
+        marked max_sub_array_sum_repeated:gexponents <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+        marked max_sub_array_sum_repeated:only_simple <- original max_sub_array_sum_repeated.kadane:best_sum, max_sub_array_sum_repeated:best_sum
+      mbpp/286 sample 915702015671 (marked bbfc17a51e29), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:msgrawsh, max_sub_array_sum_repeated.kadane:msgraw
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:msgrawsh
+      mbpp/286 sample 7f47747dc7bd (marked 2d5786b0f783), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:partial_sum -> marked max_sub_array_sum_repeated.kadane:partial_sum, max_sub_array_sum_repeated:tdata
+        marked max_sub_array_sum_repeated:tdata <- original max_sub_array_sum_repeated.kadane:partial_sum, max_sub_array_sum_repeated:partial_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   37400fdcd589       576     576     576     2    0.35%              0
+      mbpp/286 sample 57a131aae71b (marked b6a62c37566f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:mwwc9c7i
+        marked max_sub_array_sum_repeated:mwwc9c7i <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+      mbpp/286 sample 87c227f0b3d4 (marked 7ea3a64f5113), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:s9htfo30
+        marked max_sub_array_sum_repeated:s9htfo30 <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   3c1bd11758fc       576     575     575     1    0.17%              0
+      mbpp/286 sample a49189dadc81 (marked 70ee7a0efb8f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:hrz5hq5b
+        marked max_sub_array_sum_repeated:hrz5hq5b <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   59a04735824c       576     576     576     2    0.35%              0
+      mbpp/286 sample 656bbc08c3c3 (marked a8b470ec8e9c), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:jja73h15
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:avhxpqsk
+        marked max_sub_array_sum_repeated:avhxpqsk <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+        marked max_sub_array_sum_repeated:jja73h15 <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+      mbpp/286 sample c3477baa7a50 (marked 991bf3c2b280), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:mgudvd1q
+        marked max_sub_array_sum_repeated:mgudvd1q <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   770f999adefb       576     576     576     2    0.35%              0
+      mbpp/286 sample 65c0a64eaa07 (marked 5cfa5311e967), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:z7ygnzgx
+        marked max_sub_array_sum_repeated:z7ygnzgx <- original max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:max_sum
+      mbpp/286 sample 869a93dfa8e5 (marked 0c233a142dc6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:j68ii9ar
+        marked max_sub_array_sum_repeated:j68ii9ar <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   94847adacd77       576     576     576     2    0.35%              0
+      mbpp/286 sample b4ae6c97b873 (marked 638cee065858), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:running_sum -> marked max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:c8jnsp0d
+        marked max_sub_array_sum_repeated:c8jnsp0d <- original max_sub_array_sum_repeated.kadane:running_sum, max_sub_array_sum_repeated:running_sum
+      mbpp/286 sample 40a068ce1867 (marked e31112afe455), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:ign8oe6i
+        marked max_sub_array_sum_repeated:ign8oe6i <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   acac071d50d5       576     576     576     2    0.35%              0
+      mbpp/286 sample acfc9d594b85 (marked 08631f2652dd), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:dhboa9gc
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:ke08l1x5e, max_sub_array_sum_repeated.kadane:qqqvdhme
+        marked max_sub_array_sum_repeated:dhboa9gc <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:ke08l1x5e
+      mbpp/286 sample 62834d69e61d (marked e30a0fe3ec1c), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:zdo622re, max_sub_array_sum_repeated:wbni8dx3
+        marked max_sub_array_sum_repeated:wbni8dx3 <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   cb79b2fcb4e6       576     576     576     2    0.35%              0
+      mbpp/286 sample 747aa69b6fa3 (marked 2ecb4e5bc08b), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:best_sum -> marked max_sub_array_sum_repeated.kadane:best_sum, max_sub_array_sum_repeated:pnvxf746
+        marked max_sub_array_sum_repeated:pnvxf746 <- original max_sub_array_sum_repeated.kadane:best_sum, max_sub_array_sum_repeated:best_sum
+      mbpp/286 sample a8b1c4fa1dfc (marked d0fa7a259f10), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:partial_sum -> marked max_sub_array_sum_repeated.kadane:partial_sum, max_sub_array_sum_repeated:g3z3gllu
+        marked max_sub_array_sum_repeated:g3z3gllu <- original max_sub_array_sum_repeated.kadane:partial_sum, max_sub_array_sum_repeated:partial_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   cf7e4c9f106e       576     576     576     1    0.17%              0
+      mbpp/286 sample a4c80c474025 (marked 2d5786b0f783), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:partial_sum -> marked max_sub_array_sum_repeated.kadane:partial_sum, max_sub_array_sum_repeated:iol69l1s
+        marked max_sub_array_sum_repeated:iol69l1s <- original max_sub_array_sum_repeated.kadane:partial_sum, max_sub_array_sum_repeated:partial_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    37400fdcd589       576     574     574     1    0.17%              0
+      mbpp/286 sample e87a09c166f8 (marked 4058f75fa6ad), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:zvd6krq9, max_sub_array_sum_repeated:t8s38wmc
+        marked max_sub_array_sum_repeated:t8s38wmc <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    3c1bd11758fc       576     574     574     1    0.17%              0
+      mbpp/286 sample 5e8c46b1a075 (marked 70ee7a0efb8f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:danz3v4z0, max_sub_array_sum_repeated.kadane:rsurnka0
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:danz3v4z0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    4937d9ddd78a       576     574     574     1    0.17%              0
+      mbpp/286 sample 2ff0ff86d463 (marked 88624f2c20f6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:fsmtkiv56, max_sub_array_sum_repeated.kadane:wtofjhp6
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:fsmtkiv56
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    59a04735824c       576     574     574     1    0.17%              0
+      mbpp/286 sample 166053c67e80 (marked 1f62a544098e), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:alxjaku98, max_sub_array_sum_repeated.kadane:alxjaku9
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:alxjaku98
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    770f999adefb       576     575     575     1    0.17%              0
+      mbpp/286 sample 0f15309a878e (marked 5cfa5311e967), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:kt1vwfc6t, max_sub_array_sum_repeated.kadane:rhvflc8t
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:kt1vwfc6t
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    94847adacd77       576     574     574     1    0.17%              0
+      mbpp/286 sample c4f74e17a2b6 (marked 905223309a3d), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:al8dwx93m, max_sub_array_sum_repeated.kadane:al8dwx93
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:al8dwx93m
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    acac071d50d5       576     574     574     1    0.17%              0
+      mbpp/286 sample fa71324dacfc (marked 08631f2652dd), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:ztqsafyq, max_sub_array_sum_repeated:sfeudi0i
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:bqgxb0n0k, max_sub_array_sum_repeated.kadane:fjezk4xk
+        marked max_sub_array_sum_repeated:sfeudi0i <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:bqgxb0n0k
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    cb79b2fcb4e6       576     574     574     1    0.17%              0
+      mbpp/286 sample 92b08f56fdd1 (marked 2ecb4e5bc08b), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:best_sum -> marked max_sub_array_sum_repeated.kadane:p1s5jppx, max_sub_array_sum_repeated:dupgbxfr
+        marked max_sub_array_sum_repeated:dupgbxfr <- original max_sub_array_sum_repeated.kadane:best_sum, max_sub_array_sum_repeated:best_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    cf7e4c9f106e       576     574     574     1    0.17%              0
+      mbpp/286 sample 56d50553b110 (marked 730a5b0e1f61), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:best_sum -> marked max_sub_array_sum_repeated.kadane:s952hmi6, max_sub_array_sum_repeated:hp265gcy
+        marked max_sub_array_sum_repeated:hp265gcy <- original max_sub_array_sum_repeated.kadane:best_sum, max_sub_array_sum_repeated:best_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  37400fdcd589       576     576     576     1    0.17%              0
+      mbpp/286 sample 8fbe1b7df49f (marked b6a62c37566f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:to_path
+        marked max_sub_array_sum_repeated:to_path <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  3c1bd11758fc       576     575     575     2    0.35%              0
+      mbpp/286 sample 7eba88bae1ef (marked bc14e2c3ba9d), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:dateTime
+        marked max_sub_array_sum_repeated:dateTime <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+      mbpp/286 sample 469ea924d7f6 (marked a9a1745b2f69), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:sub_objects
+        marked max_sub_array_sum_repeated:sub_objects <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  4937d9ddd78a       576     576     576     1    0.17%              0
+      mbpp/286 sample b5b7f735badc (marked 2977d5f34ac6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:recipients
+        marked max_sub_array_sum_repeated:recipients <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  59a04735824c       576     576     576     2    0.35%              0
+      mbpp/286 sample e9bd87319926 (marked 1f62a544098e), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:total_weight
+        marked max_sub_array_sum_repeated:total_weight <- original max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:max_sum
+      mbpp/286 sample 87b023e42e7d (marked 991bf3c2b280), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:ErSiteRec
+        marked max_sub_array_sum_repeated:ErSiteRec <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  770f999adefb       576     576     576     1    0.17%              0
+      mbpp/286 sample 0ea36234f179 (marked 0c233a142dc6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:data_files
+        marked max_sub_array_sum_repeated:data_files <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  94847adacd77       576     576     576     1    0.17%              0
+      mbpp/286 sample 7bd02a062906 (marked 638cee065858), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:beta
+        marked max_sub_array_sum_repeated:beta <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  cb79b2fcb4e6       576     576     576     2    0.35%              0
+      mbpp/286 sample 3997cc519f21 (marked f4ab8381615f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:term_regex
+        marked max_sub_array_sum_repeated:term_regex <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+      mbpp/286 sample 5e5fb9e9025d (marked d0fa7a259f10), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:partial_sum -> marked max_sub_array_sum_repeated.kadane:partial_sum, max_sub_array_sum_repeated:fastq
+        marked max_sub_array_sum_repeated:fastq <- original max_sub_array_sum_repeated.kadane:partial_sum, max_sub_array_sum_repeated:partial_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  cf7e4c9f106e       576     576     576     2    0.35%              0
+      mbpp/286 sample 5e40f3c2d0a3 (marked bbfc17a51e29), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked <free>:initial_guessbcategory, max_sub_array_sum_repeated.kadane:layer_subcategory
+        free name changed: max_sub_array_sum_repeated.kadane:curr_sum -> <free>:initial_guessbcategory
+      mbpp/286 sample d2b8e5cfbd46 (marked 2d5786b0f783), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_count -> marked max_sub_array_sum_repeated.kadane:max_sum_count, max_sub_array_sum_repeated:socket_type
+        marked max_sub_array_sum_repeated:socket_type <- original max_sub_array_sum_repeated.kadane:max_sum_count, max_sub_array_sum_repeated:max_sum_count
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    37400fdcd589       576     576     576     1    0.17%              0
+      mbpp/286 sample f05793a13b78 (marked b6a62c37566f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:e1j5j8n0
+        marked max_sub_array_sum_repeated:e1j5j8n0 <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    3c1bd11758fc       576     575     575     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    4937d9ddd78a       576     575     575     1    0.17%              0
+      mbpp/286 sample 49695cab520e (marked 2977d5f34ac6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:wqqphsho
+        marked max_sub_array_sum_repeated:wqqphsho <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    59a04735824c       576     575     575     2    0.35%              0
+      mbpp/286 sample 3f04f77ac1f8 (marked 1f62a544098e), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked <free>:pwr11xxrw, max_sub_array_sum_repeated.kadane:pwr11xxr
+        free name changed: max_sub_array_sum_repeated.kadane:max_sum -> <free>:pwr11xxrw
+      mbpp/286 sample 49ca2e1aec91 (marked 991bf3c2b280), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:wownuhg4, max_sub_array_sum_repeated:fqwg4wfa
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:pkukthfu
+        marked max_sub_array_sum_repeated:fqwg4wfa <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+        marked max_sub_array_sum_repeated:pkukthfu <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    770f999adefb       576     576     576     2    0.35%              0
+      mbpp/286 sample 8f458308e29a (marked 7fcfd71adc97), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:g5f1b6fv
+        marked max_sub_array_sum_repeated:g5f1b6fv <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+      mbpp/286 sample 07736ab22228 (marked 0c233a142dc6), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:ppolfhsc, max_sub_array_sum_repeated:aga2mbtm
+        marked max_sub_array_sum_repeated:aga2mbtm <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    94847adacd77       576     575     575     1    0.17%              0
+      mbpp/286 sample 8f51abaab73a (marked 905223309a3d), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum -> marked max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:amct3odl
+        marked max_sub_array_sum_repeated:amct3odl <- original max_sub_array_sum_repeated.kadane:max_sum, max_sub_array_sum_repeated:max_sum
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    acac071d50d5       576     576     576     1    0.17%              0
+      mbpp/286 sample 4b1482b09c80 (marked e30a0fe3ec1c), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:c4fycit5
+        marked max_sub_array_sum_repeated:c4fycit5 <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    cb79b2fcb4e6       576     576     576     2    0.35%              0
+      mbpp/286 sample 9f6c3b68b48f (marked 2ecb4e5bc08b), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:curr_sum -> marked max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:vaitn9l3
+        marked max_sub_array_sum_repeated:vaitn9l3 <- original max_sub_array_sum_repeated.kadane:curr_sum, max_sub_array_sum_repeated:curr_sum
+      mbpp/286 sample 5fe7b488f35e (marked f4ab8381615f), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:uabh19zu
+        marked max_sub_array_sum_repeated:uabh19zu <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    cf7e4c9f106e       576     576     576     1    0.17%              0
+      mbpp/286 sample 3f518bc48360 (marked bbfc17a51e29), fails tests while the marked passes: no
+        original max_sub_array_sum_repeated.kadane:max_sum_val -> marked max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:zpei2w96
+        marked max_sub_array_sum_repeated:zpei2w96 <- original max_sub_array_sum_repeated.kadane:max_sum_val, max_sub_array_sum_repeated:max_sum_val
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   37400fdcd589       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   3c1bd11758fc       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   4937d9ddd78a       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   59a04735824c       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   770f999adefb       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   94847adacd77       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   acac071d50d5       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   cb79b2fcb4e6       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=random   cf7e4c9f106e       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  37400fdcd589       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  3c1bd11758fc       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  4937d9ddd78a       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  59a04735824c       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  770f999adefb       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  94847adacd77       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  acac071d50d5       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  cb79b2fcb4e6       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.75 name_kind=natural  cf7e4c9f106e       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   37400fdcd589       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   3c1bd11758fc       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   4937d9ddd78a       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   59a04735824c       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   770f999adefb       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   94847adacd77       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   acac071d50d5       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   cb79b2fcb4e6       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=natural   cf7e4c9f106e       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   37400fdcd589       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   3c1bd11758fc       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   4937d9ddd78a       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   59a04735824c       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   770f999adefb       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   94847adacd77       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   acac071d50d5       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   cb79b2fcb4e6       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=natural   cf7e4c9f106e       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   37400fdcd589       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   3c1bd11758fc       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   4937d9ddd78a       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   59a04735824c       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   770f999adefb       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   94847adacd77       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   acac071d50d5       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   cb79b2fcb4e6       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=random   cf7e4c9f106e       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    37400fdcd589       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    3c1bd11758fc       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    4937d9ddd78a       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    59a04735824c       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    770f999adefb       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    94847adacd77       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    acac071d50d5       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    cb79b2fcb4e6       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=1.0 name_kind=random    cf7e4c9f106e       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  37400fdcd589       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  3c1bd11758fc       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  4937d9ddd78a       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  59a04735824c       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  770f999adefb       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  94847adacd77       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  acac071d50d5       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  cb79b2fcb4e6       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.25 name_kind=natural  cf7e4c9f106e       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    37400fdcd589       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    3c1bd11758fc       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    4937d9ddd78a       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    59a04735824c       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    770f999adefb       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    94847adacd77       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    acac071d50d5       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    cb79b2fcb4e6       300     108     108     0    0.00%              0
+  multimark  dev  deepseek_coder_6p7b     L2  ratio=0.5 name_kind=random    cf7e4c9f106e       300     108     108     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   37400fdcd589       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   3c1bd11758fc       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   59a04735824c       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   770f999adefb       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   94847adacd77       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   cb79b2fcb4e6       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=random   cf7e4c9f106e       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  37400fdcd589       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  3c1bd11758fc       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  59a04735824c       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  770f999adefb       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  94847adacd77       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  cb79b2fcb4e6       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  cf7e4c9f106e       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   37400fdcd589       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   3c1bd11758fc       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   59a04735824c       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   770f999adefb       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   94847adacd77       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   cb79b2fcb4e6       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   cf7e4c9f106e       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   37400fdcd589       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   3c1bd11758fc       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   59a04735824c       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   770f999adefb       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   94847adacd77       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   cb79b2fcb4e6       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   cf7e4c9f106e       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   37400fdcd589       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   3c1bd11758fc       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   59a04735824c       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   770f999adefb       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   94847adacd77       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   cb79b2fcb4e6       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=random   cf7e4c9f106e       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    37400fdcd589       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    3c1bd11758fc       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    59a04735824c       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    770f999adefb       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    94847adacd77       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    cb79b2fcb4e6       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=1.0 name_kind=random    cf7e4c9f106e       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  37400fdcd589       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  3c1bd11758fc       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  59a04735824c       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  770f999adefb       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  94847adacd77       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  cb79b2fcb4e6       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  cf7e4c9f106e       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    37400fdcd589       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    3c1bd11758fc       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    4937d9ddd78a       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    59a04735824c       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    770f999adefb       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    94847adacd77       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    acac071d50d5       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    cb79b2fcb4e6       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L1  ratio=0.5 name_kind=random    cf7e4c9f106e       576     576     576     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   37400fdcd589       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   3c1bd11758fc       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   4937d9ddd78a       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   59a04735824c       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   770f999adefb       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   94847adacd77       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   acac071d50d5       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   cb79b2fcb4e6       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=random   cf7e4c9f106e       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  37400fdcd589       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  3c1bd11758fc       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  4937d9ddd78a       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  59a04735824c       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  770f999adefb       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  94847adacd77       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  acac071d50d5       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  cb79b2fcb4e6       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.75 name_kind=natural  cf7e4c9f106e       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   37400fdcd589       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   3c1bd11758fc       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   4937d9ddd78a       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   59a04735824c       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   770f999adefb       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   94847adacd77       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   acac071d50d5       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   cb79b2fcb4e6       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=natural   cf7e4c9f106e       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   37400fdcd589       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   3c1bd11758fc       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   4937d9ddd78a       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   59a04735824c       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   770f999adefb       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   94847adacd77       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   acac071d50d5       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   cb79b2fcb4e6       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=natural   cf7e4c9f106e       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   37400fdcd589       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   3c1bd11758fc       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   4937d9ddd78a       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   59a04735824c       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   770f999adefb       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   94847adacd77       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   acac071d50d5       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   cb79b2fcb4e6       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=random   cf7e4c9f106e       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    37400fdcd589       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    3c1bd11758fc       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    4937d9ddd78a       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    59a04735824c       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    770f999adefb       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    94847adacd77       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    acac071d50d5       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    cb79b2fcb4e6       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=1.0 name_kind=random    cf7e4c9f106e       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  37400fdcd589       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  3c1bd11758fc       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  4937d9ddd78a       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  59a04735824c       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  770f999adefb       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  94847adacd77       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  acac071d50d5       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  cb79b2fcb4e6       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.25 name_kind=natural  cf7e4c9f106e       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    37400fdcd589       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    3c1bd11758fc       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    4937d9ddd78a       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    59a04735824c       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    770f999adefb       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    94847adacd77       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    acac071d50d5       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    cb79b2fcb4e6       300     120     120     0    0.00%              0
+  multimark  dev  qwen25_coder_7b         L2  ratio=0.5 name_kind=random    cf7e4c9f106e       300     120     120     0    0.00%              0
+  promptmark test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   a9253bfc9fbf      2676    2663    2663     0    0.00%              0
+  promptmark test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  a9253bfc9fbf      2676    2663    2663     1    0.04%              0
+      mbpp/126 sample bbf1f9b94e7f (marked a0aaad3b2e17), fails tests while the marked passes: no
+        original sum:common_divisors -> marked <module>:common_divisors, sum:classes
+  promptmark test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   a9253bfc9fbf      2676    2663    2663     1    0.04%              0
+      mbpp/126 sample b38a7d8c47ed (marked a0aaad3b2e17), fails tests while the marked passes: no
+        original sum:common_divisors -> marked <module>:common_divisors, sum:post_type
+  promptmark test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   a9253bfc9fbf      2676    2663    2663     0    0.00%              0
+  promptmark test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   a9253bfc9fbf      2676    2663    2663     0    0.00%              0
+  promptmark test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    a9253bfc9fbf      2676    2663    2663     1    0.04%              0
+      mbpp/126 sample 550bd8013061 (marked a0aaad3b2e17), fails tests while the marked passes: no
+        original sum:common_divisors -> marked <module>:common_divisors, sum:fuu6o6mf
+  promptmark test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  a9253bfc9fbf      2676    2663    2663     0    0.00%              0
+  promptmark test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    a9253bfc9fbf      2676    2663    2663     0    0.00%              0
+  promptmark test qwen25_coder_7b         L1  ratio=0.75 name_kind=random   a9253bfc9fbf      2676    2668    2668     1    0.04%              0
+      humaneval/108 sample 7fe252f62061 (marked ee134cca8a66), fails tests while the marked passes: no
+        original count_nums.sum_of_digits:num -> marked count_nums.sum_of_digits:num, count_nums:mfd1ok8h
+        marked count_nums:mfd1ok8h <- original count_nums.sum_of_digits:num, count_nums:num
+  promptmark test qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  a9253bfc9fbf      2676    2668    2668     1    0.04%              1
+      humaneval/108 sample f3e50dc68810 (marked ee134cca8a66), fails tests while the marked passes: yes
+        original count_nums.sum_of_digits:num -> marked <free>:vcf_typelet, count_nums.sum_of_digits:vcf_type
+        free name changed: count_nums.sum_of_digits:num -> <free>:vcf_typelet
+  promptmark test qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   a9253bfc9fbf      2676    2668    2668     0    0.00%              0
+  promptmark test qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   a9253bfc9fbf      2676    2668    2668     1    0.04%              0
+      humaneval/108 sample 41de62ddf581 (marked ee134cca8a66), fails tests while the marked passes: no
+        original count_nums.sum_of_digits:num -> marked count_nums.sum_of_digits:num, count_nums:escape_char
+        marked count_nums:escape_char <- original count_nums.sum_of_digits:num, count_nums:num
+  promptmark test qwen25_coder_7b         L1  ratio=0.25 name_kind=random   a9253bfc9fbf      2676    2668    2668     0    0.00%              0
+  promptmark test qwen25_coder_7b         L1  ratio=1.0 name_kind=random    a9253bfc9fbf      2676    2668    2668     1    0.04%              1
+      humaneval/108 sample c20313177bdb (marked ee134cca8a66), fails tests while the marked passes: yes
+        original count_nums.sum_of_digits:num -> marked <free>:io8wptcbvwjfs, count_nums.sum_of_digits:x4kvwjfs
+        free name changed: count_nums.sum_of_digits:num -> <free>:io8wptcbvwjfs
+  promptmark test qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  a9253bfc9fbf      2676    2668    2668     0    0.00%              0
+  promptmark test qwen25_coder_7b         L1  ratio=0.5 name_kind=random    a9253bfc9fbf      2676    2668    2668     0    0.00%              0
+  stone      test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   8aca8150359d      2676    2658    2658     5    0.19%              0
+      mbpp/603 sample 46a3c0e53ea2 (marked 8817222899af), fails tests while the marked passes: no
+        original get_ludic.is_lucid:i -> marked get_ludic.is_lucid:i, get_ludic:x1g02oa0
+        marked get_ludic:x1g02oa0 <- original get_ludic.is_lucid:i, get_ludic:i
+      mbpp/765 sample b2a5b4a01940 (marked 8063e7dcd3a6), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:vyh14jzige13qzw, is_polite.count_set_bits:zge13qzw
+        free name changed: is_polite.count_set_bits:n -> <free>:vyh14jzige13qzw
+      mbpp/765 sample bcd6612aae7c (marked e155c91e8b86), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:g0ss5g51zv8stmn, is_polite.count_set_bits:vzv8stmn
+        free name changed: is_polite.count_set_bits:n -> <free>:g0ss5g51zv8stmn
+  stone      test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  8aca8150359d      2676    2658    2658     4    0.15%              0
+      mbpp/603 sample 76d094b8875b (marked 8817222899af), fails tests while the marked passes: no
+        original get_ludic.is_lucid:i -> marked <free>:chromosomeolumn, get_ludic.is_lucid:column
+        free name changed: get_ludic.is_lucid:i -> <free>:chromosomeolumn
+      mbpp/765 sample 1941d2823154 (marked e155c91e8b86), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:cacheitch, is_polite.count_set_bits:pitch
+        free name changed: is_polite.count_set_bits:n -> <free>:cacheitch
+      mbpp/765 sample 3296b36fdf38 (marked cb329d57dbb6), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:pushervices, is_polite.count_set_bits:push
+        free name changed: is_polite.count_set_bits:n -> <free>:pushervices
+  stone      test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   8aca8150359d      2676    2658    2658     6    0.23%              0
+      mbpp/603 sample a5c384ddaf40 (marked 8817222899af), fails tests while the marked passes: no
+        original get_ludic.is_lucid:i -> marked <free>:p2s_maplug_field, get_ludic.is_lucid:slug_field
+        free name changed: get_ludic.is_lucid:i -> <free>:p2s_maplug_field
+      mbpp/765 sample b6316a6bc3da (marked 8063e7dcd3a6), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:arrsating, is_polite.count_set_bits:arrs
+        free name changed: is_polite.count_set_bits:n -> <free>:arrsating
+      mbpp/765 sample 2376dad4315f (marked e155c91e8b86), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:eval_datasetx, is_polite.count_set_bits:kx
+        free name changed: is_polite.count_set_bits:n -> <free>:eval_datasetx
+  stone      test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   8aca8150359d      2676    2658    2658     2    0.08%              0
+      mbpp/765 sample a59e9b1bd4eb (marked de7b77d0a027), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:half_turnsarent_index, is_polite.count_set_bits:parent_index
+        free name changed: is_polite.count_set_bits:n -> <free>:half_turnsarent_index
+      mbpp/765 sample 950e270c8e4d (marked 3a3d34a93657), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked is_polite.count_set_bits:n, is_polite:middleware
+        marked is_polite:middleware <- original is_polite.count_set_bits:n, is_polite:n
+  stone      test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   8aca8150359d      2676    2658    2658     1    0.04%              0
+      mbpp/603 sample 540eb2bb41f3 (marked 8817222899af), fails tests while the marked passes: no
+        original get_ludic.is_lucid:i -> marked get_ludic.is_lucid:i, get_ludic:byel6y0p
+        marked get_ludic:byel6y0p <- original get_ludic.is_lucid:i, get_ludic:i
+  stone      test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    8aca8150359d      2676    2658    2658     6    0.23%              0
+      mbpp/603 sample d7b958c0665e (marked 8817222899af), fails tests while the marked passes: no
+        original get_ludic.is_lucid:i -> marked <free>:e2f998hih8bgmpb, get_ludic.is_lucid:mh8bgmpb
+        free name changed: get_ludic.is_lucid:i -> <free>:e2f998hih8bgmpb
+      mbpp/765 sample bbe88de36558 (marked 8063e7dcd3a6), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:qphbkn1g61p7pmu, is_polite.count_set_bits:z61p7pmu
+        free name changed: is_polite.count_set_bits:n -> <free>:qphbkn1g61p7pmu
+      mbpp/765 sample e70a9f37b078 (marked e155c91e8b86), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:m2aarrx4ygtttqe, is_polite.count_set_bits:vygtttqe
+        free name changed: is_polite.count_set_bits:n -> <free>:m2aarrx4ygtttqe
+  stone      test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  8aca8150359d      2676    2658    2658     2    0.08%              0
+      mbpp/765 sample 513133573cdd (marked 8063e7dcd3a6), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked is_polite.count_set_bits:n, is_polite:m1
+        marked is_polite:m1 <- original is_polite.count_set_bits:n, is_polite:n
+      mbpp/765 sample 52f042112b2f (marked de7b77d0a027), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked is_polite.count_set_bits:n, is_polite:inv_link_f
+        marked is_polite:inv_link_f <- original is_polite.count_set_bits:n, is_polite:n
+  stone      test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    8aca8150359d      2676    2658    2658     4    0.15%              0
+      mbpp/603 sample 8a831f6bb70d (marked 8817222899af), fails tests while the marked passes: no
+        original get_ludic.is_lucid:i -> marked <free>:didas8me64ss86d, get_ludic.is_lucid:h64ss86d
+        free name changed: get_ludic.is_lucid:i -> <free>:didas8me64ss86d
+      mbpp/765 sample d282db4845eb (marked e155c91e8b86), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked <free>:aprqd61yqi7paun, is_polite.count_set_bits:uqi7paun
+        free name changed: is_polite.count_set_bits:n -> <free>:aprqd61yqi7paun
+      mbpp/765 sample 29a352d258a9 (marked cb329d57dbb6), fails tests while the marked passes: no
+        original is_polite.count_set_bits:n -> marked is_polite.count_set_bits:n, is_polite:a9c2n8c4
+        marked is_polite:a9c2n8c4 <- original is_polite.count_set_bits:n, is_polite:n
+  stone      test qwen25_coder_7b         L1  ratio=0.75 name_kind=random   8de321b62de6      2676    2665    2665     2    0.08%              0
+      humaneval/75 sample 13e7ff1e3869 (marked daa979e5738e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:izu9j45irs2jmt3, is_multiply_prime.is_prime:mrs2jmt3
+        free name changed: is_multiply_prime.is_prime:i -> <free>:izu9j45irs2jmt3
+      humaneval/75 sample 9fad86456998 (marked b9fc9c9c609e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:jdaiuac30d92f3i, is_multiply_prime.is_prime:v0d92f3i
+        free name changed: is_multiply_prime.is_prime:i -> <free>:jdaiuac30d92f3i
+  stone      test qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  8de321b62de6      2676    2665    2665     2    0.08%              1
+      humaneval/75 sample c956bde2a2e1 (marked 13c5a0fd6f3a), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:parsed_valuecope_name, is_multiply_prime.is_prime:scope_name
+        free name changed: is_multiply_prime.is_prime:i -> <free>:parsed_valuecope_name
+      humaneval/75 sample 9762ee1f8a75 (marked daa979e5738e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:df2o, is_multiply_prime.is_prime:ro
+        free name changed: is_multiply_prime.is_prime:i -> <free>:df2o
+  stone      test qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   8de321b62de6      2676    2665    2665     3    0.11%              1
+      humaneval/75 sample 6b4a8f489ba1 (marked 13c5a0fd6f3a), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:config_typeustomization, is_multiply_prime.is_prime:customization
+        free name changed: is_multiply_prime.is_prime:i -> <free>:config_typeustomization
+      humaneval/75 sample fac655befdc2 (marked daa979e5738e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:sent_timestamper1, is_multiply_prime.is_prime:sent_timestamp
+        free name changed: is_multiply_prime.is_prime:i -> <free>:sent_timestamper1
+      humaneval/75 sample 9eef10ba502f (marked b9fc9c9c609e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:filepathsmax, is_multiply_prime.is_prime:qmax
+        free name changed: is_multiply_prime.is_prime:i -> <free>:filepathsmax
+  stone      test qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   8de321b62de6      2676    2665    2665     2    0.08%              1
+      humaneval/75 sample 00f4c5acad6b (marked 13c5a0fd6f3a), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked is_multiply_prime.is_prime:i, is_multiply_prime:include_content
+        marked is_multiply_prime:include_content <- original is_multiply_prime.is_prime:i, is_multiply_prime:i
+      humaneval/75 sample 41f0f70d8131 (marked daa979e5738e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked is_multiply_prime.is_prime:i, is_multiply_prime:new_i
+        marked is_multiply_prime:new_i <- original is_multiply_prime.is_prime:i, is_multiply_prime:i
+  stone      test qwen25_coder_7b         L1  ratio=0.25 name_kind=random   8de321b62de6      2676    2665    2665     1    0.04%              0
+      humaneval/75 sample 9efaa1fd5010 (marked b9fc9c9c609e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked is_multiply_prime.is_prime:i, is_multiply_prime:gcxuivhy
+        marked is_multiply_prime:gcxuivhy <- original is_multiply_prime.is_prime:i, is_multiply_prime:i
+  stone      test qwen25_coder_7b         L1  ratio=1.0 name_kind=random    8de321b62de6      2676    2665    2665     3    0.11%              1
+      humaneval/75 sample 0ae178c1f570 (marked 13c5a0fd6f3a), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:em9d0dmy55tso3s, is_multiply_prime.is_prime:em9d0dmy
+        free name changed: is_multiply_prime.is_prime:i -> <free>:em9d0dmy55tso3s
+      humaneval/75 sample 01f385f2f17d (marked daa979e5738e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:n6qx0fl1xvkppjm, is_multiply_prime.is_prime:sxvkppjm
+        free name changed: is_multiply_prime.is_prime:i -> <free>:n6qx0fl1xvkppjm
+      humaneval/75 sample 879f8b88bf47 (marked b9fc9c9c609e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:rhtsalbif2gryyl, is_multiply_prime.is_prime:sf2gryyl
+        free name changed: is_multiply_prime.is_prime:i -> <free>:rhtsalbif2gryyl
+  stone      test qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  8de321b62de6      2676    2665    2665     0    0.00%              0
+  stone      test qwen25_coder_7b         L1  ratio=0.5 name_kind=random    8de321b62de6      2676    2665    2665     3    0.11%              1
+      humaneval/75 sample 9a8eb9115c15 (marked 13c5a0fd6f3a), fails tests while the marked passes: yes
+        original is_multiply_prime.is_prime:i -> marked <free>:dkg2pn48nwdfmk3, is_multiply_prime.is_prime:dkg2pn48
+        free name changed: is_multiply_prime.is_prime:i -> <free>:dkg2pn48nwdfmk3
+      humaneval/75 sample 76ad4d7d9ae4 (marked daa979e5738e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked is_multiply_prime.is_prime:i, is_multiply_prime:bliotrpm
+        marked is_multiply_prime:bliotrpm <- original is_multiply_prime.is_prime:i, is_multiply_prime:i
+      humaneval/75 sample 56a7d8ba01bf (marked b9fc9c9c609e), fails tests while the marked passes: no
+        original is_multiply_prime.is_prime:i -> marked <free>:atw6u3hdsadyk4d, is_multiply_prime.is_prime:atw6u3hd
+        free name changed: is_multiply_prime.is_prime:i -> <free>:atw6u3hdsadyk4d
+  sweet      test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=random   c31d20315a9d      2676    2634    2634     1    0.04%              0
+      humaneval/129 sample 215e601c2dd8 (marked cb0eb58573f6), fails tests while the marked passes: no
+        original minPath.<comprehension@25>:x -> marked minPath.<comprehension@25>:x, minPath:teyaky13
+        marked minPath:teyaky13 <- original minPath.<comprehension@25>:x, minPath:x
+  sweet      test deepseek_coder_6p7b     L1  ratio=0.75 name_kind=natural  c31d20315a9d      2676    2634    2634     2    0.08%              0
+      humaneval/129 sample af4df576cd74 (marked db6cdd89d006), fails tests while the marked passes: no
+        original minPath.<comprehension@12>:c -> marked minPath.<comprehension@12>:c, minPath:as_class
+        original minPath.<comprehension@28>:c -> marked minPath.<comprehension@28>:c, minPath:as_class
+        marked minPath:as_class <- original minPath.<comprehension@12>:c, minPath.<comprehension@28>:c, minPath:c
+      humaneval/129 sample dbae938dc561 (marked cb0eb58573f6), fails tests while the marked passes: no
+        original minPath.<comprehension@25>:x -> marked minPath.<comprehension@25>:x, minPath:unique_tags
+        marked minPath:unique_tags <- original minPath.<comprehension@25>:x, minPath:x
+  sweet      test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=natural   c31d20315a9d      2676    2634    2634     2    0.08%              0
+      humaneval/129 sample 819d88f80d4e (marked db6cdd89d006), fails tests while the marked passes: no
+        original minPath.<comprehension@12>:c -> marked minPath.<comprehension@12>:c, minPath:accounts
+        original minPath.<comprehension@28>:c -> marked minPath.<comprehension@28>:c, minPath:accounts
+        marked minPath:accounts <- original minPath.<comprehension@12>:c, minPath.<comprehension@28>:c, minPath:c
+      humaneval/129 sample 2563f20a57ad (marked cb0eb58573f6), fails tests while the marked passes: no
+        original minPath.<comprehension@25>:x -> marked minPath.<comprehension@25>:x, minPath:smooth
+        marked minPath:smooth <- original minPath.<comprehension@25>:x, minPath:x
+  sweet      test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=natural   c31d20315a9d      2676    2634    2634     0    0.00%              0
+  sweet      test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=random   c31d20315a9d      2676    2634    2634     1    0.04%              0
+      humaneval/129 sample 22c0dbe3332b (marked db6cdd89d006), fails tests while the marked passes: no
+        original minPath.<comprehension@12>:c -> marked minPath.<comprehension@12>:c, minPath:ew0zyfuj
+        original minPath.<comprehension@28>:c -> marked minPath.<comprehension@28>:c, minPath:ew0zyfuj
+        marked minPath:ew0zyfuj <- original minPath.<comprehension@12>:c, minPath.<comprehension@28>:c, minPath:c
+  sweet      test deepseek_coder_6p7b     L1  ratio=1.0 name_kind=random    c31d20315a9d      2676    2634    2634     2    0.08%              0
+      humaneval/129 sample 817d450b988d (marked db6cdd89d006), fails tests while the marked passes: no
+        original minPath.<comprehension@12>:c -> marked minPath.<comprehension@12>:c, minPath:qagsc9ol
+        original minPath.<comprehension@28>:c -> marked minPath.<comprehension@28>:c, minPath:qagsc9ol
+        marked minPath:qagsc9ol <- original minPath.<comprehension@12>:c, minPath.<comprehension@28>:c, minPath:c
+      humaneval/129 sample 37dcd58bfd53 (marked cb0eb58573f6), fails tests while the marked passes: no
+        original minPath.<comprehension@25>:x -> marked minPath.<comprehension@25>:x, minPath:wlrllgvf
+        marked minPath:wlrllgvf <- original minPath.<comprehension@25>:x, minPath:x
+  sweet      test deepseek_coder_6p7b     L1  ratio=0.25 name_kind=natural  c31d20315a9d      2676    2634    2634     1    0.04%              0
+      humaneval/129 sample a6756a0a1710 (marked cb0eb58573f6), fails tests while the marked passes: no
+        original minPath.<comprehension@25>:x -> marked minPath.<comprehension@25>:x, minPath:req_headers
+        marked minPath:req_headers <- original minPath.<comprehension@25>:x, minPath:x
+  sweet      test deepseek_coder_6p7b     L1  ratio=0.5 name_kind=random    c31d20315a9d      2676    2634    2634     1    0.04%              0
+      humaneval/129 sample a1798bdc8d80 (marked cb0eb58573f6), fails tests while the marked passes: no
+        original minPath.<comprehension@25>:x -> marked minPath.<comprehension@25>:x, minPath:oyyxkcou
+        marked minPath:oyyxkcou <- original minPath.<comprehension@25>:x, minPath:x
+  sweet      test qwen25_coder_7b         L1  ratio=0.75 name_kind=random   05877f819f63      2676    2671    2671     7    0.26%              0
+      mbpp/113 sample 15cb168635ab (marked ebc439a889bb), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:mlwqhxfv
+      mbpp/587 sample 841ec64453d7 (marked 42d20b6a50f6), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:eypzi2vu
+      mbpp/587 sample 4c332ac4bb97 (marked 56bc3b0602a7), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:bu0mgyp2
+  sweet      test qwen25_coder_7b         L1  ratio=0.75 name_kind=natural  05877f819f63      2676    2671    2671     8    0.30%              0
+      mbpp/113 sample 2e029d5a4022 (marked ebc439a889bb), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:include_name
+      mbpp/113 sample 913c405e5f6b (marked 81ca823d46d2), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:mesh_v
+      mbpp/587 sample 6f2bd0b580fb (marked 42d20b6a50f6), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:blob_id
+  sweet      test qwen25_coder_7b         L1  ratio=1.0 name_kind=natural   05877f819f63      2676    2671    2671     8    0.30%              0
+      mbpp/113 sample d3cb84b6690e (marked ebc439a889bb), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:decode_length
+      mbpp/113 sample 737e67f0a158 (marked 81ca823d46d2), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:dst_file
+      mbpp/587 sample 5f3a0de9d765 (marked 42d20b6a50f6), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:ret_list
+  sweet      test qwen25_coder_7b         L1  ratio=0.5 name_kind=natural   05877f819f63      2676    2671    2671     5    0.19%              0
+      mbpp/113 sample ec6969218aca (marked 81ca823d46d2), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:devid
+      mbpp/587 sample 6de6fc83259a (marked 42d20b6a50f6), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:proc_cmd
+      mbpp/587 sample 8e98ee883b1a (marked 8279d472aa09), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:rads
+  sweet      test qwen25_coder_7b         L1  ratio=0.25 name_kind=random   05877f819f63      2676    2671    2671     2    0.07%              0
+      mbpp/587 sample 06b495b8572e (marked 3d85a4c38630), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:e873giaw
+      mbpp/587 sample 00a57df7d654 (marked 9ababbe51764), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:cmdvvuf7
+  sweet      test qwen25_coder_7b         L1  ratio=1.0 name_kind=random    05877f819f63      2676    2671    2671     8    0.30%              0
+      mbpp/113 sample 444a806114c0 (marked ebc439a889bb), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:w95knay7
+      mbpp/113 sample ff76750ce689 (marked 81ca823d46d2), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:alj7osw0
+      mbpp/587 sample 19c726f34fa9 (marked 42d20b6a50f6), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:fgq24c9k
+  sweet      test qwen25_coder_7b         L1  ratio=0.25 name_kind=natural  05877f819f63      2676    2671    2671     1    0.04%              0
+      mbpp/587 sample 41a416e46dd3 (marked 56bc3b0602a7), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:total_scores
+  sweet      test qwen25_coder_7b         L1  ratio=0.5 name_kind=random    05877f819f63      2676    2671    2671     7    0.26%              0
+      mbpp/113 sample 3c993cdc284b (marked ebc439a889bb), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:i79vp5kn
+      mbpp/113 sample 7d2b52efd1cd (marked 81ca823d46d2), fails tests while the marked passes: no
+        original check_integer:len -> marked <free>:len, check_integer:wf9rll6b
+      mbpp/587 sample 5748a9d93755 (marked 56bc3b0602a7), fails tests while the marked passes: no
+        original list_tuple:tuple -> marked <free>:tuple, list_tuple:vyz2zmid
+
+## totals by method and split (checked, with violations, % on checked, fail_vs_marked)
+  acw        test checked   42599  violations     46 (0.11%)  fail_vs_marked 9
+  mcgmark    test checked   65360  violations    273 (0.42%)  fail_vs_marked 0
+  mcss       dev  checked   22073  violations     32 (0.14%)  fail_vs_marked 0
+  multimark  dev  checked   99289  violations     95 (0.10%)  fail_vs_marked 0
+  promptmark test checked   42648  violations      7 (0.02%)  fail_vs_marked 2
+  stone      test checked   42584  violations     46 (0.11%)  fail_vs_marked 5
+  sweet      test checked   42440  violations     56 (0.13%)  fail_vs_marked 0

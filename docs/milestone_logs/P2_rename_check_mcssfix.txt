@@ -1,0 +1,18 @@
+# P2 rename check of the new mcss (scripts/run_p2_mcssfix.sh report): 2026-11-20T12:02:16+01:00
+# wm-bench 70e1b44763edddf65b96344280f7608b62a1a467, multimark 3c47a1fee86f4f37535e45aa6ca09787d56881be for mcss ae63f16de28f; other configs read from existing cells
+# rename check of the dev marked samples (scripts/check_rename_dev.py), 2026-11-20T12:02:13+01:00, tnode16
+# multimark.rename_check from /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_multimark at commit 3c47a1fee86f4f37535e45aa6ca09787d56881be; wm-bench 70e1b44763edddf65b96344280f7608b62a1a467; submodule third_party/multimark not touched
+# configs: mcss_new_3c47a1f ae63f16de28f; split dev, language python; marked without attack vs the parent baseline sample
+# share of violations on the checked samples; unpaired = variables only in rewritten subtrees (not checked); fail_vs_base = violations whose tests fail while the parent passes
+
+  config                            model                   lvl  samples  checked  skipped  viol   viol %  unpaired smp_unp  fail_vs_base
+  mcss_new_3c47a1f ae63f16de28f     qwen25_coder_7b         L1       576      576        0     0    0.00%        22       7             0
+  mcss_new_3c47a1f ae63f16de28f     qwen25_coder_7b         L2       300      299        1     0    0.00%        38      16             0
+      (1 samples not analysable by the check)
+  mcss_new_3c47a1f ae63f16de28f     deepseek_coder_6p7b     L1       576      576        0     0    0.00%         0       0             0
+  mcss_new_3c47a1f ae63f16de28f     deepseek_coder_6p7b     L2       300      300        0     0    0.00%        71      35             0
+
+## summary: max share of samples with violations over the cells (threshold 1%: if every cell is <= 1% the dev rounds are not redone)
+  mcss_new_3c47a1f ae63f16de28f     max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  -> every cell <= 1%: the dev rounds are not redone
+
