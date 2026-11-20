@@ -82,5 +82,5 @@ def test_grid_adds_only_dev_candidates(
     assert {c.config_hash for c in added} == set(sweep_hashes(cfg, method, ("candidate",))) - {
         default
     }
-    if method == "multimark":  # il default ({}) è nella griglia: resta la cella di default
+    if default in sweep_hashes(cfg, method, ("candidate",)):  # resta la cella di default
         assert set(plain) <= set(swept)

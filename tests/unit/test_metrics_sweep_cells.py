@@ -45,8 +45,6 @@ def test_metrics_sweep_adds_only_candidates(method: str, languages: str) -> None
     # celle senza hash: solo quelle di prima (il default se è un punto della griglia, il test)
     assert {c for c in swept if c.config_hash is None} <= set(plain)
     assert {c for c in plain if c.split == "test"} <= set(swept)
-    if method == "multimark":  # il default ({}) è nella griglia: resta la cella di default
-        assert set(plain) <= set(swept)
     extra = [c for c in swept if c not in plain]
     assert extra and all(c.config_hash and c.split == "dev" and c.attack_id is None for c in extra)
     from bench.hpo.grid import resolve, sweep_hashes
@@ -54,6 +52,8 @@ def test_metrics_sweep_adds_only_candidates(method: str, languages: str) -> None
 
     cfg = load_experiment([*BASE, *common])
     default = resolve(cfg, make_adapter(cfg, method), None)[1]
+    if default in sweep_hashes(cfg, method, ("candidate",)):  # resta la cella di default
+        assert set(plain) <= set(swept)
     hashes = {c.config_hash for c in extra}
     assert default not in hashes
     assert hashes == set(sweep_hashes(cfg, method, ("candidate",))) - {default}
@@ -104,8 +104,6 @@ def test_attacked_sweep_adds_only_dev_candidates(
     assert plain and all(c.config_hash is None and c.attack_id for c in plain)
     assert {c for c in swept if c.config_hash is None} <= set(plain)
     assert {c for c in plain if c.split == "test"} <= set(swept)
-    if method == "multimark":
-        assert set(plain) <= set(swept)
     added = [c for c in swept if c not in plain]
     assert added and all(c.config_hash and c.split == "dev" and c.attack_id for c in added)
     from bench.hpo.grid import resolve, sweep_hashes
@@ -113,6 +111,8 @@ def test_attacked_sweep_adds_only_dev_candidates(
 
     cfg = load_experiment([*BASE, *common])
     default = resolve(cfg, make_adapter(cfg, method), None)[1]
+    if default in sweep_hashes(cfg, method, ("candidate",)):
+        assert set(plain) <= set(swept)
     assert {c.config_hash for c in added} == set(sweep_hashes(cfg, method, ("candidate",))) - {
         default
     }

@@ -106,6 +106,32 @@ def facade(cfg: ExperimentConfig, monkeypatch: pytest.MonkeyPatch) -> BenchmarkF
     return BenchmarkFacade(tcfg)
 
 
+# Griglia piccola per gli smoke test dello sweep (il default più due punti di sviluppo, come la
+# griglia del giro di capacità): configs/hpo/multimark.yaml ha i 12 punti del giro 4, senza il
+# default, e farli girare tutti qui renderebbe il test lento senza verificare nulla in più.
+SMALL_GRID = """method: multimark
+include:
+  - {}
+  - {names.single_letter: extend_except_loop}
+  - {names.bits_per_name: 2}
+"""
+
+
+@pytest.fixture
+def small_grid(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from bench.hpo import grid
+
+    root = tmp_path / "hpo"
+    root.mkdir()
+    (root / "multimark.yaml").write_text(SMALL_GRID, encoding="utf-8")
+    real = grid.grid_path
+
+    def small(method: str, root_dir: Path | None = None) -> Path:
+        return root / f"{method}.yaml" if method == "multimark" else real(method, root_dir)
+
+    monkeypatch.setattr(grid, "grid_path", small)
+
+
 def _check_capacity(
     facade: BenchmarkFacade, method: str, positives: pd.DataFrame, marked: pd.DataFrame
 ) -> None:
@@ -193,6 +219,7 @@ def test_watermark_execute_detect_calibrate_metrics(facade: BenchmarkFacade) -> 
 
 
 @needs_library
+@pytest.mark.usefixtures("small_grid")
 def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade) -> None:
     """ADR-017 §5: con ``hpo.grid=multimark`` le fasi watermark, execute, detect, calibrate e
     metrics girano sui punti di sviluppo (execute sul loro codice marcato: c'è Pass@1); la
@@ -230,6 +257,36 @@ def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade
         table = facade.store.read_table(metrics_ref("multimark", MODEL, h, "L1", "python", "dev"))
         assert {"pass_at_1", "delta_pass_at_1_pp", "tpr_at_fpr"} <= set(table["name"])
     _check_imperceptibility_report(facade, default_hash, candidates)
+    _check_round4_report(facade, default_hash, candidates)
+
+
+def _check_round4_report(facade: BenchmarkFacade, default_hash: str, candidates: list[str]) -> None:
+    """``scripts/report_round4.py`` sulla stessa catena: legge celle, rinomine e siti; senza le
+    fasi dell'impercettibilità (AUROC mancanti) nessun punto rispetta le regole."""
+    from tests.unit.test_inventory_scripts import _load
+
+    script = _load("report_round4")
+    out = facade.cfg.paths.artifacts.parent / "round4.txt"
+    mcss_hash = DetectStage(facade.cfg).config_hash("mcss")
+    configs = [f"mcss:{mcss_hash}:mcss_new", f"multimark:{default_hash}:multimark",
+               *(f"multimark:{h}:dev{i}" for i, h in enumerate(candidates))]  # fmt: skip
+    argv = ["--levels", "L1", "--models", MODEL, "--mcss", "mcss_new", "--multimark",
+            str(LIBRARY), "--expect-commit", "", "--report", str(out), "paths=local"]  # fmt: skip
+    argv += [a for c in configs for a in ("--config", c)]
+    assert script.main(argv) == 0
+    text = out.read_text(encoding="utf-8")
+    for section in ("## constraints per configuration", "## rule 1", "## rule 2",
+                    "## names.suffix_by_type", "## mean sites per sample"):  # fmt: skip
+        assert section in text
+    rule2 = text.split("## rule 2")[1]
+    assert rule2.splitlines()[1].strip() == "none" and "incomplete" in rule2
+    sites = text.split("## mean sites per sample")[1]
+    for i, h in enumerate(candidates):
+        row = next(ln for ln in sites.splitlines() if ln.strip().startswith(f"dev{i} {h}"))
+        assert "no embedding results" not in row
+    renaming = text.split("## inconsistent renaming per cell")[1].split("##")[0]
+    assert f"{MODEL} L1 0.00%" in renaming
+    assert script.main(argv) == 1  # il report esiste già
 
 
 def _check_imperceptibility_report(
@@ -257,6 +314,7 @@ def _check_imperceptibility_report(
 
 
 @needs_library
+@pytest.mark.usefixtures("small_grid")
 def test_multimark_attacked_sweep_keeps_the_default_cells(facade: BenchmarkFacade) -> None:
     """ADR-017 §6: con ``hpo.grid=multimark`` e un attacco, le fasi attack, execute, detect e
     metrics girano sul codice marcato dei due punti di sviluppo; le celle attaccate del default
@@ -357,6 +415,7 @@ def _check_round3_report(facade: BenchmarkFacade, default_hash: str, candidates:
 
 
 @needs_library
+@pytest.mark.usefixtures("small_grid")
 def test_t16_adds_cells_without_touching_the_others(facade: BenchmarkFacade) -> None:
     """ADR-018: T1.6 è un'aggiunta. Sulla catena dello smoke test le celle attaccate di T1.5 già
     calcolate restano identiche, byte per byte, dopo attack, execute, detect e metrics di T1.6

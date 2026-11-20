@@ -2,25 +2,32 @@
 # configs/method/multimark.yaml ({}). Il solo fattore scelto fuori dall'HPO è il canale dei nomi
 # (§6.4); la scelta aggiornerà questo punto (deviazione D4x, ADR-021).
 #
-# Giro di capacità su sviluppo (pipeline v1.3.3, 18 novembre 2026; scripts/run_p2_round3.sh):
-# punti di §6.3 misurati su L1+L2 dev, senza attacchi e con gli attacchi dell'insieme S, per il
-# criterio di scelta di v1.3.3 (sweep con hpo.grid=multimark, ADR-017 §5-§6: ognuno ha il suo
-# config_hash, stampato da scripts/posthoc_config_hashes.py). Non sono una scelta: la fase tune
-# non si lancia su multimark e la scelta diventa definitiva in P5, con l'impercettibilità.
-# Il punto names.include_params=true da solo (secondo giro, libreria 475d4cc) non si rimisura.
+# Giro 4 su sviluppo (pipeline v1.3.9 e v1.3.10, 20 novembre 2026; scripts/run_p2_round4.sh),
+# libreria 0664817: {B, C, D} x {opzioni spente; names.suffix_by_type=on; on +
+# canonical.natural_forms=const_left; on + const_left_zero} = 12 punti, misurati su L1+L2 dev con
+# gli attacchi dell'insieme S, T1.6 e l'impercettibilità (sweep con hpo.grid=multimark, ADR-017
+# §5-§7: ognuno ha il suo config_hash, stampato da scripts/posthoc_config_hashes.py). Il default
+# ({}) non è nella griglia: la base di riferimento resta 3c1bd11758fc (a4e6972). Non sono una
+# scelta: la fase tune non si lancia su multimark; le due regole di v1.3.10 sono nel report.
 method: multimark
-# config_hash con la libreria a4e6972 (scripts/posthoc_config_hashes.py; il test
-# tests/unit/test_posthoc_config_hashes.py li ricontrolla). Secondo giro, libreria 475d4cc: base
-# 59a04735824c, single_letter 94847adacd77, include_params acac071d50d5 (prima delle chiavi
-# names.bits_per_name e canonical.same_kind). Primo giro, libreria 488fb5a: base 194b0aa80f9f.
+# config_hash con la libreria 0664817 (tests/unit/test_posthoc_config_hashes.py li ricontrolla).
+# Giro di capacità, libreria a4e6972 (stessi B, C, D con le opzioni spente; scripts/run_p2_round3.sh):
+# base 3c1bd11758fc, single_letter 4937d9ddd78a, A 770f999adefb, B cb79b2fcb4e6, C cf7e4c9f106e,
+# D 37400fdcd589. Secondo giro, libreria 475d4cc: base 59a04735824c, single_letter 94847adacd77,
+# include_params acac071d50d5. Primo giro, libreria 488fb5a: base 194b0aa80f9f.
 include:
-  - {}                                          # 3c1bd11758fc
-  - {names.single_letter: extend_except_loop}   # 4937d9ddd78a
-  # A
-  - {canonical.same_kind: binding_order}        # 770f999adefb
-  # B
-  - {names.bits_per_name: 2}                    # cb79b2fcb4e6
-  # C
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2}  # cf7e4c9f106e
-  # D = C + include_params
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true}  # 37400fdcd589
+  # B = base + names.bits_per_name=2
+  - {names.bits_per_name: 2}                                                                       # a8a296957377
+  - {names.bits_per_name: 2, names.suffix_by_type: "on"}                                           # 042968dc17df
+  - {names.bits_per_name: 2, names.suffix_by_type: "on", canonical.natural_forms: const_left}      # 317adaa840ee
+  - {names.bits_per_name: 2, names.suffix_by_type: "on", canonical.natural_forms: const_left_zero} # a2d195001771
+  # C = base + single_letter=extend_except_loop + same_kind=binding_order + bits_per_name=2
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2}  # 19e744a3b406
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.suffix_by_type: "on"}  # 71d9d5e6160d
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.suffix_by_type: "on", canonical.natural_forms: const_left}  # a8fadfc4757a
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.suffix_by_type: "on", canonical.natural_forms: const_left_zero}  # fb24f51f5d15
+  # D = C + names.include_params=true
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true}  # b4cd11f13a07
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true, names.suffix_by_type: "on"}  # f4fb209f9226
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true, names.suffix_by_type: "on", canonical.natural_forms: const_left}  # f765c166de34
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true, names.suffix_by_type: "on", canonical.natural_forms: const_left_zero}  # cb29e1d7b6b8
