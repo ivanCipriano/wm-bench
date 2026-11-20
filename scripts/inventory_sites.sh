@@ -19,6 +19,12 @@
 #                 come mcss_mod e base_mod con --single-letter extend_except_loop / extend_all
 #                 (PIPELINE v1.2.6 §4.2 punto 9; con exclude il nome della variante non cambia)
 #       noguards  come base con --no-guards (siti persi per le condizioni semantiche, MD6)
+#       r4_B, r4_C, r4_D e le stesse con _cl / _clz
+#                 giro 4 (PIPELINE v1.3.9 di multimark, MD29): B = base_mod con
+#                 --bits-per-name 2; C = B + --single-letter extend_except_loop --same-kind
+#                 binding_order; D = C + --include-params (come configs/hpo/multimark.yaml);
+#                 _cl aggiunge --natural-forms const_left, _clz --natural-forms const_left_zero
+#                 (names.suffix_by_type non cambia i siti e non entra nell'inventario)
 #
 #   LOG=docs/milestone_logs/P1_mcss_selftest_modlevel.txt bash scripts/inventory_sites.sh selftest
 #       selezione CodeNet della verifica di mcss (PIPELINE v1.2 §4.4 punto 2): pool delle
@@ -137,6 +143,15 @@ variant() {  # $1 = variante -> "FLAGS|NOME"
         base_mod_eel) echo "--channels extended --module-level on --single-letter extend_except_loop|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_except_loop" ;;
         base_mod_all) echo "--channels extended --module-level on --single-letter extend_all|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_all" ;;
         mcss_r2)  echo "--channels mcss8 --canonical paper --include-params --module-level on --single-letter extend_except_loop --linking positional --name-variant V1|canonical-paper_guards-on_params-on_modlevel-on_singleletter-extend_except_loop_linking-positional_names-V1" ;;
+        r4_B) echo "--channels extended --module-level on --bits-per-name 2|canonical-kind_guards-on_params-off_modlevel-on_bpn-2" ;;
+        r4_B_cl) echo "--channels extended --module-level on --bits-per-name 2 --natural-forms const_left|canonical-kind_guards-on_params-off_modlevel-on_bpn-2_natural-const_left" ;;
+        r4_B_clz) echo "--channels extended --module-level on --bits-per-name 2 --natural-forms const_left_zero|canonical-kind_guards-on_params-off_modlevel-on_bpn-2_natural-const_left_zero" ;;
+        r4_C) echo "--channels extended --module-level on --single-letter extend_except_loop --bits-per-name 2 --same-kind binding_order|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_except_loop_bpn-2_samekind-binding_order" ;;
+        r4_C_cl) echo "--channels extended --module-level on --single-letter extend_except_loop --bits-per-name 2 --same-kind binding_order --natural-forms const_left|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_except_loop_bpn-2_samekind-binding_order_natural-const_left" ;;
+        r4_C_clz) echo "--channels extended --module-level on --single-letter extend_except_loop --bits-per-name 2 --same-kind binding_order --natural-forms const_left_zero|canonical-kind_guards-on_params-off_modlevel-on_singleletter-extend_except_loop_bpn-2_samekind-binding_order_natural-const_left_zero" ;;
+        r4_D) echo "--channels extended --module-level on --single-letter extend_except_loop --bits-per-name 2 --same-kind binding_order --include-params|canonical-kind_guards-on_params-on_modlevel-on_singleletter-extend_except_loop_bpn-2_samekind-binding_order" ;;
+        r4_D_cl) echo "--channels extended --module-level on --single-letter extend_except_loop --bits-per-name 2 --same-kind binding_order --include-params --natural-forms const_left|canonical-kind_guards-on_params-on_modlevel-on_singleletter-extend_except_loop_bpn-2_samekind-binding_order_natural-const_left" ;;
+        r4_D_clz) echo "--channels extended --module-level on --single-letter extend_except_loop --bits-per-name 2 --same-kind binding_order --include-params --natural-forms const_left_zero|canonical-kind_guards-on_params-on_modlevel-on_singleletter-extend_except_loop_bpn-2_samekind-binding_order_natural-const_left_zero" ;;
         *) return 1 ;;
     esac
 }
@@ -165,7 +180,8 @@ NAMES=()
 for v in ${VARIANTS[@]+"${VARIANTS[@]}"}; do
     if ! spec="$(variant "$v")"; then
         echo "unknown variant '$v' (base, base_mod, mcss, mcss_mod, params, noguards," \
-            "mcss_mod_eel, mcss_mod_all, base_mod_eel, base_mod_all, mcss_r2)" >&2
+            "mcss_mod_eel, mcss_mod_all, base_mod_eel, base_mod_all, mcss_r2," \
+            "r4_B, r4_B_cl, r4_B_clz, r4_C, r4_C_cl, r4_C_clz, r4_D, r4_D_cl, r4_D_clz)" >&2
         exit 2
     fi
     FLAGS+=("${spec%%|*}")

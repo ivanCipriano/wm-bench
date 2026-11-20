@@ -8,7 +8,12 @@ su un frammento sintetico (round trip) e su codice senza siti.
 
 from __future__ import annotations
 
+import io
+import json
+import subprocess
 import sys
+import tarfile
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -89,10 +94,20 @@ def test_choices_and_names_match_the_library() -> None:
     sys.path.insert(0, str(LIBRARY))
     try:
         from multimark import config as mc
-        from multimark.channels import CANONICAL_MODES, CHANNEL_SET_NAMES, SAME_KIND_MODES
+        from multimark.channels import (
+            CANONICAL_MODES,
+            CHANNEL_SET_NAMES,
+            NATURAL_FORMS_MODES,
+            SAME_KIND_MODES,
+        )
         from multimark.codec import MATRICES
         from multimark.linking import LINKING_MODES
-        from multimark.names import BITS_PER_NAME, NAME_VARIANTS, SINGLE_LETTER_MODES
+        from multimark.names import (
+            BITS_PER_NAME,
+            NAME_VARIANTS,
+            SINGLE_LETTER_MODES,
+            SUFFIX_BY_TYPE_MODES,
+        )
     finally:
         sys.path.remove(str(LIBRARY))
     assert CHOICES["t"] == mc.T_VALUES and CHOICES["mask"] == mc.MASK_MODES
@@ -102,6 +117,8 @@ def test_choices_and_names_match_the_library() -> None:
     assert CHOICES["names.single_letter"] == SINGLE_LETTER_MODES
     assert CHOICES["names.bits_per_name"] == BITS_PER_NAME
     assert CHOICES["canonical.same_kind"] == SAME_KIND_MODES
+    assert CHOICES["canonical.natural_forms"] == NATURAL_FORMS_MODES
+    assert CHOICES["names.suffix_by_type"] == SUFFIX_BY_TYPE_MODES
     assert CHOICES["channels"] == CHANNEL_SET_NAMES and CHOICES["code.matrix"] == MATRICES
     fields = set(mc.Config.__dataclass_fields__)
     assert set(NATIVE_NAMES.values()) | {"message_bits", "registry_seed"} == fields
@@ -134,6 +151,36 @@ def test_native_hparams_and_validation(cfg: ExperimentConfig) -> None:
         with pytest.raises(ConfigError):
             a.to_native_hparams(hp)
     a.to_native_hparams({"voting": "weighted", "channel_weights": "w.json"})
+    for hp in ({"canonical.natural_forms": "const_left", "canonical": "paper"},
+               {"names.suffix_by_type": "on", "canonical": "paper"},
+               {"canonical.natural_forms": "zero"}, {"names.suffix_by_type": True}):  # fmt: skip
+        with pytest.raises(ConfigError):
+            a.to_native_hparams(hp)
+
+
+def test_round4_options(cfg: ExperimentConfig) -> None:
+    """``canonical.natural_forms`` e ``names.suffix_by_type`` (libreria 0664817): spente non
+    entrano negli iperparametri nativi (hash invariati a parità di commit), accese sì; ``mcss``
+    le rifiuta."""
+    mm, mc = _adapter(cfg, "multimark"), _adapter(cfg, "mcss")
+    for a in (mm, mc):
+        native = a.to_native_hparams({})
+        assert "canonical_natural_forms" not in native and "names_suffix_by_type" not in native
+        explicit = {"canonical.natural_forms": "off", "names.suffix_by_type": "off"}
+        assert a.config_hash(explicit) == a.config_hash({})
+    for hp in ({"canonical.natural_forms": "const_left"},
+               {"canonical.natural_forms": "const_left_zero"}, {"names.suffix_by_type": "on"},
+               {"canonical.natural_forms": "off", "names.suffix_by_type": "on"}):  # fmt: skip
+        native = mm.to_native_hparams(hp)
+        for key, value in hp.items():
+            if value != "off":
+                assert native[NATIVE_NAMES[key]] == value
+        assert mm.config_hash(hp) != mm.config_hash({})
+        with pytest.raises(ConfigError, match="fixed"):
+            mc.to_native_hparams(hp)
+    both = {"canonical.natural_forms": "const_left", "names.suffix_by_type": "on"}
+    assert len({mm.config_hash(both), mm.config_hash({"names.suffix_by_type": "on"}),
+                mm.config_hash({"canonical.natural_forms": "const_left"})}) == 3  # fmt: skip
 
 
 def test_config_hash_excludes_registry_seed(cfg: ExperimentConfig) -> None:
@@ -238,3 +285,99 @@ def test_shim_failures(cfg: ExperimentConfig) -> None:
     assert det.status == "FAILED" and det.error == "no_sites" and det.score is None
     with pytest.raises(ValueError, match="expected_message"):
         shim.detect(_item("x = 1\n", None))
+
+
+# ---------------------------------------------------------------- 0664817 contro 3c47a1f
+
+PREVIOUS = "3c47a1fee86f4f37535e45aa6ca09787d56881be"  # libreria di mcss ae63f16de28f
+# Inserimento in un processo a sé (le due librerie hanno lo stesso nome di pacchetto).
+EMBED_SCRIPT = """
+import json, sys
+library, shims, method, payload = sys.argv[1:5]
+sys.path[:0] = [library, shims]
+from bench_contracts import WorkerItem, WorkerRequest
+if method == "mcss":
+    from bench_shims.mcss.__main__ import McssShim as Shim
+else:
+    from bench_shims.multimark.__main__ import MultimarkShim as Shim
+import multimark
+assert multimark.__file__.startswith(library), multimark.__file__
+data = json.loads(open(payload, encoding="utf-8").read())
+shim = Shim()
+shim.setup(WorkerRequest.from_dict(data["request"]))
+out = []
+for item in data["items"]:
+    (res,) = shim.embed(WorkerItem.from_dict(item))
+    out.append({"status": str(res.status), "error": res.error, "code": res.code})
+sys.stdout.write(json.dumps(out))
+"""
+
+
+def _fixture_programs() -> list[str]:
+    """Programmi della fixture ``tiny``: prompt e soluzione canonica di HumanEval+."""
+    path = REPO_ROOT / "tests" / "fixtures" / "tiny" / "humanevalplus.jsonl"
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+    return [r["prompt"] + r["canonical_solution"] for r in rows]
+
+
+def _previous_library(dest: Path) -> Path:
+    """Copia della libreria a 3c47a1f (``git archive`` dal submodule), o skip se il commit manca."""
+    proc = subprocess.run(["git", "-C", str(LIBRARY), "archive", "--format=tar", PREVIOUS],
+                          capture_output=True, check=False)  # fmt: skip
+    if proc.returncode != 0:
+        pytest.skip(f"multimark {PREVIOUS[:7]} not available in the submodule")
+    with tarfile.open(fileobj=io.BytesIO(proc.stdout)) as tar:
+        tar.extractall(dest, filter="data")
+    return dest
+
+
+def _embed_with(library: Path, cfg: ExperimentConfig, method: str, hp: dict[str, Any],
+                codes: list[str], tmp: Path) -> list[dict[str, Any]]:  # fmt: skip
+    a = _adapter(cfg, method)
+    model = cfg.models_catalog["qwen25_coder_7b"]
+    request = a.build_request("embed", model, hp, "k1", {}, "", REPO_ROOT, "cpu")
+    items = [
+        WorkerItem(
+            item_id=f"s{i}",
+            language="python",
+            seed=0,
+            prompt_messages=None,
+            code=code,
+            context_prompt=None,
+            n=1,
+            expected_message=message_bits(
+                cfg.global_seed, method, f"p{i}", "python", model.model_id, i
+            ),
+        )
+        for i, code in enumerate(codes)
+    ]
+    payload = tmp / f"{method}_{library.name}.json"
+    data = {"request": request.to_dict(), "items": [it.to_dict() for it in items]}
+    payload.write_text(json.dumps(data), encoding="utf-8")
+    argv = [sys.executable, "-c", EMBED_SCRIPT, str(library), str(REPO_ROOT / "shims"), method,
+            str(payload)]  # fmt: skip
+    proc = subprocess.run(argv, capture_output=True, text=True, check=False)
+    assert proc.returncode == 0, proc.stderr
+    result: list[dict[str, Any]] = json.loads(proc.stdout)
+    return result
+
+
+@needs_library
+@pytest.mark.parametrize(
+    ("method", "hp"), [("mcss", {}), ("multimark", {"names.bits_per_name": 2})]
+)
+def test_embed_is_identical_to_3c47a1f_with_options_off(
+    cfg: ExperimentConfig, tmp_path: Path, method: str, hp: dict[str, Any]
+) -> None:
+    """Con ``canonical.natural_forms`` e ``names.suffix_by_type`` spenti l'inserimento della
+    libreria 0664817 è identico byte per byte a quello di 3c47a1f (mcss e multimark B)."""
+    previous = _previous_library(tmp_path / "mm_3c47a1f")
+    codes = _fixture_programs()
+    new = _embed_with(LIBRARY, cfg, method, hp, codes, tmp_path)
+    old = _embed_with(previous, cfg, method, hp, codes, tmp_path)
+    assert len(new) == len(old) == len(codes)
+    changed = [r for r, c in zip(new, codes, strict=True) if r["code"] not in (None, c)]
+    assert changed  # almeno un campione marcato: il confronto non è vuoto
+    for a, b in zip(new, old, strict=True):
+        assert (a["status"], a["error"]) == (b["status"], b["error"])
+        assert (a["code"] or "").encode("utf-8") == (b["code"] or "").encode("utf-8")

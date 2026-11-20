@@ -35,6 +35,11 @@ class McssAdapter(PosthocMultibitAdapter):
         "names.single_letter": "extend_except_loop",  # §4.2 punto 9, esito v1.2.7 (MD19)
         "names.bits_per_name": 1,  # un nome, uno stile (v1.3.2, MD27)
         "canonical.same_kind": "off",  # forme del paper (v1.3.2, MD28)
+        "canonical.natural_forms": "off",  # solo multimark (v1.3.9, MD29): fissato
+        "names.suffix_by_type": "off",  # solo multimark (v1.3.9, MD30): fissato
         "voting": "simple",
         "channel_weights": None,
     }
+    # MD29, MD30: opzioni di multimark, mai attive con il profilo mcss (la libreria le rifiuta
+    # con canonical=paper; l'adapter le rifiuta anche se si cambiasse canonical).
+    FIXED: ClassVar[tuple[str, ...]] = ("canonical.natural_forms", "names.suffix_by_type")

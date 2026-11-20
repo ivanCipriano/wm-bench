@@ -431,3 +431,41 @@ def test_linking_and_name_variant_are_passed_to_the_library(tmp_path: Path) -> N
             assert int(rows[n][i]["n_sites_total"]) == expected["n_sites_total"]
     assert int(rows[4][0]["n_vars"]) < int(rows[0][0]["n_vars"])  # MD20
     assert int(rows[4][1]["n_sites_structural"]) < int(rows[0][1]["n_sites_structural"])  # MD23
+
+
+def test_variant_names_with_round4_options() -> None:
+    """Opzioni dei giri di P2 di multimark: nel nome solo se diverse dal default."""
+    base = "canonical-kind_guards-on_params-off_modlevel-on"
+    assert inv.variant_name("kind", True, False, True) == base
+    assert (
+        inv.variant_name("kind", True, False, True, "exclude", "function_channel", "V2", 2,
+                         "binding_order", "const_left_zero")
+        == base + "_bpn-2_samekind-binding_order_natural-const_left_zero"
+    )  # fmt: skip
+
+
+NATURAL_CODE = "def f(x, a):\n    if x < 10:\n        return x < len(a), x + 1\n    return 0\n"
+
+
+@needs_library
+def test_round4_options_are_passed_to_the_library(tmp_path: Path) -> None:
+    inputs = tmp_path / "in.jsonl"
+    _input(inputs, [("humanevalplus", NATURAL_CODE)])
+    base = ["--input", str(inputs), "--out-dir", str(tmp_path), "--library", str(LIBRARY)]
+    base += ["--channels", "extended", "--module-level", "on"]
+    extra = ["--bits-per-name", "2", "--natural-forms", "const_left"]
+    summary = tmp_path / "s.json"
+    assert inv.main([*base, *extra, "--summary-json", str(summary)]) == 0
+    options = json.loads(summary.read_text(encoding="utf-8"))["options"]
+    assert options["bits_per_name"] == 2 and options["natural_forms"] == "const_left"
+    assert "same_kind" not in options
+    name = inv.variant_name("kind", True, False, True, "exclude", "function_channel", "V2", 2,
+                            "off", "const_left")  # fmt: skip
+    with (tmp_path / f"in.{name}.csv").open(encoding="utf-8", newline="") as fh:
+        (row,) = list(csv.DictReader(fh))
+    from multimark.inventory import inventory_code  # importato da LIBRARY
+
+    expected = inventory_code(NATURAL_CODE, module_level=True, bits_per_name=2,
+                              natural_forms="const_left")  # fmt: skip
+    assert int(row["n_sites_total"]) == expected["n_sites_total"]
+    assert int(row["n_sites_compare_dir"]) == 1 and int(row["n_sites_operand_order"]) == 0

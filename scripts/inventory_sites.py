@@ -135,10 +135,14 @@ def variant_name(
     single_letter: str = "exclude",
     linking: str = DEFAULT_LINKING,
     name_variant: str = DEFAULT_NAME_VARIANT,
+    bits_per_name: int = 1,
+    same_kind: str = "off",
+    natural_forms: str = "off",
 ) -> str:
     """Nome della variante delle opzioni dell'inventario (``_modlevel-on``,
-    ``_singleletter-<valore>``, ``_linking-<valore>`` e ``_names-<valore>`` solo se diversi dal
-    default: con i default i nomi restano quelli di P0/P1)."""
+    ``_singleletter-<valore>``, ``_linking-<valore>``, ``_names-<valore>``, ``_bpn-<valore>``,
+    ``_samekind-<valore>`` e ``_natural-<valore>`` solo se diversi dal default: con i default i
+    nomi restano quelli di P0/P1)."""
     return (
         f"canonical-{canonical}_guards-{'on' if guards else 'off'}"
         f"_params-{'on' if include_params else 'off'}"
@@ -146,6 +150,9 @@ def variant_name(
         + ("" if single_letter == "exclude" else f"_singleletter-{single_letter}")
         + ("" if linking == DEFAULT_LINKING else f"_linking-{linking}")
         + ("" if name_variant == DEFAULT_NAME_VARIANT else f"_names-{name_variant}")
+        + ("" if bits_per_name == 1 else f"_bpn-{bits_per_name}")
+        + ("" if same_kind == "off" else f"_samekind-{same_kind}")
+        + ("" if natural_forms == "off" else f"_natural-{natural_forms}")
     )
 
 
@@ -307,29 +314,63 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_NAME_VARIANT,
         help="names channel variant, for the reader conditions that depend on it (mcss: V1)",
     )
+    # [multimark v1.3.2/v1.3.9] opzioni dei giri di P2: la libreria le accetta da a4c9f7f
+    # (bits_per_name, same_kind) e dal commit di MD29 (natural_forms)
+    p.add_argument(
+        "--bits-per-name",
+        type=int,
+        choices=(1, 2),
+        default=1,
+        help="names.bits_per_name: n_sites_total counts each name this many times (default: 1)",
+    )
+    p.add_argument(
+        "--same-kind",
+        choices=("off", "binding_order"),
+        default="off",
+        help="canonical.same_kind: comparisons between two names (default: off)",
+    )
+    p.add_argument(
+        "--natural-forms",
+        choices=("off", "const_left", "const_left_zero"),
+        default="off",
+        help="canonical.natural_forms: no site with a constant operand (default: off)",
+    )
     return p
+
+
+def library_options(args: argparse.Namespace) -> dict[str, Any]:
+    """Argomenti di ``inventory_code``: le opzioni facoltative solo se diverse dal default."""
+    options = {
+        "canonical": args.canonical,
+        "guards": not args.no_guards,
+        "include_params": args.include_params,
+        "module_level": args.module_level == "on",
+        "channels": args.channels,
+    }
+    # Solo se diverso dal default: con ``exclude`` riepiloghi e chiamate restano quelli di
+    # prima (stesse uscite, anche con una libreria senza l'opzione).
+    if args.single_letter != "exclude":
+        options["single_letter"] = args.single_letter
+    # Come sopra: solo se diversi dal default (la libreria li accetta dal commit 4ea0d43).
+    if args.linking != DEFAULT_LINKING:
+        options["linking"] = args.linking
+    if args.name_variant != DEFAULT_NAME_VARIANT:
+        options["name_variant"] = args.name_variant
+    # Come sopra: solo se diversi dal default (riepiloghi e chiamate di prima invariati).
+    if args.bits_per_name != 1:
+        options["bits_per_name"] = args.bits_per_name
+    if args.same_kind != "off":
+        options["same_kind"] = args.same_kind
+    if args.natural_forms != "off":
+        options["natural_forms"] = args.natural_forms
+    return options
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         inventory = import_library(args.library)
-        options = {
-            "canonical": args.canonical,
-            "guards": not args.no_guards,
-            "include_params": args.include_params,
-            "module_level": args.module_level == "on",
-            "channels": args.channels,
-        }
-        # Solo se diverso dal default: con ``exclude`` riepiloghi e chiamate restano quelli di
-        # prima (stesse uscite, anche con una libreria senza l'opzione).
-        if args.single_letter != "exclude":
-            options["single_letter"] = args.single_letter
-        # Come sopra: solo se diversi dal default (la libreria li accetta dal commit 4ea0d43).
-        if args.linking != DEFAULT_LINKING:
-            options["linking"] = args.linking
-        if args.name_variant != DEFAULT_NAME_VARIANT:
-            options["name_variant"] = args.name_variant
+        options = library_options(args)
         variant = variant_name(
             args.canonical,
             not args.no_guards,
@@ -338,6 +379,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.single_letter,
             args.linking,
             args.name_variant,
+            args.bits_per_name,
+            args.same_kind,
+            args.natural_forms,
         )
         columns = [*INPUT_FIELDS, LOC_FIELD, "parse_ok", "error", *inventory.STAT_COLUMNS]
         commit = source_commit(args.library.resolve())
@@ -350,7 +394,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ""
                 if args.name_variant == DEFAULT_NAME_VARIANT
                 else f", name_variant={args.name_variant}"
-            ),
+            )
+            + ("" if args.bits_per_name == 1 else f", bits_per_name={args.bits_per_name}")
+            + ("" if args.same_kind == "off" else f", same_kind={args.same_kind}")
+            + ("" if args.natural_forms == "off" else f", natural_forms={args.natural_forms}"),
             "loc bands: " + ", ".join(band_label("loc", b) for b in LOC_BANDS),
             "site bands: " + ", ".join(band_label("n_sites_total", b) for b in SITE_BANDS),
             "",

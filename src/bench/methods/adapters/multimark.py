@@ -8,8 +8,13 @@ messaggio atteso. Audit: ``docs/audit/multimark.md`` e ``docs/audit/mcss.md``.
 - **Iperparametri** (§3.11, nomi del protocollo → nomi della libreria, 1:1): ``t``, ``linking``,
   ``mask``, ``canonical``, ``names.variant``, ``names.proposer``, ``names.include_params``,
   ``channels``, ``names.module_level``, ``code.matrix``, ``names.single_letter``,
-  ``names.bits_per_name``, ``canonical.same_kind`` (libreria a4e6972, v1.3.2), ``voting``,
-  ``channel_weights``.
+  ``names.bits_per_name``, ``canonical.same_kind`` (libreria a4e6972, v1.3.2),
+  ``canonical.natural_forms``, ``names.suffix_by_type`` (libreria 0664817, v1.3.9, MD29 e MD30),
+  ``voting``, ``channel_weights``.
+  - ``canonical.natural_forms`` e ``names.suffix_by_type`` entrano negli iperparametri nativi (e
+    nel ``config_hash``) solo se diversi da ``off``: con le opzioni spente gli hash calcolati con
+    lo stesso commit della libreria restano quelli di prima e la libreria usa i suoi default.
+  - Solo per ``multimark``: ``mcss`` le fissa a ``off`` (``FIXED``) e rifiuta ogni altro valore.
   - Una configurazione indica solo le chiavi che cambiano rispetto al profilo del metodo
     (``PROFILE``); le altre restano quelle del profilo.
   - ``message_bits`` = 24 lo fissa l'adapter.
@@ -69,6 +74,8 @@ CHOICES: dict[str, tuple[Any, ...]] = {
     "names.single_letter": ("exclude", "extend_except_loop", "extend_all"),
     "names.bits_per_name": (1, 2),
     "canonical.same_kind": ("off", "binding_order"),
+    "canonical.natural_forms": ("off", "const_left", "const_left_zero"),
+    "names.suffix_by_type": ("off", "on"),
     "voting": ("simple", "weighted", "weighted_erasure"),
 }
 # Nomi del protocollo → campi di ``multimark.config.Config`` (1:1, §3.11).
@@ -86,11 +93,15 @@ NATIVE_NAMES: dict[str, str] = {
     "names.single_letter": "names_single_letter",
     "names.bits_per_name": "names_bits_per_name",
     "canonical.same_kind": "canonical_same_kind",
+    "canonical.natural_forms": "canonical_natural_forms",
+    "names.suffix_by_type": "names_suffix_by_type",
     "voting": "voting",
     "channel_weights": "channel_weights",
 }
 # Chiavi native che non entrano nel config_hash (§3.11): il global_seed è costante.
 NOT_HASHED = ("registry_seed",)
+# Opzioni della libreria 0664817 (MD29, MD30): negli iperparametri nativi solo se non ``off``.
+OMITTED_WHEN_OFF = ("canonical.natural_forms", "names.suffix_by_type")
 
 
 def flatten(hp: Mapping[str, Any], prefix: str = "") -> dict[str, Any]:
@@ -132,6 +143,8 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
         "decode": "score_decode",
     }
     PROFILE: ClassVar[dict[str, Any]] = {}
+    # Chiavi che il metodo non lascia cambiare (valore obbligato = quello del profilo).
+    FIXED: ClassVar[tuple[str, ...]] = ()
 
     _embed_messages: dict[str, str | None] | None = None
 
@@ -152,6 +165,12 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
             raise ConfigError(f"{self.name}: names.bits_per_name=2 requires names.variant=V2")
         if merged["canonical.same_kind"] != "off" and merged["canonical"] != "kind":
             raise ConfigError(f"{self.name}: canonical.same_kind requires canonical=kind")
+        for key in self.FIXED:
+            if merged[key] != self.PROFILE[key]:
+                raise ConfigError(f"{self.name}: {key} is fixed to {self.PROFILE[key]!r}")
+        for key in OMITTED_WHEN_OFF:
+            if merged[key] != "off" and merged["canonical"] != "kind":
+                raise ConfigError(f"{self.name}: {key} requires canonical=kind")
         if merged["names.proposer"] == "neural":
             raise ConfigError(f"{self.name}: names.proposer=neural arrives in P3 (static until P2)")
         weights = merged.get("channel_weights")
@@ -159,7 +178,11 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
             raise ConfigError(f"{self.name}: voting={merged['voting']} needs channel_weights")
         if weights is not None and not isinstance(weights, str):
             raise ConfigError(f"{self.name}: channel_weights must be a JSON file path")
-        native: dict[str, Any] = {NATIVE_NAMES[k]: merged.get(k) for k in NATIVE_NAMES}
+        native: dict[str, Any] = {
+            NATIVE_NAMES[k]: merged.get(k)
+            for k in NATIVE_NAMES
+            if not (k in OMITTED_WHEN_OFF and merged[k] == "off")
+        }
         native["message_bits"] = MESSAGE_BITS
         native["registry_seed"] = int(self.cfg.global_seed)
         return native
@@ -248,6 +271,8 @@ class MultimarkAdapter(PosthocMultibitAdapter):
         "names.single_letter": "exclude",  # decisione R in P5
         "names.bits_per_name": 1,  # MD27: 2 solo nell'ablazione (v1.3.2)
         "canonical.same_kind": "off",  # MD28: binding_order solo nell'ablazione (v1.3.2)
+        "canonical.natural_forms": "off",  # MD29: const_left / const_left_zero nel giro 4 (v1.3.9)
+        "names.suffix_by_type": "off",  # MD30 (v1.3.9)
         "voting": "simple",
         "channel_weights": None,
     }
