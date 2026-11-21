@@ -1,0 +1,84 @@
+# P2 rename check of the round 4 points (scripts/run_p2_round4.sh report): 2026-11-21T17:52:52+01:00
+# wm-bench 4df21a4ebb68061e88b7325ca50abd84fbd3ce38, multimark 06648176cee2cf125ae8446381e4049929894cf9 for the 12 points of round 4; references read from existing cells
+# rename check of the dev marked samples (scripts/check_rename_dev.py), 2026-11-21T17:51:44+01:00, tnode03
+# multimark.rename_check from third_party/multimark at commit 06648176cee2cf125ae8446381e4049929894cf9; wm-bench 4df21a4ebb68061e88b7325ca50abd84fbd3ce38; submodule third_party/multimark not touched
+# configs: r4_B a8a296957377, r4_B_sfx 042968dc17df, r4_B_sfx_cl 317adaa840ee, r4_B_sfx_clz a2d195001771, r4_C 19e744a3b406, r4_C_sfx 71d9d5e6160d, r4_C_sfx_cl a8fadfc4757a, r4_C_sfx_clz fb24f51f5d15, r4_D b4cd11f13a07, r4_D_sfx f4fb209f9226, r4_D_sfx_cl f765c166de34, r4_D_sfx_clz cb29e1d7b6b8; split dev, language python; marked without attack vs the parent baseline sample
+# share of violations on the checked samples; unpaired = variables only in rewritten subtrees (not checked); fail_vs_base = violations whose tests fail while the parent passes
+
+  config                            model                   lvl  samples  checked  skipped  viol   viol %  unpaired smp_unp  fail_vs_base
+  r4_B a8a296957377                 qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_B a8a296957377                 qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  r4_B a8a296957377                 deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  r4_B a8a296957377                 deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_B_sfx 042968dc17df             qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_B_sfx 042968dc17df             qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b         L2       300      299        1     0    0.00%       102      26             0
+      (1 samples not analysable by the check)
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b     L1       576      576        0     0    0.00%       108      30             0
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b         L1       576      576        0     0    0.00%       146      44             0
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b         L2       300      299        1     0    0.00%       126      29             0
+      (1 samples not analysable by the check)
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b     L1       576      576        0     0    0.00%       120      33             0
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b     L2       300      300        0     0    0.00%       180      43             0
+  r4_C 19e744a3b406                 qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_C 19e744a3b406                 qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  r4_C 19e744a3b406                 deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  r4_C 19e744a3b406                 deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b         L2       300      299        1     0    0.00%       102      26             0
+      (1 samples not analysable by the check)
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b     L1       576      576        0     0    0.00%       108      30             0
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b         L1       576      576        0     0    0.00%       146      44             0
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b         L2       300      299        1     0    0.00%       126      29             0
+      (1 samples not analysable by the check)
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b     L1       576      576        0     0    0.00%       120      33             0
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b     L2       300      300        0     0    0.00%       180      43             0
+  r4_D b4cd11f13a07                 qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_D b4cd11f13a07                 qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  r4_D b4cd11f13a07                 deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  r4_D b4cd11f13a07                 deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b         L2       300      299        1     0    0.00%       102      26             0
+      (1 samples not analysable by the check)
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b     L1       576      576        0     0    0.00%       108      30             0
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b         L1       576      576        0     0    0.00%       146      44             0
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b         L2       300      299        1     0    0.00%       126      29             0
+      (1 samples not analysable by the check)
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b     L1       576      576        0     0    0.00%       120      33             0
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b     L2       300      300        0     0    0.00%       180      43             0
+
+## summary: max share of samples with violations over the cells (threshold 1%: if every cell is <= 1% the dev rounds are not redone)
+  r4_B a8a296957377                 max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_B_sfx 042968dc17df             max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_B_sfx_cl 317adaa840ee          max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_B_sfx_clz a2d195001771         max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_C 19e744a3b406                 max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_C_sfx 71d9d5e6160d             max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_C_sfx_cl a8fadfc4757a          max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_C_sfx_clz fb24f51f5d15         max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_D b4cd11f13a07                 max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_D_sfx f4fb209f9226             max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_D_sfx_cl f765c166de34          max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  r4_D_sfx_clz cb29e1d7b6b8         max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  -> every cell <= 1%: the dev rounds are not redone
+
