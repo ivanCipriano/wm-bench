@@ -1,0 +1,351 @@
+# P3 on dev: the two rules of v1.3.10 over all measured points (scripts/run_p2_p3.sh report): 2026-11-22T15:39:20+01:00
+# wm-bench e7a866460d85a69b5270c8178a43176360478ab7, multimark b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a for the 2 points of P3; references read from existing cells
+# P3 on development, neural names proposer, the two rules of v1.3.10 over all measured points (scripts/report_p3.py), 2026-11-22T15:39:20+01:00, tnode02
+# configs: mcss_new_3c47a1f ae63f16de28f, mcss_old_a4e6972 b521002e09f5, multimark 3c1bd11758fc, single_letter 4937d9ddd78a, A 770f999adefb, B cb79b2fcb4e6, C cf7e4c9f106e, D 37400fdcd589, r4_B a8a296957377, r4_B_sfx 042968dc17df, r4_B_sfx_cl 317adaa840ee, r4_B_sfx_clz a2d195001771, r4_C 19e744a3b406, r4_C_sfx 71d9d5e6160d, r4_C_sfx_cl a8fadfc4757a, r4_C_sfx_clz fb24f51f5d15, r4_D b4cd11f13a07, r4_D_sfx f4fb209f9226, r4_D_sfx_cl f765c166de34, r4_D_sfx_clz cb29e1d7b6b8, p3_B d54101565a0b, p3_D e80cde8924cb
+# base multimark 3c1bd11758fc, mcss mcss_new_3c47a1f ae63f16de28f; ranked: the 20 multimark configurations
+# thresholds of levels L1 L2 and theoretical score >= 2; split dev, language python
+# S = no attack; T1.4 name_kind=natural ratio=1.0 [23f6be2801c3]; T1.4 name_kind=random ratio=0.5 [e2770ff72bae]; T1.5 k=5 [705d07d343b2]; T2.1 b=all [f39d410e0723]; T2.4 p=0.5 [214ddb2cb794]; T4.1 rename=True [fe396d74371a]
+# renaming check: multimark.rename_check from third_party/multimark at commit b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a
+
+## constraints per configuration
+# max ΔPass@1 (pp) over the cells; FPR_2 = FPR on human code at score >= 2 per level; logreg Δbase = max over the cells of the AUROC difference from multimark 3c1bd11758fc (limit +0.1); <mcss = logreg AUROC below mcss_new_3c47a1f ae63f16de28f in every cell; rename = max share of samples with inconsistent renaming over the cells (limit 1%)
+  config                              mean_S   ΔPass    FPR_2 L1    FPR_2 L2   Δbase  <mcss   rename  ren/smp
+  mcss_new_3c47a1f ae63f16de28f        0.509   0.000       0.001       0.004   0.325      -    0.00%    3.616
+  mcss_old_a4e6972 b521002e09f5        0.508   1.667       0.001       0.004   0.325     no    1.67%    3.616
+  multimark 3c1bd11758fc               0.278   0.000       0.000       0.004   0.000    yes    0.00%    0.783
+  single_letter 4937d9ddd78a           0.349   0.333       0.000       0.002   0.138    yes    0.33%    1.392
+  A 770f999adefb                       0.279   0.000       0.000       0.004   0.007    yes    0.00%    0.783
+  B cb79b2fcb4e6                       0.339   0.000       0.001       0.000   0.051    yes    0.33%    1.203
+  C cf7e4c9f106e                       0.490   0.667       0.001       0.008   0.204    yes    0.67%    2.071
+  D 37400fdcd589                       0.507   0.333       0.002       0.006   0.214    yes    0.33%    2.808
+  r4_B a8a296957377                    0.337   0.000       0.001       0.000   0.050    yes    0.00%    1.203
+  r4_B_sfx 042968dc17df                0.336   0.000       0.001       0.000   0.072    yes    0.00%    1.203
+  r4_B_sfx_cl 317adaa840ee             0.253   0.000       0.000       0.000   0.061    yes    0.00%    1.203
+  r4_B_sfx_clz a2d195001771            0.236   0.000       0.000       0.000   0.047    yes    0.00%    1.203
+  r4_C 19e744a3b406                    0.492   0.000       0.001       0.008   0.204    yes    0.00%    2.071
+  r4_C_sfx 71d9d5e6160d                0.491   0.000       0.001       0.008   0.191    yes    0.00%    2.071
+  r4_C_sfx_cl a8fadfc4757a             0.409   0.000       0.000       0.002   0.210    yes    0.00%    2.071
+  r4_C_sfx_clz fb24f51f5d15            0.393   0.000       0.000       0.004   0.198    yes    0.00%    2.071
+  r4_D b4cd11f13a07                    0.506   0.000       0.002       0.006   0.213    yes    0.00%    2.808
+  r4_D_sfx f4fb209f9226                0.505   0.000       0.002       0.006   0.209    yes    0.00%    2.808
+  r4_D_sfx_cl f765c166de34             0.446   0.000       0.002       0.000   0.215    yes    0.00%    2.808
+  r4_D_sfx_clz cb29e1d7b6b8            0.438   0.000       0.002       0.000   0.204    yes    0.00%    2.808
+  p3_B d54101565a0b                    0.340   0.000       0.001       0.000   0.090    yes    0.00%    1.203
+  p3_D e80cde8924cb                    0.504   0.000       0.002       0.006   0.211    yes    0.00%    2.808
+
+## adversarial_logreg AUROC per cell: value [CI] (Δbase, Δmcss)
+  mcss_new_3c47a1f ae63f16de28f: qwen25_coder_7b L1 0.958 [0.939,0.975] (+0.325, +0.000); qwen25_coder_7b L2 0.970 [0.949,0.989] (+0.260, +0.000); deepseek_coder_6p7b L1 0.948 [0.920,0.973] (+0.285, +0.000); deepseek_coder_6p7b L2 0.974 [0.952,0.993] (+0.290, +0.000)
+  mcss_old_a4e6972 b521002e09f5: qwen25_coder_7b L1 0.958 [0.939,0.975] (+0.325, +0.000); qwen25_coder_7b L2 0.970 [0.949,0.989] (+0.260, +0.000); deepseek_coder_6p7b L1 0.948 [0.920,0.973] (+0.285, +0.000); deepseek_coder_6p7b L2 0.974 [0.952,0.994] (+0.290, -0.000)
+  multimark 3c1bd11758fc: qwen25_coder_7b L1 0.634 [0.599,0.673] (+0.000, -0.325); qwen25_coder_7b L2 0.711 [0.658,0.775] (+0.000, -0.260); deepseek_coder_6p7b L1 0.663 [0.623,0.703] (+0.000, -0.285); deepseek_coder_6p7b L2 0.684 [0.637,0.735] (+0.000, -0.290)
+  single_letter 4937d9ddd78a: qwen25_coder_7b L1 0.642 [0.608,0.682] (+0.009, -0.316); qwen25_coder_7b L2 0.834 [0.786,0.882] (+0.123, -0.136); deepseek_coder_6p7b L1 0.662 [0.624,0.701] (-0.000, -0.285); deepseek_coder_6p7b L2 0.822 [0.785,0.863] (+0.138, -0.152)
+  A 770f999adefb: qwen25_coder_7b L1 0.637 [0.601,0.673] (+0.004, -0.321); qwen25_coder_7b L2 0.706 [0.653,0.767] (-0.004, -0.264); deepseek_coder_6p7b L1 0.666 [0.622,0.710] (+0.003, -0.282); deepseek_coder_6p7b L2 0.692 [0.643,0.741] (+0.007, -0.283)
+  B cb79b2fcb4e6: qwen25_coder_7b L1 0.680 [0.642,0.718] (+0.047, -0.278); qwen25_coder_7b L2 0.761 [0.696,0.823] (+0.051, -0.209); deepseek_coder_6p7b L1 0.672 [0.632,0.717] (+0.009, -0.276); deepseek_coder_6p7b L2 0.712 [0.659,0.771] (+0.028, -0.262)
+  C cf7e4c9f106e: qwen25_coder_7b L1 0.685 [0.650,0.726] (+0.051, -0.273); qwen25_coder_7b L2 0.870 [0.821,0.918] (+0.160, -0.100); deepseek_coder_6p7b L1 0.667 [0.625,0.709] (+0.004, -0.281); deepseek_coder_6p7b L2 0.888 [0.855,0.924] (+0.204, -0.087)
+  D 37400fdcd589: qwen25_coder_7b L1 0.837 [0.803,0.868] (+0.204, -0.121); qwen25_coder_7b L2 0.893 [0.851,0.935] (+0.182, -0.078); deepseek_coder_6p7b L1 0.806 [0.768,0.846] (+0.143, -0.142); deepseek_coder_6p7b L2 0.898 [0.865,0.929] (+0.214, -0.077)
+  r4_B a8a296957377: qwen25_coder_7b L1 0.680 [0.642,0.721] (+0.047, -0.278); qwen25_coder_7b L2 0.761 [0.700,0.825] (+0.050, -0.209); deepseek_coder_6p7b L1 0.672 [0.631,0.713] (+0.009, -0.276); deepseek_coder_6p7b L2 0.712 [0.655,0.773] (+0.028, -0.262)
+  r4_B_sfx 042968dc17df: qwen25_coder_7b L1 0.682 [0.644,0.722] (+0.049, -0.276); qwen25_coder_7b L2 0.783 [0.719,0.840] (+0.072, -0.188); deepseek_coder_6p7b L1 0.667 [0.629,0.706] (+0.005, -0.280); deepseek_coder_6p7b L2 0.725 [0.671,0.781] (+0.041, -0.249)
+  r4_B_sfx_cl 317adaa840ee: qwen25_coder_7b L1 0.631 [0.597,0.668] (-0.002, -0.327); qwen25_coder_7b L2 0.772 [0.718,0.830] (+0.061, -0.199); deepseek_coder_6p7b L1 0.624 [0.585,0.666] (-0.039, -0.324); deepseek_coder_6p7b L2 0.659 [0.604,0.727] (-0.026, -0.316)
+  r4_B_sfx_clz a2d195001771: qwen25_coder_7b L1 0.639 [0.606,0.680] (+0.005, -0.319); qwen25_coder_7b L2 0.758 [0.700,0.815] (+0.047, -0.212); deepseek_coder_6p7b L1 0.613 [0.575,0.655] (-0.049, -0.334); deepseek_coder_6p7b L2 0.646 [0.599,0.700] (-0.038, -0.328)
+  r4_C 19e744a3b406: qwen25_coder_7b L1 0.685 [0.645,0.722] (+0.051, -0.273); qwen25_coder_7b L2 0.870 [0.820,0.918] (+0.160, -0.100); deepseek_coder_6p7b L1 0.667 [0.627,0.710] (+0.004, -0.281); deepseek_coder_6p7b L2 0.888 [0.852,0.925] (+0.204, -0.086)
+  r4_C_sfx 71d9d5e6160d: qwen25_coder_7b L1 0.686 [0.651,0.728] (+0.053, -0.272); qwen25_coder_7b L2 0.872 [0.827,0.916] (+0.161, -0.098); deepseek_coder_6p7b L1 0.667 [0.627,0.710] (+0.004, -0.281); deepseek_coder_6p7b L2 0.875 [0.840,0.915] (+0.191, -0.100)
+  r4_C_sfx_cl a8fadfc4757a: qwen25_coder_7b L1 0.630 [0.598,0.666] (-0.003, -0.328); qwen25_coder_7b L2 0.850 [0.802,0.900] (+0.139, -0.120); deepseek_coder_6p7b L1 0.620 [0.581,0.663] (-0.043, -0.327); deepseek_coder_6p7b L2 0.894 [0.861,0.928] (+0.210, -0.081)
+  r4_C_sfx_clz fb24f51f5d15: qwen25_coder_7b L1 0.638 [0.603,0.676] (+0.004, -0.321); qwen25_coder_7b L2 0.854 [0.805,0.899] (+0.143, -0.116); deepseek_coder_6p7b L1 0.608 [0.569,0.649] (-0.054, -0.339); deepseek_coder_6p7b L2 0.882 [0.843,0.923] (+0.198, -0.093)
+  r4_D b4cd11f13a07: qwen25_coder_7b L1 0.837 [0.806,0.870] (+0.204, -0.121); qwen25_coder_7b L2 0.893 [0.846,0.935] (+0.182, -0.078); deepseek_coder_6p7b L1 0.806 [0.768,0.843] (+0.143, -0.142); deepseek_coder_6p7b L2 0.898 [0.869,0.930] (+0.213, -0.077)
+  r4_D_sfx f4fb209f9226: qwen25_coder_7b L1 0.842 [0.811,0.877] (+0.209, -0.116); qwen25_coder_7b L2 0.892 [0.849,0.933] (+0.181, -0.079); deepseek_coder_6p7b L1 0.804 [0.765,0.843] (+0.141, -0.144); deepseek_coder_6p7b L2 0.885 [0.848,0.921] (+0.201, -0.089)
+  r4_D_sfx_cl f765c166de34: qwen25_coder_7b L1 0.829 [0.798,0.860] (+0.196, -0.129); qwen25_coder_7b L2 0.896 [0.858,0.935] (+0.185, -0.075); deepseek_coder_6p7b L1 0.801 [0.767,0.839] (+0.139, -0.146); deepseek_coder_6p7b L2 0.899 [0.865,0.931] (+0.215, -0.075)
+  r4_D_sfx_clz cb29e1d7b6b8: qwen25_coder_7b L1 0.828 [0.796,0.861] (+0.195, -0.130); qwen25_coder_7b L2 0.902 [0.862,0.941] (+0.191, -0.068); deepseek_coder_6p7b L1 0.800 [0.766,0.837] (+0.138, -0.147); deepseek_coder_6p7b L2 0.889 [0.851,0.925] (+0.204, -0.086)
+  p3_B d54101565a0b: qwen25_coder_7b L1 0.687 [0.648,0.729] (+0.053, -0.271); qwen25_coder_7b L2 0.801 [0.738,0.861] (+0.090, -0.169); deepseek_coder_6p7b L1 0.669 [0.629,0.710] (+0.007, -0.278); deepseek_coder_6p7b L2 0.703 [0.652,0.760] (+0.019, -0.271)
+  p3_D e80cde8924cb: qwen25_coder_7b L1 0.845 [0.815,0.877] (+0.211, -0.113); qwen25_coder_7b L2 0.871 [0.820,0.919] (+0.160, -0.099); deepseek_coder_6p7b L1 0.824 [0.784,0.863] (+0.161, -0.124); deepseek_coder_6p7b L2 0.867 [0.831,0.909] (+0.183, -0.107)
+
+## inconsistent renaming per cell (share of the checked samples)
+  mcss_new_3c47a1f ae63f16de28f: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  mcss_old_a4e6972 b521002e09f5: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 1.67%
+  multimark 3c1bd11758fc: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  single_letter 4937d9ddd78a: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.33%
+  A 770f999adefb: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  B cb79b2fcb4e6: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  C cf7e4c9f106e: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.67%
+  D 37400fdcd589: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.33%
+  r4_B a8a296957377: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_B_sfx 042968dc17df: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_B_sfx_cl 317adaa840ee: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_B_sfx_clz a2d195001771: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_C 19e744a3b406: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_C_sfx 71d9d5e6160d: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_C_sfx_cl a8fadfc4757a: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_C_sfx_clz fb24f51f5d15: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_D b4cd11f13a07: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_D_sfx f4fb209f9226: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_D_sfx_cl f765c166de34: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_D_sfx_clz cb29e1d7b6b8: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p3_B d54101565a0b: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p3_D e80cde8924cb: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+
+## rule 1, prudent configuration (v1.3.3 criterion, v1.3.10): ΔPass@1, FPR_2, logreg <= multimark 3c1bd11758fc + 0.1 on every cell, renaming <= 1% per cell; within 0.01 of the best mean_S, fewer renames first
+    1. p3_B d54101565a0b  mean_S 0.340  renames/sample 1.203  [tie group: fewer renames wins]
+    2. B cb79b2fcb4e6  mean_S 0.339  renames/sample 1.203  [tie group: fewer renames wins]
+    3. r4_B a8a296957377  mean_S 0.337  renames/sample 1.203  [tie group: fewer renames wins]
+    4. r4_B_sfx 042968dc17df  mean_S 0.336  renames/sample 1.203  [tie group: fewer renames wins]
+    5. A 770f999adefb  mean_S 0.279  renames/sample 0.783
+    6. multimark 3c1bd11758fc  mean_S 0.278  renames/sample 0.783
+    7. r4_B_sfx_cl 317adaa840ee  mean_S 0.253  renames/sample 1.203
+    8. r4_B_sfx_clz a2d195001771  mean_S 0.236  renames/sample 1.203
+
+## rule 2, high-capacity configuration (v1.3.10): ΔPass@1, FPR_2, renaming <= 1% per cell, logreg AUROC < mcss_new_3c47a1f ae63f16de28f on every cell (point estimate); within 0.01 of the best mean_S, fewer renames first
+    1. D 37400fdcd589  mean_S 0.507  renames/sample 2.808  [tie group: fewer renames wins]
+    2. r4_D b4cd11f13a07  mean_S 0.506  renames/sample 2.808  [tie group: fewer renames wins]
+    3. r4_D_sfx f4fb209f9226  mean_S 0.505  renames/sample 2.808  [tie group: fewer renames wins]
+    4. p3_D e80cde8924cb  mean_S 0.504  renames/sample 2.808  [tie group: fewer renames wins]
+    5. r4_C 19e744a3b406  mean_S 0.492  renames/sample 2.071
+    6. r4_C_sfx 71d9d5e6160d  mean_S 0.491  renames/sample 2.071
+    7. C cf7e4c9f106e  mean_S 0.490  renames/sample 2.071
+    8. r4_D_sfx_cl f765c166de34  mean_S 0.446  renames/sample 2.808
+    9. r4_D_sfx_clz cb29e1d7b6b8  mean_S 0.438  renames/sample 2.808
+    10. r4_C_sfx_cl a8fadfc4757a  mean_S 0.409  renames/sample 2.071
+    11. r4_C_sfx_clz fb24f51f5d15  mean_S 0.393  renames/sample 2.071
+    12. single_letter 4937d9ddd78a  mean_S 0.349  renames/sample 1.392
+    13. p3_B d54101565a0b  mean_S 0.340  renames/sample 1.203
+    14. B cb79b2fcb4e6  mean_S 0.339  renames/sample 1.203
+    15. r4_B a8a296957377  mean_S 0.337  renames/sample 1.203
+    16. r4_B_sfx 042968dc17df  mean_S 0.336  renames/sample 1.203
+    17. A 770f999adefb  mean_S 0.279  renames/sample 0.783
+    18. multimark 3c1bd11758fc  mean_S 0.278  renames/sample 0.783
+    19. r4_B_sfx_cl 317adaa840ee  mean_S 0.253  renames/sample 1.203
+    20. r4_B_sfx_clz a2d195001771  mean_S 0.236  renames/sample 1.203
+  -> two working points
+
+## names.suffix_by_type fallback to the full list (n_names_type_fallback)
+  config                            cell                           samples  fallback  smp>=1  renamed    share
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L1                 576         8       8      443    1.81%
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L2                 300         6       6      656    0.91%
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L1             576        12      12      306    3.92%
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L2             300         8       8      397    2.02%
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L1                 576         8       8      443    1.81%
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L2                 300         6       6      656    0.91%
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L1             576        12      12      306    3.92%
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L2             300         8       8      397    2.02%
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L1                 576         8       8      443    1.81%
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L2                 300         6       6      656    0.91%
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L1             576        12      12      306    3.92%
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L2             300         8       8      397    2.02%
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L1                 576         8       8      510    1.57%
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L2                 300         4       4     1154    0.35%
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L1             576        12      12      353    3.40%
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L2             300        11      11      882    1.25%
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L1                 576         8       8      510    1.57%
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L2                 300         4       4     1154    0.35%
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L1             576        12      12      353    3.40%
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L2             300        11      11      882    1.25%
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L1                 576         8       8      510    1.57%
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L2                 300         4       4     1154    0.35%
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L1             576        12      12      353    3.40%
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L2             300        11      11      882    1.25%
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L1                 576        17      17     1130    1.50%
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L2                 300         9       8     1284    0.70%
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L1             576        22      22      979    2.25%
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L2             300        21      18      987    2.13%
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L1                 576        17      17     1130    1.50%
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L2                 300         9       8     1284    0.70%
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L1             576        22      22      979    2.25%
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L2             300        21      18      987    2.13%
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L1                 576        17      17     1130    1.50%
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L2                 300         9       8     1284    0.70%
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L1             576        22      22      979    2.25%
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L2             300        21      18      987    2.13%
+  (configurations without the option: field absent, not listed)
+
+## mean sites per sample (embedding extras, failed embeddings included)
+  config                            cell                           samples             n_sites  n_structural_sites        n_name_sites
+  mcss_new_3c47a1f ae63f16de28f     qwen25_coder_7b L1                 576               6.896               1.691               2.602
+  mcss_new_3c47a1f ae63f16de28f     qwen25_coder_7b L2                 300              15.191               3.819               5.686
+  mcss_new_3c47a1f ae63f16de28f     deepseek_coder_6p7b L1             576               6.113               1.589               2.262
+  mcss_new_3c47a1f ae63f16de28f     deepseek_coder_6p7b L2             300              11.733               3.033               4.350
+  mcss_old_a4e6972 b521002e09f5     qwen25_coder_7b L1                 576               6.896               1.691               2.602
+  mcss_old_a4e6972 b521002e09f5     qwen25_coder_7b L2                 300              15.191               3.819               5.686
+  mcss_old_a4e6972 b521002e09f5     deepseek_coder_6p7b L1             576               6.113               1.589               2.262
+  mcss_old_a4e6972 b521002e09f5     deepseek_coder_6p7b L2             300              11.733               3.033               4.350
+  multimark 3c1bd11758fc            qwen25_coder_7b L1                 576               3.066               2.035               1.031
+  multimark 3c1bd11758fc            qwen25_coder_7b L2                 300               7.231               4.308               2.923
+  multimark 3c1bd11758fc            deepseek_coder_6p7b L1             576               2.564               1.852               0.712
+  multimark 3c1bd11758fc            deepseek_coder_6p7b L2             300               5.407               3.667               1.740
+  single_letter 4937d9ddd78a        qwen25_coder_7b L1                 576               3.212               2.035               1.177
+  single_letter 4937d9ddd78a        qwen25_coder_7b L2                 300               9.448               4.308               5.140
+  single_letter 4937d9ddd78a        deepseek_coder_6p7b L1             576               2.705               1.852               0.852
+  single_letter 4937d9ddd78a        deepseek_coder_6p7b L2             300               7.593               3.667               3.927
+  A 770f999adefb                    qwen25_coder_7b L1                 576               3.156               2.125               1.031
+  A 770f999adefb                    qwen25_coder_7b L2                 300               7.401               4.478               2.923
+  A 770f999adefb                    deepseek_coder_6p7b L1             576               2.722               2.010               0.712
+  A 770f999adefb                    deepseek_coder_6p7b L2             300               5.600               3.860               1.740
+  B cb79b2fcb4e6                    qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  B cb79b2fcb4e6                    qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  B cb79b2fcb4e6                    deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  B cb79b2fcb4e6                    deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  C cf7e4c9f106e                    qwen25_coder_7b L1                 576               4.479               2.125               1.177
+  C cf7e4c9f106e                    qwen25_coder_7b L2                 300              14.759               4.478               5.140
+  C cf7e4c9f106e                    deepseek_coder_6p7b L1             576               3.715               2.010               0.852
+  C cf7e4c9f106e                    deepseek_coder_6p7b L2             300              11.713               3.860               3.927
+  D 37400fdcd589                    qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  D 37400fdcd589                    qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  D 37400fdcd589                    deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  D 37400fdcd589                    deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+  r4_B a8a296957377                 qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  r4_B a8a296957377                 qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  r4_B a8a296957377                 deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  r4_B a8a296957377                 deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L1                 576               3.144               1.082               1.031
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L2                 300               7.803               1.957               2.923
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L1             576               2.278               0.854               0.712
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L2             300               5.400               1.920               1.740
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L1                 576               3.009               0.946               1.031
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L2                 300               7.247               1.401               2.923
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L1             576               2.095               0.672               0.712
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L2             300               4.710               1.230               1.740
+  r4_C 19e744a3b406                 qwen25_coder_7b L1                 576               4.479               2.125               1.177
+  r4_C 19e744a3b406                 qwen25_coder_7b L2                 300              14.759               4.478               5.140
+  r4_C 19e744a3b406                 deepseek_coder_6p7b L1             576               3.715               2.010               0.852
+  r4_C 19e744a3b406                 deepseek_coder_6p7b L2             300              11.713               3.860               3.927
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L1                 576               4.479               2.125               1.177
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L2                 300              14.759               4.478               5.140
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L1             576               3.715               2.010               0.852
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L2             300              11.713               3.860               3.927
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L1                 576               3.526               1.172               1.177
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L2                 300              12.408               2.127               5.140
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L1             576               2.717               1.012               0.852
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L2             300               9.967               2.113               3.927
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L1                 576               3.391               1.036               1.177
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L2                 300              11.853               1.572               5.140
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L1             576               2.535               0.830               0.852
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L2             300               9.277               1.423               3.927
+  r4_D b4cd11f13a07                 qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  r4_D b4cd11f13a07                 qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  r4_D b4cd11f13a07                 deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  r4_D b4cd11f13a07                 deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L1                 576               6.377               1.172               2.602
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L2                 300              13.552               2.127               5.712
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L1             576               5.536               1.012               2.262
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L2             300              10.867               2.113               4.377
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L1                 576               6.241               1.036               2.602
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L2                 300              12.997               1.572               5.712
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L1             576               5.354               0.830               2.262
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L2             300              10.177               1.423               4.377
+  p3_B d54101565a0b                 qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  p3_B d54101565a0b                 qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  p3_B d54101565a0b                 deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  p3_B d54101565a0b                 deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  p3_D e80cde8924cb                 qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  p3_D e80cde8924cb                 qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  p3_D e80cde8924cb                 deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  p3_D e80cde8924cb                 deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+
+## neural proposer fallback to the static candidates (n_names_neural_fallback)
+  config                            cell                           samples  fallback  smp>=1  renamed    share
+  p3_B d54101565a0b                 qwen25_coder_7b L1                 576        41      40      443    9.26%
+  p3_B d54101565a0b                 qwen25_coder_7b L2                 300        39      35      656    5.95%
+  p3_B d54101565a0b                 deepseek_coder_6p7b L1             576        13      13      306    4.25%
+  p3_B d54101565a0b                 deepseek_coder_6p7b L2             300        23      22      397    5.79%
+  p3_D e80cde8924cb                 qwen25_coder_7b L1                 576       111      97     1130    9.82%
+  p3_D e80cde8924cb                 qwen25_coder_7b L2                 300       175     134     1284   13.63%
+  p3_D e80cde8924cb                 deepseek_coder_6p7b L1             576        93      84      979    9.50%
+  p3_D e80cde8924cb                 deepseek_coder_6p7b L2             300       149     120      987   15.10%
+  (configurations with the static proposer: field absent, not listed)
+
+## embedding time per sample (worker elapsed_s, seconds; neural points: model loading excluded, batches of prompts read from the disk cache / generated)
+  config                            cell                           samples     mean   median      p90     total  cached    gen smp_gen mean_gen
+  mcss_new_3c47a1f ae63f16de28f     qwen25_coder_7b L1                 576    0.014    0.011    0.025       7.9       -      -       -        -
+  mcss_new_3c47a1f ae63f16de28f     qwen25_coder_7b L2                 300    0.026    0.023    0.046       7.9       -      -       -        -
+  mcss_new_3c47a1f ae63f16de28f     deepseek_coder_6p7b L1             576    0.014    0.010    0.024       7.8       -      -       -        -
+  mcss_new_3c47a1f ae63f16de28f     deepseek_coder_6p7b L2             300    0.025    0.022    0.045       7.6       -      -       -        -
+  mcss_old_a4e6972 b521002e09f5     qwen25_coder_7b L1                 576    0.015    0.012    0.026       8.9       -      -       -        -
+  mcss_old_a4e6972 b521002e09f5     qwen25_coder_7b L2                 300    0.027    0.024    0.047       8.1       -      -       -        -
+  mcss_old_a4e6972 b521002e09f5     deepseek_coder_6p7b L1             576    0.015    0.011    0.025       8.7       -      -       -        -
+  mcss_old_a4e6972 b521002e09f5     deepseek_coder_6p7b L2             300    0.025    0.023    0.045       7.6       -      -       -        -
+  multimark 3c1bd11758fc            qwen25_coder_7b L1                 576    0.009    0.007    0.021       5.1       -      -       -        -
+  multimark 3c1bd11758fc            qwen25_coder_7b L2                 300    0.023    0.019    0.047       6.8       -      -       -        -
+  multimark 3c1bd11758fc            deepseek_coder_6p7b L1             576    0.008    0.004    0.023       4.8       -      -       -        -
+  multimark 3c1bd11758fc            deepseek_coder_6p7b L2             300    0.020    0.014    0.045       5.9       -      -       -        -
+  single_letter 4937d9ddd78a        qwen25_coder_7b L1                 576    0.009    0.007    0.024       5.2       -      -       -        -
+  single_letter 4937d9ddd78a        qwen25_coder_7b L2                 300    0.026    0.023    0.047       7.7       -      -       -        -
+  single_letter 4937d9ddd78a        deepseek_coder_6p7b L1             576    0.008    0.004    0.023       4.6       -      -       -        -
+  single_letter 4937d9ddd78a        deepseek_coder_6p7b L2             300    0.023    0.019    0.044       7.0       -      -       -        -
+  A 770f999adefb                    qwen25_coder_7b L1                 576    0.009    0.007    0.022       5.1       -      -       -        -
+  A 770f999adefb                    qwen25_coder_7b L2                 300    0.023    0.019    0.048       6.8       -      -       -        -
+  A 770f999adefb                    deepseek_coder_6p7b L1             576    0.008    0.005    0.021       4.7       -      -       -        -
+  A 770f999adefb                    deepseek_coder_6p7b L2             300    0.019    0.014    0.043       5.8       -      -       -        -
+  B cb79b2fcb4e6                    qwen25_coder_7b L1                 576    0.010    0.009    0.023       5.7       -      -       -        -
+  B cb79b2fcb4e6                    qwen25_coder_7b L2                 300    0.024    0.022    0.046       7.2       -      -       -        -
+  B cb79b2fcb4e6                    deepseek_coder_6p7b L1             576    0.009    0.006    0.022       5.1       -      -       -        -
+  B cb79b2fcb4e6                    deepseek_coder_6p7b L2             300    0.021    0.016    0.043       6.3       -      -       -        -
+  C cf7e4c9f106e                    qwen25_coder_7b L1                 576    0.011    0.009    0.025       6.2       -      -       -        -
+  C cf7e4c9f106e                    qwen25_coder_7b L2                 300    0.027    0.024    0.047       8.1       -      -       -        -
+  C cf7e4c9f106e                    deepseek_coder_6p7b L1             576    0.009    0.006    0.024       5.3       -      -       -        -
+  C cf7e4c9f106e                    deepseek_coder_6p7b L2             300    0.025    0.021    0.045       7.5       -      -       -        -
+  D 37400fdcd589                    qwen25_coder_7b L1                 576    0.013    0.011    0.025       7.8       -      -       -        -
+  D 37400fdcd589                    qwen25_coder_7b L2                 300    0.027    0.023    0.049       8.1       -      -       -        -
+  D 37400fdcd589                    deepseek_coder_6p7b L1             576    0.013    0.010    0.025       7.5       -      -       -        -
+  D 37400fdcd589                    deepseek_coder_6p7b L2             300    0.025    0.022    0.045       7.5       -      -       -        -
+  r4_B a8a296957377                 qwen25_coder_7b L1                 576    0.011    0.010    0.025       6.3       -      -       -        -
+  r4_B a8a296957377                 qwen25_coder_7b L2                 300    0.027    0.024    0.051       8.0       -      -       -        -
+  r4_B a8a296957377                 deepseek_coder_6p7b L1             576    0.010    0.007    0.025       5.7       -      -       -        -
+  r4_B a8a296957377                 deepseek_coder_6p7b L2             300    0.023    0.018    0.048       6.9       -      -       -        -
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L1                 576    0.011    0.010    0.025       6.2       -      -       -        -
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L2                 300    0.026    0.023    0.051       7.9       -      -       -        -
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L1             576    0.010    0.006    0.025       5.6       -      -       -        -
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L2             300    0.023    0.018    0.048       6.9       -      -       -        -
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L1                 576    0.009    0.008    0.022       5.2       -      -       -        -
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L2                 300    0.024    0.021    0.050       7.2       -      -       -        -
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L1             576    0.008    0.003    0.022       4.6       -      -       -        -
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L2             300    0.020    0.015    0.043       5.9       -      -       -        -
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L1                 576    0.010    0.010    0.024       5.7       -      -       -        -
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L2                 300    0.024    0.021    0.050       7.3       -      -       -        -
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L1             576    0.008    0.003    0.023       4.9       -      -       -        -
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L2             300    0.020    0.015    0.045       6.1       -      -       -        -
+  r4_C 19e744a3b406                 qwen25_coder_7b L1                 576    0.012    0.010    0.027       6.9       -      -       -        -
+  r4_C 19e744a3b406                 qwen25_coder_7b L2                 300    0.030    0.026    0.053       8.9       -      -       -        -
+  r4_C 19e744a3b406                 deepseek_coder_6p7b L1             576    0.010    0.006    0.027       6.0       -      -       -        -
+  r4_C 19e744a3b406                 deepseek_coder_6p7b L2             300    0.028    0.024    0.049       8.4       -      -       -        -
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L1                 576    0.011    0.009    0.025       6.2       -      -       -        -
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L2                 300    0.027    0.023    0.048       8.2       -      -       -        -
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L1             576    0.009    0.005    0.024       5.3       -      -       -        -
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L2             300    0.025    0.021    0.045       7.6       -      -       -        -
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L1                 576    0.011    0.010    0.026       6.3       -      -       -        -
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L2                 300    0.028    0.024    0.052       8.5       -      -       -        -
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L1             576    0.010    0.004    0.026       5.6       -      -       -        -
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L2             300    0.027    0.023    0.049       8.0       -      -       -        -
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L1                 576    0.011    0.010    0.026       6.3       -      -       -        -
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L2                 300    0.027    0.024    0.050       8.2       -      -       -        -
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L1             576    0.009    0.003    0.025       5.3       -      -       -        -
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L2             300    0.026    0.022    0.047       7.7       -      -       -        -
+  r4_D b4cd11f13a07                 qwen25_coder_7b L1                 576    0.014    0.011    0.025       7.9       -      -       -        -
+  r4_D b4cd11f13a07                 qwen25_coder_7b L2                 300    0.027    0.024    0.048       8.2       -      -       -        -
+  r4_D b4cd11f13a07                 deepseek_coder_6p7b L1             576    0.013    0.010    0.024       7.6       -      -       -        -
+  r4_D b4cd11f13a07                 deepseek_coder_6p7b L2             300    0.025    0.021    0.045       7.6       -      -       -        -
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L1                 576    0.015    0.013    0.028       8.8       -      -       -        -
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L2                 300    0.030    0.026    0.054       9.0       -      -       -        -
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L1             576    0.015    0.012    0.028       8.5       -      -       -        -
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L2             300    0.028    0.025    0.050       8.5       -      -       -        -
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L1                 576    0.015    0.012    0.027       8.4       -      -       -        -
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L2                 300    0.028    0.024    0.053       8.5       -      -       -        -
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L1             576    0.014    0.011    0.027       8.1       -      -       -        -
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L2             300    0.027    0.024    0.049       8.0       -      -       -        -
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L1                 576    0.012    0.010    0.024       7.1       -      -       -        -
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L2                 300    0.026    0.022    0.047       7.7       -      -       -        -
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L1             576    0.012    0.010    0.023       7.0       -      -       -        -
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L2             300    0.024    0.020    0.044       7.1       -      -       -        -
+  p3_B d54101565a0b                 qwen25_coder_7b L1                 576    0.449    0.009    1.958     258.5       4    121     121    2.107
+  p3_B d54101565a0b                 qwen25_coder_7b L2                 300    1.074    0.031    2.944     322.2       0    129     129    2.477
+  p3_B d54101565a0b                 deepseek_coder_6p7b L1             576    0.285    0.005    1.719     164.0       9     83      83    1.937
+  p3_B d54101565a0b                 deepseek_coder_6p7b L2             300    0.889    0.018    2.495     266.7       2    119     119    2.224
+  p3_D e80cde8924cb                 qwen25_coder_7b L1                 576    0.252    0.013    1.471     145.3     130     79      79    1.751
+  p3_D e80cde8924cb                 qwen25_coder_7b L2                 300    0.127    0.028    0.070      38.0     129     17      17    1.698
+  p3_D e80cde8924cb                 deepseek_coder_6p7b L1             576    0.288    0.014    1.449     166.1     101     97      97    1.645
+  p3_D e80cde8924cb                 deepseek_coder_6p7b L2             300    0.226    0.028    1.018      67.9     125     35      35    1.723
+  (static points ran on CPU; D cells follow B cells in the same GPU job and read the disk cache for the same codes: their mean is not the model cost)
+

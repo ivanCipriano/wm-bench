@@ -1,0 +1,24 @@
+# P3 rename check of the neural points (scripts/run_p2_p3.sh report): 2026-11-22T15:33:52+01:00
+# wm-bench e7a866460d85a69b5270c8178a43176360478ab7, multimark b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a for the 2 points of P3; references read from existing cells
+# rename check of the dev marked samples (scripts/check_rename_dev.py), 2026-11-22T15:33:47+01:00, tnode02
+# multimark.rename_check from third_party/multimark at commit b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a; wm-bench e7a866460d85a69b5270c8178a43176360478ab7; submodule third_party/multimark not touched
+# configs: p3_B d54101565a0b, p3_D e80cde8924cb; split dev, language python; marked without attack vs the parent baseline sample
+# share of violations on the checked samples; unpaired = variables only in rewritten subtrees (not checked); fail_vs_base = violations whose tests fail while the parent passes
+
+  config                            model                   lvl  samples  checked  skipped  viol   viol %  unpaired smp_unp  fail_vs_base
+  p3_B d54101565a0b                 qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  p3_B d54101565a0b                 qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  p3_B d54101565a0b                 deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  p3_B d54101565a0b                 deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  p3_D e80cde8924cb                 qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  p3_D e80cde8924cb                 qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  p3_D e80cde8924cb                 deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  p3_D e80cde8924cb                 deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+
+## summary: max share of samples with violations over the cells (threshold 1%: if every cell is <= 1% the dev rounds are not redone)
+  p3_B d54101565a0b                 max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  p3_D e80cde8924cb                 max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  -> every cell <= 1%: the dev rounds are not redone
+
