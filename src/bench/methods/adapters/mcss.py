@@ -27,7 +27,7 @@ class McssAdapter(PosthocMultibitAdapter):
         "mask": "off",
         "canonical": "paper",
         "names.variant": "V1",
-        "names.proposer": "static",  # non usato da V1 (stili, nessun candidato)
+        "names.proposer": "static",  # non usato da V1 (stili): fissato (MD31)
         "names.include_params": True,  # §4.2 punto 8
         "channels": "mcss8",
         "names.module_level": True,  # §3.6.1: true per mcss in ogni caso
@@ -41,5 +41,10 @@ class McssAdapter(PosthocMultibitAdapter):
         "channel_weights": None,
     }
     # MD29, MD30: opzioni di multimark, mai attive con il profilo mcss (la libreria le rifiuta
-    # con canonical=paper; l'adapter le rifiuta anche se si cambiasse canonical).
-    FIXED: ClassVar[tuple[str, ...]] = ("canonical.natural_forms", "names.suffix_by_type")
+    # con canonical=paper; l'adapter le rifiuta anche se si cambiasse canonical). MD31: il
+    # proponente neurale è solo di multimark (V1 non usa candidati), quindi resta static.
+    FIXED: ClassVar[tuple[str, ...]] = (
+        "canonical.natural_forms",
+        "names.suffix_by_type",
+        "names.proposer",
+    )

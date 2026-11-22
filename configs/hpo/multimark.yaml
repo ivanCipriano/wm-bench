@@ -2,32 +2,27 @@
 # configs/method/multimark.yaml ({}). Il solo fattore scelto fuori dall'HPO è il canale dei nomi
 # (§6.4); la scelta aggiornerà questo punto (deviazione D4x, ADR-021).
 #
-# Giro 4 su sviluppo (pipeline v1.3.9 e v1.3.10, 20 novembre 2026; scripts/run_p2_round4.sh),
-# libreria 0664817: {B, C, D} x {opzioni spente; names.suffix_by_type=on; on +
-# canonical.natural_forms=const_left; on + const_left_zero} = 12 punti, misurati su L1+L2 dev con
+# Giro P3 su sviluppo (pipeline v1.3.13, 22 novembre 2026; scripts/run_p2_p3.sh), libreria
+# b2b6c18: le opzioni di B e di D (come r4_B e r4_D, opzioni del giro 4 spente) con
+# names.proposer=neural (MD31, modello qwen25_coder_1p5b del catalogo), misurati su L1+L2 dev con
 # gli attacchi dell'insieme S, T1.6 e l'impercettibilità (sweep con hpo.grid=multimark, ADR-017
-# §5-§7: ognuno ha il suo config_hash, stampato da scripts/posthoc_config_hashes.py). Il default
-# ({}) non è nella griglia: la base di riferimento resta 3c1bd11758fc (a4e6972). Non sono una
-# scelta: la fase tune non si lancia su multimark; le due regole di v1.3.10 sono nel report.
+# §5-§7; config_hash stampati da scripts/posthoc_config_hashes.py). Il default ({}) non è nella
+# griglia: la base di riferimento resta 3c1bd11758fc (a4e6972). Non sono una scelta: la fase tune
+# non si lancia su multimark; le due regole di v1.3.10 sono nel report (scripts/report_p3.py).
+# L'ordine conta: nell'inserimento (un solo job GPU) ogni cella di D segue quella di B, così D
+# legge dalla cache su disco le risposte del modello per gli stessi codici.
 method: multimark
-# config_hash con la libreria 0664817 (tests/unit/test_posthoc_config_hashes.py li ricontrolla).
-# Giro di capacità, libreria a4e6972 (stessi B, C, D con le opzioni spente; scripts/run_p2_round3.sh):
-# base 3c1bd11758fc, single_letter 4937d9ddd78a, A 770f999adefb, B cb79b2fcb4e6, C cf7e4c9f106e,
-# D 37400fdcd589. Secondo giro, libreria 475d4cc: base 59a04735824c, single_letter 94847adacd77,
-# include_params acac071d50d5. Primo giro, libreria 488fb5a: base 194b0aa80f9f.
+# config_hash con la libreria b2b6c18 (tests/unit/test_posthoc_config_hashes.py li ricontrolla).
+# Giro 4, libreria 0664817 (scripts/run_p2_round4.sh; punti in ROUND4_POINTS del test): B
+# a8a296957377, B_sfx 042968dc17df, B_sfx_cl 317adaa840ee, B_sfx_clz a2d195001771, C 19e744a3b406,
+# C_sfx 71d9d5e6160d, C_sfx_cl a8fadfc4757a, C_sfx_clz fb24f51f5d15, D b4cd11f13a07, D_sfx
+# f4fb209f9226, D_sfx_cl f765c166de34, D_sfx_clz cb29e1d7b6b8.
+# Giro di capacità, libreria a4e6972 (scripts/run_p2_round3.sh): base 3c1bd11758fc, single_letter
+# 4937d9ddd78a, A 770f999adefb, B cb79b2fcb4e6, C cf7e4c9f106e, D 37400fdcd589. Secondo giro,
+# libreria 475d4cc: base 59a04735824c, single_letter 94847adacd77, include_params acac071d50d5.
+# Primo giro, libreria 488fb5a: base 194b0aa80f9f.
 include:
-  # B = base + names.bits_per_name=2
-  - {names.bits_per_name: 2}                                                                       # a8a296957377
-  - {names.bits_per_name: 2, names.suffix_by_type: "on"}                                           # 042968dc17df
-  - {names.bits_per_name: 2, names.suffix_by_type: "on", canonical.natural_forms: const_left}      # 317adaa840ee
-  - {names.bits_per_name: 2, names.suffix_by_type: "on", canonical.natural_forms: const_left_zero} # a2d195001771
-  # C = base + single_letter=extend_except_loop + same_kind=binding_order + bits_per_name=2
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2}  # 19e744a3b406
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.suffix_by_type: "on"}  # 71d9d5e6160d
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.suffix_by_type: "on", canonical.natural_forms: const_left}  # a8fadfc4757a
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.suffix_by_type: "on", canonical.natural_forms: const_left_zero}  # fb24f51f5d15
-  # D = C + names.include_params=true
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true}  # b4cd11f13a07
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true, names.suffix_by_type: "on"}  # f4fb209f9226
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true, names.suffix_by_type: "on", canonical.natural_forms: const_left}  # f765c166de34
-  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true, names.suffix_by_type: "on", canonical.natural_forms: const_left_zero}  # cb29e1d7b6b8
+  # B neurale = base + names.bits_per_name=2 + names.proposer=neural
+  - {names.bits_per_name: 2, names.proposer: neural}  # d54101565a0b
+  # D neurale = base + single_letter=extend_except_loop + same_kind=binding_order + bits_per_name=2 + include_params=true + names.proposer=neural
+  - {names.single_letter: extend_except_loop, canonical.same_kind: binding_order, names.bits_per_name: 2, names.include_params: true, names.proposer: neural}  # e80cde8924cb

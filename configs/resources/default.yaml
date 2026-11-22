@@ -4,8 +4,9 @@
 gpu_stages: [generate_baseline, generate_baseline_twin, perplexity, adversarial_unixcoder,
              adversarial_unixcoder_fmtfree]
 gpu_methods_by_stage:
-  # mcss e multimark (PIPELINE di multimark, P2): solo CPU finché names.proposer = static (il
-  # modello dei nomi di P3 porterà multimark su GPU nell'inserimento, gpu_for_embed).
+  # mcss e multimark (PIPELINE di multimark, P2): CPU con names.proposer = static. Con il
+  # proponente neurale (P3) l'inserimento di multimark va su GPU: la regola è per metodo, quindi
+  # scripts/run_p2_p3.sh la cambia solo nel suo invio (resources...watermark.multimark=true).
   watermark: {sweet: true, acw: false, stone: true, promptmark: true, mcgmark: true, mcss: false,
               multimark: false}
   # Rilevazione: SWEET usa il modello. STONE usa solo il tokenizer, ma la green list nasce da un

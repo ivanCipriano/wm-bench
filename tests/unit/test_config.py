@@ -28,7 +28,7 @@ def test_real_config_is_valid(cfg: ExperimentConfig, local_root: Path) -> None:
         "mcgmark",
         "posthoc",
     }
-    assert len(cfg.models_catalog) == 5
+    assert len(cfg.models_catalog) == 6  # anche il modello dei nomi di multimark (P3)
     assert cfg.decoding["level1"].max_new_tokens == 512
     assert cfg.decoding["level234"].max_new_tokens == 1024
     assert cfg.decoding["level1"].temperature == 0.2

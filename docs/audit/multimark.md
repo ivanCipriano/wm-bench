@@ -66,7 +66,7 @@ Una configurazione dell'HPO o dell'ablazione indica solo le chiavi che cambiano.
 | `mask` | `mask` | `on` (1B) | ablazione `off` |
 | `canonical` | `canonical` | `kind` (2D) | ablazione `paper` |
 | `names.variant` | `names_variant` | `V2` | ablazione V0, V1, V1b, V2b; scelta fuori dall'HPO (§6.4) |
-| `names.proposer` | `names_proposer` | **`static`** | `neural` arriva in P3: fino ad allora è rifiutato e `gpu_for_embed = False` |
+| `names.proposer` | `names_proposer` | **`static`** | `neural` da P3 (MD31), solo con V2/V2b: in più `names_neural_model` (repository@snapshot) e `names_neural_dtype` nell'hash, `names_neural_path`, `names_neural_cache` e `names_neural_library` fuori; inserimento su GPU (`embed_device`) |
 | `names.include_params` | `names_include_params` | `false` | decisione C (chiusa il 13 novembre) |
 | `channels` | `channels` | `extended` (1–14) | ablazione `mcss8`; `extended+str` solo con la decisione P |
 | `names.module_level` | `names_module_level` | **`true`** | decisione O, provvisoria (v1.2.4); conferma a fine P2 (ΔPass@1 su L2 dev con entrambi i valori) |
@@ -112,8 +112,13 @@ Le altre celle sono `NOT_APPLICABLE` senza worker.
 
 ## 6. Decoding cablato da sovrascrivere
 
-Nessuno: il metodo è post-hoc, senza generazione. In P3 il proponente neurale userà un modello
-piccolo con decoding greedy (`max_new_tokens = 64`, §3.6.4), che sarà da registrare qui.
+Nessuno: il metodo è post-hoc, senza generazione. Il proponente neurale di P3 (MD31) usa
+`Qwen/Qwen2.5-Coder-1.5B-Instruct` (`qwen25_coder_1p5b` del catalogo, snapshot `2e1fd397`,
+`float32`) con decodifica greedy, `max_new_tokens = 128` e 16 nomi per variabile (costanti della
+libreria, `multimark/names_neural.py`): niente da sovrascrivere, il benchmark passa solo la
+snapshot locale. Le risposte si riusano fra configurazioni con la cache su disco dello shim
+(`shims/bench_shims/multimark/neural_cache.py`), con chiave su lotto, modello, prompt e parametri
+di generazione.
 
 ## 7. Dipendenze esterne
 
@@ -121,8 +126,10 @@ piccolo con decoding greedy (`max_new_tokens = 64`, §3.6.4), che sarà da regis
 - **Nient'altro:** nessuna rete, nessun token e nessun binario esterno.
 - **Hardware:** solo CPU fino a P2 (proponente statico, dizionario
   `multimark/data/name_synonyms.json` nel pacchetto).
-- **Da P3:** `torch`/`transformers` e il modello dei nomi dalla cache del cluster (decisione J);
-  allora `gpu_for_embed` passerà a `True` per `names.proposer=neural`.
+- **Da P3:** `torch`/`transformers` (già in `environment-posthoc.yml`) e il modello dei nomi dalla
+  cache del cluster (decisione J di v1.3.13); `gpu_for_embed = True` per `multimark`, e
+  l'inserimento va su GPU solo con `names.proposer=neural` (`embed_device`; nello script
+  `scripts/run_p2_p3.sh` la regola delle risorse si cambia solo per quell'invio).
 
 ## 8. Patch
 

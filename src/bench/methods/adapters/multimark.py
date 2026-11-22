@@ -20,8 +20,17 @@ messaggio atteso. Audit: ``docs/audit/multimark.md`` e ``docs/audit/mcss.md``.
   - ``message_bits`` = 24 lo fissa l'adapter.
   - ``registry_seed`` = ``global_seed`` va allo shim per le esche del registro (§3.10.1) ma
     **non** entra nel ``config_hash`` (§3.11).
-  - ``names.proposer=neural`` arriva in P3: fino ad allora si rifiuta, e per questo
-    ``gpu_for_embed`` è ``False``.
+  - ``names.proposer=neural`` (libreria b2b6c18, P3, MD31): solo per ``multimark``
+    (``mcss`` lo fissa a ``static``) e solo con ``names.variant`` V2 o V2b. Il modello dei nomi è
+    ``NEURAL_MODEL`` del catalogo dei modelli (``Qwen/Qwen2.5-Coder-1.5B-Instruct``, decisione J
+    di v1.3.13). Solo con il proponente neurale gli iperparametri nativi hanno in più
+    ``names_neural_model`` (repository e snapshot) e ``names_neural_dtype``, che entrano nel
+    ``config_hash``, e ``names_neural_path`` (snapshot locale passata a ``NeuralProposer``),
+    ``names_neural_cache`` (cache su disco delle risposte, condivisa fra le configurazioni) e
+    ``names_neural_library`` (commit della libreria, per la chiave della cache), che non ci
+    entrano: con ``static`` gli hash restano quelli di prima. ``names.proposer`` c'era già.
+  - Con il proponente neurale l'inserimento va su GPU (``gpu_for_embed``, ``embed_device``); la
+    rilevazione no (il bit si legge dal nome).
 - **Messaggio** (§3.7): 24 bit, ``derive_seed(global_seed, "<metodo>-msg", problem_key,
   language, model_id, sample_index)``, come ``mcgmark.message_bits``.
   - Per i positivi il messaggio va allo shim nell'item dell'inserimento e resta nel campione
@@ -98,8 +107,14 @@ NATIVE_NAMES: dict[str, str] = {
     "voting": "voting",
     "channel_weights": "channel_weights",
 }
-# Chiavi native che non entrano nel config_hash (§3.11): il global_seed è costante.
-NOT_HASHED = ("registry_seed",)
+# Chiavi native che non entrano nel config_hash (§3.11): il global_seed è costante; percorso del
+# modello dei nomi, cartella della cache e commit della libreria dipendono dalla macchina o sono già
+# nell'hash (il commit).
+NOT_HASHED = ("registry_seed", "names_neural_path", "names_neural_cache", "names_neural_library")
+# Modello del proponente neurale (P3, decisione J di v1.3.13): chiave di ``models_catalog``.
+NEURAL_MODEL = "qwen25_coder_1p5b"
+# Varianti dei nomi che usano il proponente (con V0, V1 e V1b non si usa).
+PROPOSER_VARIANTS = ("V2", "V2b")
 # Opzioni della libreria 0664817 (MD29, MD30): negli iperparametri nativi solo se non ``off``.
 OMITTED_WHEN_OFF = ("canonical.natural_forms", "names.suffix_by_type")
 
@@ -134,7 +149,8 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
     """Base di ``mcss`` e ``multimark``: stessa libreria, profili diversi (``PROFILE``)."""
 
     family: ClassVar[MethodFamily] = MethodFamily.POST_HOC
-    gpu_for_embed: ClassVar[bool] = False  # names.proposer=static (P2); neural in P3
+    # Se l'inserimento può usare la GPU: solo con names.proposer=neural (``embed_device``).
+    gpu_for_embed: ClassVar[bool] = False
     gpu_for_detect: ClassVar[bool] = False
     message_bits: ClassVar[int | None] = MESSAGE_BITS
     secondary_scores: ClassVar[dict[str, str]] = {
@@ -156,6 +172,31 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
         if unknown:
             raise ConfigError(f"{self.name}: unknown hyperparameters {unknown}")
         merged = {**self.PROFILE, **given}
+        self._check_choices(merged)
+        neural = merged["names.proposer"] == "neural"
+        weights = merged.get("channel_weights")
+        if merged["voting"] != "simple" and not weights:
+            raise ConfigError(f"{self.name}: voting={merged['voting']} needs channel_weights")
+        if weights is not None and not isinstance(weights, str):
+            raise ConfigError(f"{self.name}: channel_weights must be a JSON file path")
+        native: dict[str, Any] = {
+            NATIVE_NAMES[k]: merged.get(k)
+            for k in NATIVE_NAMES
+            if not (k in OMITTED_WHEN_OFF and merged[k] == "off")
+        }
+        native["message_bits"] = MESSAGE_BITS
+        native["registry_seed"] = int(self.cfg.global_seed)
+        if neural:
+            spec = self.neural_model()
+            native["names_neural_model"] = f"{spec.hf_repo}@{spec.snapshot}"
+            native["names_neural_dtype"] = spec.dtype
+            native["names_neural_path"] = str(spec.path)
+            native["names_neural_cache"] = str(self.neural_cache_dir())
+            native["names_neural_library"] = self.source_commit()
+        return native
+
+    def _check_choices(self, merged: dict[str, Any]) -> None:
+        """Valori ammessi e vincoli fra le chiavi (§3.11, MD27–MD31)."""
         for key, allowed in CHOICES.items():
             value = merged[key]
             ok = value in allowed and (isinstance(value, bool) == isinstance(allowed[0], bool))
@@ -171,21 +212,31 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
         for key in OMITTED_WHEN_OFF:
             if merged[key] != "off" and merged["canonical"] != "kind":
                 raise ConfigError(f"{self.name}: {key} requires canonical=kind")
-        if merged["names.proposer"] == "neural":
-            raise ConfigError(f"{self.name}: names.proposer=neural arrives in P3 (static until P2)")
-        weights = merged.get("channel_weights")
-        if merged["voting"] != "simple" and not weights:
-            raise ConfigError(f"{self.name}: voting={merged['voting']} needs channel_weights")
-        if weights is not None and not isinstance(weights, str):
-            raise ConfigError(f"{self.name}: channel_weights must be a JSON file path")
-        native: dict[str, Any] = {
-            NATIVE_NAMES[k]: merged.get(k)
-            for k in NATIVE_NAMES
-            if not (k in OMITTED_WHEN_OFF and merged[k] == "off")
-        }
-        native["message_bits"] = MESSAGE_BITS
-        native["registry_seed"] = int(self.cfg.global_seed)
-        return native
+        if (
+            merged["names.proposer"] == "neural"
+            and merged["names.variant"] not in PROPOSER_VARIANTS
+        ):
+            raise ConfigError(f"{self.name}: names.proposer=neural requires names.variant V2/V2b")
+
+    def neural_model(self) -> ModelSpec:
+        """Modello del proponente neurale dal catalogo (``NEURAL_MODEL``)."""
+        spec = self.cfg.models_catalog.get(NEURAL_MODEL)
+        if spec is None:
+            raise ConfigError(
+                f"{self.name}: names.proposer=neural needs {NEURAL_MODEL} in models_catalog"
+            )
+        return spec
+
+    def neural_cache_dir(self) -> Path:
+        """Cache su disco delle risposte del modello dei nomi (shim, ``neural_cache.py``): una
+        sola per tutte le configurazioni, perché la chiave contiene lotto, modello, prompt e
+        parametri di generazione."""
+        return Path(self.cfg.paths.artifacts) / "_cache" / "multimark_neural_names"
+
+    def embed_device(self, hp: dict[str, Any]) -> str:
+        """Dispositivo dell'inserimento: ``cuda:0`` con il proponente neurale, altrimenti CPU."""
+        neural = {**self.PROFILE, **flatten(hp)}["names.proposer"] == "neural"
+        return "cuda:0" if neural else "cpu"
 
     def config_hash(self, hp: dict[str, Any]) -> str:
         """Hash degli iperparametri nativi senza ``registry_seed`` (§3.11) + contratto e commit."""
@@ -223,7 +274,10 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
         device: str = "cpu",
     ) -> EmbedRun:
         """Come ``CodeEmbedder.embed_from_code`` con il messaggio atteso nei campioni marcati e il
-        codice dello shim anche per gli inserimenti ``PARTIAL`` (§3.9: sono positivi)."""
+        codice dello shim anche per gli inserimenti ``PARTIAL`` (§3.9: sono positivi). Con il
+        proponente neurale il worker usa la GPU (``embed_device``)."""
+        if self.embed_device(hp) != "cpu":
+            device = self.embed_device(hp)
         self._embed_messages = {s.sample_id: self._parent_message(model, s) for s in samples}
         try:
             run = super().embed_from_code(samples, hp, model, key_id, run_dir, device)
@@ -254,16 +308,17 @@ class PosthocMultibitAdapter(CodeEmbedder, Detector):
 
 @METHODS.register("multimark")
 class MultimarkAdapter(PosthocMultibitAdapter):
-    """MultiMark, configurazione di base (§0.1, §3.11; proponente statico fino a P3)."""
+    """MultiMark, configurazione di base (§0.1, §3.11; proponente statico, neurale da P3)."""
 
     name: ClassVar[str] = "multimark"
+    gpu_for_embed: ClassVar[bool] = True  # solo con names.proposer=neural (embed_device)
     PROFILE: ClassVar[dict[str, Any]] = {
         "t": 2,
         "linking": "function_channel",
         "mask": "on",
         "canonical": "kind",
         "names.variant": "V2",
-        "names.proposer": "static",  # neural da P3 (§3.11)
+        "names.proposer": "static",  # neural in P3 (MD31): due punti del giro P3
         "names.include_params": False,  # decisione C (chiusa il 13 novembre)
         "channels": "extended",
         "names.module_level": True,  # decisione O, chiusa con true (v1.3.1)

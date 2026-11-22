@@ -57,7 +57,9 @@ def _adapter(cfg: ExperimentConfig, method: str) -> PosthocMultibitAdapter:
 def test_capabilities(cfg: ExperimentConfig, method: str) -> None:
     a = _adapter(cfg, method)
     assert isinstance(a, CodeEmbedder) and isinstance(a, Detector)
-    assert (a.gpu_for_embed, a.gpu_for_detect, a.message_bits) == (False, False, 24)
+    # multimark: GPU nell'inserimento solo con il proponente neurale (embed_device)
+    assert (a.gpu_for_embed, a.gpu_for_detect, a.message_bits) == (method == "multimark", False, 24)
+    assert a.embed_device({}) == "cpu"
     assert a.secondary_scores == {"nreg16": "score_nreg16", "nreg1024": "score_nreg1024",
                                   "decode": "score_decode"}  # fmt: skip
     assert a.supports("python") and not a.supports("java")
@@ -143,7 +145,7 @@ def test_native_hparams_and_validation(cfg: ExperimentConfig) -> None:
         {"names.include_params": 1},  # bool, non intero
         {"mask": True},
         {"color": "red"},
-        {"names.proposer": "neural"},  # P3
+        {"names.proposer": "neural", "names.variant": "V1"},  # il proponente serve solo a V2/V2b
         {"voting": "weighted"},  # senza channel_weights
         {"channel_weights": 3},
     ]
@@ -181,6 +183,49 @@ def test_round4_options(cfg: ExperimentConfig) -> None:
     both = {"canonical.natural_forms": "const_left", "names.suffix_by_type": "on"}
     assert len({mm.config_hash(both), mm.config_hash({"names.suffix_by_type": "on"}),
                 mm.config_hash({"canonical.natural_forms": "const_left"})}) == 3  # fmt: skip
+
+
+def test_neural_proposer(cfg: ExperimentConfig) -> None:
+    """``names.proposer=neural`` (P3, MD31): solo multimark; modello e ``dtype`` negli iperparametri
+    nativi e nell'hash, percorso, cache e commit no; con ``static`` gli iperparametri nativi sono
+    quelli di prima; inserimento su GPU."""
+    mm, mc = _adapter(cfg, "multimark"), _adapter(cfg, "mcss")
+    spec = cfg.models_catalog["qwen25_coder_1p5b"]
+    assert spec.hf_repo == "Qwen/Qwen2.5-Coder-1.5B-Instruct" and spec.path.name == spec.snapshot
+    assert spec.snapshot == "2e1fd397ee46e1388853d2af2c993145b0f1098a"
+    b = {"names.bits_per_name": 2}
+    static = mm.to_native_hparams(b)
+    assert not {k for k in static if k.startswith("names_neural")}
+    assert mm.config_hash({**b, "names.proposer": "static"}) == mm.config_hash(b)
+    native = mm.to_native_hparams({**b, "names.proposer": "neural"})
+    assert native["names_proposer"] == "neural"
+    assert native["names_neural_model"] == f"{spec.hf_repo}@{spec.snapshot}"
+    assert native["names_neural_dtype"] == "float32"
+    assert native["names_neural_path"] == str(spec.path)
+    assert native["names_neural_cache"] == str(mm.neural_cache_dir())
+    assert mm.neural_cache_dir() == Path(cfg.paths.artifacts) / "_cache" / "multimark_neural_names"
+    assert native["names_neural_library"] == "c" * 40
+    neural_hash = mm.config_hash({**b, "names.proposer": "neural"})
+    assert neural_hash != mm.config_hash(b)
+    hashed = {k: v for k, v in native.items()
+              if k not in ("registry_seed", "names_neural_path", "names_neural_cache",
+                           "names_neural_library")}  # fmt: skip
+    assert neural_hash == config_hash(hashed, "c" * 40)
+    # un'altra snapshot o un altro dtype cambiano l'hash; un altro percorso no
+    other = spec.model_copy(update={"snapshot": "f" * 40, "path": spec.path.parent / ("f" * 40)})
+    moved = spec.model_copy(update={"path": Path("/elsewhere") / spec.snapshot})
+    for changed, same in ((other, False), (spec.model_copy(update={"dtype": "bfloat16"}), False),
+                          (moved, True)):  # fmt: skip
+        mm.neural_model = lambda changed=changed: changed  # type: ignore[method-assign,misc]
+        assert (mm.config_hash({**b, "names.proposer": "neural"}) == neural_hash) is same
+    del mm.neural_model
+    assert mm.embed_device({**b, "names.proposer": "neural"}) == "cuda:0"
+    assert mm.embed_device(b) == "cpu"
+    with pytest.raises(ConfigError, match="fixed"):
+        mc.to_native_hparams({"names.proposer": "neural"})
+    with pytest.raises(ConfigError, match="V2/V2b"):
+        mm.to_native_hparams({"names.proposer": "neural", "names.variant": "V1b"})
+    mm.to_native_hparams({"names.proposer": "neural", "names.variant": "V2b"})
 
 
 def test_config_hash_excludes_registry_seed(cfg: ExperimentConfig) -> None:
@@ -320,12 +365,15 @@ def _fixture_programs() -> list[str]:
     return [r["prompt"] + r["canonical_solution"] for r in rows]
 
 
-def _previous_library(dest: Path) -> Path:
-    """Copia della libreria a 3c47a1f (``git archive`` dal submodule), o skip se il commit manca."""
-    proc = subprocess.run(["git", "-C", str(LIBRARY), "archive", "--format=tar", PREVIOUS],
+ROUND4_LIBRARY = "06648176cee2cf125ae8446381e4049929894cf9"  # libreria del giro 4
+
+
+def _previous_library(dest: Path, commit: str = PREVIOUS) -> Path:
+    """Copia della libreria a ``commit`` (``git archive`` dal submodule), o skip se manca."""
+    proc = subprocess.run(["git", "-C", str(LIBRARY), "archive", "--format=tar", commit],
                           capture_output=True, check=False)  # fmt: skip
     if proc.returncode != 0:
-        pytest.skip(f"multimark {PREVIOUS[:7]} not available in the submodule")
+        pytest.skip(f"multimark {commit[:7]} not available in the submodule")
     with tarfile.open(fileobj=io.BytesIO(proc.stdout)) as tar:
         tar.extractall(dest, filter="data")
     return dest
@@ -378,6 +426,31 @@ def test_embed_is_identical_to_3c47a1f_with_options_off(
     assert len(new) == len(old) == len(codes)
     changed = [r for r, c in zip(new, codes, strict=True) if r["code"] not in (None, c)]
     assert changed  # almeno un campione marcato: il confronto non è vuoto
+    for a, b in zip(new, old, strict=True):
+        assert (a["status"], a["error"]) == (b["status"], b["error"])
+        assert (a["code"] or "").encode("utf-8") == (b["code"] or "").encode("utf-8")
+
+
+_D = {"names.single_letter": "extend_except_loop", "canonical.same_kind": "binding_order",
+      "names.bits_per_name": 2, "names.include_params": True}  # fmt: skip
+
+
+@needs_library
+@pytest.mark.parametrize(
+    "hp",
+    [{"names.bits_per_name": 2}, _D,
+     {**_D, "names.suffix_by_type": "on", "canonical.natural_forms": "const_left_zero"}],
+)  # fmt: skip
+def test_static_embed_is_identical_to_round4_library(
+    cfg: ExperimentConfig, tmp_path: Path, hp: dict[str, Any]
+) -> None:
+    """Con il proponente statico l'inserimento della libreria di P3 è identico byte per byte a
+    quello di 0664817 (giro 4): r4_B, r4_D e r4_D_sfx_clz."""
+    previous = _previous_library(tmp_path / "mm_0664817", ROUND4_LIBRARY)
+    codes = _fixture_programs()
+    new = _embed_with(LIBRARY, cfg, "multimark", hp, codes, tmp_path)
+    old = _embed_with(previous, cfg, "multimark", hp, codes, tmp_path)
+    assert [r for r, c in zip(new, codes, strict=True) if r["code"] not in (None, c)]
     for a, b in zip(new, old, strict=True):
         assert (a["status"], a["error"]) == (b["status"], b["error"])
         assert (a["code"] or "").encode("utf-8") == (b["code"] or "").encode("utf-8")

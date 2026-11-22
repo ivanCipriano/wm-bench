@@ -258,6 +258,7 @@ def test_multimark_sweep_adds_only_the_candidate_metrics(facade: BenchmarkFacade
         assert {"pass_at_1", "delta_pass_at_1_pp", "tpr_at_fpr"} <= set(table["name"])
     _check_imperceptibility_report(facade, default_hash, candidates)
     _check_round4_report(facade, default_hash, candidates)
+    _check_p3_report(facade, default_hash, candidates)
 
 
 def _check_round4_report(facade: BenchmarkFacade, default_hash: str, candidates: list[str]) -> None:
@@ -286,6 +287,34 @@ def _check_round4_report(facade: BenchmarkFacade, default_hash: str, candidates:
         assert "no embedding results" not in row
     renaming = text.split("## inconsistent renaming per cell")[1].split("##")[0]
     assert f"{MODEL} L1 0.00%" in renaming
+    assert script.main(argv) == 1  # il report esiste già
+
+
+def _check_p3_report(facade: BenchmarkFacade, default_hash: str, candidates: list[str]) -> None:
+    """``scripts/report_p3.py`` sulla stessa catena (proponente statico): le sezioni del giro 4,
+    nessun ripiego neurale (campo assente) e un tempo di inserimento per ogni configurazione."""
+    from tests.unit.test_inventory_scripts import _load
+
+    script = _load("report_p3")
+    out = facade.cfg.paths.artifacts.parent / "p3.txt"
+    mcss_hash = DetectStage(facade.cfg).config_hash("mcss")
+    configs = [f"mcss:{mcss_hash}:mcss_new", f"multimark:{default_hash}:multimark",
+               *(f"multimark:{h}:dev{i}" for i, h in enumerate(candidates))]  # fmt: skip
+    argv = ["--levels", "L1", "--models", MODEL, "--mcss", "mcss_new", "--multimark",
+            str(LIBRARY), "--expect-commit", "", "--report", str(out), "paths=local"]  # fmt: skip
+    argv += [a for c in configs for a in ("--config", c)]
+    assert script.main(argv) == 0
+    text = out.read_text(encoding="utf-8")
+    for section in ("## constraints per configuration", "## rule 1", "## rule 2",
+                    "## mean sites per sample", "## neural proposer fallback",
+                    "## embedding time per sample"):  # fmt: skip
+        assert section in text
+    neural = text.split("## neural proposer fallback")[1].split("##")[0]
+    assert "dev0" not in neural
+    times = text.split("## embedding time per sample")[1]
+    for i, h in enumerate(candidates):
+        row = next(ln for ln in times.splitlines() if ln.strip().startswith(f"dev{i} {h}"))
+        assert "no embedding results" not in row and row.split()[-4:] == ["-"] * 4
     assert script.main(argv) == 1  # il report esiste già
 
 

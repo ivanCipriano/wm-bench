@@ -1,7 +1,8 @@
 """``scripts/posthoc_config_hashes.py``: il commit della libreria entra nel ``config_hash``, così le
 celle del giro di capacità (libreria a4e6972) hanno percorsi diversi da quelle dei giri precedenti
-(475d4cc, 488fb5a) e da quelle del giro 4 (0664817); gli hash scritti in
-``configs/hpo/multimark.yaml`` (i 12 punti del giro 4) sono quelli calcolati.
+(475d4cc, 488fb5a), da quelle del giro 4 (0664817) e da quelle del giro P3; gli hash scritti in
+``configs/hpo/multimark.yaml`` (i 2 punti neurali di P3) sono quelli calcolati, e quelli del giro 4
+si ricalcolano dai loro iperparametri (``ROUND4_POINTS``).
 
 Gli hash dei giri precedenti scritti nei log (per esempio 59a04735824c) non si ricalcolano più:
 da a4e6972 l'adapter passa anche ``names.bits_per_name`` e ``canonical.same_kind``, che entrano
@@ -147,37 +148,30 @@ ROUND4_HASHES = {
 }  # fmt: skip
 # Default con la libreria 0664817: non si lanciano nel giro 4.
 ROUND4_DEFAULTS = {"mcss": "ef3ec0dfdb26", "multimark": "9f4d71ebe223"}
-OPTIONS = ("names.suffix_by_type", "canonical.natural_forms")
 
 
-def test_round4_grid_hashes(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """La griglia ha i 12 punti del giro 4 (B, C, D × opzioni) senza il default, con gli hash
-    scritti nei commenti; B, C e D con le opzioni spente sono i punti del giro di capacità."""
-    monkeypatch.setenv("WMB_LOCAL_ROOT", str(tmp_path))
-    monkeypatch.setenv("SOURCERY_TOKEN", "fake-token-for-tests")
-    script = _load("posthoc_config_hashes")
-    rows = _hashes(script, monkeypatch, ROUND4, capsys)
-    assert [h for _, h, _ in rows[:2]] == list(ROUND4_DEFAULTS.values())
-    grid = [h for _, h, label in rows if label.startswith("grid:")]
-    assert grid == list(ROUND4_HASHES.values())
-    text = (REPO_ROOT / "configs" / "hpo" / "multimark.yaml").read_text(encoding="utf-8")
-    assert re.findall(r"^  - \{.*\}\s+# ([0-9a-f]{12})$", text, flags=re.M) == grid
-    assert not set(grid) & (set(ROUND3_HASHES.values()) | set(MCSSFIX_HASHES.values()))
-    from bench.hpo.grid import load_grid
+# Punti del giro 4 (non più nella griglia, che dal giro P3 ha solo i suoi 2 punti).
+_C = {"names.single_letter": "extend_except_loop", "canonical.same_kind": "binding_order",
+      "names.bits_per_name": 2}  # fmt: skip
+_BASES = {"B": ROUND3_POINTS["B"], "C": _C, "D": {**_C, "names.include_params": True}}
+_VARIANTS = {"": {}, "_SFX": {"names.suffix_by_type": "on"},
+             "_SFX_CL": {"names.suffix_by_type": "on", "canonical.natural_forms": "const_left"},
+             "_SFX_CLZ": {"names.suffix_by_type": "on",
+                          "canonical.natural_forms": "const_left_zero"}}  # fmt: skip
+ROUND4_POINTS = {f"{b}{v}": {**hp, **opt} for b, hp in _BASES.items()
+                 for v, opt in _VARIANTS.items()}  # fmt: skip
 
-    points = [p.hparams for p in load_grid("multimark").points]
-    assert {} not in points and len(points) == len(ROUND4_HASHES)
-    off = [hp for hp in points if not set(OPTIONS) & set(hp)]
-    assert off == [ROUND3_POINTS[k] for k in ("B", "C", "D")]
-    variants = set()
-    for hp in points:
-        base = {k: v for k, v in hp.items() if k not in OPTIONS}
-        assert base in off
-        variants.add(tuple(hp.get(k, "off") for k in OPTIONS))
-    assert variants == {("off", "off"), ("on", "off"), ("on", "const_left"),
-                        ("on", "const_left_zero")}  # fmt: skip
+
+def test_round4_hashes_are_recomputed(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Gli hash del giro 4 si ricalcolano identici con la libreria 0664817 (anche dopo le chiavi
+    del proponente neurale, che con ``static`` non entrano negli iperparametri nativi); B, C e D
+    con le opzioni spente sono i punti del giro di capacità."""
+    mc, mm = _adapters(monkeypatch, tmp_path, ROUND4)
+    assert {k: mm.config_hash(hp) for k, hp in ROUND4_POINTS.items()} == ROUND4_HASHES
+    assert {"mcss": mc.config_hash({}), "multimark": mm.config_hash({})} == ROUND4_DEFAULTS
+    assert [ROUND4_POINTS[k] for k in ("B", "C", "D")] == [ROUND3_POINTS[k] for k in "BCD"]
+    explicit = {**ROUND4_POINTS["B"], "names.proposer": "static"}
+    assert mm.config_hash(explicit) == ROUND4_HASHES["B"]
 
 
 def test_round4_script_launches_only_the_grid() -> None:
@@ -200,3 +194,85 @@ def test_round4_script_launches_only_the_grid() -> None:
     assert submits and all(re.search(r'"\$\{(CLEAN|ATTACKED|IMP)\[@\]\}"', s) for s in submits)
     assert 'ATTACKED=("${CLEAN[@]}"' in code and 'IMP=("${CLEAN[@]}"' in code
     assert 'ATTACKS="attacks=[T1.4,T1.5,T2.1,T2.4,T4.1,T1.6]"' in code
+
+
+# Giro P3 (pipeline v1.3.13, libreria con il proponente neurale; scripts/run_p2_p3.sh li controlla).
+P3 = "b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a"
+P3_HASHES = {"B": "d54101565a0b", "D": "e80cde8924cb"}
+# Default e B, D statici con la stessa libreria: non si lanciano nel giro P3.
+P3_STATIC = {"mcss": "1d3087c73439", "multimark": "36a0251d191f", "B": "e52b040770df",
+             "D": "3fed1f1c1e24"}  # fmt: skip
+
+
+def test_p3_grid_hashes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """La griglia ha solo i 2 punti di P3, B e D del giro 4 con ``names.proposer=neural``,
+    nell'ordine B, D (l'inserimento di D legge la cache di B), con gli hash nei commenti."""
+    monkeypatch.setenv("WMB_LOCAL_ROOT", str(tmp_path))
+    monkeypatch.setenv("SOURCERY_TOKEN", "fake-token-for-tests")
+    script = _load("posthoc_config_hashes")
+    rows = _hashes(script, monkeypatch, P3, capsys)
+    assert [h for _, h, _ in rows[:2]] == [P3_STATIC["mcss"], P3_STATIC["multimark"]]
+    grid = [h for _, h, label in rows if label.startswith("grid:")]
+    assert grid == list(P3_HASHES.values())
+    text = (REPO_ROOT / "configs" / "hpo" / "multimark.yaml").read_text(encoding="utf-8")
+    assert re.findall(r"^  - \{.*\}\s+# ([0-9a-f]{12})$", text, flags=re.M) == grid
+    from bench.hpo.grid import load_grid
+
+    points = [p.hparams for p in load_grid("multimark").points]
+    neural = {"names.proposer": "neural"}
+    assert points == [{**ROUND4_POINTS["B"], **neural}, {**ROUND4_POINTS["D"], **neural}]
+    _, mm = _adapters(monkeypatch, tmp_path, P3)
+    assert {k: mm.config_hash(ROUND4_POINTS[k]) for k in ("B", "D")} == {
+        k: P3_STATIC[k] for k in ("B", "D")}  # fmt: skip
+    old = set(ROUND3_HASHES.values()) | set(MCSSFIX_HASHES.values()) | set(ROUND4_HASHES.values())
+    assert not (set(grid) | set(P3_STATIC.values())) & old
+
+
+def test_p3_neural_keys_in_the_hash(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Modello (repository e snapshot) e ``dtype`` entrano nell'hash; percorso, cache e commit
+    passato allo shim no (il commit c'è già)."""
+    from bench.domain.ids import config_hash as raw_hash
+
+    _, mm = _adapters(monkeypatch, tmp_path, P3)
+    hp = {**ROUND4_POINTS["B"], "names.proposer": "neural"}
+    native = mm.to_native_hparams(hp)
+    hashed = {k: v for k, v in native.items()
+              if k not in ("registry_seed", "names_neural_path", "names_neural_cache",
+                           "names_neural_library")}  # fmt: skip
+    assert hashed["names_neural_model"] == (
+        "Qwen/Qwen2.5-Coder-1.5B-Instruct@2e1fd397ee46e1388853d2af2c993145b0f1098a"
+    )
+    assert hashed["names_neural_dtype"] == "float32"
+    assert mm.config_hash(hp) == raw_hash(hashed, P3) == P3_HASHES["B"]
+
+
+def test_p3_script_launches_only_the_grid() -> None:
+    """``scripts/run_p2_p3.sh``: libreria e hash giusti, solo lo sweep di multimark (mai il
+    default, né mcss, né B e D statici con la libreria nuova), solo su dev, inserimento su GPU in
+    un solo job; riferimenti letti con gli hash già calcolati."""
+    text = (REPO_ROOT / "scripts" / "run_p2_p3.sh").read_text(encoding="utf-8")
+    assert f"EXPECTED={P3}" in text
+    assert f"P3_B={P3_HASHES['B']}" in text and f"P3_D={P3_HASHES['D']}" in text
+    for name, h in ROUND4_HASHES.items():
+        assert f"R4_{name}={h}" in text
+    assert f"MCSS_NEW={MCSSFIX_HASHES['mcss']}" in text
+    for name, var in (("mcss", "MCSS"), ("multimark", "MM"), ("single_letter", "MM_SL"),
+                      ("A", "MM_A"), ("B", "MM_B"), ("C", "MM_C"), ("D", "MM_D")):  # fmt: skip
+        assert f"{var}={ROUND3_HASHES[name]}" in text
+    code = "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
+    assert re.findall(r'"methods=\[[^\]]*\]"', code) == ['"methods=[multimark]"']
+    assert code.count('"hpo.grid=multimark"') == 1
+    assert re.findall(r'"splits=\[[^\]]*\]"', code) == ['"splits=[dev]"']
+    assert not set(P3_STATIC.values()) & set(re.findall(r"[0-9a-f]{12}", text))
+    submits = [ln for ln in code.splitlines() if ln.strip().startswith("submit --jobs")]
+    assert submits and all(re.search(r'"\$\{(CLEAN|ATTACKED|IMP)\[@\]\}"', s) for s in submits)
+    assert 'ATTACKED=("${CLEAN[@]}"' in code and 'IMP=("${CLEAN[@]}"' in code
+    assert 'ATTACKS="attacks=[T1.4,T1.5,T2.1,T2.4,T4.1,T1.6]"' in code
+    # inserimento: un solo job GPU (B e D in sequenza per cella), regola delle risorse solo lì
+    gpu = "resources.gpu_methods_by_stage.watermark.multimark=true"
+    assert code.count(gpu) == 1
+    (wm,) = (s for s in submits if "stage=watermark" in s)
+    assert wm.strip().startswith("submit --jobs 1 ") and '"$GPU_EMBED"' in wm
+    assert f'GPU_EMBED="{gpu}"' in code

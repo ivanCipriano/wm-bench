@@ -148,6 +148,7 @@ I modelli sono nella cache Hugging Face condivisa (`HF_HUB_CACHE=/mnt/beegfs/did
 | `llama31_8b_attacker` | `meta-llama/Llama-3.1-8B-Instruct` | `models--meta-llama--Llama-3.1-8B-Instruct` | `0e9e39f249a16976918f6564b8830bc894c89659` | attaccante T2.2 / T2.3 |
 | `starcoder2_7b` | `bigcode/starcoder2-7b` | `models--bigcode--starcoder2-7b` | `bb9afde76d7945da5745592525db122d4d729eb1` | osservatore per la perplexity |
 | `unixcoder_base` | `microsoft/unixcoder-base` | `models--microsoft--unixcoder-base` | `5604afdc964f6c53782a6813140ade5216b99006` | classificatore avversario |
+| `qwen25_coder_1p5b` | `Qwen/Qwen2.5-Coder-1.5B-Instruct` | `models--Qwen--Qwen2.5-Coder-1.5B-Instruct` | `2e1fd397ee46e1388853d2af2c993145b0f1098a` | proponente neurale dei nomi di `multimark` (P3) |
 
 **Regola per l'agente:** nei file `configs/model/*.yaml` il campo `path` deve essere il percorso della **snapshot** (`<HF_HUB_CACHE>/<cartella in cache>/snapshots/<hash>`), in modo che tutti gli ambienti (anche quelli dei metodi, che non condividono la configurazione HF dell'orchestratore) carichino esattamente gli stessi pesi da un percorso locale. L'hash di snapshot va registrato nei manifest.
 

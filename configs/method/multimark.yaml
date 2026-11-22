@@ -20,7 +20,7 @@ default_hparams:
   mask: "on"
   canonical: kind
   names.variant: V2
-  names.proposer: static            # neural da P3: fino ad allora gpu_for_embed = False
+  names.proposer: static            # neural (P3, MD31): modello qwen25_coder_1p5b, inserimento su GPU
   names.include_params: false       # decisione C
   channels: extended
   names.module_level: true          # decisione O, chiusa con true (v1.3.1)

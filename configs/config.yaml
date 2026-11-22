@@ -17,6 +17,7 @@ defaults:
   - model@models_catalog.llama31_8b_attacker: llama31_8b_attacker
   - model@models_catalog.starcoder2_7b: starcoder2_7b
   - model@models_catalog.unixcoder_base: unixcoder_base
+  - model@models_catalog.qwen25_coder_1p5b: qwen25_coder_1p5b   # nomi di multimark (P3)
   - method@methods_catalog.sweet: sweet
   - method@methods_catalog.acw: acw
   - method@methods_catalog.stone: stone

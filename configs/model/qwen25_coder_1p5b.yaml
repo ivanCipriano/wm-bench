@@ -1,0 +1,11 @@
+# Qwen/Qwen2.5-Coder-1.5B-Instruct dalla cache HF condivisa, snapshot fissata (cluster_info §7).
+# Proponente neurale dei nomi di multimark (names.proposer=neural, P3, MD31; decisione J di
+# PIPELINE_metodo.md v1.3.13): non è un generatore, non va nella lista `models`.
+model_id: qwen25_coder_1p5b
+hf_repo: Qwen/Qwen2.5-Coder-1.5B-Instruct
+snapshot: 2e1fd397ee46e1388853d2af2c993145b0f1098a
+path: ${paths.hf_hub_cache}/models--Qwen--Qwen2.5-Coder-1.5B-Instruct/snapshots/${.snapshot}
+tokenizer_path: ${.path}
+dtype: float32                  # HFGenerator di multimark: float32 di default
+chat_template: native
+role: "names proposer (multimark, P3)"

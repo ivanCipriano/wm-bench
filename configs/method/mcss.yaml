@@ -20,7 +20,7 @@ default_hparams:
   mask: "off"
   canonical: paper
   names.variant: V1
-  names.proposer: static            # non usato da V1
+  names.proposer: static            # non usato da V1: fissato (MD31), l'adapter rifiuta neural
   names.include_params: true        # §4.2 punto 8
   channels: mcss8
   names.module_level: true
