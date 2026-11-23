@@ -42,6 +42,7 @@ import statistics
 import sys
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -62,6 +63,7 @@ from bench.pipeline.stage import Cell
 from bench.pipeline.stages.attack import codebleu_distance
 from bench.pipeline.stages.attack_pools import attack_pool_ref
 from bench.pipeline.stages.execute import ExecuteStage, execution_ref, max_workers
+from bench.pipeline.stages.function_pools import function_pool_ref
 from bench.pipeline.stages.generate_baseline import baseline_ref, problems_ref
 from bench.store.artifact_store import ArtifactStore
 
@@ -183,6 +185,21 @@ def isolate_types(
         sys.stdout.write(f"  {sample.problem_key} {sample.sample_id[:12]}: {found}\n")
 
 
+def read_pools(store: ArtifactStore, language: str) -> AttackPools:
+    """Raccolte già calcolate del linguaggio: commenti e nomi (``attack_pools``) e funzioni
+    (``function_pools``, T2.5); vuote se la fase non è stata lanciata."""
+    pool_ref = attack_pool_ref(language)
+    functions_ref = function_pool_ref(language)
+    pools = AttackPools()
+    if store.exists(pool_ref):
+        pool = store.read_model(pool_ref, AttackPool)
+        pools = AttackPools(tuple(pool.comments), tuple(pool.names))
+    if store.exists(functions_ref):
+        table = store.read_table(functions_ref).sort_values("function_id")
+        pools = replace(pools, functions=tuple(str(c) for c in table["code"]))
+    return pools
+
+
 def check_language(
     cfg: Any,
     store: ArtifactStore,
@@ -194,11 +211,7 @@ def check_language(
     checker = Checker(cfg, store, language)
     tools = ToolRunner(repo_root() / "tools", cfg.paths.tmp / "attack_canonical")
     parsers = default_parsers()
-    pool_ref = attack_pool_ref(language)
-    pools = AttackPools()
-    if store.exists(pool_ref):
-        pool = store.read_model(pool_ref, AttackPool)
-        pools = AttackPools(tuple(pool.comments), tuple(pool.names))
+    pools = read_pools(store, language)
     n_before = len(checker.passed_before)
     sys.stdout.write(
         f"\n########## {language}: {len(checker.problems)} canoniche, {n_before} passano senza "
@@ -210,6 +223,11 @@ def check_language(
         for params_hash, attack in grid_points(attack_id, wanted or {}, language).items():
             if attack.needs_pools and not (pools.comments and pools.names):
                 sys.stdout.write(f"{attack_id} {attack.params}: SKIPPED (run stage attack_pools)\n")
+                continue
+            if attack.needs_function_pool and not pools.functions:
+                sys.stdout.write(
+                    f"{attack_id} {attack.params}: SKIPPED (run stage function_pools)\n"
+                )
                 continue
             keys = [p.problem_key for p in checker.problems]
             ctxs = [

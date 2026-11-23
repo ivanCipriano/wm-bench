@@ -284,8 +284,10 @@ def export_case(rec: dict[str, Any], code: str, global_seed: int) -> dict[str, A
     if marked is None:
         out.update(detection_sites=[], differences=None, decode=None, reproduced=None)
         return out
-    attacked = ATTACKS[rec["attack"]](marked, cfg, key, derive_seed(global_seed, rec["attack"],
-                                                                    sid, k))  # fmt: skip
+    # nessuna raccolta di nomi: le rinomine della Tabella 5 con la raccolta di T1.4 non si
+    # riproducono qui (gli altri attacchi non la usano)
+    seed = derive_seed(global_seed, rec["attack"], sid, k)
+    attacked = ATTACKS[rec["attack"]](marked, cfg, key, seed, ())
     det_sites, votes = detection_sites(attacked, cfg, key, cw)
     out["detection_sites"] = det_sites
     out["differences"] = differences(emb_sites, det_sites, votes, cfg.codeword_length, cw)

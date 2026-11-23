@@ -34,7 +34,6 @@ import pandas as pd
 from bench.attacks.base import (
     Attack,
     AttackContext,
-    AttackPools,
     MethodSetup,
     resolve_attack,
     sample_rng,
@@ -53,6 +52,7 @@ from bench.hpo.grid import resolve
 from bench.lang.parsers import default_parsers
 from bench.pipeline.stage import Cell, Stage, StageContext
 from bench.pipeline.stages.attack_pools import attack_pool_ref
+from bench.pipeline.stages.function_pools import function_pool_ref, load_attack_pools
 from bench.pipeline.stages.generate_baseline import decoding_for, problems_ref
 from bench.pipeline.stages.watermark import make_adapter, watermarked_ref
 from bench.registry import STAGES
@@ -185,6 +185,8 @@ class AttackStage(Stage):
         ]
         if self.attack(cell).needs_pools:
             refs.append(attack_pool_ref(language))
+        if self.attack(cell).needs_function_pool:
+            refs.append(function_pool_ref(language))
         return refs
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:
@@ -224,12 +226,7 @@ class AttackStage(Stage):
             CodeSample.model_validate(_clean(r))
             for r in table[list(CodeSample.model_fields)].to_dict(orient="records")
         ]
-        pools = AttackPools()
-        if attack.needs_pools:
-            from bench.data.attack_pools import AttackPool
-
-            pool = ctx.store.read_model(attack_pool_ref(language), AttackPool)
-            pools = AttackPools(tuple(pool.comments), tuple(pool.names))
+        pools = load_attack_pools(ctx.store, attack, language)
         tools = (
             ToolRunner(repo_root() / "tools", cfg.paths.tmp / "attack")
             if attack.needs_tools

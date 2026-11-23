@@ -112,8 +112,21 @@ def test_watermark_plan_is_one_gpu_job_with_d_after_b(
     monkeypatch: pytest.MonkeyPatch, local_root: Path
 ) -> None:
     """Con la regola di ``run_p2_p3.sh`` le 8 celle vanno su GPU; in un solo job l'ordine è
-    (modello, livello) × (B, D), qualunque sia il peso delle celle; senza la regola vanno su CPU."""
+    (modello, livello) × (B, D), qualunque sia il peso delle celle; senza la regola vanno su CPU.
+    La griglia è quella del giro P3 (i soli B e D neurali), non più in ``configs/hpo``."""
+    import bench.hpo.grid as grid_mod
     import bench.pipeline.stages  # noqa: F401
+
+    p3_grid = local_root / "hpo_p3" / "multimark.yaml"
+    p3_grid.parent.mkdir(parents=True)
+    lines = ["method: multimark", "include:", *(f"  - {json.dumps(p)}" for p in (B, D))]
+    p3_grid.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    real = grid_mod.grid_path
+
+    def p3_path(method: str, root: Path | None = None) -> Path:
+        return p3_grid if method == "multimark" and root is None else real(method, root)
+
+    monkeypatch.setattr(grid_mod, "grid_path", p3_path)
     from bench.config.builder import load_experiment
     from bench.config.resources import ResourceClass
     from bench.doctor import load_cluster_profiles

@@ -204,26 +204,14 @@ P3_STATIC = {"mcss": "1d3087c73439", "multimark": "36a0251d191f", "B": "e52b0407
              "D": "3fed1f1c1e24"}  # fmt: skip
 
 
-def test_p3_grid_hashes(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """La griglia ha solo i 2 punti di P3, B e D del giro 4 con ``names.proposer=neural``,
-    nell'ordine B, D (l'inserimento di D legge la cache di B), con gli hash nei commenti."""
-    monkeypatch.setenv("WMB_LOCAL_ROOT", str(tmp_path))
-    monkeypatch.setenv("SOURCERY_TOKEN", "fake-token-for-tests")
-    script = _load("posthoc_config_hashes")
-    rows = _hashes(script, monkeypatch, P3, capsys)
-    assert [h for _, h, _ in rows[:2]] == [P3_STATIC["mcss"], P3_STATIC["multimark"]]
-    grid = [h for _, h, label in rows if label.startswith("grid:")]
-    assert grid == list(P3_HASHES.values())
-    text = (REPO_ROOT / "configs" / "hpo" / "multimark.yaml").read_text(encoding="utf-8")
-    assert re.findall(r"^  - \{.*\}\s+# ([0-9a-f]{12})$", text, flags=re.M) == grid
-    from bench.hpo.grid import load_grid
-
-    points = [p.hparams for p in load_grid("multimark").points]
+def test_p3_hashes_are_recomputed(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """I 2 punti di P3 (B e D del giro 4 con ``names.proposer=neural``, non più nella griglia dal
+    giro P4) si ricalcolano identici con la libreria b2b6c18, come i default."""
+    mc, mm = _adapters(monkeypatch, tmp_path, P3)
     neural = {"names.proposer": "neural"}
-    assert points == [{**ROUND4_POINTS["B"], **neural}, {**ROUND4_POINTS["D"], **neural}]
-    _, mm = _adapters(monkeypatch, tmp_path, P3)
+    grid = [mm.config_hash({**ROUND4_POINTS[k], **neural}) for k in ("B", "D")]
+    assert grid == list(P3_HASHES.values())
+    assert [mc.config_hash({}), mm.config_hash({})] == [P3_STATIC["mcss"], P3_STATIC["multimark"]]
     assert {k: mm.config_hash(ROUND4_POINTS[k]) for k in ("B", "D")} == {
         k: P3_STATIC[k] for k in ("B", "D")}  # fmt: skip
     old = set(ROUND3_HASHES.values()) | set(MCSSFIX_HASHES.values()) | set(ROUND4_HASHES.values())
@@ -276,3 +264,118 @@ def test_p3_script_launches_only_the_grid() -> None:
     (wm,) = (s for s in submits if "stage=watermark" in s)
     assert wm.strip().startswith("submit --jobs 1 ") and '"$GPU_EMBED"' in wm
     assert f'GPU_EMBED="{gpu}"' in code
+
+
+# Giro P4 su dev (P4+P5 ridotte, v1.3.11 e v1.3.14; scripts/run_p4_dev.sh li controlla), libreria
+# b2b6c18 con il proponente statico: B e D da congelare e 5 ablazioni rispetto a B (§6.3).
+P4_POINTS = {
+    "B": ROUND4_POINTS["B"],
+    "D": ROUND4_POINTS["D"],
+    "V0": {"names.variant": "V0"},
+    "V1": {"names.variant": "V1"},
+    "POS": {**ROUND4_POINTS["B"], "linking": "positional"},
+    "MASK": {**ROUND4_POINTS["B"], "mask": "off"},
+    "PAPER": {**ROUND4_POINTS["B"], "canonical": "paper"},
+}
+P4_HASHES = {"B": "e52b040770df", "D": "3fed1f1c1e24", "V0": "ebeb5a0753cd",
+             "V1": "40e5e9455cea", "POS": "271087ba99b6", "MASK": "16de27361bad",
+             "PAPER": "65eb9730301a"}  # fmt: skip
+P4_MCSS = "1d3087c73439"
+# Celle già misurate con lo stesso inserimento (impercettibilità non rimisurata).
+P4_SAME = {"mcss": MCSSFIX_HASHES["mcss"], "B": ROUND4_HASHES["B"], "D": ROUND4_HASHES["D"]}
+
+
+def test_p4_grid_hashes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """La griglia ha B, D e le 5 ablazioni nell'ordine, con gli hash nei commenti; mcss, B e D
+    sono quelli dati dall'utente; le ablazioni cambiano un solo fattore rispetto a B (V0 e V1
+    tornano a 1 bit per nome, l'unico valore ammesso con quelle varianti)."""
+    monkeypatch.setenv("WMB_LOCAL_ROOT", str(tmp_path))
+    monkeypatch.setenv("SOURCERY_TOKEN", "fake-token-for-tests")
+    script = _load("posthoc_config_hashes")
+    rows = _hashes(script, monkeypatch, P3, capsys)
+    assert [h for _, h, _ in rows[:2]] == [P4_MCSS, P3_STATIC["multimark"]]
+    grid = [h for _, h, label in rows if label.startswith("grid:")]
+    assert grid == list(P4_HASHES.values())
+    assert [P4_HASHES["B"], P4_HASHES["D"]] == [P3_STATIC["B"], P3_STATIC["D"]]
+    text = (REPO_ROOT / "configs" / "hpo" / "multimark.yaml").read_text(encoding="utf-8")
+    assert re.findall(r"^  - \{.*\}\s+# ([0-9a-f]{12})$", text, flags=re.M) == grid
+    from bench.hpo.grid import load_grid
+
+    assert [p.hparams for p in load_grid("multimark").points] == list(P4_POINTS.values())
+    _, mm = _adapters(monkeypatch, tmp_path, P3)
+    with pytest.raises(Exception, match="bits_per_name=2 requires names.variant=V2"):
+        mm.config_hash({**ROUND4_POINTS["B"], "names.variant": "V0"})
+    old = (set(ROUND3_HASHES.values()) | set(MCSSFIX_HASHES.values())
+           | set(ROUND4_HASHES.values()) | set(P3_HASHES.values()))  # fmt: skip
+    assert not set(grid) & old
+
+
+def test_hpo_points_filters_the_sweep(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """``hpo.points`` (stringhe, anche da riga di comando) tiene solo quegli hash dello sweep; un
+    hash che non è nella griglia ferma la pianificazione."""
+    from bench.config.builder import load_experiment
+    from bench.domain.errors import ConfigError
+    from bench.pipeline.stage import CellPlanner
+    from bench.pipeline.stages.imperceptibility import AdversarialLogregStage
+
+    monkeypatch.setenv("WMB_LOCAL_ROOT", str(tmp_path))
+    monkeypatch.setenv("SOURCERY_TOKEN", "fake-token-for-tests")
+    monkeypatch.setattr(MethodAdapter, "source_commit", lambda self: P3)
+    ablations = [P4_HASHES[k] for k in ("V0", "V1", "POS", "MASK", "PAPER")]
+    base = ["paths=local", "stage=adversarial_logreg", "methods=[multimark]",
+            "hpo.grid=multimark", "hpo.use_selected=false", "levels=[L1]", "splits=[dev]",
+            "languages=[python]", "models=[qwen25_coder_7b]"]  # fmt: skip
+    every = CellPlanner(load_experiment(base)).cells_for(AdversarialLogregStage)
+    assert [c.config_hash for c in every] == list(P4_HASHES.values())
+    quoted = "hpo.points=[" + ",".join(f"'{h}'" for h in ablations) + "]"
+    some = CellPlanner(load_experiment([*base, quoted])).cells_for(AdversarialLogregStage)
+    assert [c.config_hash for c in some] == ablations
+    bad = load_experiment([*base, "hpo.points=['000000000000']"])
+    with pytest.raises(ConfigError, match="hpo.points not in the multimark grid"):
+        CellPlanner(bad).cells_for(AdversarialLogregStage)
+
+
+def test_p4_script() -> None:
+    """``scripts/run_p4_dev.sh``: libreria e hash giusti, multimark solo come sweep della griglia
+    e mcss solo come default del suo metodo, solo su dev, impercettibilità solo per le ablazioni,
+    attacchi con T1.6 e T2.5, riferimenti letti con gli hash già calcolati."""
+    text = (REPO_ROOT / "scripts" / "run_p4_dev.sh").read_text(encoding="utf-8")
+    assert f"EXPECTED={P3}" in text and f"P4_MCSS={P4_MCSS}" in text
+    for name, h in P4_HASHES.items():
+        assert f"P4_{name}={h}" in text
+    for name, h in ROUND4_HASHES.items():
+        assert f"R4_{name}={h}" in text
+    assert f"P3_B={P3_HASHES['B']}" in text and f"P3_D={P3_HASHES['D']}" in text
+    assert f"MCSS_NEW={MCSSFIX_HASHES['mcss']}" in text
+    for name, var in (("mcss", "MCSS"), ("multimark", "MM"), ("single_letter", "MM_SL"),
+                      ("A", "MM_A"), ("B", "MM_B"), ("C", "MM_C"), ("D", "MM_D")):  # fmt: skip
+        assert f"{var}={ROUND3_HASHES[name]}" in text
+    code = "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
+    assert sorted(re.findall(r'"methods=\[[^\]]*\]"', code)) == [
+        '"methods=[mcss]"',
+        '"methods=[multimark]"',
+    ]
+    assert code.count('"hpo.grid=multimark"') == 1
+    assert re.findall(r'"splits=\[[^\]]*\]"', code) == ['"splits=[dev]"']
+    assert 'ATTACKS="attacks=[T1.4,T1.5,T2.1,T2.4,T4.1,T1.6,T2.5]"' in code
+    submits = [ln for ln in code.splitlines() if ln.strip().startswith("submit --jobs")]
+    allowed = r'"\$\{(CLEAN|CLEAN_MCSS|ATTACKED|ATTACKED_MCSS|IMP)\[@\]\}"'
+    others = [s for s in submits if not re.search(allowed, s)]
+    assert others == ['        submit --jobs 1 stage=function_pools "languages=[python]"']
+    # impercettibilità solo per le 5 ablazioni, mai per mcss
+    imp = [s for s in submits if "perplexity" in s or "adversarial" in s or "imperceptibility" in s]
+    assert len(imp) == 4 and all('"${IMP[@]}"' in s for s in imp)
+    assert 'IMP=("${CLEAN[@]}" "attacks=[]" "hpo.points=[$ABLATIONS]")' in code
+    assert "ABLATIONS=\"'$P4_V0','$P4_V1','$P4_POS','$P4_MASK','$P4_PAPER'\"" in code
+    # mcss, B e D: impercettibilità dalle celle con lo stesso inserimento, identità controllata
+    assert "--same p4_mcss=mcss_new_3c47a1f p4_B=r4_B p4_D=r4_D" in code
+    assert P4_SAME == {"mcss": "ae63f16de28f", "B": "a8a296957377", "D": "b4cd11f13a07"}
+    assert '--pair "mcss:$P4_MCSS:$MCSS_NEW:p4_mcss"' in code
+    assert '--pair "multimark:$P4_B:$R4_B:p4_B"' in code
+    assert '--pair "multimark:$P4_D:$R4_D:p4_D"' in code
+    # nessun job di più del limite: ogni fase controlla i posti prima di inviare
+    phases = re.findall(r"^    ([a-z0-9_]+)\)$", code, flags=re.M)
+    assert phases[:5] == ["function_pools", "canonical", "table5", "watermark", "identity"]
+    assert 'MAX_JOBS="${MAX_JOBS:-10}"' in code

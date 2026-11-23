@@ -39,6 +39,7 @@ from bench.pipeline.stages.attack import AttackStage, attacked_subject
 from bench.pipeline.stages.attack_pools import attack_pool_ref
 from bench.pipeline.stages.calibrate import levels_tag, primary_view, threshold_ref
 from bench.pipeline.stages.detect import DetectStage, detection_ref
+from bench.pipeline.stages.function_pools import function_pool_ref
 from bench.pipeline.stages.generate_baseline import baseline_ref, problems_ref
 from bench.pipeline.stages.metrics import MetricsStage, _attack_info, _detected, _scores
 from bench.pipeline.stages.watermark import watermarked_ref
@@ -130,6 +131,8 @@ class AttackBaselineStage(AttackStage):
         refs = [problems_ref(level, language), baseline_ref(model_id, level, language, split)]
         if self.attack(cell).needs_pools:
             refs.append(attack_pool_ref(language))
+        if self.attack(cell).needs_function_pool:
+            refs.append(function_pool_ref(language))
         return refs
 
     def outputs(self, cell: Cell) -> list[ArtifactRef]:

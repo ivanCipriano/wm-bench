@@ -1,0 +1,9 @@
+# T2.5 diluizione (ADR-018 §4; PIPELINE di multimark §5.5): solo Python, livello di file; n
+# funzioni umane della fase function_pools (CodeSearchNet train) aggiunte a livello di modulo,
+# mai chiamate. Griglia ridotta a 3 celle (decisione G di §7, decisione dell'utente del 23
+# novembre 2026): (2, around) è la cella di §6.3 e del criterio di §6.4.
+attack_id: T2.5
+points:
+  - {n: 1, position: before}
+  - {n: 2, position: around}
+  - {n: 4, position: around}

@@ -306,3 +306,18 @@ cambiano il conteggio.
 - **Uso:** è la selezione del criterio (a) di P2 e della riproduzione della Tabella 5.
 
 La selezione precedente con `exclude` (101 file, `P1_mcss_selftest_extra.txt`) resta com'è.
+
+**Riproduzione della Tabella 5** (§4.4 punto 3; giro P4, decisioni dell'utente del 23 novembre 2026).
+
+- **Come:** `scripts/mcss_paper_attacks.py --attack table5` sui 169 file della selezione, una
+  chiave per file, `t = 2`. Gli attacchi sono 17: nessuno; `rename r` con r ∈ {2, 4, 8, 16}; per
+  ognuno degli 8 canali, l'inversione di tutti i siti del canale.
+- **Rinomina:** r variabili sito, scelte a caso, rinominate in modo coerente. Il paper non dice che
+  nome nuovo ricevono, quindi le letture sono due, riportate affiancate:
+  - principale: un nome casuale della raccolta di T1.4, come farebbe un attaccante reale;
+  - seconda: una parola minuscola casuale, così ogni rinomina diventa una cancellazione.
+- **Ordinamenti attesi** (controllati su tutte e due le letture): no-attack 100%; `rename 2` e
+  `rename 4` ≥ 95%; `rename 8` < 10%; `rename 16` ≈ 0 (≤ 2%); recupero non crescente in r;
+  `operand_order` il canale peggiore e `none_check` il migliore.
+- **Esito:** `docs/milestone_logs/P4_mcss_table5.txt`, che dice anche quale lettura si avvicina di
+  più all'andamento del paper (da riportare qui quando arriva).

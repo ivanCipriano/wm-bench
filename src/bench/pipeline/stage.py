@@ -287,7 +287,8 @@ class CellPlanner:
 
         Le celle senza metodo (es. esecuzione della baseline) restano come sono; quelle di altri
         metodi si scartano. Le fasi senza ``sweep_roles`` non si espandono. I punti di ``local``
-        si espandono solo nelle loro celle (modello, linguaggio).
+        si espandono solo nelle loro celle (modello, linguaggio). Con ``hpo.points`` solo i punti
+        con quegli hash.
         """
         method = self.config.hpo.grid
         if method is None or not stage.sweep_roles:
@@ -295,6 +296,12 @@ class CellPlanner:
         from bench.hpo.grid import sweep_points
 
         points = sweep_points(self.config, method, stage.sweep_roles)  # type: ignore[arg-type]
+        wanted = self.config.hpo.points
+        if wanted is not None:
+            unknown = sorted(set(wanted) - {h for h, _ in points})
+            if unknown:
+                raise ConfigError(f"hpo.points not in the {method} grid: {unknown}")
+            points = [(h, p) for h, p in points if h in set(wanted)]
         default: str | None = None
         if stage.sweep_default_unhashed or any(c.attack_id for c in cells):
             from bench.hpo.grid import resolve

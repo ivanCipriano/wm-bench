@@ -1,7 +1,7 @@
-# ADR-018 — Attacchi nuovi: T1.6 nomi in `snake_case`
+# ADR-018 — Attacchi nuovi: T1.6 nomi in `snake_case` e T2.5 diluizione
 
-- **Stato:** accettato per T1.6 (decisioni dell'utente del 19 novembre 2026). T2.5 (diluizione,
-  PIPELINE di multimark §5.5) si aggiungerà a questo ADR in P3.
+- **Stato:** accettato per T1.6 (decisioni dell'utente del 19 novembre 2026) e per T2.5
+  (diluizione, PIPELINE di multimark §5.5; decisioni dell'utente del 23 novembre 2026, §4).
 - **Contesto:** il canale dei nomi di `mcss` (V1) scrive 2 bit per variabile nello **stile** del
   nome (`snake_case` 00, `camelCase` 01, `PascalCase` 10, `ALL_CAPS` 11). Portare tutti i nomi
   in `snake_case`, come chiede PEP 8, è un attacco realistico: lo fa chi uniforma lo stile di un
@@ -99,3 +99,60 @@ configurazioni: `mcss` e i 6 punti di `configs/hpo/multimark.yaml`, compresa B, 
 Gira solo su L1 e L2 dev, con le soglie del giro di capacità e senza ricalibrare. La deviazione
 dal protocollo, che prevede gli attacchi sul test con la configurazione congelata, è in
 `docs/deviations.md`. Sul test T1.6 entrerà con gli altri attacchi in P3 e P6.
+
+## 4. T2.5 diluizione (23 novembre 2026)
+
+- **Contesto:** §5.5 di PIPELINE: un attaccante aggiunge al file funzioni umane che non vengono
+  chiamate. Il codice originale resta intatto, ma i metodi che leggono il messaggio da tutto il
+  file (`mcss`, `multimark` con legame `positional`) ricevono voti da siti che non portano bit. È
+  l'attacco del fattore «legame» dell'ablazione (§6.3) e una delle quattro celle del criterio di
+  §6.4.
+- **Vincolo:** come per T1.6, è un'aggiunta: un nuovo `attack_id` (`src/bench/attacks/t2/dilution.py`,
+  `configs/attack/t2_5_dilution.yaml`) e una fase nuova (`function_pools`). Gli altri attacchi e le
+  celle già calcolate non cambiano: `tests/unit/test_attacks_t2_dilution.py::test_grid_and_other_hashes`
+  fissa gli `attack_params_hash` di tutte le altre griglie, T1.6 compreso.
+- **Fase `function_pools`** (`src/bench/pipeline/stages/function_pools.py`, dati in
+  `src/bench/data/function_pools.py`): una cella, solo Python, uscita
+  `data/function_pools/python.parquet`. Le funzioni di CodeSearchNet **train** si leggono in ordine
+  casuale con il seme `derive_seed(global_seed, "function_pool", "python")` e si tengono le prime
+  5.000 che passano i filtri, con il conteggio dopo ciascuno nel manifest:
+  - i filtri delle raccolte di ADR-012 (righe oltre 200 caratteri, marcatori di codice generato);
+  - quelli di §5.5: `ast.parse` riuscito (più `compile`, che scarta i `nonlocal` senza funzione
+    esterna), una sola `def`, 3–40 righe di codice (non vuote e non di solo commento), nessun
+    `import`, nessun decoratore, non ricorsive, senza `global`;
+  - **un filtro in più, `definition_time`**: niente annotazioni e solo default letterali.
+    Annotazioni e default si valutano quando la `def` viene eseguita, quindi una funzione con
+    `x: np.ndarray` o `timeout=DEFAULT_TIMEOUT` farebbe fallire il programma al caricamento, e le
+    canoniche non resterebbero verdi come chiede §5.5;
+  - i duplicati esatti.
+- **Attacco:** solo Python, livello di file, `n` funzioni distinte estratte con l'RNG dell'attacco
+  e messe a livello di modulo.
+  - `before`: dopo la parte iniziale fatta di docstring e `import`. È il punto «dopo le `import`
+    iniziali e prima della prima definizione» di §5.5 quando fra le due non c'è altro; altrimenti
+    vale «dopo le `import`».
+  - `after`: in coda.
+  - `around`: le prime `ceil(n/2)` prima, le altre dopo.
+  - Due righe vuote separano ogni funzione aggiunta.
+- **Collisioni:** se il nome di una funzione aggiunta è già una parola del file, una parola
+  riservata, un **builtin** o il nome di un'altra funzione aggiunta, la `def` diventa
+  `<nome>_ext<k>`. I builtin non sono in §5.5: una `def sorted` messa prima del codice ne cambierebbe
+  il comportamento. Basta rinominare la `def`, perché le funzioni della raccolta non sono
+  ricorsive.
+- **Esiti:**
+  - `APPLIED`;
+  - codice vuoto `NOT_APPLICABLE`, come chiede §5.5 (gli altri attacchi lo trattano come
+    `UNCHANGED`);
+  - `TOOL_ERROR` con il codice originale se l'ingresso o l'uscita non si analizzano.
+  - `attack_detail` = `{n_inserted, names, position, added_loc, function_ids, n_renamed}`.
+- **Griglia:** 3 celle, `(n, position)` ∈ `{(1, before), (2, around), (4, around)}`, con
+  `attack_params_hash` `c32f7d55a266`, `9528392ed687` e `a2bc6db7f357`. È la riduzione della
+  decisione G di §7, scelta dall'utente il 23 novembre 2026; (2, around) è la cella di §6.3 e §6.4.
+- **Uso:** giro P4 su sviluppo (`scripts/run_p4_dev.sh`), solo sui punti di `mcss` e `multimark`.
+  Il perimetro sul test (tutti i metodi Python secondo §5.5) si decide dopo.
+- **Verifiche:**
+  - unitarie in `tests/unit/test_attacks_t2_dilution.py`: filtri, raccolta, posizioni,
+    collisioni, programma invariato (le funzioni aggiunte non cambiano i test), determinismo,
+    esiti;
+  - canoniche di L1 sul cluster: `LOG=P4_t2_5_canonical.txt bash scripts/check_attacks_canonical.sh
+    --languages python --attacks T2.5` (fase `canonical` di `run_p4_dev.sh`). Lo script legge la
+    raccolta di funzioni se la fase `function_pools` è stata lanciata e altrimenti salta T2.5.

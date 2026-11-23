@@ -52,6 +52,7 @@ hpo:
   max_pass1_drop_pp: 3.0       # definitivo (decisione dell'utente del 20 ottobre 2026)
   grid: null                   # sweep: metodo della griglia configs/hpo/<metodo>.yaml
   part: all                    # all | trajectories | candidates (PromptMark, ADR-009)
+  points: null                 # sottoinsieme dei config_hash dello sweep (null = tutti)
   allow_frozen_override: false # ricalibrare un metodo congelato: solo come deviazione (ADR-013)
 detection:
   target_fpr: 0.01

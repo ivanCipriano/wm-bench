@@ -61,10 +61,12 @@ PARAMS_HASH_LENGTH = 12
 
 @dataclass(frozen=True)
 class AttackPools:
-    """Raccolte di commenti e nomi umani di un linguaggio (fase ``attack_pools``)."""
+    """Raccolte umane di un linguaggio: commenti e nomi (fase ``attack_pools``) e funzioni
+    (fase ``function_pools``, T2.5; vuota per gli attacchi che non la usano)."""
 
     comments: tuple[str, ...] = ()
     names: tuple[str, ...] = ()
+    functions: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -152,6 +154,8 @@ class Attack(ABC):
     supported_languages: ClassVar[frozenset[Language]] = ALL_LANGUAGES
     requires_gpu: ClassVar[bool] = False
     needs_pools: ClassVar[bool] = False
+    # Usa la raccolta di funzioni della fase ``function_pools`` (T2.5).
+    needs_function_pool: ClassVar[bool] = False
     needs_tools: ClassVar[bool] = False
     needs_llm: ClassVar[bool] = False
     # Usa il generatore del metodo marcato (T3.1): la fase attack chiama ``apply_with_method``.

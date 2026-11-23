@@ -282,6 +282,10 @@ class HpoConfig(_Frozen):
     # celle (``Cell.config_hash``) e parte dello sweep (traiettorie di PromptMark, ADR-009).
     grid: str | None = None
     part: Literal["all", "trajectories", "candidates"] = "all"
+    # Sottoinsieme dei punti dello sweep (``config_hash`` della griglia): solo queste celle; un
+    # hash che non è nella griglia ferma la pianificazione. ``None`` = tutti i punti (giro P4 su
+    # dev: impercettibilità solo per le ablazioni, decisione dell'utente del 23 novembre 2026).
+    points: list[str] | None = None
     # Ricalibrare o rifare la scelta di un metodo congelato (ADR-013): solo come deviazione
     # registrata in docs/deviations.md.
     allow_frozen_override: bool = False
