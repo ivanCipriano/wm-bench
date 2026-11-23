@@ -136,7 +136,9 @@ def _git_runner(
 ) -> FakeRunner:  # type: ignore[assignment]
     responses: dict[tuple[str, ...], CommandResult] = {
         ("git", "rev-parse", "HEAD"): CommandResult(0, "a" * 40 + "\n", ""),
-        ("git", "status", "--porcelain", "--untracked-files=no"): CommandResult(0, "", ""),
+        ("git", "--no-optional-locks", "status", "--porcelain", "--untracked-files=no"): (
+            CommandResult(0, "", "")
+        ),
         ("git", "config", "-f", ".gitmodules"): CommandResult(
             0, "".join(f"submodule.{p}.path {p}\n" for p in links), ""
         ),
@@ -149,9 +151,8 @@ def _git_runner(
         responses[("git", "-C", sub, "rev-parse", "HEAD")] = CommandResult(
             0, heads.get(path, link) + "\n", ""
         )
-        responses[("git", "-C", sub, "status", "--porcelain")] = CommandResult(
-            0, " M file\n" if path in dirty else "", ""
-        )
+        status = ("git", "--no-optional-locks", "-C", sub, "status", "--porcelain")
+        responses[status] = CommandResult(0, " M file\n" if path in dirty else "", "")
     return FakeRunner(responses=responses)
 
 

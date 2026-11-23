@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
 import pytest
 
-from bench.store.manifest import ProvenanceCollector
+from bench.store.manifest import GIT_READ_ONLY, ProvenanceCollector
 
 
 def _git(repo: Path, *args: str) -> None:
@@ -70,3 +71,51 @@ def test_dirty_paths_ignore_milestone_logs() -> None:
     porcelain = " M docs/milestone_logs/M3_cluster.txt\n M src/bench/cli.py\nR  a.py -> b.py\n"
     assert dirty_paths(porcelain) == ["b.py", "src/bench/cli.py"]
     assert dirty_paths(" M docs/milestone_logs/M4_cluster.txt\n") == []
+
+
+def _make_index_stale(repo: Path) -> bytes:
+    """Cambia il mtime di un file tracciato senza cambiarne il contenuto: il prossimo ``git status``
+    con i lock opzionali riscrive l'indice per aggiornare le informazioni di stat."""
+    st = (repo / "a.txt").stat()
+    os.utime(repo / "a.txt", ns=(st.st_atime_ns, st.st_mtime_ns + 5_000_000_000))
+    return (repo / ".git" / "index").read_bytes()
+
+
+def test_plain_git_status_rewrites_the_index(git_repo: Path) -> None:
+    """Premessa del test sotto: senza ``--no-optional-locks`` ``git status`` scrive l'indice."""
+    before = _make_index_stale(git_repo)
+    _git(git_repo, "status", "--porcelain", "--untracked-files=no")
+    assert (git_repo / ".git" / "index").read_bytes() != before
+
+
+def test_provenance_never_writes_the_index(git_repo: Path) -> None:
+    """La provenienza non scrive ``.git/index`` (né prende ``.git/index.lock``): un job ucciso
+    durante ``git status`` non lascia il lock che fa fallire il commit dei log."""
+    before = _make_index_stale(git_repo)
+    prov = ProvenanceCollector(git_repo).provenance
+    assert prov.repo_dirty is False
+    assert (git_repo / ".git" / "index").read_bytes() == before
+    assert not (git_repo / ".git" / "index.lock").exists()
+
+
+def test_provenance_works_with_a_stale_lock(git_repo: Path) -> None:
+    """Con un ``index.lock`` lasciato da un altro processo la provenienza si legge lo stesso."""
+    (git_repo / ".git" / "index.lock").write_bytes(b"")
+    prov = ProvenanceCollector(git_repo).provenance
+    assert prov.repo_commit is not None and prov.repo_dirty is False
+
+
+def test_every_provenance_git_call_is_read_only(
+    git_repo: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[list[str]] = []
+    real = subprocess.run
+
+    def spy(cmd: list[str], *args: object, **kwargs: object) -> object:
+        calls.append(list(cmd))
+        return real(cmd, *args, **kwargs)  # type: ignore[call-overload]
+
+    monkeypatch.setattr(subprocess, "run", spy)
+    ProvenanceCollector(git_repo).provenance  # noqa: B018
+    git_calls = [c for c in calls if c and c[0] == "git"]
+    assert git_calls and all(tuple(c[:2]) == GIT_READ_ONLY for c in git_calls)

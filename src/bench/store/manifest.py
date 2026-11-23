@@ -30,6 +30,13 @@ _STATUS_MIN_FIELDS = 2  # "<sha> <path> [(describe)]" in git submodule status
 # (i log delle milestone vengono scritti con tee mentre i job girano).
 NON_CODE_PREFIXES = ("docs/milestone_logs/",)
 _PORCELAIN_PREFIX = 3  # "XY " prima del percorso
+# Ogni comando git della provenienza è in sola lettura: ``git status`` (e i ``git status`` che
+# ``git submodule status`` lancia nei submodule) altrimenti riscrive l'indice per aggiornare le
+# informazioni di stat, prendendo ``.git/index.lock``. Se il processo viene ucciso mentre tiene il
+# lock (timeout di 60 s qui sotto, ``scancel``, limite di tempo SLURM) il lock resta e il
+# ``git commit`` successivo fallisce. Con ``--no-optional-locks`` (git >= 2.15, equivale a
+# ``GIT_OPTIONAL_LOCKS=0`` ed è ereditato dai git figli) l'indice non si scrive mai.
+GIT_READ_ONLY = ("git", "--no-optional-locks")
 
 
 def dirty_paths(porcelain: str) -> list[str]:
@@ -129,7 +136,7 @@ class ProvenanceCollector:
     def _git(self, *args: str, cwd: Path | None = None) -> str | None:
         try:
             proc = subprocess.run(
-                ["git", *args],
+                [*GIT_READ_ONLY, *args],
                 cwd=cwd or self.repo_root,
                 capture_output=True,
                 text=True,

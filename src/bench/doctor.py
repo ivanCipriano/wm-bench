@@ -276,8 +276,12 @@ class SubmodulesCheck(DoctorCheck):
     def run(self, ctx: DoctorContext) -> list[CheckResult]:
         results: list[CheckResult] = []
         head = ctx.run(["git", "rev-parse", "HEAD"], 60, None, ctx.repo)
+        # sola lettura: senza --no-optional-locks git status riscrive l'indice (store/manifest.py)
         dirty = ctx.run(
-            ["git", "status", "--porcelain", "--untracked-files=no"], 60, None, ctx.repo
+            ["git", "--no-optional-locks", "status", "--porcelain", "--untracked-files=no"],
+            60,
+            None,
+            ctx.repo,
         )
         if head.returncode != 0:
             results.append(self.result("repository", Status.FAIL, "not a git repository"))
@@ -316,7 +320,10 @@ class SubmodulesCheck(DoctorCheck):
                 ["git", "-C", str(sub), "rev-parse", "HEAD"], 60, None, ctx.repo
             ).stdout.strip()
             local = ctx.run(
-                ["git", "-C", str(sub), "status", "--porcelain"], 60, None, ctx.repo
+                ["git", "--no-optional-locks", "-C", str(sub), "status", "--porcelain"],
+                60,
+                None,
+                ctx.repo,
             ).stdout.strip()
             if actual != link:
                 results.append(
