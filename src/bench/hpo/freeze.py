@@ -36,6 +36,9 @@ class FrozenCell(FrozenModel):
 
     model_id: str
     language: str
+    # Etichetta della configurazione (metodi post-hoc del registro, P6: più configurazioni per
+    # (modello, linguaggio), es. ``prudent`` e ``high_capacity``); ``None`` per gli altri metodi.
+    label: str | None = None
     not_applicable: bool = False
     config_hash: str | None = None
     hparams: dict[str, Any] = Field(default_factory=dict)
@@ -58,13 +61,27 @@ class FreezeRecord(FrozenModel):
     grid_sha256: str | None
     candidate_hashes: list[str]
     cells: list[FrozenCell]
+    # Solo metodi post-hoc del registro (P6, ADR-019): commit della libreria, sha256 dei file di
+    # patch della copia patchata, dei file di configurazione (percorsi relativi a ``configs/``) e
+    # delle soglie della rilevazione aggregata (percorsi relativi agli artefatti).
+    library_commit: str | None = None
+    library_patches_sha256: str | None = None
+    files_sha256: dict[str, str] = Field(default_factory=dict)
+    aggregated_sha256: dict[str, str] = Field(default_factory=dict)
 
-    def cell(self, model_id: str, language: str) -> FrozenCell | None:
-        """Cella congelata di (modello, linguaggio), se c'è."""
-        for c in self.cells:
-            if c.model_id == model_id and c.language == language:
+    def cell(
+        self, model_id: str, language: str, config_hash: str | None = None
+    ) -> FrozenCell | None:
+        """Cella congelata di (modello, linguaggio), se c'è; con ``config_hash`` quella di
+        quella configurazione (registri con più configurazioni)."""
+        for c in self.cells_for(model_id, language):
+            if config_hash is None or c.config_hash == config_hash:
                 return c
         return None
+
+    def cells_for(self, model_id: str, language: str) -> list[FrozenCell]:
+        """Celle congelate di (modello, linguaggio), nell'ordine del record."""
+        return [c for c in self.cells if c.model_id == model_id and c.language == language]
 
 
 def freeze_ref(method: str, key_id: str = MAIN_KEY_ID) -> ArtifactRef:

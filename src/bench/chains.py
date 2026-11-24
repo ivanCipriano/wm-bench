@@ -19,6 +19,15 @@ Decisioni dell'utente del 30 ottobre 2026 (``docs/milestone_logs/M13_M14_plan.md
 Ordine obbligatorio di SWEET: estensione D31 su L1 e L2 dev → soglie e scelta su L1+L2 →
 congelamento → fase 0 sul test → attacchi T1-T4 → M12 → L2 test e L3; nessun passo sul test prima
 del congelamento (i passi di test dipendono da ``sweet/freeze``).
+
+Metodi post-hoc ``mcss`` e ``multimark`` (P6, PIPELINE di multimark v1.3.16, decisioni dell'utente
+del 24 novembre 2026; :func:`posthoc_steps`): solo i passi sul test, che restano non pianificabili
+(«held») finché il metodo non è congelato (il ``CellPlanner`` li rifiuta, ADR-019). Congelamento,
+seconda chiave su dev e ``freeze_k2`` sono fuori dalle catene (``scripts/run_p6.sh``). Tre
+configurazioni (``mcss`` main, ``multimark`` prudent e high_capacity: un passo di ``multimark``
+copre le due), tutto su CPU salvo perplexity, ``adversarial_unixcoder`` e T2.2; L1 test con la
+suite completa, L2 test con l'insieme S più T1.6, T2.4k e T2.5, L3 = solo ClassEval
+(``posthoc_datasets=[classeval]``) con T2.4k, T2.5, T1.4 natural r = 1,0 e T1.6 convert.
 """
 
 from __future__ import annotations
@@ -53,6 +62,30 @@ METHOD_OWNER = {"sweet": "simone", "promptmark": "simone", "stone": "ivan", "mcg
 # job di rilevazione per passo: la rilevazione di SWEET (con Qwen) è il collo di bottiglia
 # delle catene (stima complessiva, M13_closing_cost_4.txt); al più i posti liberi
 DETECT_JOBS = {"sweet": 8}
+POSTHOC = ("mcss", "multimark")
+# Attacchi dei post-hoc sul test per livello (v1.3.16, punto 5); T3.1 a parte (t3_1_steps).
+POSTHOC_ATTACKS = {
+    "L1": ("T1.1", "T1.2", "T1.3", "T1.4", "T1.5", "T1.6", "T2.1", "T2.2", "T2.4", "T2.5",
+           "T4.1"),
+    "L2": ("T1.4", "T1.5", "T1.6", "T2.1", "T2.4", "T2.4k", "T2.5", "T4.1"),
+    "L3": ("T1.4", "T1.6", "T2.4k", "T2.5"),
+}  # fmt: skip
+# Punti scelti (attack_params_hash, ``attack_points``) degli attacchi che non girano con tutta la
+# griglia; tests/unit/test_chains.py ricontrolla i parametri.
+POSTHOC_POINTS: dict[str, dict[str, tuple[str, ...]]] = {
+    "L2": {
+        "T1.4": ("23f6be2801c3", "e2770ff72bae"),  # natural r = 1,0; random r = 0,5
+        "T1.5": ("705d07d343b2",),  # k = 5
+        "T2.1": ("f39d410e0723",),  # b = all
+        "T2.4": ("214ddb2cb794",),  # p = 0,5
+        "T4.1": ("fe396d74371a",),  # rename = true
+    },
+    "L3": {
+        "T1.4": ("23f6be2801c3",),  # natural r = 1,0
+        "T1.6": ("9ad68973c317",),  # convert
+    },
+}
+POSTHOC_L3_DATASETS = "[classeval]"
 SWEET_ATTACKS = ("T1.1", "T1.2", "T1.3", "T1.4", "T1.5", "T2.1", "T2.2", "T2.4", "T4.1", "T4.2")
 ACTIVE = ("PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "REQUEUED", "RESIZING", "SUSPENDED")
 FAILED = ("FAILED", "TIMEOUT", "CANCELLED", "NODE_FAIL", "OUT_OF_MEMORY", "BOOT_FAIL", "DEADLINE",
@@ -95,8 +128,10 @@ DoneCheck = Callable[[Step], bool | None]  # None: non pianificabile (es. metodo
 
 # --------------------------------------------------------------------------- definizione
 def _test(method: str, level: str, attacks: str = "[]") -> tuple[str, ...]:
+    posthoc_l3 = method in POSTHOC and level == "L3"
+    only = (f"posthoc_datasets={POSTHOC_L3_DATASETS}",) if posthoc_l3 else ()
     return (f"methods=[{method}]", f"levels=[{level}]", "splits=[test]",
-            f"languages={LANGS[method]}", f"attacks={attacks}")  # fmt: skip
+            f"languages={LANGS[method]}", f"attacks={attacks}", *only)  # fmt: skip
 
 
 def _image(wmb: str) -> tuple[str, ...]:
@@ -165,7 +200,7 @@ def test_phase(method: str, level: str, wmb: str, after: Sequence[str] = ()) -> 
     base_exec = (f"base/{level}/execute",)
     image = _image(wmb) if level == "L3" else ()
     acw = method == "acw" and level in ("L2", "L3")
-    gpu = None if method == "acw" else "auto"
+    gpu = None if method == "acw" or method in POSTHOC else "auto"  # post-hoc: proponente statico
     steps: list[Step] = []
     first = (*after, *base)
     sources = "[llm_watermarked]"
@@ -209,10 +244,14 @@ def test_phase(method: str, level: str, wmb: str, after: Sequence[str] = ()) -> 
     return steps
 
 
-def attack_steps(method: str, attack: str, level: str, wmb: str) -> list[Step]:
-    """Un attacco sul test di un livello: attack, execute, detect, metrics (M10, M11)."""
+def attack_steps(
+    method: str, attack: str, level: str, wmb: str, points: Sequence[str] = ()
+) -> list[Step]:
+    """Un attacco sul test di un livello: attack, execute, detect, metrics (M10, M11); con
+    ``points`` solo quei punti dell'attacco (``attack_points``, P6)."""
     owner, prefix = METHOD_OWNER[method], f"{method}/{level}/{attack}"
-    test = _test(method, level, f"[{attack}]")
+    chosen = (f"attack_points=[{','.join(repr(h) for h in points)}]",) if points else ()
+    test = (*_test(method, level, f"[{attack}]"), *chosen)
     image = _image(wmb) if level == "L3" else ()
     acw = method == "acw" and level in ("L2", "L3")
     gpu_attack = "auto" if attack in ("T2.2", "T2.3", "T3.1") else None
@@ -333,12 +372,17 @@ def sweet_steps(wmb: str) -> list[Step]:
     return steps
 
 
-def t3_1_steps(method: str, wmb: str, after: Sequence[str]) -> list[Step]:
-    """T3.1 con la seconda chiave (ADR-014 §3), nell'ordine di ``submit_attacks_l1.sh``."""
+def t3_1_steps(
+    method: str, wmb: str, after: Sequence[str], dev: bool = True, gpu: str | None = "auto"
+) -> list[Step]:
+    """T3.1 con la seconda chiave (ADR-014 §3), nell'ordine di ``submit_attacks_l1.sh``. Con
+    ``dev=False`` senza i passi su dev e il congelamento di k2 (post-hoc, P6: fatti prima del
+    congelamento da ``scripts/run_p6.sh``); ``gpu=None``: ri-marcatura su CPU (post-hoc)."""
     o, langs, p = METHOD_OWNER[method], LANGS[method], f"{method}/L1/T3.1"
     k2 = (f"methods=[{method}]", f"languages={langs}", "attacks=[]")
     test = _test(method, "L1", "[T3.1]")
-    return [
+    frozen_k2 = (f"{p}/k2_freeze",) if dev else tuple(after)
+    steps = [
         Step(
             f"{p}/k2_detect_dev",
             o,
@@ -363,7 +407,7 @@ def t3_1_steps(method: str, wmb: str, after: Sequence[str]) -> list[Step]:
             "detect_k2",
             ("levels=[L1]", "splits=[test]", *k2),
             jobs=2,
-            needs=(f"{p}/k2_freeze", f"{method}/L1/watermark"),
+            needs=(*frozen_k2, f"{method}/L1/watermark"),
         ),  # fmt: skip
         Step(
             f"{p}/attack",
@@ -371,8 +415,8 @@ def t3_1_steps(method: str, wmb: str, after: Sequence[str]) -> list[Step]:
             "attack",
             test,
             jobs=4,
-            gpu="auto",
-            needs=(f"{p}/k2_freeze", f"{method}/L1/watermark"),
+            gpu=gpu,
+            needs=(*frozen_k2, f"{method}/L1/watermark"),
         ),  # fmt: skip
         Step(
             f"{p}/execute",
@@ -399,10 +443,13 @@ def t3_1_steps(method: str, wmb: str, after: Sequence[str]) -> list[Step]:
             needs=(f"{p}/metrics", f"{p}/k2_detect", f"{p}/k2_detect_test"),
         ),  # fmt: skip
     ]
+    return steps if dev else steps[3:]
 
 
-def m12_steps(method: str, after: Sequence[str]) -> list[Step]:
-    """Impercettibilità (M12, ADR-015) sul test di L1."""
+def m12_steps(
+    method: str, after: Sequence[str], sources: str = "[llm_baseline,llm_watermarked,baseline_twin]"
+) -> list[Step]:
+    """Impercettibilità (M12, ADR-015) sul test di L1 (post-hoc: senza gemella)."""
     o, p = METHOD_OWNER[method], f"{method}/M12"
     test = _test(method, "L1")
     return [
@@ -410,7 +457,7 @@ def m12_steps(method: str, after: Sequence[str]) -> list[Step]:
             f"{p}/perplexity",
             o,
             "perplexity",
-            (*test, "execution.sources=[llm_baseline,llm_watermarked,baseline_twin]"),
+            (*test, f"execution.sources={sources}"),
             jobs=2,
             gpu="auto",
             needs=tuple(after),
@@ -435,6 +482,41 @@ def k_curve_steps(method: str, wmb: str) -> list[Step]:
     return steps
 
 
+def posthoc_steps(method: str, wmb: str) -> list[Step]:
+    """Parte di test di un metodo post-hoc (P6, v1.3.16): fase 0 su L1, L2 e ClassEval, attacchi
+    per livello (:data:`POSTHOC_ATTACKS`, punti di :data:`POSTHOC_POINTS`), controllo negativo di
+    T2.2(b), T3.1 su CPU e impercettibilità su L1. Nessun passo su dev né di congelamento."""
+    o = METHOD_OWNER[method]
+    steps: list[Step] = []
+    for level, attacks in POSTHOC_ATTACKS.items():
+        steps += test_phase(method, level, wmb)
+        for attack in attacks:
+            points = POSTHOC_POINTS.get(level, {}).get(attack, ())
+            steps += attack_steps(method, attack, level, wmb, points)
+    t22 = _test(method, "L1", "[T2.2]")
+    steps += [
+        Step(
+            f"{method}/L1/T2.2/control_detect",
+            o,
+            "detect_attack_control",
+            t22,
+            jobs=2,
+            needs=("base/L1/T2.2/control_attack", f"{method}/L1/metrics"),
+        ),  # fmt: skip
+        Step(
+            f"{method}/L1/T2.2/control_metrics",
+            o,
+            "metrics_attack_control",
+            (*t22, "detection.threshold_levels=[L1,L2]"),
+            needs=(f"{method}/L1/T2.2/control_detect", f"{method}/L1/T2.2/metrics"),
+        ),  # fmt: skip
+    ]
+    steps += t3_1_steps(method, wmb, after=(f"{method}/L1/metrics",), dev=False, gpu=None)
+    steps += m12_steps(method, after=(f"{method}/L1/metrics",),
+                       sources="[llm_baseline,llm_watermarked]")  # fmt: skip
+    return steps
+
+
 def all_steps(wmb: str) -> list[Step]:
     """Tutti i passi, in ordine di priorità (SWEET per primo sulle GPU)."""
     steps = sweet_steps(wmb) + k_curve_steps("sweet", wmb) + baseline_steps(wmb)
@@ -442,6 +524,8 @@ def all_steps(wmb: str) -> list[Step]:
         for level in ("L2", "L3"):
             steps += test_phase(method, level, wmb)
         steps += k_curve_steps(method, wmb)
+    for method in POSTHOC:
+        steps += posthoc_steps(method, wmb)
     keys = [s.key for s in steps]
     duplicates = sorted({k for k in keys if keys.count(k) > 1})
     if duplicates:

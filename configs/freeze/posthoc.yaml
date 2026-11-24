@@ -1,0 +1,15 @@
+# Registro delle configurazioni da congelare dei metodi post-hoc multi-bit (P6, PIPELINE di
+# multimark v1.3.16; decisioni dell'utente del 24 novembre 2026; ADR-019).
+#
+# Per ogni metodo, etichetta -> config_hash con la libreria `library_commit` (b2b6c18, submodule
+# fermo). Gli hash devono essere il default del metodo o punti di configs/hpo/<metodo>.yaml:
+# la fase freeze li ricalcola dagli iperparametri e rifiuta il congelamento se non coincidono.
+# Dopo il congelamento (freeze/<metodo>.json) la parte di test usa solo questi hash; il file entra
+# negli sha256 controllati dal CellPlanner a ogni pianificazione sul test, quindi non si modifica.
+library_commit: b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a
+methods:
+  mcss:
+    main: 1d3087c73439
+  multimark:
+    prudent: e52b040770df        # B: base + names.bits_per_name=2
+    high_capacity: 3fed1f1c1e24  # D: + single_letter, same_kind, include_params

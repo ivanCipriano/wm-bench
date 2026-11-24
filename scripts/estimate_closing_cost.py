@@ -3,7 +3,16 @@ mancano, per metodo e livello, e giorni reali.
 
 Uso (con bench-core, nodo di login, nessun job; qualche minuto per leggere i manifest):
     python scripts/estimate_closing_cost.py | tee docs/milestone_logs/M13_closing_cost.txt
+    python scripts/estimate_closing_cost.py --methods mcss multimark   # solo P6 dei post-hoc
     (file nuovo: non riscrivere un log già committato; se esiste, usare un altro nome)
+
+Metodi post-hoc ``mcss`` e ``multimark`` (P6, v1.3.16): le celle di test si pianificano con gli
+hash del registro ``configs/freeze/posthoc.yaml`` anche prima del congelamento (``CellPlanner`` con
+``posthoc_guard=False``, sola lettura); in L3 si contano solo i problemi di ClassEval
+(``posthoc_datasets``); i loro passi sono su GPU solo se lo dice il passo (perplexity,
+``adversarial_unixcoder``, T2.2), perché l'inserimento con il proponente statico gira su CPU. I
+tempi vengono dalle celle di sviluppo dei due metodi (P4) e, per gli attacchi che non hanno mai
+fatto (T2.2 e gli altri attacchi di L1), dagli altri metodi.
 
 Metodo:
 
@@ -38,7 +47,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from bench.chains import MAX_JOBS, OWNERS, Step, all_steps
+from bench.chains import MAX_JOBS, OWNERS, POSTHOC, Step, all_steps
 from bench.config.builder import load_experiment
 from bench.config.resources import ResourceClass
 from bench.domain.enums import Language
@@ -111,22 +120,38 @@ class Counts:
 
     def __init__(self, store: ArtifactStore) -> None:
         self.store = store
-        self._cache: dict[tuple[str, str, str], tuple[int, int]] = {}
+        self._cache: dict[tuple[str, str, str, tuple[str, ...] | None], tuple[int, int]] = {}
 
-    def get(self, level: str | None, lang: str | None, split: str | None) -> tuple[int, int]:
+    def get(
+        self,
+        level: str | None,
+        lang: str | None,
+        split: str | None,
+        datasets: tuple[str, ...] | None = None,
+    ) -> tuple[int, int]:
+        """Problemi (solo di ``datasets``, se dati) e negativi umani (tutti) del livello."""
         if level is None or lang is None:
             return 0, 0
-        key = (level, lang, split or "test")
+        key = (level, lang, split or "test", datasets)
         if key not in self._cache:
-            self._cache[key] = (self._count(problems_ref(Language(lang), level), key[2]),
-                                self._count(native_ref(Language(lang), level), key[2]))  # fmt: skip
+            self._cache[key] = (
+                self._count(problems_ref(Language(lang), level), key[2], datasets),
+                self._count(native_ref(Language(lang), level), key[2]),
+            )
         return self._cache[key]
 
-    def _count(self, ref: Any, split: str) -> int:
+    def _count(self, ref: Any, split: str, datasets: tuple[str, ...] | None = None) -> int:
         if not self.store.exists(ref):
             return 0
         table = self.store.read_table(ref)
+        if datasets is not None and "dataset" in table.columns:
+            table = table[table["dataset"].isin(datasets)]
         return int((table["split"] == split).sum()) if "split" in table.columns else len(table)
+
+
+def cell_datasets(cell: Cell) -> tuple[str, ...] | None:
+    """Dataset dei problemi di una cella da fare: in L3 i post-hoc solo ClassEval (P6)."""
+    return ("classeval",) if cell.method in POSTHOC and cell.level == "L3" else None
 
 
 def _coords(stage: str, cell: dict[str, Any], method: bool = True) -> tuple[Any, ...]:
@@ -186,7 +211,7 @@ class Rates:
                                   lambda m: self._per_problem(stage, cell, m))  # fmt: skip
         if per_row is None or per_problem is None:
             return None
-        p, h = self.counts.get(cell.level, cell.language, cell.split)
+        p, h = self.counts.get(cell.level, cell.language, cell.split, cell_datasets(cell))
         rows = per_problem[0] * p + (h if self._human(stage, cell) else 0)
         label = per_row[1] if per_row[1] == per_problem[1] else f"{per_row[1]} | {per_problem[1]}"
         return per_row[0] * rows, label
@@ -219,7 +244,8 @@ class Rates:
 
 
 def missing_cells(step: Step, store: ArtifactStore) -> Iterator[Cell]:
-    """Celle senza output di un passo (SWEET non congelato: tutte, senza configurazione)."""
+    """Celle senza output di un passo (SWEET non congelato: tutte, senza configurazione; post-hoc
+    non congelati: tutte, con gli hash del registro)."""
     import bench.pipeline.stages  # noqa: F401  (popola STAGES)
 
     stage_cls = STAGES.get(step.stage)
@@ -232,7 +258,15 @@ def missing_cells(step: Step, store: ArtifactStore) -> Iterator[Cell]:
     except BenchError:
         cfg = load_experiment([*BASE, f"stage={step.stage}", *step.overrides,
                                "hpo.use_selected=false"])  # fmt: skip
-        yield from (replace(c, config_hash=None) for c in CellPlanner(cfg).cells_for(stage_cls))
+        cells = CellPlanner(cfg, posthoc_guard=False).cells_for(stage_cls)
+        yield from (c if c.method in POSTHOC else replace(c, config_hash=None) for c in cells)
+
+
+def is_gpu(step: Step) -> bool:
+    """Passo su GPU: per i post-hoc solo se lo dice il passo (proponente statico, P6)."""
+    if step.chain.split("/")[0] in POSTHOC:
+        return step.gpu is not None
+    return STAGES.get(step.stage).resources is not ResourceClass.CPU
 
 
 def progress(message: str) -> None:
@@ -245,9 +279,19 @@ def h(seconds: float) -> str:
     return f"{seconds / 3600:8.1f}"
 
 
-def main() -> int:
+def parse_args(argv: list[str] | None) -> Any:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
+    parser.add_argument("--methods", nargs="*", default=None,
+                        help="only the steps of these chains (e.g. mcss multimark)")  # fmt: skip
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915
     import bench.pipeline.stages  # noqa: F401  (popola STAGES)
 
+    args = parse_args(argv)
     cfg = load_experiment([*BASE, "stage=selftest"])
     store = ArtifactStore(cfg.paths.artifacts)
     w = sys.stdout.write
@@ -257,6 +301,8 @@ def main() -> int:
     progress("manifest letti; pianificazione dei passi")
     steps = all_steps(str(cfg.paths.wmb))
     by_key = {s.key: s for s in steps}
+    if args.methods:
+        steps = [s for s in steps if s.chain.split("/")[0] in set(args.methods)]
 
     step_s: dict[str, float] = {}
     gpu_of: dict[str, bool] = {}
@@ -266,7 +312,7 @@ def main() -> int:
     for i, step in enumerate(steps, 1):
         progress(f"passo {i}/{len(steps)}: {step.key}")
         sys.stdout.flush()
-        gpu = STAGES.get(step.stage).resources is not ResourceClass.CPU
+        gpu = is_gpu(step)
         total, sources, n = 0.0, set(), 0
         for cell in missing_cells(step, store):
             n += 1
@@ -305,6 +351,7 @@ def main() -> int:
             days = max(slots, path) / 86400
             w(f"    {owner:<7} GPU {h(gpu_s)} h, CPU {h(cpu_s)} h; 10 posti {h(slots)} h; cammino "
               f"critico {h(path)} h -> {days:.1f} giorni\n")  # fmt: skip
+    w(posthoc_summary(step_s, gpu_of, by_key))
     sweet = [k for k in step_s if k.startswith("sweet/")]
     w(f"\n  SWEET (priorità sulle GPU): cammino critico {h(critical_path(sweet, step_s, by_key))}"
       f" h, GPU {h(sum(step_s[k] for k in sweet if gpu_of[k]))} h\n")  # fmt: skip
@@ -313,6 +360,22 @@ def main() -> int:
         for line in unknown[:40]:
             w(f"  {line}\n")
     return 0
+
+
+def posthoc_summary(
+    step_s: dict[str, float], gpu_of: dict[str, bool], by_key: dict[str, Step]
+) -> str:
+    """Riga di P6 per i post-hoc: ore GPU e CPU, 10 posti, cammino critico e giorni."""
+    posthoc = [k for k in step_s if k.split("/")[0] in POSTHOC]
+    if not posthoc:
+        return ""
+    gpu_s = sum(step_s[k] for k in posthoc if gpu_of[k])
+    cpu_s = sum(step_s[k] for k in posthoc if not gpu_of[k])
+    slots = (gpu_s + cpu_s) / MAX_JOBS
+    path = critical_path(posthoc, step_s, by_key)
+    days = max(slots, path) / 86400
+    return (f"\n  P6 post-hoc (mcss, multimark): GPU {h(gpu_s)} h, CPU {h(cpu_s)} h; 10 posti "
+            f"{h(slots)} h; cammino critico {h(path)} h -> {days:.1f} giorni\n")  # fmt: skip
 
 
 def critical_path(keys: list[str], seconds: dict[str, float], by_key: dict[str, Step]) -> float:

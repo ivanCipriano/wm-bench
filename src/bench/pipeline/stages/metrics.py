@@ -331,10 +331,19 @@ class MetricsStage(Stage):
             )
         method, model_id, language = str(cell.method), str(cell.model_id), str(cell.language)
         record = load_freeze(ctx.store, method)
-        frozen = record.cell(model_id, language) if record is not None else None
+        cfg_hash = self.config_hash(cell)
+        # Registri con più configurazioni (post-hoc, P6): la cella della configurazione; per gli
+        # altri metodi l'unica cella di (modello, linguaggio), come prima.
+        many = record is not None and len(record.cells_for(model_id, language)) > 1
+        frozen = (
+            record.cell(model_id, language, cfg_hash if many else None)
+            if record is not None
+            else None
+        )
+        if frozen is None and many:
+            raise ConfigError(f"{cell.key()}: config {cfg_hash} is not among the frozen ones")
         if frozen is None:
             raise ConfigError(f"{cell.key()}: {method} is not frozen (ADR-013): no test metrics")
-        cfg_hash = self.config_hash(cell)
         if frozen.config_hash != cfg_hash:
             raise ConfigError(
                 f"{cell.key()}: config {cfg_hash} is not the frozen one ({frozen.config_hash})"

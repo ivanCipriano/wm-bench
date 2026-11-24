@@ -45,6 +45,8 @@ languages: [python, java, cpp, javascript]
 levels: [L1, L2]
 splits: [dev]
 attacks: []
+attack_points: null            # sottoinsieme degli attack_params_hash (P6; null = tutti i punti)
+posthoc_datasets: null         # post-hoc: solo questi dataset della baseline (P6: L3 = [classeval])
 force: false
 log_level: INFO
 hpo:

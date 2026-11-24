@@ -302,6 +302,15 @@ class ExperimentConfig(_Frozen):
     levels: list[Level]
     splits: list[Split]
     attacks: list[str]
+    # Sottoinsieme dei punti degli attacchi (``attack_params_hash``, P6, decisione dell'utente del
+    # 24 novembre 2026): un attacco di ``attacks`` con almeno un punto in questa lista tiene solo
+    # quei punti, uno senza punti nella lista li tiene tutti; un hash che non è un punto di un
+    # attacco di ``attacks`` ferma la pianificazione. ``None`` = tutti i punti (comportamento di
+    # prima).
+    attack_points: list[str] | None = None
+    # Metodi post-hoc: solo i campioni della baseline di questi dataset (P6: L3 = solo ClassEval,
+    # decisione dell'utente del 24 novembre 2026). ``None`` = tutti (comportamento di prima).
+    posthoc_datasets: list[str] | None = None
     force: bool
     log_level: str = "INFO"
     paths: PathsConfig

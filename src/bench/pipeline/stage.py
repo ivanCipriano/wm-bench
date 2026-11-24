@@ -164,6 +164,10 @@ class Stage(ABC):
     # Punti della griglia degli attacchi: tutti (``grid``) o solo quelli con il controllo negativo
     # sulla baseline (``negative_control``, D34).
     attack_points: ClassVar[str] = "grid"
+    # Fasi che usano la configurazione congelata anche fuori dalla parte di test (seconda chiave,
+    # T3.1): per i metodi post-hoc del registro le celle si espandono nelle configurazioni
+    # registrate su ogni parte (P6, :mod:`bench.hpo.posthoc_freeze`).
+    frozen_config: ClassVar[bool] = False
 
     @classmethod
     def create(cls, config: ExperimentConfig) -> Stage:
@@ -203,8 +207,11 @@ class CellPlanner:
         config: configurazione validata.
     """
 
-    def __init__(self, config: ExperimentConfig) -> None:
+    def __init__(self, config: ExperimentConfig, posthoc_guard: bool = True) -> None:
         self.config = config
+        # False solo per le stime in sola lettura (estimate_closing_cost.py): le celle di test
+        # dei post-hoc si pianificano con gli hash del registro anche prima del congelamento.
+        self.posthoc_guard = posthoc_guard
         self._axes: dict[str, list[str]] = {
             "method": list(config.methods),
             "model_id": list(config.models),
@@ -232,31 +239,50 @@ class CellPlanner:
             cell = stage.normalize_cell(Cell(**dict(zip(stage.cell_axes, combo, strict=True))))
             if cell is not None and cell not in cells:
                 cells.append(cell)
-        return self._selected(stage, self._attack_grid(stage, self._sweep(stage, cells)))
+        cells = self._attack_grid(stage, self._sweep(stage, cells))
+        return self._selected(stage, self._posthoc(stage, cells))
 
-    @staticmethod
-    def _attack_grid(stage: type[Stage], cells: list[Cell]) -> list[Cell]:
+    def _attack_grid(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:
         """Una cella per combinazione dei parametri di ogni attacco (``configs/attack/*.yaml``):
-        ``Cell.attack_params_hash``, come lo sweep dell'HPO per i metodi (ADR-012)."""
+        ``Cell.attack_params_hash``, come lo sweep dell'HPO per i metodi (ADR-012). Con
+        ``attack_points`` solo quei punti per gli attacchi che ne hanno almeno uno nella lista."""
         if "attack_id" not in stage.cell_axes:
             return cells
         from bench.attacks.base import grid_attacks, negative_control_attacks
 
         control = stage.attack_points == "negative_control"
         points = negative_control_attacks if control else grid_attacks
+        wanted = self.config.attack_points
+        known: set[str] = set()
         out: list[Cell] = []
         for cell in cells:
             if cell.attack_id is None or cell.attack_params_hash is not None:
                 out.append(cell)
-            else:
-                found = points(cell.attack_id, language=cell.language)
-                # niente celle per i linguaggi che l'attacco non supporta (T4: solo py e js)
-                out.extend(
-                    replace(cell, attack_params_hash=h)
-                    for h, attack in found.items()
-                    if cell.language is None or attack.supports(cell.language)
-                )
+                continue
+            found = points(cell.attack_id, language=cell.language)
+            known.update(found)
+            if wanted is not None and set(found) & set(wanted):
+                found = {h: a for h, a in found.items() if h in set(wanted)}
+            # niente celle per i linguaggi che l'attacco non supporta (T4: solo py e js)
+            out.extend(
+                replace(cell, attack_params_hash=h)
+                for h, attack in found.items()
+                if cell.language is None or attack.supports(cell.language)
+            )
+        if wanted is not None and not control and any(c.attack_id for c in cells):
+            unknown = sorted(set(wanted) - known)
+            if unknown:
+                raise ConfigError(f"attack_points not among the points of {self.config.attacks}: "
+                                  f"{unknown}")  # fmt: skip
         return out
+
+    def _posthoc(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:
+        """Metodi post-hoc del registro ``configs/freeze/posthoc.yaml`` (P6, ADR-019): sulla
+        parte di test solo le configurazioni congelate, con i controlli di
+        :func:`bench.hpo.posthoc_freeze.plan_cells`; gli altri metodi non cambiano."""
+        from bench.hpo.posthoc_freeze import plan_cells
+
+        return plan_cells(self.config, stage, cells, guard=self.posthoc_guard)
 
     def _selected(self, stage: type[Stage], cells: list[Cell]) -> list[Cell]:
         """Sulla parte di test: la configurazione congelata del metodo (ADR-013).

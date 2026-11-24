@@ -28,8 +28,15 @@ def _env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(MethodAdapter, "source_commit", lambda self: "e" * 40)
 
 
+POSTHOC = ("mcss", "multimark")  # parte di test protetta dal congelamento (P6, ADR-019)
+
+
 def _cells(stage: type, *overrides: str) -> list:  # type: ignore[type-arg]
-    cfg = load_experiment([*BASE, "hpo.use_selected=false", *overrides])
+    """Celle della fase; con un post-hoc del registro solo dev: le loro celle di test senza
+    congelamento sono rifiutate (test_posthoc_test_cells_are_refused)."""
+    methods = next((o for o in overrides if o.startswith("methods=")), "")
+    split = ["splits=[dev]"] if any(m in methods for m in POSTHOC) else []
+    cfg = load_experiment([*BASE, "hpo.use_selected=false", *split, *overrides])
     return CellPlanner(cfg).cells_for(stage)
 
 
@@ -137,3 +144,21 @@ def test_sweep_without_attacks_is_unchanged_in_every_stage() -> None:
     assert len(det) == n and all(c.config_hash and c.attack_id is None for c in det)
     ex = _cells(ExecuteStage, *common, "execution.sources=[llm_watermarked,attacked]")
     assert len(ex) == n and all(c.source == "llm_watermarked" for c in ex)
+
+
+@pytest.mark.parametrize("stage", [MetricsStage, ExecuteStage, AttackStage, DetectStage])
+def test_posthoc_test_cells_are_refused(stage: type) -> None:
+    """P6 (ADR-019): le celle di test di mcss e multimark senza congelamento, o con la griglia,
+    non si pianificano (prima erano le celle di default senza hash); stone resta com'era."""
+    from bench.domain.errors import ConfigError
+
+    for method in ("mcss", "multimark"):
+        common = [f"methods=[{method}]", "languages=[python]", "attacks=[T1.5]",
+                  "execution.sources=[llm_watermarked,attacked]"]  # fmt: skip
+        for more in ([], [f"hpo.grid={method}"]):
+            cfg = load_experiment([*BASE, "hpo.use_selected=false", *common, *more])
+            with pytest.raises(ConfigError, match="P6 freeze check"):
+                CellPlanner(cfg).cells_for(stage)
+    stone = _cells(stage, "methods=[stone]", "languages=[python]", "attacks=[T1.5]",
+                   "execution.sources=[llm_watermarked,attacked]")  # fmt: skip
+    assert any(c.split == "test" and c.config_hash is None for c in stone)

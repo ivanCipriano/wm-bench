@@ -123,6 +123,7 @@ class DetectK2Stage(_FrozenConfig, DetectStage):
     output_kinds: ClassVar[frozenset[str]] = frozenset({f"detection_{ALT_KEY_ID}"})
     sweep_roles: ClassVar[tuple[str, ...]] = ()
     key_id: ClassVar[str] = ALT_KEY_ID
+    frozen_config: ClassVar[bool] = True
 
     def cell_config(self, cell: Cell) -> tuple[dict[str, Any], str]:
         return super().cell_config(self._frozen(cell))
@@ -149,6 +150,7 @@ class CalibrateK2Stage(_FrozenConfig, CalibrateStage):
     output_kinds: ClassVar[frozenset[str]] = frozenset({f"threshold_{ALT_KEY_ID}"})
     sweep_roles: ClassVar[tuple[str, ...]] = ()
     key_id: ClassVar[str] = ALT_KEY_ID
+    frozen_config: ClassVar[bool] = True
 
     def config_hash(self, cell: Cell | str) -> str:
         if isinstance(cell, str):
@@ -319,7 +321,8 @@ class MetricsRemarkStage(MetricsStage):
         if thresholds.provisional:
             raise ConfigError(f"{cell.key()}: k2 threshold is provisional")
         record = load_freeze(ctx.store, str(cell.method), ALT_KEY_ID)
-        frozen = record.cell(str(cell.model_id), str(cell.language)) if record else None
+        cfg_hash = self.config_hash(cell)
+        frozen = record.cell(str(cell.model_id), str(cell.language), cfg_hash) if record else None
         if frozen is None or frozen.threshold_sha256 != data_sha256(ctx.store, ref):
             raise ConfigError(f"{cell.key()}: k2 threshold {ref.path} is not the frozen one")
 

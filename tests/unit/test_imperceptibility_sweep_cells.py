@@ -38,8 +38,14 @@ def _env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(MethodAdapter, "source_commit", lambda self: "e" * 40)
 
 
+POSTHOC = ("mcss", "multimark")  # parte di test protetta dal congelamento (P6, ADR-019)
+
+
 def _cells(stage: type, *overrides: str) -> list:  # type: ignore[type-arg]
-    return CellPlanner(load_experiment([*BASE, *overrides])).cells_for(stage)
+    """Celle della fase; per i post-hoc del registro solo dev: le loro celle di test senza
+    congelamento sono rifiutate (test_posthoc_test_cells_are_refused)."""
+    split = ["splits=[dev]"] if any(f"methods=[{m}]" in overrides for m in POSTHOC) else []
+    return CellPlanner(load_experiment([*BASE, *split, *overrides])).cells_for(stage)
 
 
 @pytest.mark.parametrize(("stage", "extra"), STAGES)
@@ -84,3 +90,15 @@ def test_grid_adds_only_dev_candidates(
     }
     if default in sweep_hashes(cfg, method, ("candidate",)):  # resta la cella di default
         assert set(plain) <= set(swept)
+
+
+@pytest.mark.parametrize(("stage", "extra"), STAGES)
+def test_posthoc_test_cells_are_refused(stage: type, extra: list[str]) -> None:
+    """P6 (ADR-019): le celle di test di multimark senza congelamento, o con la griglia, non si
+    pianificano (prima erano le celle di default senza hash)."""
+    from bench.domain.errors import ConfigError
+
+    common = ["methods=[multimark]", "languages=[python]", *extra]
+    for more in ([], ["hpo.grid=multimark"]):
+        with pytest.raises(ConfigError, match="P6 freeze check"):
+            CellPlanner(load_experiment([*BASE, *common, *more])).cells_for(stage)

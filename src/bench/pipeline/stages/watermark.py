@@ -30,7 +30,7 @@ from __future__ import annotations
 import logging
 import statistics
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any, ClassVar
 
 import pandas as pd
@@ -304,6 +304,8 @@ class WatermarkStage(Stage):
             (CodeSample.model_validate(r) for r in baseline.to_dict(orient="records")),
             key=lambda s: (s.problem_key, s.sample_index or 0),
         )
+        if cfg.posthoc_datasets is not None:  # P6: L3 = solo ClassEval (24 novembre 2026)
+            problems, parents = only_datasets(problems, parents, cfg.posthoc_datasets, cell.key())
         run_dir = (
             ctx.store.root / "_runs" / "watermark" / method / model_id / cfg_hash
             / f"{level}_{language}_{split}"
@@ -373,6 +375,7 @@ class WatermarkStage(Stage):
             "seed_scheme": seed_scheme,
             "config_hash": cfg_hash,
             "embed_status_counts": dict(statuses),
+            "posthoc_datasets": self._cfg().posthoc_datasets,
             "extraction_rate": round(extracted / len(samples), 6) if samples else None,
             "embed_success_rate": _success_rate(statuses),
             "n_sites": _summary([m.get("n_sites") for m in metrics]),
@@ -413,6 +416,23 @@ class WatermarkStage(Stage):
             dict(statuses),
             extra["extraction_rate"],
         )
+
+
+def only_datasets(
+    problems: list[Problem], parents: list[CodeSample], datasets: Sequence[str], where: str
+) -> tuple[list[Problem], list[CodeSample]]:
+    """Problemi e campioni della baseline dei soli ``datasets`` (``posthoc_datasets``, P6).
+
+    Raises:
+        ConfigError: se non resta nessun problema o nessun campione.
+    """
+    keep = set(datasets)
+    problems = [p for p in problems if p.dataset in keep]
+    parents = [s for s in parents if s.dataset in keep]
+    if not problems or not parents:
+        raise ConfigError(f"{where}: posthoc_datasets={sorted(keep)} leaves no problems")
+    logger.info("%s: only datasets %s (posthoc_datasets)", where, sorted(keep))
+    return problems, parents
 
 
 @STAGES.register("generate_baseline_twin")
