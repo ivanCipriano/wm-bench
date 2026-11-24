@@ -1,0 +1,767 @@
+# P6 dry run of the test split of mcss and multimark (nothing submitted) (scripts/run_p6.sh): 2026-11-24T15:33:51+01:00
+# wm-bench c3ebf6fc6460487423b27feecb3420c991099345, multimark b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a
+##### the test split must be refused before the freeze (bench submit --dry-run)
+OK   mcss not frozen: refused
+       bench submit: mcss on the test split (P6 freeze check):
+         - mcss is not frozen: run `python scripts/freeze_method.py mcss`
+OK   mcss with hpo.grid: refused
+       bench submit: mcss on the test split (P6 freeze check):
+         - hpo.grid=mcss is not allowed on the test split
+         - hpo.use_selected=false is not allowed on the test split
+         - mcss is not frozen: run `python scripts/freeze_method.py mcss`
+OK   mcss with hpo.points: refused
+       bench submit: mcss on the test split (P6 freeze check):
+         - hpo.points is not allowed on the test split
+         - mcss is not frozen: run `python scripts/freeze_method.py mcss`
+OK   multimark not frozen: refused
+       bench submit: multimark on the test split (P6 freeze check):
+         - multimark is not frozen: run `python scripts/freeze_method.py multimark`
+OK   multimark with hpo.grid: refused
+       bench submit: multimark on the test split (P6 freeze check):
+         - hpo.grid=multimark is not allowed on the test split
+         - hpo.use_selected=false is not allowed on the test split
+         - multimark is not frozen: run `python scripts/freeze_method.py multimark`
+OK   multimark with hpo.points: refused
+       bench submit: multimark on the test split (P6 freeze check):
+         - hpo.points is not allowed on the test split
+         - multimark is not frozen: run `python scripts/freeze_method.py multimark`
+
+##### mcss: test steps planned with the registry hashes (dry run)
+  mcss/L1/watermark                      watermark                   2 cells  CPU  1d3087c73439
+  mcss/L1/execute                        execute                     2 cells  CPU  1d3087c73439
+  mcss/L1/detect                         detect                      2 cells  CPU  1d3087c73439
+  mcss/L1/metrics                        metrics                     2 cells  CPU  1d3087c73439
+  mcss/L1/T1.1/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L1/T1.1/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L1/T1.1/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L1/T1.1/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L1/T1.2/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L1/T1.2/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L1/T1.2/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L1/T1.2/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L1/T1.3/attack                    attack                      4 cells  CPU  1d3087c73439
+  mcss/L1/T1.3/execute                   execute                     4 cells  CPU  1d3087c73439
+  mcss/L1/T1.3/detect                    detect                      4 cells  CPU  1d3087c73439
+  mcss/L1/T1.3/metrics                   metrics                     4 cells  CPU  1d3087c73439
+  mcss/L1/T1.4/attack                    attack                     16 cells  CPU  1d3087c73439
+  mcss/L1/T1.4/execute                   execute                    16 cells  CPU  1d3087c73439
+  mcss/L1/T1.4/detect                    detect                     16 cells  CPU  1d3087c73439
+  mcss/L1/T1.4/metrics                   metrics                    16 cells  CPU  1d3087c73439
+  mcss/L1/T1.5/attack                    attack                      6 cells  CPU  1d3087c73439
+  mcss/L1/T1.5/execute                   execute                     6 cells  CPU  1d3087c73439
+  mcss/L1/T1.5/detect                    detect                      6 cells  CPU  1d3087c73439
+  mcss/L1/T1.5/metrics                   metrics                     6 cells  CPU  1d3087c73439
+  mcss/L1/T1.6/attack                    attack                      4 cells  CPU  1d3087c73439
+  mcss/L1/T1.6/execute                   execute                     4 cells  CPU  1d3087c73439
+  mcss/L1/T1.6/detect                    detect                      4 cells  CPU  1d3087c73439
+  mcss/L1/T1.6/metrics                   metrics                     4 cells  CPU  1d3087c73439
+  mcss/L1/T2.1/attack                    attack                      8 cells  CPU  1d3087c73439
+  mcss/L1/T2.1/execute                   execute                     8 cells  CPU  1d3087c73439
+  mcss/L1/T2.1/detect                    detect                      8 cells  CPU  1d3087c73439
+  mcss/L1/T2.1/metrics                   metrics                     8 cells  CPU  1d3087c73439
+  mcss/L1/T2.2/attack                    attack                      4 cells  GPU  1d3087c73439
+  mcss/L1/T2.2/execute                   execute                     4 cells  CPU  1d3087c73439
+  mcss/L1/T2.2/detect                    detect                      4 cells  CPU  1d3087c73439
+  mcss/L1/T2.2/metrics                   metrics                     4 cells  CPU  1d3087c73439
+  mcss/L1/T2.4/attack                    attack                      4 cells  CPU  1d3087c73439
+  mcss/L1/T2.4/execute                   execute                     4 cells  CPU  1d3087c73439
+  mcss/L1/T2.4/detect                    detect                      4 cells  CPU  1d3087c73439
+  mcss/L1/T2.4/metrics                   metrics                     4 cells  CPU  1d3087c73439
+  mcss/L1/T2.5/attack                    attack                      6 cells  CPU  1d3087c73439
+  mcss/L1/T2.5/execute                   execute                     6 cells  CPU  1d3087c73439
+  mcss/L1/T2.5/detect                    detect                      6 cells  CPU  1d3087c73439
+  mcss/L1/T2.5/metrics                   metrics                     6 cells  CPU  1d3087c73439
+  mcss/L1/T4.1/attack                    attack                      4 cells  CPU  1d3087c73439
+  mcss/L1/T4.1/execute                   execute                     4 cells  CPU  1d3087c73439
+  mcss/L1/T4.1/detect                    detect                      4 cells  CPU  1d3087c73439
+  mcss/L1/T4.1/metrics                   metrics                     4 cells  CPU  1d3087c73439
+  mcss/L2/watermark                      watermark                   2 cells  CPU  1d3087c73439
+  mcss/L2/execute                        execute                     2 cells  CPU  1d3087c73439
+  mcss/L2/detect                         detect                      2 cells  CPU  1d3087c73439
+  mcss/L2/metrics                        metrics                     2 cells  CPU  1d3087c73439
+  mcss/L2/T1.4/attack                    attack                      4 cells  CPU  1d3087c73439
+  mcss/L2/T1.4/execute                   execute                     4 cells  CPU  1d3087c73439
+  mcss/L2/T1.4/detect                    detect                      4 cells  CPU  1d3087c73439
+  mcss/L2/T1.4/metrics                   metrics                     4 cells  CPU  1d3087c73439
+  mcss/L2/T1.5/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L2/T1.5/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L2/T1.5/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L2/T1.5/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L2/T1.6/attack                    attack                      4 cells  CPU  1d3087c73439
+  mcss/L2/T1.6/execute                   execute                     4 cells  CPU  1d3087c73439
+  mcss/L2/T1.6/detect                    detect                      4 cells  CPU  1d3087c73439
+  mcss/L2/T1.6/metrics                   metrics                     4 cells  CPU  1d3087c73439
+  mcss/L2/T2.1/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L2/T2.1/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L2/T2.1/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L2/T2.1/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L2/T2.4/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L2/T2.4/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L2/T2.4/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L2/T2.4/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L2/T2.4k/attack                   attack                     20 cells  CPU  1d3087c73439
+  mcss/L2/T2.4k/execute                  execute                    20 cells  CPU  1d3087c73439
+  mcss/L2/T2.4k/detect                   detect                     20 cells  CPU  1d3087c73439
+  mcss/L2/T2.4k/metrics                  metrics                    20 cells  CPU  1d3087c73439
+  mcss/L2/T2.5/attack                    attack                      6 cells  CPU  1d3087c73439
+  mcss/L2/T2.5/execute                   execute                     6 cells  CPU  1d3087c73439
+  mcss/L2/T2.5/detect                    detect                      6 cells  CPU  1d3087c73439
+  mcss/L2/T2.5/metrics                   metrics                     6 cells  CPU  1d3087c73439
+  mcss/L2/T4.1/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L2/T4.1/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L2/T4.1/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L2/T4.1/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L3/watermark                      watermark                   2 cells  CPU  1d3087c73439
+  mcss/L3/execute                        execute                     2 cells  CPU  1d3087c73439
+  mcss/L3/detect                         detect                      2 cells  CPU  1d3087c73439
+  mcss/L3/metrics                        metrics                     2 cells  CPU  1d3087c73439
+  mcss/L3/T1.4/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L3/T1.4/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L3/T1.4/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L3/T1.4/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L3/T1.6/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L3/T1.6/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L3/T1.6/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L3/T1.6/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L3/T2.4k/attack                   attack                     20 cells  CPU  1d3087c73439
+  mcss/L3/T2.4k/execute                  execute                    20 cells  CPU  1d3087c73439
+  mcss/L3/T2.4k/detect                   detect                     20 cells  CPU  1d3087c73439
+  mcss/L3/T2.4k/metrics                  metrics                    20 cells  CPU  1d3087c73439
+  mcss/L3/T2.5/attack                    attack                      6 cells  CPU  1d3087c73439
+  mcss/L3/T2.5/execute                   execute                     6 cells  CPU  1d3087c73439
+  mcss/L3/T2.5/detect                    detect                      6 cells  CPU  1d3087c73439
+  mcss/L3/T2.5/metrics                   metrics                     6 cells  CPU  1d3087c73439
+  mcss/L1/T2.2/control_detect            detect_attack_control       2 cells  CPU  1d3087c73439
+  mcss/L1/T2.2/control_metrics           metrics_attack_control      2 cells  CPU  1d3087c73439
+  mcss/L1/T3.1/k2_detect_test            detect_k2                   2 cells  CPU  1d3087c73439
+  mcss/L1/T3.1/attack                    attack                      2 cells  CPU  1d3087c73439
+  mcss/L1/T3.1/execute                   execute                     2 cells  CPU  1d3087c73439
+  mcss/L1/T3.1/detect                    detect                      2 cells  CPU  1d3087c73439
+  mcss/L1/T3.1/k2_detect                 detect_k2                   2 cells  CPU  1d3087c73439
+  mcss/L1/T3.1/metrics                   metrics                     2 cells  CPU  1d3087c73439
+  mcss/L1/T3.1/k2_metrics                metrics_remark              2 cells  CPU  1d3087c73439
+  mcss/M12/perplexity                    perplexity                  4 cells  GPU  1d3087c73439
+  mcss/M12/logreg                        adversarial_logreg          2 cells  CPU  1d3087c73439
+  mcss/M12/unixcoder                     adversarial_unixcoder       2 cells  GPU  1d3087c73439
+  mcss/M12/metrics                       metrics_imperceptibility    2 cells  CPU  1d3087c73439
+  total 580 cells
+
+##### multimark: test steps planned with the registry hashes (dry run)
+  multimark/L1/watermark                 watermark                   4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/execute                   execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/detect                    detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/metrics                   metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.1/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.1/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.1/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.1/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.2/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.2/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.2/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.2/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.3/attack               attack                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.3/execute              execute                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.3/detect               detect                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.3/metrics              metrics                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.4/attack               attack                     32 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.4/execute              execute                    32 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.4/detect               detect                     32 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.4/metrics              metrics                    32 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.5/attack               attack                     12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.5/execute              execute                    12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.5/detect               detect                     12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.5/metrics              metrics                    12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.6/attack               attack                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.6/execute              execute                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.6/detect               detect                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T1.6/metrics              metrics                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.1/attack               attack                     16 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.1/execute              execute                    16 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.1/detect               detect                     16 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.1/metrics              metrics                    16 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.2/attack               attack                      8 cells  GPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.2/execute              execute                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.2/detect               detect                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.2/metrics              metrics                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.4/attack               attack                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.4/execute              execute                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.4/detect               detect                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.4/metrics              metrics                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.5/attack               attack                     12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.5/execute              execute                    12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.5/detect               detect                     12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.5/metrics              metrics                    12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T4.1/attack               attack                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T4.1/execute              execute                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T4.1/detect               detect                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T4.1/metrics              metrics                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/watermark                 watermark                   4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/execute                   execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/detect                    detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/metrics                   metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.4/attack               attack                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.4/execute              execute                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.4/detect               detect                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.4/metrics              metrics                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.5/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.5/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.5/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.5/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.6/attack               attack                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.6/execute              execute                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.6/detect               detect                      8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T1.6/metrics              metrics                     8 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.1/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.1/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.1/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.1/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.4/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.4/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.4/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.4/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.4k/attack              attack                     40 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.4k/execute             execute                    40 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.4k/detect              detect                     40 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.4k/metrics             metrics                    40 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.5/attack               attack                     12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.5/execute              execute                    12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.5/detect               detect                     12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T2.5/metrics              metrics                    12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T4.1/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T4.1/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T4.1/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L2/T4.1/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/watermark                 watermark                   4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/execute                   execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/detect                    detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/metrics                   metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T1.4/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T1.4/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T1.4/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T1.4/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T1.6/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T1.6/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T1.6/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T1.6/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T2.4k/attack              attack                     40 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T2.4k/execute             execute                    40 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T2.4k/detect              detect                     40 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T2.4k/metrics             metrics                    40 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T2.5/attack               attack                     12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T2.5/execute              execute                    12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T2.5/detect               detect                     12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L3/T2.5/metrics              metrics                    12 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.2/control_detect       detect_attack_control       4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T2.2/control_metrics      metrics_attack_control      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T3.1/k2_detect_test       detect_k2                   4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T3.1/attack               attack                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T3.1/execute              execute                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T3.1/detect               detect                      4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T3.1/k2_detect            detect_k2                   4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T3.1/metrics              metrics                     4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/L1/T3.1/k2_metrics           metrics_remark              4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/M12/perplexity               perplexity                  6 cells  GPU  3fed1f1c1e24 e52b040770df
+  multimark/M12/logreg                   adversarial_logreg          4 cells  CPU  3fed1f1c1e24 e52b040770df
+  multimark/M12/unixcoder                adversarial_unixcoder       4 cells  GPU  3fed1f1c1e24 e52b040770df
+  multimark/M12/metrics                  metrics_imperceptibility    4 cells  CPU  3fed1f1c1e24 e52b040770df
+  total 1158 cells
+
+##### cost of the test part (scripts/estimate_closing_cost.py --methods mcss multimark)
+[15:21:28] 5000 manifest letti (detection)
+[15:24:19] 10000 manifest letti (detection)
+[15:26:08] 15000 manifest letti (execution)
+[15:28:01] 20000 manifest letti (metrics_L1L2)
+[15:29:59] 25000 manifest letti (thresholds)
+[15:30:59] manifest letti; pianificazione dei passi
+[15:30:59] passo 1/234: mcss/L1/watermark
+lettura dei manifest...
+
+##### passi che mancano (ore-job, fonte dei tempi)
+[15:31:00] passo 2/234: mcss/L1/execute
+  mcss/L1/watermark                        ivan    CPU    2 celle      0.2 h  [same level]
+[15:31:01] passo 3/234: mcss/L1/detect
+  mcss/L1/execute                          ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:01] passo 4/234: mcss/L1/metrics
+  mcss/L1/detect                           ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:02] passo 5/234: mcss/L1/T1.1/attack
+  mcss/L1/metrics                          ivan    CPU    2 celle      0.0 h  [cell median]
+[15:31:03] passo 6/234: mcss/L1/T1.1/execute
+  mcss/L1/T1.1/attack                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:03] passo 7/234: mcss/L1/T1.1/detect
+  mcss/L1/T1.1/execute                     ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:04] passo 8/234: mcss/L1/T1.1/metrics
+  mcss/L1/T1.1/detect                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:05] passo 9/234: mcss/L1/T1.2/attack
+  mcss/L1/T1.1/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:31:06] passo 10/234: mcss/L1/T1.2/execute
+  mcss/L1/T1.2/attack                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:06] passo 11/234: mcss/L1/T1.2/detect
+  mcss/L1/T1.2/execute                     ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:07] passo 12/234: mcss/L1/T1.2/metrics
+  mcss/L1/T1.2/detect                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:08] passo 13/234: mcss/L1/T1.3/attack
+  mcss/L1/T1.2/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:31:08] passo 14/234: mcss/L1/T1.3/execute
+  mcss/L1/T1.3/attack                      ivan    CPU    4 celle      0.0 h  [same level]
+[15:31:09] passo 15/234: mcss/L1/T1.3/detect
+  mcss/L1/T1.3/execute                     ivan    CPU    4 celle      0.3 h  [same level]
+[15:31:10] passo 16/234: mcss/L1/T1.3/metrics
+  mcss/L1/T1.3/detect                      ivan    CPU    4 celle      0.1 h  [same level]
+[15:31:10] passo 17/234: mcss/L1/T1.4/attack
+  mcss/L1/T1.3/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:31:11] passo 18/234: mcss/L1/T1.4/execute
+  mcss/L1/T1.4/attack                      ivan    CPU   16 celle      0.2 h  [same level]
+[15:31:12] passo 19/234: mcss/L1/T1.4/detect
+  mcss/L1/T1.4/execute                     ivan    CPU   16 celle      1.1 h  [same level]
+[15:31:13] passo 20/234: mcss/L1/T1.4/metrics
+  mcss/L1/T1.4/detect                      ivan    CPU   16 celle      0.3 h  [same level]
+[15:31:13] passo 21/234: mcss/L1/T1.5/attack
+  mcss/L1/T1.4/metrics                     ivan    CPU   16 celle      0.0 h  [cell median]
+[15:31:14] passo 22/234: mcss/L1/T1.5/execute
+  mcss/L1/T1.5/attack                      ivan    CPU    6 celle      0.0 h  [same level]
+[15:31:15] passo 23/234: mcss/L1/T1.5/detect
+  mcss/L1/T1.5/execute                     ivan    CPU    6 celle      0.4 h  [same level]
+[15:31:16] passo 24/234: mcss/L1/T1.5/metrics
+  mcss/L1/T1.5/detect                      ivan    CPU    6 celle      0.1 h  [same level]
+[15:31:16] passo 25/234: mcss/L1/T1.6/attack
+  mcss/L1/T1.5/metrics                     ivan    CPU    6 celle      0.0 h  [cell median]
+[15:31:17] passo 26/234: mcss/L1/T1.6/execute
+  mcss/L1/T1.6/attack                      ivan    CPU    4 celle      0.1 h  [same level]
+[15:31:18] passo 27/234: mcss/L1/T1.6/detect
+  mcss/L1/T1.6/execute                     ivan    CPU    4 celle      0.3 h  [same level]
+[15:31:19] passo 28/234: mcss/L1/T1.6/metrics
+  mcss/L1/T1.6/detect                      ivan    CPU    4 celle      0.1 h  [same level]
+[15:31:19] passo 29/234: mcss/L1/T2.1/attack
+  mcss/L1/T1.6/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:31:20] passo 30/234: mcss/L1/T2.1/execute
+  mcss/L1/T2.1/attack                      ivan    CPU    8 celle      0.1 h  [same level]
+[15:31:21] passo 31/234: mcss/L1/T2.1/detect
+  mcss/L1/T2.1/execute                     ivan    CPU    8 celle      0.7 h  [same level]
+[15:31:21] passo 32/234: mcss/L1/T2.1/metrics
+  mcss/L1/T2.1/detect                      ivan    CPU    8 celle      0.2 h  [same level]
+[15:31:22] passo 33/234: mcss/L1/T2.2/attack
+  mcss/L1/T2.1/metrics                     ivan    CPU    8 celle      0.0 h  [cell median]
+[15:31:23] passo 34/234: mcss/L1/T2.2/execute
+  mcss/L1/T2.2/attack                      ivan    GPU    4 celle      1.5 h  [other methods same level/split]
+[15:31:23] passo 35/234: mcss/L1/T2.2/detect
+  mcss/L1/T2.2/execute                     ivan    CPU    4 celle      0.2 h  [other methods same level/split]
+[15:31:24] passo 36/234: mcss/L1/T2.2/metrics
+  mcss/L1/T2.2/detect                      ivan    CPU    4 celle      0.0 h  [detect same level | other methods same level/split]
+[15:31:25] passo 37/234: mcss/L1/T2.4/attack
+  mcss/L1/T2.2/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:31:26] passo 38/234: mcss/L1/T2.4/execute
+  mcss/L1/T2.4/attack                      ivan    CPU    4 celle      0.0 h  [same level]
+[15:31:26] passo 39/234: mcss/L1/T2.4/detect
+  mcss/L1/T2.4/execute                     ivan    CPU    4 celle      0.1 h  [same level]
+[15:31:27] passo 40/234: mcss/L1/T2.4/metrics
+  mcss/L1/T2.4/detect                      ivan    CPU    4 celle      0.1 h  [same level]
+[15:31:28] passo 41/234: mcss/L1/T2.5/attack
+  mcss/L1/T2.4/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:31:28] passo 42/234: mcss/L1/T2.5/execute
+  mcss/L1/T2.5/attack                      ivan    CPU    6 celle      0.1 h  [same level]
+[15:31:29] passo 43/234: mcss/L1/T2.5/detect
+  mcss/L1/T2.5/execute                     ivan    CPU    6 celle      0.4 h  [same level]
+[15:31:30] passo 44/234: mcss/L1/T2.5/metrics
+  mcss/L1/T2.5/detect                      ivan    CPU    6 celle      0.2 h  [same level]
+[15:31:30] passo 45/234: mcss/L1/T4.1/attack
+  mcss/L1/T2.5/metrics                     ivan    CPU    6 celle      0.0 h  [cell median]
+[15:31:31] passo 46/234: mcss/L1/T4.1/execute
+  mcss/L1/T4.1/attack                      ivan    CPU    4 celle      0.0 h  [same level]
+[15:31:32] passo 47/234: mcss/L1/T4.1/detect
+  mcss/L1/T4.1/execute                     ivan    CPU    4 celle      0.3 h  [same level]
+[15:31:33] passo 48/234: mcss/L1/T4.1/metrics
+  mcss/L1/T4.1/detect                      ivan    CPU    4 celle      0.1 h  [same level]
+[15:31:33] passo 49/234: mcss/L2/watermark
+  mcss/L1/T4.1/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:31:34] passo 50/234: mcss/L2/execute
+  mcss/L2/watermark                        ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:35] passo 51/234: mcss/L2/detect
+  mcss/L2/execute                          ivan    CPU    2 celle      0.2 h  [same level]
+[15:31:36] passo 52/234: mcss/L2/metrics
+  mcss/L2/detect                           ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:36] passo 53/234: mcss/L2/T1.4/attack
+  mcss/L2/metrics                          ivan    CPU    2 celle      0.0 h  [cell median]
+[15:31:37] passo 54/234: mcss/L2/T1.4/execute
+  mcss/L2/T1.4/attack                      ivan    CPU    4 celle      0.0 h  [same level]
+[15:31:38] passo 55/234: mcss/L2/T1.4/detect
+  mcss/L2/T1.4/execute                     ivan    CPU    4 celle      0.3 h  [same level]
+[15:31:38] passo 56/234: mcss/L2/T1.4/metrics
+  mcss/L2/T1.4/detect                      ivan    CPU    4 celle      0.0 h  [same level]
+[15:31:39] passo 57/234: mcss/L2/T1.5/attack
+  mcss/L2/T1.4/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:31:40] passo 58/234: mcss/L2/T1.5/execute
+  mcss/L2/T1.5/attack                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:40] passo 59/234: mcss/L2/T1.5/detect
+  mcss/L2/T1.5/execute                     ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:41] passo 60/234: mcss/L2/T1.5/metrics
+  mcss/L2/T1.5/detect                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:42] passo 61/234: mcss/L2/T1.6/attack
+  mcss/L2/T1.5/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:31:43] passo 62/234: mcss/L2/T1.6/execute
+  mcss/L2/T1.6/attack                      ivan    CPU    4 celle      0.1 h  [same level]
+[15:31:43] passo 63/234: mcss/L2/T1.6/detect
+  mcss/L2/T1.6/execute                     ivan    CPU    4 celle      0.2 h  [same level]
+[15:31:44] passo 64/234: mcss/L2/T1.6/metrics
+  mcss/L2/T1.6/detect                      ivan    CPU    4 celle      0.0 h  [same level]
+[15:31:45] passo 65/234: mcss/L2/T2.1/attack
+  mcss/L2/T1.6/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:31:45] passo 66/234: mcss/L2/T2.1/execute
+  mcss/L2/T2.1/attack                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:46] passo 67/234: mcss/L2/T2.1/detect
+  mcss/L2/T2.1/execute                     ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:47] passo 68/234: mcss/L2/T2.1/metrics
+  mcss/L2/T2.1/detect                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:48] passo 69/234: mcss/L2/T2.4/attack
+  mcss/L2/T2.1/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:31:48] passo 70/234: mcss/L2/T2.4/execute
+  mcss/L2/T2.4/attack                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:49] passo 71/234: mcss/L2/T2.4/detect
+  mcss/L2/T2.4/execute                     ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:50] passo 72/234: mcss/L2/T2.4/metrics
+  mcss/L2/T2.4/detect                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:51] passo 73/234: mcss/L2/T2.4k/attack
+  mcss/L2/T2.4/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:31:51] passo 74/234: mcss/L2/T2.4k/execute
+  mcss/L2/T2.4k/attack                     ivan    CPU   20 celle      0.1 h  [same level]
+[15:31:52] passo 75/234: mcss/L2/T2.4k/detect
+  mcss/L2/T2.4k/execute                    ivan    CPU   20 celle      0.8 h  [same level]
+[15:31:53] passo 76/234: mcss/L2/T2.4k/metrics
+  mcss/L2/T2.4k/detect                     ivan    CPU   20 celle      0.2 h  [same level]
+[15:31:54] passo 77/234: mcss/L2/T2.5/attack
+  mcss/L2/T2.4k/metrics                    ivan    CPU   20 celle      0.0 h  [cell median]
+[15:31:54] passo 78/234: mcss/L2/T2.5/execute
+  mcss/L2/T2.5/attack                      ivan    CPU    6 celle      0.0 h  [same level]
+[15:31:55] passo 79/234: mcss/L2/T2.5/detect
+  mcss/L2/T2.5/execute                     ivan    CPU    6 celle      0.3 h  [same level]
+[15:31:56] passo 80/234: mcss/L2/T2.5/metrics
+  mcss/L2/T2.5/detect                      ivan    CPU    6 celle      0.1 h  [same level]
+[15:31:57] passo 81/234: mcss/L2/T4.1/attack
+  mcss/L2/T2.5/metrics                     ivan    CPU    6 celle      0.0 h  [cell median]
+[15:31:57] passo 82/234: mcss/L2/T4.1/execute
+  mcss/L2/T4.1/attack                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:31:58] passo 83/234: mcss/L2/T4.1/detect
+  mcss/L2/T4.1/execute                     ivan    CPU    2 celle      0.1 h  [same level]
+[15:31:59] passo 84/234: mcss/L2/T4.1/metrics
+  mcss/L2/T4.1/detect                      ivan    CPU    2 celle      0.0 h  [same level]
+[15:32:00] passo 85/234: mcss/L3/watermark
+  mcss/L2/T4.1/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:32:01] passo 86/234: mcss/L3/execute
+  mcss/L3/watermark                        ivan    CPU    2 celle      0.0 h  [any]
+[15:32:02] passo 87/234: mcss/L3/detect
+  mcss/L3/execute                          ivan    CPU    2 celle      0.0 h  [any]
+[15:32:02] passo 88/234: mcss/L3/metrics
+  mcss/L3/detect                           ivan    CPU    2 celle      0.2 h  [any]
+[15:32:03] passo 89/234: mcss/L3/T1.4/attack
+  mcss/L3/metrics                          ivan    CPU    2 celle      0.0 h  [cell median]
+[15:32:04] passo 90/234: mcss/L3/T1.4/execute
+  mcss/L3/T1.4/attack                      ivan    CPU    2 celle      0.0 h  [any]
+[15:32:05] passo 91/234: mcss/L3/T1.4/detect
+  mcss/L3/T1.4/execute                     ivan    CPU    2 celle      0.0 h  [any]
+[15:32:05] passo 92/234: mcss/L3/T1.4/metrics
+  mcss/L3/T1.4/detect                      ivan    CPU    2 celle      0.0 h  [any]
+[15:32:06] passo 93/234: mcss/L3/T1.6/attack
+  mcss/L3/T1.4/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:32:07] passo 94/234: mcss/L3/T1.6/execute
+  mcss/L3/T1.6/attack                      ivan    CPU    2 celle      0.0 h  [any]
+[15:32:07] passo 95/234: mcss/L3/T1.6/detect
+  mcss/L3/T1.6/execute                     ivan    CPU    2 celle      0.0 h  [any]
+[15:32:08] passo 96/234: mcss/L3/T1.6/metrics
+  mcss/L3/T1.6/detect                      ivan    CPU    2 celle      0.0 h  [any]
+[15:32:09] passo 97/234: mcss/L3/T2.4k/attack
+  mcss/L3/T1.6/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:32:10] passo 98/234: mcss/L3/T2.4k/execute
+  mcss/L3/T2.4k/attack                     ivan    CPU   20 celle      0.0 h  [any]
+[15:32:10] passo 99/234: mcss/L3/T2.4k/detect
+  mcss/L3/T2.4k/execute                    ivan    CPU   20 celle      0.2 h  [any]
+[15:32:11] passo 100/234: mcss/L3/T2.4k/metrics
+  mcss/L3/T2.4k/detect                     ivan    CPU   20 celle      0.1 h  [any]
+[15:32:12] passo 101/234: mcss/L3/T2.5/attack
+  mcss/L3/T2.4k/metrics                    ivan    CPU   20 celle      0.0 h  [cell median]
+[15:32:13] passo 102/234: mcss/L3/T2.5/execute
+  mcss/L3/T2.5/attack                      ivan    CPU    6 celle      0.0 h  [any]
+[15:32:13] passo 103/234: mcss/L3/T2.5/detect
+  mcss/L3/T2.5/execute                     ivan    CPU    6 celle      0.1 h  [any]
+[15:32:14] passo 104/234: mcss/L3/T2.5/metrics
+  mcss/L3/T2.5/detect                      ivan    CPU    6 celle      0.0 h  [any]
+[15:32:15] passo 105/234: mcss/L1/T2.2/control_detect
+  mcss/L3/T2.5/metrics                     ivan    CPU    6 celle      0.0 h  [cell median]
+[15:32:16] passo 106/234: mcss/L1/T2.2/control_metrics
+  mcss/L1/T2.2/control_detect              ivan    CPU    2 celle      0.0 h  [detect same level | other methods same level/split]
+[15:32:16] passo 107/234: mcss/L1/T3.1/k2_detect_test
+  mcss/L1/T2.2/control_metrics             ivan    CPU    2 celle      0.0 h  [cell median]
+[15:32:17] passo 108/234: mcss/L1/T3.1/attack
+  mcss/L1/T3.1/k2_detect_test              ivan    CPU    2 celle      0.1 h  [same level]
+[15:32:18] passo 109/234: mcss/L1/T3.1/execute
+  mcss/L1/T3.1/attack                      ivan    CPU    2 celle      3.2 h  [other methods same level/split]
+[15:32:18] passo 110/234: mcss/L1/T3.1/detect
+  mcss/L1/T3.1/execute                     ivan    CPU    2 celle      0.1 h  [other methods same level/split]
+[15:32:19] passo 111/234: mcss/L1/T3.1/k2_detect
+  mcss/L1/T3.1/detect                      ivan    CPU    2 celle      0.0 h  [detect same level | other methods same level/split]
+[15:32:20] passo 112/234: mcss/L1/T3.1/metrics
+  mcss/L1/T3.1/k2_detect                   ivan    CPU    2 celle      0.0 h  [detect same level | other methods same level/split]
+[15:32:21] passo 113/234: mcss/L1/T3.1/k2_metrics
+  mcss/L1/T3.1/metrics                     ivan    CPU    2 celle      0.0 h  [cell median]
+[15:32:21] passo 114/234: mcss/M12/perplexity
+  mcss/L1/T3.1/k2_metrics                  ivan    CPU    2 celle      0.0 h  [cell median]
+[15:32:22] passo 115/234: mcss/M12/logreg
+  mcss/M12/perplexity                      ivan    GPU    4 celle      0.2 h  [same level, same level/split]
+[15:32:23] passo 116/234: mcss/M12/unixcoder
+  mcss/M12/logreg                          ivan    CPU    2 celle      0.4 h  [same level]
+[15:32:23] passo 117/234: mcss/M12/metrics
+  mcss/M12/unixcoder                       ivan    GPU    2 celle      0.8 h  [same level]
+[15:32:24] passo 118/234: multimark/L1/watermark
+  mcss/M12/metrics                         ivan    CPU    2 celle      0.0 h  [cell median]
+[15:32:25] passo 119/234: multimark/L1/execute
+  multimark/L1/watermark                   ivan    CPU    4 celle      0.1 h  [same level]
+[15:32:26] passo 120/234: multimark/L1/detect
+  multimark/L1/execute                     ivan    CPU    4 celle      0.3 h  [same level]
+[15:32:26] passo 121/234: multimark/L1/metrics
+  multimark/L1/detect                      ivan    CPU    4 celle      0.3 h  [same level]
+[15:32:27] passo 122/234: multimark/L1/T1.1/attack
+  multimark/L1/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:32:28] passo 123/234: multimark/L1/T1.1/execute
+  multimark/L1/T1.1/attack                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:32:28] passo 124/234: multimark/L1/T1.1/detect
+  multimark/L1/T1.1/execute                ivan    CPU    4 celle      0.3 h  [same level]
+[15:32:29] passo 125/234: multimark/L1/T1.1/metrics
+  multimark/L1/T1.1/detect                 ivan    CPU    4 celle      0.1 h  [same level]
+[15:32:30] passo 126/234: multimark/L1/T1.2/attack
+  multimark/L1/T1.1/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:32:31] passo 127/234: multimark/L1/T1.2/execute
+  multimark/L1/T1.2/attack                 ivan    CPU    4 celle      0.1 h  [same level]
+[15:32:32] passo 128/234: multimark/L1/T1.2/detect
+  multimark/L1/T1.2/execute                ivan    CPU    4 celle      0.3 h  [same level]
+[15:32:32] passo 129/234: multimark/L1/T1.2/metrics
+  multimark/L1/T1.2/detect                 ivan    CPU    4 celle      0.1 h  [same level]
+[15:32:33] passo 130/234: multimark/L1/T1.3/attack
+  multimark/L1/T1.2/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:32:34] passo 131/234: multimark/L1/T1.3/execute
+  multimark/L1/T1.3/attack                 ivan    CPU    8 celle      0.0 h  [same level]
+[15:32:35] passo 132/234: multimark/L1/T1.3/detect
+  multimark/L1/T1.3/execute                ivan    CPU    8 celle      0.5 h  [same level]
+[15:32:35] passo 133/234: multimark/L1/T1.3/metrics
+  multimark/L1/T1.3/detect                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:32:36] passo 134/234: multimark/L1/T1.4/attack
+  multimark/L1/T1.3/metrics                ivan    CPU    8 celle      0.0 h  [cell median]
+[15:32:37] passo 135/234: multimark/L1/T1.4/execute
+  multimark/L1/T1.4/attack                 ivan    CPU   32 celle      0.3 h  [same level]
+[15:32:38] passo 136/234: multimark/L1/T1.4/detect
+  multimark/L1/T1.4/execute                ivan    CPU   32 celle      2.2 h  [same level]
+[15:32:38] passo 137/234: multimark/L1/T1.4/metrics
+  multimark/L1/T1.4/detect                 ivan    CPU   32 celle      0.5 h  [same level]
+[15:32:39] passo 138/234: multimark/L1/T1.5/attack
+  multimark/L1/T1.4/metrics                ivan    CPU   32 celle      0.1 h  [cell median]
+[15:32:40] passo 139/234: multimark/L1/T1.5/execute
+  multimark/L1/T1.5/attack                 ivan    CPU   12 celle      0.1 h  [same level]
+[15:32:41] passo 140/234: multimark/L1/T1.5/detect
+  multimark/L1/T1.5/execute                ivan    CPU   12 celle      0.9 h  [same level]
+[15:32:41] passo 141/234: multimark/L1/T1.5/metrics
+  multimark/L1/T1.5/detect                 ivan    CPU   12 celle      0.2 h  [same level]
+[15:32:42] passo 142/234: multimark/L1/T1.6/attack
+  multimark/L1/T1.5/metrics                ivan    CPU   12 celle      0.0 h  [cell median]
+[15:32:43] passo 143/234: multimark/L1/T1.6/execute
+  multimark/L1/T1.6/attack                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:32:44] passo 144/234: multimark/L1/T1.6/detect
+  multimark/L1/T1.6/execute                ivan    CPU    8 celle      0.6 h  [same level]
+[15:32:44] passo 145/234: multimark/L1/T1.6/metrics
+  multimark/L1/T1.6/detect                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:32:45] passo 146/234: multimark/L1/T2.1/attack
+  multimark/L1/T1.6/metrics                ivan    CPU    8 celle      0.0 h  [cell median]
+[15:32:46] passo 147/234: multimark/L1/T2.1/execute
+  multimark/L1/T2.1/attack                 ivan    CPU   16 celle      0.2 h  [same level]
+[15:32:47] passo 148/234: multimark/L1/T2.1/detect
+  multimark/L1/T2.1/execute                ivan    CPU   16 celle      1.3 h  [same level]
+[15:32:47] passo 149/234: multimark/L1/T2.1/metrics
+  multimark/L1/T2.1/detect                 ivan    CPU   16 celle      0.2 h  [same level]
+[15:32:48] passo 150/234: multimark/L1/T2.2/attack
+  multimark/L1/T2.1/metrics                ivan    CPU   16 celle      0.0 h  [cell median]
+[15:32:49] passo 151/234: multimark/L1/T2.2/execute
+  multimark/L1/T2.2/attack                 ivan    GPU    8 celle      3.0 h  [other methods same level/split]
+[15:32:50] passo 152/234: multimark/L1/T2.2/detect
+  multimark/L1/T2.2/execute                ivan    CPU    8 celle      0.3 h  [other methods same level/split]
+[15:32:51] passo 153/234: multimark/L1/T2.2/metrics
+  multimark/L1/T2.2/detect                 ivan    CPU    8 celle      0.1 h  [detect same level | other methods same level/split]
+[15:32:51] passo 154/234: multimark/L1/T2.4/attack
+  multimark/L1/T2.2/metrics                ivan    CPU    8 celle      0.0 h  [cell median]
+[15:32:52] passo 155/234: multimark/L1/T2.4/execute
+  multimark/L1/T2.4/attack                 ivan    CPU    8 celle      0.0 h  [same level]
+[15:32:53] passo 156/234: multimark/L1/T2.4/detect
+  multimark/L1/T2.4/execute                ivan    CPU    8 celle      0.1 h  [same level]
+[15:32:54] passo 157/234: multimark/L1/T2.4/metrics
+  multimark/L1/T2.4/detect                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:32:55] passo 158/234: multimark/L1/T2.5/attack
+  multimark/L1/T2.4/metrics                ivan    CPU    8 celle      0.0 h  [cell median]
+[15:32:55] passo 159/234: multimark/L1/T2.5/execute
+  multimark/L1/T2.5/attack                 ivan    CPU   12 celle      0.1 h  [same level]
+[15:32:56] passo 160/234: multimark/L1/T2.5/detect
+  multimark/L1/T2.5/execute                ivan    CPU   12 celle      0.8 h  [same level]
+[15:32:57] passo 161/234: multimark/L1/T2.5/metrics
+  multimark/L1/T2.5/detect                 ivan    CPU   12 celle      0.3 h  [same level]
+[15:32:58] passo 162/234: multimark/L1/T4.1/attack
+  multimark/L1/T2.5/metrics                ivan    CPU   12 celle      0.0 h  [cell median]
+[15:32:59] passo 163/234: multimark/L1/T4.1/execute
+  multimark/L1/T4.1/attack                 ivan    CPU    8 celle      0.0 h  [same level]
+[15:32:59] passo 164/234: multimark/L1/T4.1/detect
+  multimark/L1/T4.1/execute                ivan    CPU    8 celle      0.6 h  [same level]
+[15:33:00] passo 165/234: multimark/L1/T4.1/metrics
+  multimark/L1/T4.1/detect                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:33:01] passo 166/234: multimark/L2/watermark
+  multimark/L1/T4.1/metrics                ivan    CPU    8 celle      0.0 h  [cell median]
+[15:33:02] passo 167/234: multimark/L2/execute
+  multimark/L2/watermark                   ivan    CPU    4 celle      0.1 h  [same level]
+[15:33:03] passo 168/234: multimark/L2/detect
+  multimark/L2/execute                     ivan    CPU    4 celle      0.2 h  [same level]
+[15:33:03] passo 169/234: multimark/L2/metrics
+  multimark/L2/detect                      ivan    CPU    4 celle      0.2 h  [same level]
+[15:33:04] passo 170/234: multimark/L2/T1.4/attack
+  multimark/L2/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:05] passo 171/234: multimark/L2/T1.4/execute
+  multimark/L2/T1.4/attack                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:33:06] passo 172/234: multimark/L2/T1.4/detect
+  multimark/L2/T1.4/execute                ivan    CPU    8 celle      0.4 h  [same level]
+[15:33:06] passo 173/234: multimark/L2/T1.4/metrics
+  multimark/L2/T1.4/detect                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:33:07] passo 174/234: multimark/L2/T1.5/attack
+  multimark/L2/T1.4/metrics                ivan    CPU    8 celle      0.0 h  [cell median]
+[15:33:08] passo 175/234: multimark/L2/T1.5/execute
+  multimark/L2/T1.5/attack                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:33:09] passo 176/234: multimark/L2/T1.5/detect
+  multimark/L2/T1.5/execute                ivan    CPU    4 celle      0.2 h  [same level]
+[15:33:09] passo 177/234: multimark/L2/T1.5/metrics
+  multimark/L2/T1.5/detect                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:33:10] passo 178/234: multimark/L2/T1.6/attack
+  multimark/L2/T1.5/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:11] passo 179/234: multimark/L2/T1.6/execute
+  multimark/L2/T1.6/attack                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:33:12] passo 180/234: multimark/L2/T1.6/detect
+  multimark/L2/T1.6/execute                ivan    CPU    8 celle      0.4 h  [same level]
+[15:33:12] passo 181/234: multimark/L2/T1.6/metrics
+  multimark/L2/T1.6/detect                 ivan    CPU    8 celle      0.1 h  [same level]
+[15:33:13] passo 182/234: multimark/L2/T2.1/attack
+  multimark/L2/T1.6/metrics                ivan    CPU    8 celle      0.0 h  [cell median]
+[15:33:14] passo 183/234: multimark/L2/T2.1/execute
+  multimark/L2/T2.1/attack                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:33:15] passo 184/234: multimark/L2/T2.1/detect
+  multimark/L2/T2.1/execute                ivan    CPU    4 celle      0.2 h  [same level]
+[15:33:15] passo 185/234: multimark/L2/T2.1/metrics
+  multimark/L2/T2.1/detect                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:33:16] passo 186/234: multimark/L2/T2.4/attack
+  multimark/L2/T2.1/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:17] passo 187/234: multimark/L2/T2.4/execute
+  multimark/L2/T2.4/attack                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:33:17] passo 188/234: multimark/L2/T2.4/detect
+  multimark/L2/T2.4/execute                ivan    CPU    4 celle      0.2 h  [same level]
+[15:33:18] passo 189/234: multimark/L2/T2.4/metrics
+  multimark/L2/T2.4/detect                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:33:19] passo 190/234: multimark/L2/T2.4k/attack
+  multimark/L2/T2.4/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:20] passo 191/234: multimark/L2/T2.4k/execute
+  multimark/L2/T2.4k/attack                ivan    CPU   40 celle      0.2 h  [same level]
+[15:33:20] passo 192/234: multimark/L2/T2.4k/detect
+  multimark/L2/T2.4k/execute               ivan    CPU   40 celle      1.6 h  [same level]
+[15:33:21] passo 193/234: multimark/L2/T2.4k/metrics
+  multimark/L2/T2.4k/detect                ivan    CPU   40 celle      0.4 h  [same level]
+[15:33:22] passo 194/234: multimark/L2/T2.5/attack
+  multimark/L2/T2.4k/metrics               ivan    CPU   40 celle      0.1 h  [cell median]
+[15:33:22] passo 195/234: multimark/L2/T2.5/execute
+  multimark/L2/T2.5/attack                 ivan    CPU   12 celle      0.1 h  [same level]
+[15:33:23] passo 196/234: multimark/L2/T2.5/detect
+  multimark/L2/T2.5/execute                ivan    CPU   12 celle      0.6 h  [same level]
+[15:33:24] passo 197/234: multimark/L2/T2.5/metrics
+  multimark/L2/T2.5/detect                 ivan    CPU   12 celle      0.1 h  [same level]
+[15:33:24] passo 198/234: multimark/L2/T4.1/attack
+  multimark/L2/T2.5/metrics                ivan    CPU   12 celle      0.0 h  [cell median]
+[15:33:25] passo 199/234: multimark/L2/T4.1/execute
+  multimark/L2/T4.1/attack                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:33:26] passo 200/234: multimark/L2/T4.1/detect
+  multimark/L2/T4.1/execute                ivan    CPU    4 celle      0.2 h  [same level]
+[15:33:27] passo 201/234: multimark/L2/T4.1/metrics
+  multimark/L2/T4.1/detect                 ivan    CPU    4 celle      0.0 h  [same level]
+[15:33:27] passo 202/234: multimark/L3/watermark
+  multimark/L2/T4.1/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:28] passo 203/234: multimark/L3/execute
+  multimark/L3/watermark                   ivan    CPU    4 celle      0.0 h  [any]
+[15:33:29] passo 204/234: multimark/L3/detect
+  multimark/L3/execute                     ivan    CPU    4 celle      0.1 h  [any]
+[15:33:29] passo 205/234: multimark/L3/metrics
+  multimark/L3/detect                      ivan    CPU    4 celle      0.5 h  [any]
+[15:33:30] passo 206/234: multimark/L3/T1.4/attack
+  multimark/L3/metrics                     ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:31] passo 207/234: multimark/L3/T1.4/execute
+  multimark/L3/T1.4/attack                 ivan    CPU    4 celle      0.0 h  [any]
+[15:33:32] passo 208/234: multimark/L3/T1.4/detect
+  multimark/L3/T1.4/execute                ivan    CPU    4 celle      0.1 h  [any]
+[15:33:32] passo 209/234: multimark/L3/T1.4/metrics
+  multimark/L3/T1.4/detect                 ivan    CPU    4 celle      0.0 h  [any]
+[15:33:33] passo 210/234: multimark/L3/T1.6/attack
+  multimark/L3/T1.4/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:34] passo 211/234: multimark/L3/T1.6/execute
+  multimark/L3/T1.6/attack                 ivan    CPU    4 celle      0.0 h  [any]
+[15:33:34] passo 212/234: multimark/L3/T1.6/detect
+  multimark/L3/T1.6/execute                ivan    CPU    4 celle      0.1 h  [any]
+[15:33:35] passo 213/234: multimark/L3/T1.6/metrics
+  multimark/L3/T1.6/detect                 ivan    CPU    4 celle      0.0 h  [any]
+[15:33:36] passo 214/234: multimark/L3/T2.4k/attack
+  multimark/L3/T1.6/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:37] passo 215/234: multimark/L3/T2.4k/execute
+  multimark/L3/T2.4k/attack                ivan    CPU   40 celle      0.1 h  [any]
+[15:33:37] passo 216/234: multimark/L3/T2.4k/detect
+  multimark/L3/T2.4k/execute               ivan    CPU   40 celle      0.5 h  [any]
+[15:33:38] passo 217/234: multimark/L3/T2.4k/metrics
+  multimark/L3/T2.4k/detect                ivan    CPU   40 celle      0.2 h  [any]
+[15:33:39] passo 218/234: multimark/L3/T2.5/attack
+  multimark/L3/T2.4k/metrics               ivan    CPU   40 celle      0.1 h  [cell median]
+[15:33:40] passo 219/234: multimark/L3/T2.5/execute
+  multimark/L3/T2.5/attack                 ivan    CPU   12 celle      0.0 h  [any]
+[15:33:40] passo 220/234: multimark/L3/T2.5/detect
+  multimark/L3/T2.5/execute                ivan    CPU   12 celle      0.2 h  [any]
+[15:33:41] passo 221/234: multimark/L3/T2.5/metrics
+  multimark/L3/T2.5/detect                 ivan    CPU   12 celle      0.1 h  [any]
+[15:33:42] passo 222/234: multimark/L1/T2.2/control_detect
+  multimark/L3/T2.5/metrics                ivan    CPU   12 celle      0.0 h  [cell median]
+[15:33:43] passo 223/234: multimark/L1/T2.2/control_metrics
+  multimark/L1/T2.2/control_detect         ivan    CPU    4 celle      0.0 h  [detect same level | other methods same level/split]
+[15:33:43] passo 224/234: multimark/L1/T3.1/k2_detect_test
+  multimark/L1/T2.2/control_metrics        ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:44] passo 225/234: multimark/L1/T3.1/attack
+  multimark/L1/T3.1/k2_detect_test         ivan    CPU    4 celle      0.2 h  [same level]
+[15:33:45] passo 226/234: multimark/L1/T3.1/execute
+  multimark/L1/T3.1/attack                 ivan    CPU    4 celle      6.4 h  [other methods same level/split]
+[15:33:46] passo 227/234: multimark/L1/T3.1/detect
+  multimark/L1/T3.1/execute                ivan    CPU    4 celle      0.1 h  [other methods same level/split]
+[15:33:46] passo 228/234: multimark/L1/T3.1/k2_detect
+  multimark/L1/T3.1/detect                 ivan    CPU    4 celle      0.0 h  [detect same level | other methods same level/split]
+[15:33:47] passo 229/234: multimark/L1/T3.1/metrics
+  multimark/L1/T3.1/k2_detect              ivan    CPU    4 celle      0.0 h  [detect same level | other methods same level/split]
+[15:33:48] passo 230/234: multimark/L1/T3.1/k2_metrics
+  multimark/L1/T3.1/metrics                ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:48] passo 231/234: multimark/M12/perplexity
+  multimark/L1/T3.1/k2_metrics             ivan    CPU    4 celle      0.0 h  [cell median]
+[15:33:49] passo 232/234: multimark/M12/logreg
+  multimark/M12/perplexity                 ivan    GPU    6 celle      0.1 h  [same level, same level/split]
+[15:33:50] passo 233/234: multimark/M12/unixcoder
+  multimark/M12/logreg                     ivan    CPU    4 celle      0.2 h  [same level]
+[15:33:51] passo 234/234: multimark/M12/metrics
+  multimark/M12/unixcoder                  ivan    GPU    4 celle      1.4 h  [same level]
+  multimark/M12/metrics                    ivan    CPU    4 celle      0.0 h  [cell median]
+
+##### per metodo e livello (ore-job)
+  metodo       livello       GPU h    CPU h
+  mcss         L1 test         2.4     10.3
+  mcss         L2 test         0.0      3.3
+  mcss         L3 test         0.0      1.0
+  multimark    L1 test         4.5     18.9
+  multimark    L2 test         0.0      5.9
+  multimark    L3 test         0.0      2.1
+
+##### giorni reali per proprietario (senza attesa in coda)
+  senza ACW su L2 test e L3:
+    ivan    GPU      6.9 h, CPU     41.5 h; 10 posti      4.8 h; cammino critico      1.8 h -> 0.2 giorni
+    simone  GPU      0.0 h, CPU      0.0 h; 10 posti      0.0 h; cammino critico      0.0 h -> 0.0 giorni
+  con ACW su L2 test e L3:
+    ivan    GPU      6.9 h, CPU     41.5 h; 10 posti      4.8 h; cammino critico      1.8 h -> 0.2 giorni
+    simone  GPU      0.0 h, CPU      0.0 h; 10 posti      0.0 h; cammino critico      0.0 h -> 0.0 giorni
+
+  P6 post-hoc (mcss, multimark): GPU      6.9 h, CPU     41.5 h; 10 posti      4.8 h; cammino critico      1.8 h -> 0.2 giorni
+
+  SWEET (priorità sulle GPU): cammino critico      0.0 h, GPU      0.0 h
