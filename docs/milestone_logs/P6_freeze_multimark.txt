@@ -1,0 +1,43 @@
+# P6 freeze of multimark (scripts/run_p6.sh): 2026-11-24T17:14:59+01:00
+# wm-bench 90cd09c777114aa9b6e32c7abbf24ea8dd748e13, multimark b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a
+##### multimark: frozen now
+frozen_at   2026-11-24T16:14:59.523314+00:00
+commit      90cd09c777114aa9b6e32c7abbf24ea8dd748e13 (dirty: False)
+levels      ['L1', 'L2']
+grid_sha256 36b35947f91c2f63274d9c9c8668f17321d881ca944a9785901d42095ceeaee2 (2 candidates)
+record      freeze/multimark.json (sha256 9f75d355d3ad3a6de6bdc621c665aa57ee2b1eb6ef739dfc341554a0f3947dfa)
+library     b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a (patches sha256 )
+  configs/method/multimark.yaml                    fc42de274d960cd440a5fa911ce94766b303613fb6c19850d014305aae8d425d
+  configs/hpo/multimark.yaml                       36b35947f91c2f63274d9c9c8668f17321d881ca944a9785901d42095ceeaee2
+  configs/freeze/posthoc.yaml                      97d3fcbf239d1ea2eb9fbb18a1ff9418d1dd68f08fee5cb17d0fe8c840bd80d8
+  configs/attack/t1_1_format.yaml                  30829ccbf8558c3b7b2de5f94be60462d12d52a51941854a5d0259bc42b93f04
+  configs/attack/t1_2_lint.yaml                    b9a1ff90fc50280e8570f4e6e6f5db4ea1edb98fa968a0f0c35025d460ee65dc
+  configs/attack/t1_3_comments.yaml                230f748edf7cd8195ab4bde9b95295e50ae92758dbaf3374bcc6562872611a0c
+  configs/attack/t1_4_rename.yaml                  b278f8924e3af78a6d79a8625b0fb0d44183d0ef26007664b7fd7af4d8dd7d33
+  configs/attack/t1_5_local.yaml                   ee977fb3546d772537f4876a527cf215196308cd67746ad2a6920da7a130ff30
+  configs/attack/t1_6_snake_case.yaml              4c43f4d8361ea116b6f106eca03f833a20f9b22e8bdd235c527371cc14cec72f
+  configs/attack/t2_1_refactor.yaml                924ce1f8b92c01478cf7f1f40bfb6f27f87d1f7a9a61dde323af056cecd49366
+  configs/attack/t2_2_llm_rewrite.yaml             49688999bab3ee10ab38016237b5a564d69563995e23f9669a832477063ae1e2
+  configs/attack/t2_3_roundtrip.yaml               1aee0fba80f088327197c7c89c12d597096cd7b8ac8c1c6abdd6e7fcddfd6668
+  configs/attack/t2_4_truncate.yaml                0ea42d43bc73594cf3e8182623f0df1d795a98cb4aaecd6ff965dd795523ca14
+  configs/attack/t2_4k_truncate.yaml               e48b6d7f2f1fe7b07b2c7890c4e25c7e28a1b2e4a776e8fcb621351e3e4ef52f
+  configs/attack/t2_5_dilution.yaml                fd677cc3ad5a31409e1a1e3c2d8f11d1e61efc1f541f5595a6d773b4f122f9a6
+  configs/attack/t3_1_remark.yaml                  5394f5a7bdb2cde13507d29986cc7ee5ce2516af11e0f57794d72253644cf420
+  configs/attack/t4_1_minify.yaml                  38009a9f053283697954321e6386c3e7be2b52b17cada0957d84b0c184eae923
+  configs/attack/t4_2_bundle.yaml                  90020c537a4a89129b403ddb77125bdcf2e355e266bf1ca7fbc52016c7753a85
+  aggregated/multimark/qwen25_coder_7b/e52b040770df/L1L2_python.json e7071048e9b1a8d806214de38b03fb68fb284b899c9b2f52ba795f5276f08743
+  aggregated/multimark/qwen25_coder_7b/3fed1f1c1e24/L1L2_python.json 8e571303abcab4ad6060ccd8bcc01e16859be76d6b7c2cff6a6f359050f03f59
+  aggregated/multimark/deepseek_coder_6p7b/e52b040770df/L1L2_python.json e9c5c983d0b88bd57603eaad2ed074f7479df273843948108f8f4155f930fc5a
+  aggregated/multimark/deepseek_coder_6p7b/3fed1f1c1e24/L1L2_python.json e0fa86dc0ba47aa3ce06f249941b049ef0b4897bf9c75c92331c6ed8859d8502
+  qwen25_coder_7b      python      prudent       e52b040770df {'names.bits_per_name': 2}  τ 1.2274243995713552  constraint None
+      selection sha256 None
+      threshold sha256 983a6e6a2981c3ef5b9a1d07265d245a1d91851b919f12601e673f8e0591f7c6
+  qwen25_coder_7b      python      high_capacity 3fed1f1c1e24 {'names.single_letter': 'extend_except_loop', 'canonical.same_kind': 'binding_order', 'names.bits_per_name': 2, 'names.include_params': True}  τ 1.5423220813600191  constraint None
+      selection sha256 None
+      threshold sha256 b21f5192610568e761b0374680372ce62e405d09f0b0dba225966f8a723eac7f
+  deepseek_coder_6p7b  python      prudent       e52b040770df {'names.bits_per_name': 2}  τ 1.3358981437945303  constraint None
+      selection sha256 None
+      threshold sha256 dff590803c15e2315540454dc1c6e23cd33d5bd69380b71e3fba3718c8b71395
+  deepseek_coder_6p7b  python      high_capacity 3fed1f1c1e24 {'names.single_letter': 'extend_except_loop', 'canonical.same_kind': 'binding_order', 'names.bits_per_name': 2, 'names.include_params': True}  τ 1.6104640538603547  constraint None
+      selection sha256 None
+      threshold sha256 961fdf3e3d82b234447ff29659d6e191043d84f2354358c868278c1081b6eea1
