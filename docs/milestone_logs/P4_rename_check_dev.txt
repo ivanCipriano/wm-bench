@@ -1,0 +1,60 @@
+# P4 rename check of the new points (scripts/run_p4_dev.sh): 2026-11-24T11:30:30+01:00
+# wm-bench e52aef1bb907d436ad492d18e0b034c2f1547af4, multimark b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a for the points of P4; references read from existing cells
+# rename check of the dev marked samples (scripts/check_rename_dev.py), 2026-11-24T11:30:16+01:00, tnode07
+# multimark.rename_check from third_party/multimark at commit b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a; wm-bench e52aef1bb907d436ad492d18e0b034c2f1547af4; submodule third_party/multimark not touched
+# configs: p4_mcss 1d3087c73439, p4_B e52b040770df, p4_D 3fed1f1c1e24, p4_B_V0 ebeb5a0753cd, p4_B_V1 40e5e9455cea, p4_B_positional 271087ba99b6, p4_B_mask_off 16de27361bad, p4_B_canonical_paper 65eb9730301a; split dev, language python; marked without attack vs the parent baseline sample
+# share of violations on the checked samples; unpaired = variables only in rewritten subtrees (not checked); fail_vs_base = violations whose tests fail while the parent passes
+
+  config                            model                   lvl  samples  checked  skipped  viol   viol %  unpaired smp_unp  fail_vs_base
+  p4_mcss 1d3087c73439              qwen25_coder_7b         L1       576      576        0     0    0.00%        22       7             0
+  p4_mcss 1d3087c73439              qwen25_coder_7b         L2       300      299        1     0    0.00%        38      16             0
+      (1 samples not analysable by the check)
+  p4_mcss 1d3087c73439              deepseek_coder_6p7b     L1       576      576        0     0    0.00%         0       0             0
+  p4_mcss 1d3087c73439              deepseek_coder_6p7b     L2       300      300        0     0    0.00%        71      35             0
+  p4_B e52b040770df                 qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  p4_B e52b040770df                 qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  p4_B e52b040770df                 deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  p4_B e52b040770df                 deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  p4_B_V0 ebeb5a0753cd              qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  p4_B_V0 ebeb5a0753cd              qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  p4_B_V0 ebeb5a0753cd              deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  p4_B_V0 ebeb5a0753cd              deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  p4_B_V1 40e5e9455cea              qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  p4_B_V1 40e5e9455cea              qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  p4_B_V1 40e5e9455cea              deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  p4_B_V1 40e5e9455cea              deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+  p4_B_positional 271087ba99b6      qwen25_coder_7b         L1       576      576        0     0    0.00%       156      45             0
+  p4_B_positional 271087ba99b6      qwen25_coder_7b         L2       300      299        1     0    0.00%       124      31             0
+      (1 samples not analysable by the check)
+  p4_B_positional 271087ba99b6      deepseek_coder_6p7b     L1       576      576        0     0    0.00%        92      25             0
+  p4_B_positional 271087ba99b6      deepseek_coder_6p7b     L2       300      300        0     0    0.00%       168      39             0
+  p4_B_mask_off 16de27361bad        qwen25_coder_7b         L1       576      576        0     0    0.00%       134      39             0
+  p4_B_mask_off 16de27361bad        qwen25_coder_7b         L2       300      299        1     0    0.00%       102      25             0
+      (1 samples not analysable by the check)
+  p4_B_mask_off 16de27361bad        deepseek_coder_6p7b     L1       576      576        0     0    0.00%       112      28             0
+  p4_B_mask_off 16de27361bad        deepseek_coder_6p7b     L2       300      300        0     0    0.00%       112      32             0
+  p4_B_canonical_paper 65eb9730301a qwen25_coder_7b         L1       576      576        0     0    0.00%       138      42             0
+  p4_B_canonical_paper 65eb9730301a qwen25_coder_7b         L2       300      299        1     0    0.00%        94      22             0
+      (1 samples not analysable by the check)
+  p4_B_canonical_paper 65eb9730301a deepseek_coder_6p7b     L1       576      576        0     0    0.00%       110      31             0
+  p4_B_canonical_paper 65eb9730301a deepseek_coder_6p7b     L2       300      300        0     0    0.00%       176      42             0
+
+## summary: max share of samples with violations over the cells (threshold 1%: if every cell is <= 1% the dev rounds are not redone)
+  p4_mcss 1d3087c73439              max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  p4_B e52b040770df                 max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  p4_D 3fed1f1c1e24                 max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  p4_B_V0 ebeb5a0753cd              max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  p4_B_V1 40e5e9455cea              max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  p4_B_positional 271087ba99b6      max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  p4_B_mask_off 16de27361bad        max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  p4_B_canonical_paper 65eb9730301a max    0.00% (qwen25_coder_7b L1)  ok (<= 1%)
+  -> every cell <= 1%: the dev rounds are not redone
+

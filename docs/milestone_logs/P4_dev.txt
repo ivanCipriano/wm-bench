@@ -1,0 +1,746 @@
+# P4 on dev: rules of v1.3.10, ablations next to B, T2.5, 8/16 bits (scripts/run_p4_dev.sh): 2026-11-24T11:39:26+01:00
+# wm-bench e52aef1bb907d436ad492d18e0b034c2f1547af4, multimark b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a for the points of P4; references read from existing cells
+# P4+P5 reduced on development, last round before the freeze (scripts/report_p4.py), 2026-11-24T11:39:25+01:00, tnode07
+# configs: mcss_new_3c47a1f ae63f16de28f, mcss_old_a4e6972 b521002e09f5, multimark 3c1bd11758fc, single_letter 4937d9ddd78a, A 770f999adefb, B cb79b2fcb4e6, C cf7e4c9f106e, D 37400fdcd589, r4_B a8a296957377, r4_B_sfx 042968dc17df, r4_B_sfx_cl 317adaa840ee, r4_B_sfx_clz a2d195001771, r4_C 19e744a3b406, r4_C_sfx 71d9d5e6160d, r4_C_sfx_cl a8fadfc4757a, r4_C_sfx_clz fb24f51f5d15, r4_D b4cd11f13a07, r4_D_sfx f4fb209f9226, r4_D_sfx_cl f765c166de34, r4_D_sfx_clz cb29e1d7b6b8, p3_B d54101565a0b, p3_D e80cde8924cb, p4_mcss 1d3087c73439, p4_B e52b040770df, p4_D 3fed1f1c1e24, p4_B_V0 ebeb5a0753cd, p4_B_V1 40e5e9455cea, p4_B_positional 271087ba99b6, p4_B_mask_off 16de27361bad, p4_B_canonical_paper 65eb9730301a
+# base multimark 3c1bd11758fc, mcss mcss_new_3c47a1f ae63f16de28f; ranked: the 27 multimark configurations; B p4_B e52b040770df; ablations p4_B_V0, p4_B_V1, p4_B_positional, p4_B_mask_off, p4_B_canonical_paper
+# thresholds of levels L1 L2 and theoretical score >= 2; split dev, language python
+# S = no attack; T1.4 name_kind=natural ratio=1.0 [23f6be2801c3]; T1.4 name_kind=random ratio=0.5 [e2770ff72bae]; T1.5 k=5 [705d07d343b2]; T2.1 b=all [f39d410e0723]; T2.4 p=0.5 [214ddb2cb794]; T4.1 rename=True [fe396d74371a]
+# other conditions: T1.6 caps=convert [9ad68973c317]; T1.6 caps=keep [8e1e8882fb91]; T2.5 n=1 position=before [c32f7d55a266]; T2.5 n=2 position=around [9528392ed687]; T2.5 n=4 position=around [a2bc6db7f357]
+# renaming check: multimark.rename_check from third_party/multimark at commit b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a
+
+## embedding identity of mcss, B and D at b2b6c18 with the measured cells (scripts/check_embed_identity.py)
+## p4_mcss: mcss 1d3087c73439 (new) vs ae63f16de28f (measured)
+  p4_mcss qwen25_coder_7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new f95e799846a30f0dc26d0add6d63998ad740efe12f6e67f1e62987a6e356f07c
+                                          old f95e799846a30f0dc26d0add6d63998ad740efe12f6e67f1e62987a6e356f07c
+  p4_mcss qwen25_coder_7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 862857c9e6ae43949218a4c0a36487f6023f04da89c5adc4ea81f10cf772c081
+                                          old 862857c9e6ae43949218a4c0a36487f6023f04da89c5adc4ea81f10cf772c081
+  p4_mcss deepseek_coder_6p7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new 3159e06b39308ea8d68b044e1d6fbaf04ce055cf685d3a11c325e753dce3d1a8
+                                          old 3159e06b39308ea8d68b044e1d6fbaf04ce055cf685d3a11c325e753dce3d1a8
+  p4_mcss deepseek_coder_6p7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 3d0009db0cbb91f781e957f4ed60966429554595c6d9bcd0f3a55ffdb12da36f
+                                          old 3d0009db0cbb91f781e957f4ed60966429554595c6d9bcd0f3a55ffdb12da36f
+
+## p4_B: multimark e52b040770df (new) vs a8a296957377 (measured)
+  p4_B qwen25_coder_7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new 88e2d24cea5377066c876d9f19771d370686d60db62a1c0b292470aa26fe6e65
+                                          old 88e2d24cea5377066c876d9f19771d370686d60db62a1c0b292470aa26fe6e65
+  p4_B qwen25_coder_7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 32801ce9c05442cc2c3cd551233be9913302a80e768c28946da349631383c569
+                                          old 32801ce9c05442cc2c3cd551233be9913302a80e768c28946da349631383c569
+  p4_B deepseek_coder_6p7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new 1fffbaf134b3e7f0ca7f0ce3fff1585fbdf7aed6b645e67f59b4b94dd35dcc99
+                                          old 1fffbaf134b3e7f0ca7f0ce3fff1585fbdf7aed6b645e67f59b4b94dd35dcc99
+  p4_B deepseek_coder_6p7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new bb78ce352bcdc35927d5f1020a81196c1157c342684ab2987c56e8f7810d8e02
+                                          old bb78ce352bcdc35927d5f1020a81196c1157c342684ab2987c56e8f7810d8e02
+
+## p4_D: multimark 3fed1f1c1e24 (new) vs b4cd11f13a07 (measured)
+  p4_D qwen25_coder_7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new dabefe95020cd88d255fa8086ed6f603d46dca8bb8b6fac2c7b3a3df37505656
+                                          old dabefe95020cd88d255fa8086ed6f603d46dca8bb8b6fac2c7b3a3df37505656
+  p4_D qwen25_coder_7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 136f967f9a924ab923a66f583ca3d060602fcc71addc88a2ddba661939c3335f
+                                          old 136f967f9a924ab923a66f583ca3d060602fcc71addc88a2ddba661939c3335f
+  p4_D deepseek_coder_6p7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new fbb0c30a7c275a962e2543f52cd2176235c8ba2250a161b918debb92b915536e
+                                          old fbb0c30a7c275a962e2543f52cd2176235c8ba2250a161b918debb92b915536e
+  p4_D deepseek_coder_6p7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 04e20737c91479b5c88d4a44c3b9c8bbb82d8fda4e33082741a84f105ecc22e6
+                                          old 04e20737c91479b5c88d4a44c3b9c8bbb82d8fda4e33082741a84f105ecc22e6
+
+## result: p4_mcss identical, p4_B identical, p4_D identical -> embedding identical byte for byte: the measured imperceptibility holds
+
+## imperceptibility borrowed from the cells with the same embedding (identity verified): p4_mcss 1d3087c73439 <- mcss_new_3c47a1f ae63f16de28f; p4_B e52b040770df <- r4_B a8a296957377; p4_D 3fed1f1c1e24 <- r4_D b4cd11f13a07
+
+## constraints per configuration
+# max ΔPass@1 (pp) over the cells; FPR_2 = FPR on human code at score >= 2 per level; logreg Δbase = max over the cells of the AUROC difference from multimark 3c1bd11758fc (limit +0.1); <mcss = logreg AUROC below mcss_new_3c47a1f ae63f16de28f in every cell; rename = max share of samples with inconsistent renaming over the cells (limit 1%)
+  config                              mean_S   ΔPass    FPR_2 L1    FPR_2 L2   Δbase  <mcss   rename  ren/smp
+  mcss_new_3c47a1f ae63f16de28f        0.509   0.000       0.001       0.004   0.325      -    0.00%    3.616
+  mcss_old_a4e6972 b521002e09f5        0.508   1.667       0.001       0.004   0.325     no    1.67%    3.616
+  multimark 3c1bd11758fc               0.278   0.000       0.000       0.004   0.000    yes    0.00%    0.783
+  single_letter 4937d9ddd78a           0.349   0.333       0.000       0.002   0.138    yes    0.33%    1.392
+  A 770f999adefb                       0.279   0.000       0.000       0.004   0.007    yes    0.00%    0.783
+  B cb79b2fcb4e6                       0.339   0.000       0.001       0.000   0.051    yes    0.33%    1.203
+  C cf7e4c9f106e                       0.490   0.667       0.001       0.008   0.204    yes    0.67%    2.071
+  D 37400fdcd589                       0.507   0.333       0.002       0.006   0.214    yes    0.33%    2.808
+  r4_B a8a296957377                    0.337   0.000       0.001       0.000   0.050    yes    0.00%    1.203
+  r4_B_sfx 042968dc17df                0.336   0.000       0.001       0.000   0.072    yes    0.00%    1.203
+  r4_B_sfx_cl 317adaa840ee             0.253   0.000       0.000       0.000   0.061    yes    0.00%    1.203
+  r4_B_sfx_clz a2d195001771            0.236   0.000       0.000       0.000   0.047    yes    0.00%    1.203
+  r4_C 19e744a3b406                    0.492   0.000       0.001       0.008   0.204    yes    0.00%    2.071
+  r4_C_sfx 71d9d5e6160d                0.491   0.000       0.001       0.008   0.191    yes    0.00%    2.071
+  r4_C_sfx_cl a8fadfc4757a             0.409   0.000       0.000       0.002   0.210    yes    0.00%    2.071
+  r4_C_sfx_clz fb24f51f5d15            0.393   0.000       0.000       0.004   0.198    yes    0.00%    2.071
+  r4_D b4cd11f13a07                    0.506   0.000       0.002       0.006   0.213    yes    0.00%    2.808
+  r4_D_sfx f4fb209f9226                0.505   0.000       0.002       0.006   0.209    yes    0.00%    2.808
+  r4_D_sfx_cl f765c166de34             0.446   0.000       0.002       0.000   0.215    yes    0.00%    2.808
+  r4_D_sfx_clz cb29e1d7b6b8            0.438   0.000       0.002       0.000   0.204    yes    0.00%    2.808
+  p3_B d54101565a0b                    0.340   0.000       0.001       0.000   0.090    yes    0.00%    1.203
+  p3_D e80cde8924cb                    0.504   0.000       0.002       0.006   0.211    yes    0.00%    2.808
+  p4_mcss 1d3087c73439                 0.507   0.000       0.001       0.004   0.325     no    0.00%    3.616
+  p4_B e52b040770df                    0.338   0.000       0.001       0.000   0.050    yes    0.00%    1.203
+  p4_D 3fed1f1c1e24                    0.505   0.000       0.002       0.006   0.213    yes    0.00%    2.808
+  p4_B_V0 ebeb5a0753cd                 0.263   0.000       0.000       0.002   0.009    yes    0.00%    0.000
+  p4_B_V1 40e5e9455cea                 0.363   0.000       0.000       0.002   0.165    yes    0.00%    1.484
+  p4_B_positional 271087ba99b6         0.254   0.000       0.000       0.002   0.072    yes    0.00%    1.192
+  p4_B_mask_off 16de27361bad           0.334   0.000       0.001       0.006   0.099    yes    0.00%    1.203
+  p4_B_canonical_paper 65eb9730301a    0.349   0.000       0.001       0.000   0.043    yes    0.00%    1.203
+
+## adversarial_logreg AUROC per cell: value [CI] (Δbase, Δmcss)
+  mcss_new_3c47a1f ae63f16de28f: qwen25_coder_7b L1 0.958 [0.939,0.975] (+0.325, +0.000); qwen25_coder_7b L2 0.970 [0.949,0.989] (+0.260, +0.000); deepseek_coder_6p7b L1 0.948 [0.920,0.973] (+0.285, +0.000); deepseek_coder_6p7b L2 0.974 [0.952,0.993] (+0.290, +0.000)
+  mcss_old_a4e6972 b521002e09f5: qwen25_coder_7b L1 0.958 [0.939,0.975] (+0.325, +0.000); qwen25_coder_7b L2 0.970 [0.949,0.989] (+0.260, +0.000); deepseek_coder_6p7b L1 0.948 [0.920,0.973] (+0.285, +0.000); deepseek_coder_6p7b L2 0.974 [0.952,0.994] (+0.290, -0.000)
+  multimark 3c1bd11758fc: qwen25_coder_7b L1 0.634 [0.599,0.673] (+0.000, -0.325); qwen25_coder_7b L2 0.711 [0.658,0.775] (+0.000, -0.260); deepseek_coder_6p7b L1 0.663 [0.623,0.703] (+0.000, -0.285); deepseek_coder_6p7b L2 0.684 [0.637,0.735] (+0.000, -0.290)
+  single_letter 4937d9ddd78a: qwen25_coder_7b L1 0.642 [0.608,0.682] (+0.009, -0.316); qwen25_coder_7b L2 0.834 [0.786,0.882] (+0.123, -0.136); deepseek_coder_6p7b L1 0.662 [0.624,0.701] (-0.000, -0.285); deepseek_coder_6p7b L2 0.822 [0.785,0.863] (+0.138, -0.152)
+  A 770f999adefb: qwen25_coder_7b L1 0.637 [0.601,0.673] (+0.004, -0.321); qwen25_coder_7b L2 0.706 [0.653,0.767] (-0.004, -0.264); deepseek_coder_6p7b L1 0.666 [0.622,0.710] (+0.003, -0.282); deepseek_coder_6p7b L2 0.692 [0.643,0.741] (+0.007, -0.283)
+  B cb79b2fcb4e6: qwen25_coder_7b L1 0.680 [0.642,0.718] (+0.047, -0.278); qwen25_coder_7b L2 0.761 [0.696,0.823] (+0.051, -0.209); deepseek_coder_6p7b L1 0.672 [0.632,0.717] (+0.009, -0.276); deepseek_coder_6p7b L2 0.712 [0.659,0.771] (+0.028, -0.262)
+  C cf7e4c9f106e: qwen25_coder_7b L1 0.685 [0.650,0.726] (+0.051, -0.273); qwen25_coder_7b L2 0.870 [0.821,0.918] (+0.160, -0.100); deepseek_coder_6p7b L1 0.667 [0.625,0.709] (+0.004, -0.281); deepseek_coder_6p7b L2 0.888 [0.855,0.924] (+0.204, -0.087)
+  D 37400fdcd589: qwen25_coder_7b L1 0.837 [0.803,0.868] (+0.204, -0.121); qwen25_coder_7b L2 0.893 [0.851,0.935] (+0.182, -0.078); deepseek_coder_6p7b L1 0.806 [0.768,0.846] (+0.143, -0.142); deepseek_coder_6p7b L2 0.898 [0.865,0.929] (+0.214, -0.077)
+  r4_B a8a296957377: qwen25_coder_7b L1 0.680 [0.642,0.721] (+0.047, -0.278); qwen25_coder_7b L2 0.761 [0.700,0.825] (+0.050, -0.209); deepseek_coder_6p7b L1 0.672 [0.631,0.713] (+0.009, -0.276); deepseek_coder_6p7b L2 0.712 [0.655,0.773] (+0.028, -0.262)
+  r4_B_sfx 042968dc17df: qwen25_coder_7b L1 0.682 [0.644,0.722] (+0.049, -0.276); qwen25_coder_7b L2 0.783 [0.719,0.840] (+0.072, -0.188); deepseek_coder_6p7b L1 0.667 [0.629,0.706] (+0.005, -0.280); deepseek_coder_6p7b L2 0.725 [0.671,0.781] (+0.041, -0.249)
+  r4_B_sfx_cl 317adaa840ee: qwen25_coder_7b L1 0.631 [0.597,0.668] (-0.002, -0.327); qwen25_coder_7b L2 0.772 [0.718,0.830] (+0.061, -0.199); deepseek_coder_6p7b L1 0.624 [0.585,0.666] (-0.039, -0.324); deepseek_coder_6p7b L2 0.659 [0.604,0.727] (-0.026, -0.316)
+  r4_B_sfx_clz a2d195001771: qwen25_coder_7b L1 0.639 [0.606,0.680] (+0.005, -0.319); qwen25_coder_7b L2 0.758 [0.700,0.815] (+0.047, -0.212); deepseek_coder_6p7b L1 0.613 [0.575,0.655] (-0.049, -0.334); deepseek_coder_6p7b L2 0.646 [0.599,0.700] (-0.038, -0.328)
+  r4_C 19e744a3b406: qwen25_coder_7b L1 0.685 [0.645,0.722] (+0.051, -0.273); qwen25_coder_7b L2 0.870 [0.820,0.918] (+0.160, -0.100); deepseek_coder_6p7b L1 0.667 [0.627,0.710] (+0.004, -0.281); deepseek_coder_6p7b L2 0.888 [0.852,0.925] (+0.204, -0.086)
+  r4_C_sfx 71d9d5e6160d: qwen25_coder_7b L1 0.686 [0.651,0.728] (+0.053, -0.272); qwen25_coder_7b L2 0.872 [0.827,0.916] (+0.161, -0.098); deepseek_coder_6p7b L1 0.667 [0.627,0.710] (+0.004, -0.281); deepseek_coder_6p7b L2 0.875 [0.840,0.915] (+0.191, -0.100)
+  r4_C_sfx_cl a8fadfc4757a: qwen25_coder_7b L1 0.630 [0.598,0.666] (-0.003, -0.328); qwen25_coder_7b L2 0.850 [0.802,0.900] (+0.139, -0.120); deepseek_coder_6p7b L1 0.620 [0.581,0.663] (-0.043, -0.327); deepseek_coder_6p7b L2 0.894 [0.861,0.928] (+0.210, -0.081)
+  r4_C_sfx_clz fb24f51f5d15: qwen25_coder_7b L1 0.638 [0.603,0.676] (+0.004, -0.321); qwen25_coder_7b L2 0.854 [0.805,0.899] (+0.143, -0.116); deepseek_coder_6p7b L1 0.608 [0.569,0.649] (-0.054, -0.339); deepseek_coder_6p7b L2 0.882 [0.843,0.923] (+0.198, -0.093)
+  r4_D b4cd11f13a07: qwen25_coder_7b L1 0.837 [0.806,0.870] (+0.204, -0.121); qwen25_coder_7b L2 0.893 [0.846,0.935] (+0.182, -0.078); deepseek_coder_6p7b L1 0.806 [0.768,0.843] (+0.143, -0.142); deepseek_coder_6p7b L2 0.898 [0.869,0.930] (+0.213, -0.077)
+  r4_D_sfx f4fb209f9226: qwen25_coder_7b L1 0.842 [0.811,0.877] (+0.209, -0.116); qwen25_coder_7b L2 0.892 [0.849,0.933] (+0.181, -0.079); deepseek_coder_6p7b L1 0.804 [0.765,0.843] (+0.141, -0.144); deepseek_coder_6p7b L2 0.885 [0.848,0.921] (+0.201, -0.089)
+  r4_D_sfx_cl f765c166de34: qwen25_coder_7b L1 0.829 [0.798,0.860] (+0.196, -0.129); qwen25_coder_7b L2 0.896 [0.858,0.935] (+0.185, -0.075); deepseek_coder_6p7b L1 0.801 [0.767,0.839] (+0.139, -0.146); deepseek_coder_6p7b L2 0.899 [0.865,0.931] (+0.215, -0.075)
+  r4_D_sfx_clz cb29e1d7b6b8: qwen25_coder_7b L1 0.828 [0.796,0.861] (+0.195, -0.130); qwen25_coder_7b L2 0.902 [0.862,0.941] (+0.191, -0.068); deepseek_coder_6p7b L1 0.800 [0.766,0.837] (+0.138, -0.147); deepseek_coder_6p7b L2 0.889 [0.851,0.925] (+0.204, -0.086)
+  p3_B d54101565a0b: qwen25_coder_7b L1 0.687 [0.648,0.729] (+0.053, -0.271); qwen25_coder_7b L2 0.801 [0.738,0.861] (+0.090, -0.169); deepseek_coder_6p7b L1 0.669 [0.629,0.710] (+0.007, -0.278); deepseek_coder_6p7b L2 0.703 [0.652,0.760] (+0.019, -0.271)
+  p3_D e80cde8924cb: qwen25_coder_7b L1 0.845 [0.815,0.877] (+0.211, -0.113); qwen25_coder_7b L2 0.871 [0.820,0.919] (+0.160, -0.099); deepseek_coder_6p7b L1 0.824 [0.784,0.863] (+0.161, -0.124); deepseek_coder_6p7b L2 0.867 [0.831,0.909] (+0.183, -0.107)
+  p4_mcss 1d3087c73439: qwen25_coder_7b L1 0.958 [0.939,0.975] (+0.325, +0.000); qwen25_coder_7b L2 0.970 [0.949,0.989] (+0.260, +0.000); deepseek_coder_6p7b L1 0.948 [0.920,0.973] (+0.285, +0.000); deepseek_coder_6p7b L2 0.974 [0.952,0.993] (+0.290, +0.000)
+  p4_B e52b040770df: qwen25_coder_7b L1 0.680 [0.642,0.721] (+0.047, -0.278); qwen25_coder_7b L2 0.761 [0.700,0.825] (+0.050, -0.209); deepseek_coder_6p7b L1 0.672 [0.631,0.713] (+0.009, -0.276); deepseek_coder_6p7b L2 0.712 [0.655,0.773] (+0.028, -0.262)
+  p4_D 3fed1f1c1e24: qwen25_coder_7b L1 0.837 [0.806,0.870] (+0.204, -0.121); qwen25_coder_7b L2 0.893 [0.846,0.935] (+0.182, -0.078); deepseek_coder_6p7b L1 0.806 [0.768,0.843] (+0.143, -0.142); deepseek_coder_6p7b L2 0.898 [0.869,0.930] (+0.213, -0.077)
+  p4_B_V0 ebeb5a0753cd: qwen25_coder_7b L1 0.628 [0.592,0.668] (-0.006, -0.331); qwen25_coder_7b L2 0.688 [0.631,0.748] (-0.023, -0.283); deepseek_coder_6p7b L1 0.640 [0.606,0.675] (-0.022, -0.307); deepseek_coder_6p7b L2 0.693 [0.640,0.750] (+0.009, -0.282)
+  p4_B_V1 40e5e9455cea: qwen25_coder_7b L1 0.798 [0.750,0.842] (+0.164, -0.161); qwen25_coder_7b L2 0.876 [0.813,0.924] (+0.165, -0.095); deepseek_coder_6p7b L1 0.763 [0.713,0.814] (+0.101, -0.184); deepseek_coder_6p7b L2 0.814 [0.754,0.868] (+0.130, -0.161)
+  p4_B_positional 271087ba99b6: qwen25_coder_7b L1 0.665 [0.632,0.705] (+0.032, -0.293); qwen25_coder_7b L2 0.783 [0.722,0.842] (+0.072, -0.187); deepseek_coder_6p7b L1 0.682 [0.643,0.722] (+0.020, -0.265); deepseek_coder_6p7b L2 0.719 [0.662,0.782] (+0.035, -0.256)
+  p4_B_mask_off 16de27361bad: qwen25_coder_7b L1 0.672 [0.637,0.715] (+0.039, -0.286); qwen25_coder_7b L2 0.810 [0.754,0.869] (+0.099, -0.160); deepseek_coder_6p7b L1 0.662 [0.622,0.703] (-0.001, -0.286); deepseek_coder_6p7b L2 0.719 [0.670,0.772] (+0.035, -0.255)
+  p4_B_canonical_paper 65eb9730301a: qwen25_coder_7b L1 0.676 [0.642,0.719] (+0.043, -0.282); qwen25_coder_7b L2 0.752 [0.694,0.814] (+0.041, -0.218); deepseek_coder_6p7b L1 0.667 [0.623,0.708] (+0.004, -0.281); deepseek_coder_6p7b L2 0.715 [0.654,0.777] (+0.031, -0.259)
+
+## inconsistent renaming per cell (share of the checked samples)
+  mcss_new_3c47a1f ae63f16de28f: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  mcss_old_a4e6972 b521002e09f5: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 1.67%
+  multimark 3c1bd11758fc: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  single_letter 4937d9ddd78a: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.33%
+  A 770f999adefb: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  B cb79b2fcb4e6: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  C cf7e4c9f106e: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.67%
+  D 37400fdcd589: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.33%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.33%
+  r4_B a8a296957377: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_B_sfx 042968dc17df: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_B_sfx_cl 317adaa840ee: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_B_sfx_clz a2d195001771: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_C 19e744a3b406: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_C_sfx 71d9d5e6160d: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_C_sfx_cl a8fadfc4757a: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_C_sfx_clz fb24f51f5d15: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_D b4cd11f13a07: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_D_sfx f4fb209f9226: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_D_sfx_cl f765c166de34: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  r4_D_sfx_clz cb29e1d7b6b8: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p3_B d54101565a0b: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p3_D e80cde8924cb: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p4_mcss 1d3087c73439: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p4_B e52b040770df: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p4_D 3fed1f1c1e24: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p4_B_V0 ebeb5a0753cd: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p4_B_V1 40e5e9455cea: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p4_B_positional 271087ba99b6: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p4_B_mask_off 16de27361bad: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+  p4_B_canonical_paper 65eb9730301a: qwen25_coder_7b L1 0.00%; qwen25_coder_7b L2 0.00%; deepseek_coder_6p7b L1 0.00%; deepseek_coder_6p7b L2 0.00%
+
+## rule 1, prudent configuration (v1.3.3 criterion, v1.3.10): ΔPass@1, FPR_2, logreg <= multimark 3c1bd11758fc + 0.1 on every cell, renaming <= 1% per cell; within 0.01 of the best mean_S, fewer renames first
+    1. p4_B_canonical_paper 65eb9730301a  mean_S 0.349  renames/sample 1.203  [tie group: fewer renames wins]
+    2. p3_B d54101565a0b  mean_S 0.340  renames/sample 1.203  [tie group: fewer renames wins]
+    3. B cb79b2fcb4e6  mean_S 0.339  renames/sample 1.203
+    4. p4_B e52b040770df  mean_S 0.338  renames/sample 1.203
+    5. r4_B a8a296957377  mean_S 0.337  renames/sample 1.203
+    6. r4_B_sfx 042968dc17df  mean_S 0.336  renames/sample 1.203
+    7. p4_B_mask_off 16de27361bad  mean_S 0.334  renames/sample 1.203
+    8. A 770f999adefb  mean_S 0.279  renames/sample 0.783
+    9. multimark 3c1bd11758fc  mean_S 0.278  renames/sample 0.783
+    10. p4_B_V0 ebeb5a0753cd  mean_S 0.263  renames/sample 0.000
+    11. p4_B_positional 271087ba99b6  mean_S 0.254  renames/sample 1.192
+    12. r4_B_sfx_cl 317adaa840ee  mean_S 0.253  renames/sample 1.203
+    13. r4_B_sfx_clz a2d195001771  mean_S 0.236  renames/sample 1.203
+
+## rule 2, high-capacity configuration (v1.3.10): ΔPass@1, FPR_2, renaming <= 1% per cell, logreg AUROC < mcss_new_3c47a1f ae63f16de28f on every cell (point estimate); within 0.01 of the best mean_S, fewer renames first
+    1. D 37400fdcd589  mean_S 0.507  renames/sample 2.808  [tie group: fewer renames wins]
+    2. r4_D b4cd11f13a07  mean_S 0.506  renames/sample 2.808  [tie group: fewer renames wins]
+    3. r4_D_sfx f4fb209f9226  mean_S 0.505  renames/sample 2.808  [tie group: fewer renames wins]
+    4. p4_D 3fed1f1c1e24  mean_S 0.505  renames/sample 2.808  [tie group: fewer renames wins]
+    5. p3_D e80cde8924cb  mean_S 0.504  renames/sample 2.808  [tie group: fewer renames wins]
+    6. r4_C 19e744a3b406  mean_S 0.492  renames/sample 2.071
+    7. r4_C_sfx 71d9d5e6160d  mean_S 0.491  renames/sample 2.071
+    8. C cf7e4c9f106e  mean_S 0.490  renames/sample 2.071
+    9. r4_D_sfx_cl f765c166de34  mean_S 0.446  renames/sample 2.808
+    10. r4_D_sfx_clz cb29e1d7b6b8  mean_S 0.438  renames/sample 2.808
+    11. r4_C_sfx_cl a8fadfc4757a  mean_S 0.409  renames/sample 2.071
+    12. r4_C_sfx_clz fb24f51f5d15  mean_S 0.393  renames/sample 2.071
+    13. p4_B_V1 40e5e9455cea  mean_S 0.363  renames/sample 1.484
+    14. single_letter 4937d9ddd78a  mean_S 0.349  renames/sample 1.392
+    15. p4_B_canonical_paper 65eb9730301a  mean_S 0.349  renames/sample 1.203
+    16. p3_B d54101565a0b  mean_S 0.340  renames/sample 1.203
+    17. B cb79b2fcb4e6  mean_S 0.339  renames/sample 1.203
+    18. p4_B e52b040770df  mean_S 0.338  renames/sample 1.203
+    19. r4_B a8a296957377  mean_S 0.337  renames/sample 1.203
+    20. r4_B_sfx 042968dc17df  mean_S 0.336  renames/sample 1.203
+    21. p4_B_mask_off 16de27361bad  mean_S 0.334  renames/sample 1.203
+    22. A 770f999adefb  mean_S 0.279  renames/sample 0.783
+    23. multimark 3c1bd11758fc  mean_S 0.278  renames/sample 0.783
+    24. p4_B_V0 ebeb5a0753cd  mean_S 0.263  renames/sample 0.000
+    25. p4_B_positional 271087ba99b6  mean_S 0.254  renames/sample 1.192
+    26. r4_B_sfx_cl 317adaa840ee  mean_S 0.253  renames/sample 1.203
+    27. r4_B_sfx_clz a2d195001771  mean_S 0.236  renames/sample 1.203
+  -> two working points
+
+## ablations next to p4_B e52b040770df, one factor at a time (§6.3): TPR at the calibrated threshold, simple mean of the 4 cells (Δ from B)
+  condition                                       p4_B               p4_B_V0               p4_B_V1       p4_B_positional         p4_B_mask_off  p4_B_canonical_paper
+  none                                           0.489        0.322 (-0.167)        0.489 (+0.000)        0.489 (+0.000)        0.489 (+0.000)        0.507 (+0.018)
+  T1.4 name_kind=natural ratio=1.0                 0.282        0.322 (+0.039)        0.305 (+0.022)        0.186 (-0.097)        0.285 (+0.003)        0.298 (+0.015)
+  T1.4 name_kind=random ratio=0.5                 0.358        0.322 (-0.037)        0.394 (+0.036)        0.250 (-0.108)        0.349 (-0.009)        0.374 (+0.015)
+  T1.5 k=5                                       0.346        0.300 (-0.045)        0.462 (+0.117)        0.192 (-0.154)        0.331 (-0.015)        0.364 (+0.018)
+  T2.1 b=all                                     0.304        0.112 (-0.191)        0.314 (+0.010)        0.277 (-0.026)        0.300 (-0.003)        0.292 (-0.011)
+  T2.4 p=0.5                                     0.258        0.152 (-0.106)        0.258 (+0.000)        0.193 (-0.065)        0.259 (+0.000)        0.262 (+0.004)
+  T4.1 rename=True                               0.326        0.311 (-0.015)        0.321 (-0.005)        0.191 (-0.135)        0.324 (-0.002)        0.348 (+0.022)
+  T1.6 caps=convert                              0.476        0.322 (-0.155)        0.201 (-0.276)        0.462 (-0.014)        0.476 (-0.001)        0.487 (+0.010)
+  T1.6 caps=keep                                 0.486        0.322 (-0.165)        0.253 (-0.233)        0.479 (-0.008)        0.486 (+0.000)        0.501 (+0.015)
+  T2.5 n=1 position=before                       0.400        0.320 (-0.080)        0.459 (+0.058)        0.112 (-0.288)        0.394 (-0.006)        0.424 (+0.023)
+  T2.5 n=2 position=around                       0.335        0.305 (-0.030)        0.411 (+0.076)        0.073 (-0.262)        0.334 (-0.001)        0.354 (+0.019)
+  T2.5 n=4 position=around                       0.309        0.274 (-0.035)        0.357 (+0.048)        0.035 (-0.274)        0.258 (-0.051)        0.290 (-0.019)
+
+  per cell (TPR at the calibrated threshold):
+    none | qwen25_coder_7b L1: p4_B 0.387 p4_B_V0 0.217 p4_B_V1 0.387 p4_B_positional 0.387 p4_B_mask_off 0.387 p4_B_canonical_paper 0.398
+    none | qwen25_coder_7b L2: p4_B 0.670 p4_B_V0 0.427 p4_B_V1 0.670 p4_B_positional 0.670 p4_B_mask_off 0.670 p4_B_canonical_paper 0.693
+    none | deepseek_coder_6p7b L1: p4_B 0.332 p4_B_V0 0.196 p4_B_V1 0.332 p4_B_positional 0.332 p4_B_mask_off 0.332 p4_B_canonical_paper 0.333
+    none | deepseek_coder_6p7b L2: p4_B 0.567 p4_B_V0 0.447 p4_B_V1 0.567 p4_B_positional 0.567 p4_B_mask_off 0.567 p4_B_canonical_paper 0.603
+    T1.4 name_kind=natural ratio=1.0 | qwen25_coder_7b L1: p4_B 0.149 p4_B_V0 0.217 p4_B_V1 0.144 p4_B_positional 0.047 p4_B_mask_off 0.134 p4_B_canonical_paper 0.137
+    T1.4 name_kind=natural ratio=1.0 | qwen25_coder_7b L2: p4_B 0.500 p4_B_V0 0.427 p4_B_V1 0.550 p4_B_positional 0.360 p4_B_mask_off 0.537 p4_B_canonical_paper 0.553
+    T1.4 name_kind=natural ratio=1.0 | deepseek_coder_6p7b L1: p4_B 0.109 p4_B_V0 0.196 p4_B_V1 0.104 p4_B_positional 0.049 p4_B_mask_off 0.095 p4_B_canonical_paper 0.080
+    T1.4 name_kind=natural ratio=1.0 | deepseek_coder_6p7b L2: p4_B 0.370 p4_B_V0 0.447 p4_B_V1 0.420 p4_B_positional 0.287 p4_B_mask_off 0.373 p4_B_canonical_paper 0.420
+    T1.4 name_kind=random ratio=0.5 | qwen25_coder_7b L1: p4_B 0.234 p4_B_V0 0.217 p4_B_V1 0.233 p4_B_positional 0.167 p4_B_mask_off 0.219 p4_B_canonical_paper 0.253
+    T1.4 name_kind=random ratio=0.5 | qwen25_coder_7b L2: p4_B 0.600 p4_B_V0 0.427 p4_B_V1 0.623 p4_B_positional 0.433 p4_B_mask_off 0.577 p4_B_canonical_paper 0.610
+    T1.4 name_kind=random ratio=0.5 | deepseek_coder_6p7b L1: p4_B 0.175 p4_B_V0 0.196 p4_B_V1 0.205 p4_B_positional 0.101 p4_B_mask_off 0.201 p4_B_canonical_paper 0.184
+    T1.4 name_kind=random ratio=0.5 | deepseek_coder_6p7b L2: p4_B 0.423 p4_B_V0 0.447 p4_B_V1 0.517 p4_B_positional 0.300 p4_B_mask_off 0.400 p4_B_canonical_paper 0.447
+    T1.5 k=5 | qwen25_coder_7b L1: p4_B 0.208 p4_B_V0 0.191 p4_B_V1 0.351 p4_B_positional 0.043 p4_B_mask_off 0.148 p4_B_canonical_paper 0.205
+    T1.5 k=5 | qwen25_coder_7b L2: p4_B 0.593 p4_B_V0 0.397 p4_B_V1 0.660 p4_B_positional 0.370 p4_B_mask_off 0.570 p4_B_canonical_paper 0.633
+    T1.5 k=5 | deepseek_coder_6p7b L1: p4_B 0.148 p4_B_V0 0.181 p4_B_V1 0.285 p4_B_positional 0.045 p4_B_mask_off 0.168 p4_B_canonical_paper 0.146
+    T1.5 k=5 | deepseek_coder_6p7b L2: p4_B 0.433 p4_B_V0 0.433 p4_B_V1 0.553 p4_B_positional 0.310 p4_B_mask_off 0.437 p4_B_canonical_paper 0.470
+    T2.1 b=all | qwen25_coder_7b L1: p4_B 0.188 p4_B_V0 0.052 p4_B_V1 0.193 p4_B_positional 0.141 p4_B_mask_off 0.163 p4_B_canonical_paper 0.193
+    T2.1 b=all | qwen25_coder_7b L2: p4_B 0.537 p4_B_V0 0.150 p4_B_V1 0.547 p4_B_positional 0.523 p4_B_mask_off 0.537 p4_B_canonical_paper 0.537
+    T2.1 b=all | deepseek_coder_6p7b L1: p4_B 0.163 p4_B_V0 0.064 p4_B_V1 0.161 p4_B_positional 0.132 p4_B_mask_off 0.158 p4_B_canonical_paper 0.135
+    T2.1 b=all | deepseek_coder_6p7b L2: p4_B 0.327 p4_B_V0 0.183 p4_B_V1 0.353 p4_B_positional 0.313 p4_B_mask_off 0.343 p4_B_canonical_paper 0.303
+    T2.4 p=0.5 | qwen25_coder_7b L1: p4_B 0.139 p4_B_V0 0.080 p4_B_V1 0.139 p4_B_positional 0.087 p4_B_mask_off 0.137 p4_B_canonical_paper 0.141
+    T2.4 p=0.5 | qwen25_coder_7b L2: p4_B 0.433 p4_B_V0 0.203 p4_B_V1 0.433 p4_B_positional 0.320 p4_B_mask_off 0.433 p4_B_canonical_paper 0.447
+    T2.4 p=0.5 | deepseek_coder_6p7b L1: p4_B 0.104 p4_B_V0 0.073 p4_B_V1 0.104 p4_B_positional 0.082 p4_B_mask_off 0.108 p4_B_canonical_paper 0.104
+    T2.4 p=0.5 | deepseek_coder_6p7b L2: p4_B 0.357 p4_B_V0 0.253 p4_B_V1 0.357 p4_B_positional 0.283 p4_B_mask_off 0.357 p4_B_canonical_paper 0.357
+    T4.1 rename=True | qwen25_coder_7b L1: p4_B 0.132 p4_B_V0 0.214 p4_B_V1 0.128 p4_B_positional 0.052 p4_B_mask_off 0.132 p4_B_canonical_paper 0.141
+    T4.1 rename=True | qwen25_coder_7b L2: p4_B 0.600 p4_B_V0 0.420 p4_B_V1 0.583 p4_B_positional 0.350 p4_B_mask_off 0.597 p4_B_canonical_paper 0.607
+    T4.1 rename=True | deepseek_coder_6p7b L1: p4_B 0.095 p4_B_V0 0.186 p4_B_V1 0.095 p4_B_positional 0.049 p4_B_mask_off 0.095 p4_B_canonical_paper 0.109
+    T4.1 rename=True | deepseek_coder_6p7b L2: p4_B 0.477 p4_B_V0 0.427 p4_B_V1 0.477 p4_B_positional 0.313 p4_B_mask_off 0.470 p4_B_canonical_paper 0.537
+    T1.6 caps=convert | qwen25_coder_7b L1: p4_B 0.387 p4_B_V0 0.217 p4_B_V1 0.135 p4_B_positional 0.387 p4_B_mask_off 0.387 p4_B_canonical_paper 0.387
+    T1.6 caps=convert | qwen25_coder_7b L2: p4_B 0.650 p4_B_V0 0.427 p4_B_V1 0.267 p4_B_positional 0.617 p4_B_mask_off 0.647 p4_B_canonical_paper 0.660
+    T1.6 caps=convert | deepseek_coder_6p7b L1: p4_B 0.332 p4_B_V0 0.196 p4_B_V1 0.127 p4_B_positional 0.332 p4_B_mask_off 0.332 p4_B_canonical_paper 0.333
+    T1.6 caps=convert | deepseek_coder_6p7b L2: p4_B 0.537 p4_B_V0 0.447 p4_B_V1 0.273 p4_B_positional 0.513 p4_B_mask_off 0.537 p4_B_canonical_paper 0.567
+    T1.6 caps=keep | qwen25_coder_7b L1: p4_B 0.387 p4_B_V0 0.217 p4_B_V1 0.135 p4_B_positional 0.387 p4_B_mask_off 0.387 p4_B_canonical_paper 0.387
+    T1.6 caps=keep | qwen25_coder_7b L2: p4_B 0.670 p4_B_V0 0.427 p4_B_V1 0.397 p4_B_positional 0.650 p4_B_mask_off 0.670 p4_B_canonical_paper 0.693
+    T1.6 caps=keep | deepseek_coder_6p7b L1: p4_B 0.332 p4_B_V0 0.196 p4_B_V1 0.127 p4_B_positional 0.332 p4_B_mask_off 0.332 p4_B_canonical_paper 0.333
+    T1.6 caps=keep | deepseek_coder_6p7b L2: p4_B 0.557 p4_B_V0 0.447 p4_B_V1 0.353 p4_B_positional 0.547 p4_B_mask_off 0.557 p4_B_canonical_paper 0.590
+    T2.5 n=1 position=before | qwen25_coder_7b L1: p4_B 0.307 p4_B_V0 0.220 p4_B_V1 0.342 p4_B_positional 0.085 p4_B_mask_off 0.281 p4_B_canonical_paper 0.319
+    T2.5 n=1 position=before | qwen25_coder_7b L2: p4_B 0.633 p4_B_V0 0.437 p4_B_V1 0.657 p4_B_positional 0.157 p4_B_mask_off 0.593 p4_B_canonical_paper 0.663
+    T2.5 n=1 position=before | deepseek_coder_6p7b L1: p4_B 0.234 p4_B_V0 0.193 p4_B_V1 0.302 p4_B_positional 0.073 p4_B_mask_off 0.226 p4_B_canonical_paper 0.222
+    T2.5 n=1 position=before | deepseek_coder_6p7b L2: p4_B 0.427 p4_B_V0 0.430 p4_B_V1 0.533 p4_B_positional 0.133 p4_B_mask_off 0.477 p4_B_canonical_paper 0.490
+    T2.5 n=2 position=around | qwen25_coder_7b L1: p4_B 0.252 p4_B_V0 0.194 p4_B_V1 0.293 p4_B_positional 0.056 p4_B_mask_off 0.231 p4_B_canonical_paper 0.283
+    T2.5 n=2 position=around | qwen25_coder_7b L2: p4_B 0.530 p4_B_V0 0.407 p4_B_V1 0.623 p4_B_positional 0.123 p4_B_mask_off 0.527 p4_B_canonical_paper 0.570
+    T2.5 n=2 position=around | deepseek_coder_6p7b L1: p4_B 0.174 p4_B_V0 0.222 p4_B_V1 0.283 p4_B_positional 0.038 p4_B_mask_off 0.191 p4_B_canonical_paper 0.160
+    T2.5 n=2 position=around | deepseek_coder_6p7b L2: p4_B 0.383 p4_B_V0 0.397 p4_B_V1 0.443 p4_B_positional 0.073 p4_B_mask_off 0.387 p4_B_canonical_paper 0.403
+    T2.5 n=4 position=around | qwen25_coder_7b L1: p4_B 0.219 p4_B_V0 0.167 p4_B_V1 0.233 p4_B_positional 0.028 p4_B_mask_off 0.137 p4_B_canonical_paper 0.210
+    T2.5 n=4 position=around | qwen25_coder_7b L2: p4_B 0.507 p4_B_V0 0.340 p4_B_V1 0.603 p4_B_positional 0.047 p4_B_mask_off 0.407 p4_B_canonical_paper 0.507
+    T2.5 n=4 position=around | deepseek_coder_6p7b L1: p4_B 0.146 p4_B_V0 0.207 p4_B_V1 0.219 p4_B_positional 0.016 p4_B_mask_off 0.135 p4_B_canonical_paper 0.128
+    T2.5 n=4 position=around | deepseek_coder_6p7b L2: p4_B 0.367 p4_B_V0 0.383 p4_B_V1 0.373 p4_B_positional 0.050 p4_B_mask_off 0.353 p4_B_canonical_paper 0.317
+
+  measure                                         p4_B               p4_B_V0               p4_B_V1       p4_B_positional         p4_B_mask_off  p4_B_canonical_paper
+  mean_S                                         0.338                 0.263                 0.363                 0.254                 0.334                 0.349
+  max ΔPass@1 pp                                 0.000                 0.000                 0.000                 0.000                 0.000                 0.000
+  FPR_2 L1                                       0.001                 0.000                 0.000                 0.000                 0.001                 0.001
+  FPR_2 L2                                       0.000                 0.002                 0.002                 0.002                 0.006                 0.000
+  logreg AUROC (mean)                            0.706                 0.662                 0.813                 0.712                 0.716                 0.703
+  logreg AUROC max Δ from p4_B                       -                -0.020                +0.117                +0.022                +0.049                +0.003
+  unixcoder AUROC (mean)                         0.756                 0.543                 0.871                 0.757                 0.754                 0.754
+  unixcoder AUROC max Δ from p4_B                     -                -0.116                +0.196                +0.011                +0.011                +0.018
+  inconsistent renaming (max)                    0.00%                 0.00%                 0.00%                 0.00%                 0.00%                 0.00%
+  renames/sample                                 1.203                 0.000                 1.484                 1.192                 1.203                 1.203
+  n_sites (mean)                                 6.168                 2.965                 6.142                 6.166                 6.168                 6.398
+  n_structural_sites (mean)                      2.965                 2.965                 2.965                 2.963                 2.965                 3.195
+  n_name_sites (mean)                            1.602                 0.000                 1.588                 1.602                 1.602                 1.602
+  (imperceptibility of p4_B read from the cells with the same embedding)
+
+## p4_B_V0, p4_B_V1 next to the base multimark 3c1bd11758fc: they run at 1 bit per name (names.bits_per_name = 2 is allowed only with V2), so besides B (2 bits per name, V2) they are compared with the base, which differs from them only in the names variant (V2, 1 bit per name); TPR at the calibrated threshold, simple mean of the 4 cells (Δ from the base)
+  condition                              multimark           p4_B_V0           p4_B_V1
+  none                                       0.407    0.322 (-0.086)    0.489 (+0.081)
+  T1.4 name_kind=natural ratio=1.0             0.261    0.322 (+0.061)    0.305 (+0.044)
+  T1.4 name_kind=random ratio=0.5             0.302    0.322 (+0.020)    0.394 (+0.093)
+  T1.5 k=5                                   0.311    0.300 (-0.011)    0.462 (+0.151)
+  T2.1 b=all                                 0.192    0.112 (-0.080)    0.314 (+0.121)
+  T2.4 p=0.5                                 0.179    0.152 (-0.027)    0.258 (+0.079)
+  T4.1 rename=True                           0.291    0.311 (+0.021)    0.321 (+0.030)
+  T1.6 caps=convert                          0.390    0.322 (-0.068)    0.201 (-0.189)
+  T1.6 caps=keep                             0.400    0.322 (-0.078)    0.253 (-0.147)
+  T2.5 n=1 position=before                       -         0.320 (-)         0.459 (-)
+  T2.5 n=2 position=around                       -         0.305 (-)         0.411 (-)
+  T2.5 n=4 position=around                       -         0.274 (-)         0.357 (-)
+
+  per cell (TPR at the calibrated threshold):
+    none | qwen25_coder_7b L1: multimark 0.285 p4_B_V0 0.217 p4_B_V1 0.387
+    none | qwen25_coder_7b L2: multimark 0.603 p4_B_V0 0.427 p4_B_V1 0.670
+    none | deepseek_coder_6p7b L1: multimark 0.255 p4_B_V0 0.196 p4_B_V1 0.332
+    none | deepseek_coder_6p7b L2: multimark 0.487 p4_B_V0 0.447 p4_B_V1 0.567
+    T1.4 name_kind=natural ratio=1.0 | qwen25_coder_7b L1: multimark 0.135 p4_B_V0 0.217 p4_B_V1 0.144
+    T1.4 name_kind=natural ratio=1.0 | qwen25_coder_7b L2: multimark 0.483 p4_B_V0 0.427 p4_B_V1 0.550
+    T1.4 name_kind=natural ratio=1.0 | deepseek_coder_6p7b L1: multimark 0.101 p4_B_V0 0.196 p4_B_V1 0.104
+    T1.4 name_kind=natural ratio=1.0 | deepseek_coder_6p7b L2: multimark 0.323 p4_B_V0 0.447 p4_B_V1 0.420
+    T1.4 name_kind=random ratio=0.5 | qwen25_coder_7b L1: multimark 0.193 p4_B_V0 0.217 p4_B_V1 0.233
+    T1.4 name_kind=random ratio=0.5 | qwen25_coder_7b L2: multimark 0.503 p4_B_V0 0.427 p4_B_V1 0.623
+    T1.4 name_kind=random ratio=0.5 | deepseek_coder_6p7b L1: multimark 0.155 p4_B_V0 0.196 p4_B_V1 0.205
+    T1.4 name_kind=random ratio=0.5 | deepseek_coder_6p7b L2: multimark 0.357 p4_B_V0 0.447 p4_B_V1 0.517
+    T1.5 k=5 | qwen25_coder_7b L1: multimark 0.181 p4_B_V0 0.191 p4_B_V1 0.351
+    T1.5 k=5 | qwen25_coder_7b L2: multimark 0.520 p4_B_V0 0.397 p4_B_V1 0.660
+    T1.5 k=5 | deepseek_coder_6p7b L1: multimark 0.151 p4_B_V0 0.181 p4_B_V1 0.285
+    T1.5 k=5 | deepseek_coder_6p7b L2: multimark 0.393 p4_B_V0 0.433 p4_B_V1 0.553
+    T2.1 b=all | qwen25_coder_7b L1: multimark 0.094 p4_B_V0 0.052 p4_B_V1 0.193
+    T2.1 b=all | qwen25_coder_7b L2: multimark 0.367 p4_B_V0 0.150 p4_B_V1 0.547
+    T2.1 b=all | deepseek_coder_6p7b L1: multimark 0.078 p4_B_V0 0.064 p4_B_V1 0.161
+    T2.1 b=all | deepseek_coder_6p7b L2: multimark 0.230 p4_B_V0 0.183 p4_B_V1 0.353
+    T2.4 p=0.5 | qwen25_coder_7b L1: multimark 0.071 p4_B_V0 0.080 p4_B_V1 0.139
+    T2.4 p=0.5 | qwen25_coder_7b L2: multimark 0.300 p4_B_V0 0.203 p4_B_V1 0.433
+    T2.4 p=0.5 | deepseek_coder_6p7b L1: multimark 0.059 p4_B_V0 0.073 p4_B_V1 0.104
+    T2.4 p=0.5 | deepseek_coder_6p7b L2: multimark 0.287 p4_B_V0 0.253 p4_B_V1 0.357
+    T4.1 rename=True | qwen25_coder_7b L1: multimark 0.128 p4_B_V0 0.214 p4_B_V1 0.128
+    T4.1 rename=True | qwen25_coder_7b L2: multimark 0.527 p4_B_V0 0.420 p4_B_V1 0.583
+    T4.1 rename=True | deepseek_coder_6p7b L1: multimark 0.095 p4_B_V0 0.186 p4_B_V1 0.095
+    T4.1 rename=True | deepseek_coder_6p7b L2: multimark 0.413 p4_B_V0 0.427 p4_B_V1 0.477
+    T1.6 caps=convert | qwen25_coder_7b L1: multimark 0.285 p4_B_V0 0.217 p4_B_V1 0.135
+    T1.6 caps=convert | qwen25_coder_7b L2: multimark 0.563 p4_B_V0 0.427 p4_B_V1 0.267
+    T1.6 caps=convert | deepseek_coder_6p7b L1: multimark 0.255 p4_B_V0 0.196 p4_B_V1 0.127
+    T1.6 caps=convert | deepseek_coder_6p7b L2: multimark 0.457 p4_B_V0 0.447 p4_B_V1 0.273
+    T1.6 caps=keep | qwen25_coder_7b L1: multimark 0.285 p4_B_V0 0.217 p4_B_V1 0.135
+    T1.6 caps=keep | qwen25_coder_7b L2: multimark 0.590 p4_B_V0 0.427 p4_B_V1 0.397
+    T1.6 caps=keep | deepseek_coder_6p7b L1: multimark 0.255 p4_B_V0 0.196 p4_B_V1 0.127
+    T1.6 caps=keep | deepseek_coder_6p7b L2: multimark 0.470 p4_B_V0 0.447 p4_B_V1 0.353
+    T2.5 n=1 position=before | qwen25_coder_7b L1: multimark - p4_B_V0 0.220 p4_B_V1 0.342
+    T2.5 n=1 position=before | qwen25_coder_7b L2: multimark - p4_B_V0 0.437 p4_B_V1 0.657
+    T2.5 n=1 position=before | deepseek_coder_6p7b L1: multimark - p4_B_V0 0.193 p4_B_V1 0.302
+    T2.5 n=1 position=before | deepseek_coder_6p7b L2: multimark - p4_B_V0 0.430 p4_B_V1 0.533
+    T2.5 n=2 position=around | qwen25_coder_7b L1: multimark - p4_B_V0 0.194 p4_B_V1 0.293
+    T2.5 n=2 position=around | qwen25_coder_7b L2: multimark - p4_B_V0 0.407 p4_B_V1 0.623
+    T2.5 n=2 position=around | deepseek_coder_6p7b L1: multimark - p4_B_V0 0.222 p4_B_V1 0.283
+    T2.5 n=2 position=around | deepseek_coder_6p7b L2: multimark - p4_B_V0 0.397 p4_B_V1 0.443
+    T2.5 n=4 position=around | qwen25_coder_7b L1: multimark - p4_B_V0 0.167 p4_B_V1 0.233
+    T2.5 n=4 position=around | qwen25_coder_7b L2: multimark - p4_B_V0 0.340 p4_B_V1 0.603
+    T2.5 n=4 position=around | deepseek_coder_6p7b L1: multimark - p4_B_V0 0.207 p4_B_V1 0.219
+    T2.5 n=4 position=around | deepseek_coder_6p7b L2: multimark - p4_B_V0 0.383 p4_B_V1 0.373
+
+  measure                                multimark           p4_B_V0           p4_B_V1
+  mean_S                                     0.278             0.263             0.363
+  max ΔPass@1 pp                             0.000             0.000             0.000
+  FPR_2 L1                                   0.000             0.000             0.000
+  FPR_2 L2                                   0.004             0.002             0.002
+  logreg AUROC (mean)                        0.673             0.662             0.813
+  logreg AUROC max Δ from multimark                 -            +0.009            +0.165
+  unixcoder AUROC (mean)                     0.678             0.543             0.871
+  unixcoder AUROC max Δ from multimark                 -            -0.053            +0.296
+  inconsistent renaming (max)                0.00%             0.00%             0.00%
+  renames/sample                             0.783             0.000             1.484
+  n_sites (mean)                             4.567             2.965             6.142
+  n_structural_sites (mean)                  2.965             2.965             2.965
+  n_name_sites (mean)                        1.602             0.000             1.588
+
+## T2.5 dilution per point and per method: TPR at the calibrated threshold (tpr_cal) and at score >= 2 (tpr_2), Δ from the marked samples without attack, share APPLIED and mean added lines of code
+  method    config                            point                         cell                            tpr_cal       Δ    tpr_2       Δ  applied  add_loc
+  mcss      p4_mcss 1d3087c73439              T2.5 n=1 position=before      qwen25_coder_7b L1                0.050  -0.554    0.028  -0.380    1.000   15.807
+  mcss      p4_mcss 1d3087c73439              T2.5 n=1 position=before      qwen25_coder_7b L2                0.103  -0.853    0.077  -0.747    0.997   15.796
+  mcss      p4_mcss 1d3087c73439              T2.5 n=1 position=before      deepseek_coder_6p7b L1            0.056  -0.453    0.024  -0.358    1.000   15.797
+  mcss      p4_mcss 1d3087c73439              T2.5 n=1 position=before      deepseek_coder_6p7b L2            0.080  -0.833    0.027  -0.663    1.000   16.260
+  mcss      p4_mcss 1d3087c73439              T2.5 n=1 position=before      mean of the cells                 0.072  -0.673    0.039
+  multimark p4_B e52b040770df                 T2.5 n=1 position=before      qwen25_coder_7b L1                0.307  -0.080    0.148  -0.082    1.000   15.538
+  multimark p4_B e52b040770df                 T2.5 n=1 position=before      qwen25_coder_7b L2                0.633  -0.037    0.493  -0.113    0.997   15.679
+  multimark p4_B e52b040770df                 T2.5 n=1 position=before      deepseek_coder_6p7b L1            0.234  -0.097    0.108  -0.085    1.000   15.457
+  multimark p4_B e52b040770df                 T2.5 n=1 position=before      deepseek_coder_6p7b L2            0.427  -0.140    0.270  -0.157    1.000   15.757
+  multimark p4_B e52b040770df                 T2.5 n=1 position=before      mean of the cells                 0.400  -0.088    0.255
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=1 position=before      qwen25_coder_7b L1                0.405  -0.142    0.260  -0.205    1.000   16.248
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=1 position=before      qwen25_coder_7b L2                0.750  -0.137    0.627  -0.197    0.997   15.786
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=1 position=before      deepseek_coder_6p7b L1            0.342  -0.132    0.245  -0.167    1.000   16.321
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=1 position=before      deepseek_coder_6p7b L2            0.607  -0.207    0.497  -0.240    1.000   15.223
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=1 position=before      mean of the cells                 0.526  -0.154    0.407
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=1 position=before      qwen25_coder_7b L1                0.220  +0.003    0.069  +0.000    1.000   16.151
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=1 position=before      qwen25_coder_7b L2                0.437  +0.010    0.227  -0.057    0.997   15.204
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=1 position=before      deepseek_coder_6p7b L1            0.193  -0.003    0.038  -0.002    1.000   15.609
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=1 position=before      deepseek_coder_6p7b L2            0.430  -0.017    0.147  +0.000    1.000   14.960
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=1 position=before      mean of the cells                 0.320  -0.002    0.120
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=1 position=before      qwen25_coder_7b L1                0.342  -0.045    0.201  -0.028    1.000   15.738
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=1 position=before      qwen25_coder_7b L2                0.657  -0.013    0.533  -0.073    0.997   17.127
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=1 position=before      deepseek_coder_6p7b L1            0.302  -0.030    0.144  -0.049    1.000   15.363
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=1 position=before      deepseek_coder_6p7b L2            0.533  -0.033    0.370  -0.047    1.000   15.553
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=1 position=before      mean of the cells                 0.459  -0.030    0.312
+  multimark p4_B_positional 271087ba99b6      T2.5 n=1 position=before      qwen25_coder_7b L1                0.085  -0.302    0.033  -0.196    1.000   15.991
+  multimark p4_B_positional 271087ba99b6      T2.5 n=1 position=before      qwen25_coder_7b L2                0.157  -0.513    0.113  -0.493    0.997   16.525
+  multimark p4_B_positional 271087ba99b6      T2.5 n=1 position=before      deepseek_coder_6p7b L1            0.073  -0.259    0.038  -0.155    1.000   16.309
+  multimark p4_B_positional 271087ba99b6      T2.5 n=1 position=before      deepseek_coder_6p7b L2            0.133  -0.433    0.083  -0.343    1.000   15.227
+  multimark p4_B_positional 271087ba99b6      T2.5 n=1 position=before      mean of the cells                 0.112  -0.377    0.067
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=1 position=before      qwen25_coder_7b L1                0.281  -0.106    0.160  -0.069    1.000   15.684
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=1 position=before      qwen25_coder_7b L2                0.593  -0.077    0.503  -0.103    0.997   15.555
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=1 position=before      deepseek_coder_6p7b L1            0.226  -0.106    0.111  -0.082    1.000   16.071
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=1 position=before      deepseek_coder_6p7b L2            0.477  -0.090    0.333  -0.093    1.000   15.877
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=1 position=before      mean of the cells                 0.394  -0.095    0.277
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=1 position=before      qwen25_coder_7b L1                0.319  -0.078    0.158  -0.089    1.000   15.481
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=1 position=before      qwen25_coder_7b L2                0.663  -0.030    0.523  -0.087    0.997   15.709
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=1 position=before      deepseek_coder_6p7b L1            0.222  -0.111    0.130  -0.073    1.000   16.372
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=1 position=before      deepseek_coder_6p7b L2            0.490  -0.113    0.337  -0.107    1.000   16.213
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=1 position=before      mean of the cells                 0.424  -0.083    0.287
+
+  mcss      p4_mcss 1d3087c73439              T2.5 n=2 position=around      qwen25_coder_7b L1                0.045  -0.559    0.010  -0.398    1.000   31.615
+  mcss      p4_mcss 1d3087c73439              T2.5 n=2 position=around      qwen25_coder_7b L2                0.080  -0.877    0.040  -0.783    0.997   32.217
+  mcss      p4_mcss 1d3087c73439              T2.5 n=2 position=around      deepseek_coder_6p7b L1            0.036  -0.472    0.009  -0.373    1.000   31.701
+  mcss      p4_mcss 1d3087c73439              T2.5 n=2 position=around      deepseek_coder_6p7b L2            0.083  -0.830    0.040  -0.650    1.000   30.923
+  mcss      p4_mcss 1d3087c73439              T2.5 n=2 position=around      mean of the cells                 0.061  -0.684    0.025
+  multimark p4_B e52b040770df                 T2.5 n=2 position=around      qwen25_coder_7b L1                0.252  -0.135    0.097  -0.132    1.000   31.642
+  multimark p4_B e52b040770df                 T2.5 n=2 position=around      qwen25_coder_7b L2                0.530  -0.140    0.397  -0.210    0.997   32.458
+  multimark p4_B e52b040770df                 T2.5 n=2 position=around      deepseek_coder_6p7b L1            0.174  -0.158    0.066  -0.127    1.000   32.457
+  multimark p4_B e52b040770df                 T2.5 n=2 position=around      deepseek_coder_6p7b L2            0.383  -0.183    0.243  -0.183    1.000   31.877
+  multimark p4_B e52b040770df                 T2.5 n=2 position=around      mean of the cells                 0.335  -0.154    0.201
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=2 position=around      qwen25_coder_7b L1                0.283  -0.264    0.179  -0.286    1.000   30.460
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=2 position=around      qwen25_coder_7b L2                0.620  -0.267    0.520  -0.303    0.997   32.452
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=2 position=around      deepseek_coder_6p7b L1            0.241  -0.233    0.177  -0.234    1.000   30.896
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=2 position=around      deepseek_coder_6p7b L2            0.500  -0.313    0.410  -0.327    1.000   30.370
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=2 position=around      mean of the cells                 0.411  -0.269    0.321
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=2 position=around      qwen25_coder_7b L1                0.194  -0.023    0.059  -0.010    1.000   31.785
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=2 position=around      qwen25_coder_7b L2                0.407  -0.020    0.207  -0.077    0.997   30.913
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=2 position=around      deepseek_coder_6p7b L1            0.222  +0.026    0.040  +0.000    1.000   32.498
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=2 position=around      deepseek_coder_6p7b L2            0.397  -0.050    0.133  -0.013    1.000   31.267
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=2 position=around      mean of the cells                 0.305  -0.017    0.110
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=2 position=around      qwen25_coder_7b L1                0.293  -0.094    0.144  -0.085    1.000   31.649
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=2 position=around      qwen25_coder_7b L2                0.623  -0.047    0.457  -0.150    0.997   31.167
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=2 position=around      deepseek_coder_6p7b L1            0.283  -0.049    0.130  -0.062    1.000   31.142
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=2 position=around      deepseek_coder_6p7b L2            0.443  -0.123    0.283  -0.133    1.000   32.003
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=2 position=around      mean of the cells                 0.411  -0.078    0.254
+  multimark p4_B_positional 271087ba99b6      T2.5 n=2 position=around      qwen25_coder_7b L1                0.056  -0.332    0.026  -0.203    1.000   31.535
+  multimark p4_B_positional 271087ba99b6      T2.5 n=2 position=around      qwen25_coder_7b L2                0.123  -0.547    0.063  -0.543    0.997   32.786
+  multimark p4_B_positional 271087ba99b6      T2.5 n=2 position=around      deepseek_coder_6p7b L1            0.038  -0.293    0.019  -0.174    1.000   31.943
+  multimark p4_B_positional 271087ba99b6      T2.5 n=2 position=around      deepseek_coder_6p7b L2            0.073  -0.493    0.037  -0.390    1.000   31.427
+  multimark p4_B_positional 271087ba99b6      T2.5 n=2 position=around      mean of the cells                 0.073  -0.416    0.036
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=2 position=around      qwen25_coder_7b L1                0.231  -0.156    0.118  -0.111    1.000   30.608
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=2 position=around      qwen25_coder_7b L2                0.527  -0.143    0.410  -0.197    0.997   30.729
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=2 position=around      deepseek_coder_6p7b L1            0.191  -0.141    0.076  -0.116    1.000   31.847
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=2 position=around      deepseek_coder_6p7b L2            0.387  -0.180    0.240  -0.187    1.000   31.147
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=2 position=around      mean of the cells                 0.334  -0.155    0.211
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=2 position=around      qwen25_coder_7b L1                0.283  -0.115    0.137  -0.109    1.000   31.965
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=2 position=around      qwen25_coder_7b L2                0.570  -0.123    0.383  -0.227    0.997   31.174
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=2 position=around      deepseek_coder_6p7b L1            0.160  -0.174    0.097  -0.106    1.000   31.247
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=2 position=around      deepseek_coder_6p7b L2            0.403  -0.200    0.260  -0.183    1.000   31.283
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=2 position=around      mean of the cells                 0.354  -0.153    0.219
+
+  mcss      p4_mcss 1d3087c73439              T2.5 n=4 position=around      qwen25_coder_7b L1                0.043  -0.561    0.012  -0.396    1.000   62.344
+  mcss      p4_mcss 1d3087c73439              T2.5 n=4 position=around      qwen25_coder_7b L2                0.027  -0.930    0.000  -0.823    0.997   63.682
+  mcss      p4_mcss 1d3087c73439              T2.5 n=4 position=around      deepseek_coder_6p7b L1            0.035  -0.474    0.005  -0.377    1.000   63.155
+  mcss      p4_mcss 1d3087c73439              T2.5 n=4 position=around      deepseek_coder_6p7b L2            0.040  -0.873    0.013  -0.677    1.000   63.353
+  mcss      p4_mcss 1d3087c73439              T2.5 n=4 position=around      mean of the cells                 0.036  -0.710    0.008
+  multimark p4_B e52b040770df                 T2.5 n=4 position=around      qwen25_coder_7b L1                0.219  -0.168    0.080  -0.149    1.000   63.547
+  multimark p4_B e52b040770df                 T2.5 n=4 position=around      qwen25_coder_7b L2                0.507  -0.163    0.327  -0.280    0.997   63.599
+  multimark p4_B e52b040770df                 T2.5 n=4 position=around      deepseek_coder_6p7b L1            0.146  -0.186    0.062  -0.130    1.000   63.517
+  multimark p4_B e52b040770df                 T2.5 n=4 position=around      deepseek_coder_6p7b L2            0.367  -0.200    0.193  -0.233    1.000   62.267
+  multimark p4_B e52b040770df                 T2.5 n=4 position=around      mean of the cells                 0.309  -0.179    0.166
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=4 position=around      qwen25_coder_7b L1                0.193  -0.354    0.123  -0.342    1.000   62.139
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=4 position=around      qwen25_coder_7b L2                0.530  -0.357    0.420  -0.403    0.997   62.077
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=4 position=around      deepseek_coder_6p7b L1            0.188  -0.286    0.099  -0.312    1.000   61.286
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=4 position=around      deepseek_coder_6p7b L2            0.410  -0.403    0.303  -0.433    1.000   62.457
+  multimark p4_D 3fed1f1c1e24                 T2.5 n=4 position=around      mean of the cells                 0.330  -0.350    0.236
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=4 position=around      qwen25_coder_7b L1                0.167  -0.050    0.036  -0.033    1.000   61.726
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=4 position=around      qwen25_coder_7b L2                0.340  -0.087    0.140  -0.143    0.997   62.836
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=4 position=around      deepseek_coder_6p7b L1            0.207  +0.010    0.028  -0.012    1.000   60.965
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=4 position=around      deepseek_coder_6p7b L2            0.383  -0.063    0.133  -0.013    1.000   65.043
+  multimark p4_B_V0 ebeb5a0753cd              T2.5 n=4 position=around      mean of the cells                 0.274  -0.047    0.084
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=4 position=around      qwen25_coder_7b L1                0.233  -0.155    0.095  -0.134    1.000   62.543
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=4 position=around      qwen25_coder_7b L2                0.603  -0.067    0.427  -0.180    0.997   61.642
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=4 position=around      deepseek_coder_6p7b L1            0.219  -0.113    0.092  -0.101    1.000   62.674
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=4 position=around      deepseek_coder_6p7b L2            0.373  -0.193    0.237  -0.180    1.000   64.223
+  multimark p4_B_V1 40e5e9455cea              T2.5 n=4 position=around      mean of the cells                 0.357  -0.132    0.213
+  multimark p4_B_positional 271087ba99b6      T2.5 n=4 position=around      qwen25_coder_7b L1                0.028  -0.359    0.003  -0.226    1.000   63.415
+  multimark p4_B_positional 271087ba99b6      T2.5 n=4 position=around      qwen25_coder_7b L2                0.047  -0.623    0.023  -0.583    0.997   63.528
+  multimark p4_B_positional 271087ba99b6      T2.5 n=4 position=around      deepseek_coder_6p7b L1            0.016  -0.316    0.005  -0.188    1.000   61.347
+  multimark p4_B_positional 271087ba99b6      T2.5 n=4 position=around      deepseek_coder_6p7b L2            0.050  -0.517    0.013  -0.413    1.000   62.703
+  multimark p4_B_positional 271087ba99b6      T2.5 n=4 position=around      mean of the cells                 0.035  -0.454    0.011
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=4 position=around      qwen25_coder_7b L1                0.137  -0.250    0.068  -0.161    1.000   63.441
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=4 position=around      qwen25_coder_7b L2                0.407  -0.263    0.313  -0.293    0.997   61.401
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=4 position=around      deepseek_coder_6p7b L1            0.135  -0.196    0.042  -0.151    1.000   63.866
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=4 position=around      deepseek_coder_6p7b L2            0.353  -0.213    0.190  -0.237    1.000   62.067
+  multimark p4_B_mask_off 16de27361bad        T2.5 n=4 position=around      mean of the cells                 0.258  -0.231    0.153
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=4 position=around      qwen25_coder_7b L1                0.210  -0.187    0.087  -0.160    1.000   63.182
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=4 position=around      qwen25_coder_7b L2                0.507  -0.187    0.353  -0.257    0.997   61.776
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=4 position=around      deepseek_coder_6p7b L1            0.128  -0.205    0.064  -0.139    1.000   62.191
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=4 position=around      deepseek_coder_6p7b L2            0.317  -0.287    0.210  -0.233    1.000   63.540
+  multimark p4_B_canonical_paper 65eb9730301a T2.5 n=4 position=around      mean of the cells                 0.290  -0.216    0.179
+
+## message length 8 and 16 bits read without embedding again (v1.3.2, §5.11): the reading at m bits is the point K = 2^m of the attribution curve; TPR with score_K >= 2 (Šidák from the saved (A, N))
+  config                            cell                      condition                 band                 n    K=1 (24b)     2^8 (8b)   2^16 (16b)   2^24 (24b)
+  p4_B e52b040770df                 qwen25_coder_7b L1        no attack                 all                576        0.229        0.021        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        no attack                 1-7                355        0.068        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        no attack                 8-12                88        1.000        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        no attack                 13-19               20        1.000        0.600        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        no attack                 n_sites=0/none     113        0.000        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.0all                576        0.059        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.01-7                355        0.031        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.08-12                88        0.193        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.013-19               20        0.300        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.0n_sites=0/none     113        0.000        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        no attack                 all                300        0.607        0.277        0.047        0.023
+  p4_B e52b040770df                 qwen25_coder_7b L2        no attack                 1-7                106        0.104        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        no attack                 8-12                59        1.000        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        no attack                 13-19               72        1.000        0.597        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        no attack                 20-31               38        1.000        1.000        0.316        0.132
+  p4_B e52b040770df                 qwen25_coder_7b L2        no attack                 32-55                2        1.000        1.000        1.000        1.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        no attack                 n_sites=0/none      23        0.000        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.0all                300        0.387        0.100        0.003        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.01-7                106        0.075        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.08-12                59        0.508        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.013-19               72        0.681        0.236        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.020-31               38        0.711        0.342        0.026        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.032-55                2        1.000        0.000        0.000        0.000
+  p4_B e52b040770df                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.0n_sites=0/none      23        0.000        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    no attack                 all                576        0.193        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    no attack                 1-7                320        0.075        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    no attack                 8-12                84        1.000        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    no attack                 13-19                3        1.000        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    no attack                 n_sites=0/none     169        0.000        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.0all                576        0.031        0.002        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.01-7                320        0.022        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.08-12                84        0.107        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.013-19                3        0.667        0.333        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.0n_sites=0/none     169        0.000        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    no attack                 all                300        0.427        0.133        0.030        0.003
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    no attack                 1-7                155        0.084        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    no attack                 8-12                61        1.000        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    no attack                 13-19               36        1.000        0.611        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    no attack                 20-31               17        1.000        1.000        0.471        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    no attack                 32-55                1        1.000        1.000        1.000        1.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    no attack                 n_sites=0/none      30        0.000        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.0all                300        0.233        0.050        0.003        0.003
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.01-7                155        0.052        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.08-12                61        0.541        0.000        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.013-19               36        0.639        0.333        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.020-31               17        0.294        0.118        0.000        0.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.032-55                1        1.000        1.000        1.000        1.000
+  p4_B e52b040770df                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.0n_sites=0/none      30        0.000        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        no attack                 all                576        0.465        0.076        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        no attack                 1-7                350        0.120        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        no attack                 8-12               141        1.000        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        no attack                 13-19               81        1.000        0.494        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        no attack                 20-31                4        1.000        1.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.0all                576        0.030        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.01-7                350        0.006        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.08-12               141        0.028        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.013-19               81        0.111        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1        T1.4 name_kind=natural ratio=1.020-31                4        0.500        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        no attack                 all                300        0.823        0.500        0.273        0.077
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        no attack                 1-7                 56        0.071        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        no attack                 8-12                82        1.000        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        no attack                 13-19               55        1.000        0.800        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        no attack                 20-31               91        1.000        1.000        0.736        0.088
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        no attack                 32-55               15        1.000        1.000        1.000        1.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        no attack                 n_sites=0/none       1        0.000        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.0all                300        0.590        0.210        0.080        0.003
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.01-7                 56        0.071        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.08-12                82        0.902        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.013-19               55        0.436        0.309        0.000        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.020-31               91        0.681        0.440        0.242        0.000
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.032-55               15        0.867        0.400        0.133        0.067
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2        T1.4 name_kind=natural ratio=1.0n_sites=0/none       1        0.000        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    no attack                 all                576        0.411        0.068        0.007        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    no attack                 1-7                367        0.076        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    no attack                 8-12               141        1.000        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    no attack                 13-19               61        1.000        0.525        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    no attack                 20-31                7        1.000        1.000        0.571        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.0all                576        0.036        0.005        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.01-7                367        0.011        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.08-12               141        0.021        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.013-19               61        0.180        0.049        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1    T1.4 name_kind=natural ratio=1.020-31                7        0.429        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    no attack                 all                300        0.737        0.353        0.133        0.053
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    no attack                 1-7                106        0.255        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    no attack                 8-12                72        1.000        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    no attack                 13-19               69        1.000        0.768        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    no attack                 20-31               39        1.000        1.000        0.667        0.051
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    no attack                 32-55               14        1.000        1.000        1.000        1.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.0all                300        0.490        0.153        0.027        0.003
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.01-7                106        0.208        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.08-12                72        0.861        0.000        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.013-19               69        0.507        0.391        0.000        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.020-31               39        0.641        0.462        0.179        0.000
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2    T1.4 name_kind=natural ratio=1.032-55               14        0.214        0.071        0.071        0.071
+
+## names.suffix_by_type fallback to the full list (n_names_type_fallback)
+  config                            cell                           samples  fallback  smp>=1  renamed    share
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L1                 576         8       8      443    1.81%
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L2                 300         6       6      656    0.91%
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L1             576        12      12      306    3.92%
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L2             300         8       8      397    2.02%
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L1                 576         8       8      443    1.81%
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L2                 300         6       6      656    0.91%
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L1             576        12      12      306    3.92%
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L2             300         8       8      397    2.02%
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L1                 576         8       8      443    1.81%
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L2                 300         6       6      656    0.91%
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L1             576        12      12      306    3.92%
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L2             300         8       8      397    2.02%
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L1                 576         8       8      510    1.57%
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L2                 300         4       4     1154    0.35%
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L1             576        12      12      353    3.40%
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L2             300        11      11      882    1.25%
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L1                 576         8       8      510    1.57%
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L2                 300         4       4     1154    0.35%
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L1             576        12      12      353    3.40%
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L2             300        11      11      882    1.25%
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L1                 576         8       8      510    1.57%
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L2                 300         4       4     1154    0.35%
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L1             576        12      12      353    3.40%
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L2             300        11      11      882    1.25%
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L1                 576        17      17     1130    1.50%
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L2                 300         9       8     1284    0.70%
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L1             576        22      22      979    2.25%
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L2             300        21      18      987    2.13%
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L1                 576        17      17     1130    1.50%
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L2                 300         9       8     1284    0.70%
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L1             576        22      22      979    2.25%
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L2             300        21      18      987    2.13%
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L1                 576        17      17     1130    1.50%
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L2                 300         9       8     1284    0.70%
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L1             576        22      22      979    2.25%
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L2             300        21      18      987    2.13%
+  (configurations without the option: field absent, not listed)
+
+## mean sites per sample (embedding extras, failed embeddings included)
+  config                            cell                           samples             n_sites  n_structural_sites        n_name_sites
+  mcss_new_3c47a1f ae63f16de28f     qwen25_coder_7b L1                 576               6.896               1.691               2.602
+  mcss_new_3c47a1f ae63f16de28f     qwen25_coder_7b L2                 300              15.191               3.819               5.686
+  mcss_new_3c47a1f ae63f16de28f     deepseek_coder_6p7b L1             576               6.113               1.589               2.262
+  mcss_new_3c47a1f ae63f16de28f     deepseek_coder_6p7b L2             300              11.733               3.033               4.350
+  mcss_old_a4e6972 b521002e09f5     qwen25_coder_7b L1                 576               6.896               1.691               2.602
+  mcss_old_a4e6972 b521002e09f5     qwen25_coder_7b L2                 300              15.191               3.819               5.686
+  mcss_old_a4e6972 b521002e09f5     deepseek_coder_6p7b L1             576               6.113               1.589               2.262
+  mcss_old_a4e6972 b521002e09f5     deepseek_coder_6p7b L2             300              11.733               3.033               4.350
+  multimark 3c1bd11758fc            qwen25_coder_7b L1                 576               3.066               2.035               1.031
+  multimark 3c1bd11758fc            qwen25_coder_7b L2                 300               7.231               4.308               2.923
+  multimark 3c1bd11758fc            deepseek_coder_6p7b L1             576               2.564               1.852               0.712
+  multimark 3c1bd11758fc            deepseek_coder_6p7b L2             300               5.407               3.667               1.740
+  single_letter 4937d9ddd78a        qwen25_coder_7b L1                 576               3.212               2.035               1.177
+  single_letter 4937d9ddd78a        qwen25_coder_7b L2                 300               9.448               4.308               5.140
+  single_letter 4937d9ddd78a        deepseek_coder_6p7b L1             576               2.705               1.852               0.852
+  single_letter 4937d9ddd78a        deepseek_coder_6p7b L2             300               7.593               3.667               3.927
+  A 770f999adefb                    qwen25_coder_7b L1                 576               3.156               2.125               1.031
+  A 770f999adefb                    qwen25_coder_7b L2                 300               7.401               4.478               2.923
+  A 770f999adefb                    deepseek_coder_6p7b L1             576               2.722               2.010               0.712
+  A 770f999adefb                    deepseek_coder_6p7b L2             300               5.600               3.860               1.740
+  B cb79b2fcb4e6                    qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  B cb79b2fcb4e6                    qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  B cb79b2fcb4e6                    deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  B cb79b2fcb4e6                    deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  C cf7e4c9f106e                    qwen25_coder_7b L1                 576               4.479               2.125               1.177
+  C cf7e4c9f106e                    qwen25_coder_7b L2                 300              14.759               4.478               5.140
+  C cf7e4c9f106e                    deepseek_coder_6p7b L1             576               3.715               2.010               0.852
+  C cf7e4c9f106e                    deepseek_coder_6p7b L2             300              11.713               3.860               3.927
+  D 37400fdcd589                    qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  D 37400fdcd589                    qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  D 37400fdcd589                    deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  D 37400fdcd589                    deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+  r4_B a8a296957377                 qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  r4_B a8a296957377                 qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  r4_B a8a296957377                 deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  r4_B a8a296957377                 deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  r4_B_sfx 042968dc17df             qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  r4_B_sfx 042968dc17df             deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L1                 576               3.144               1.082               1.031
+  r4_B_sfx_cl 317adaa840ee          qwen25_coder_7b L2                 300               7.803               1.957               2.923
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L1             576               2.278               0.854               0.712
+  r4_B_sfx_cl 317adaa840ee          deepseek_coder_6p7b L2             300               5.400               1.920               1.740
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L1                 576               3.009               0.946               1.031
+  r4_B_sfx_clz a2d195001771         qwen25_coder_7b L2                 300               7.247               1.401               2.923
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L1             576               2.095               0.672               0.712
+  r4_B_sfx_clz a2d195001771         deepseek_coder_6p7b L2             300               4.710               1.230               1.740
+  r4_C 19e744a3b406                 qwen25_coder_7b L1                 576               4.479               2.125               1.177
+  r4_C 19e744a3b406                 qwen25_coder_7b L2                 300              14.759               4.478               5.140
+  r4_C 19e744a3b406                 deepseek_coder_6p7b L1             576               3.715               2.010               0.852
+  r4_C 19e744a3b406                 deepseek_coder_6p7b L2             300              11.713               3.860               3.927
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L1                 576               4.479               2.125               1.177
+  r4_C_sfx 71d9d5e6160d             qwen25_coder_7b L2                 300              14.759               4.478               5.140
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L1             576               3.715               2.010               0.852
+  r4_C_sfx 71d9d5e6160d             deepseek_coder_6p7b L2             300              11.713               3.860               3.927
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L1                 576               3.526               1.172               1.177
+  r4_C_sfx_cl a8fadfc4757a          qwen25_coder_7b L2                 300              12.408               2.127               5.140
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L1             576               2.717               1.012               0.852
+  r4_C_sfx_cl a8fadfc4757a          deepseek_coder_6p7b L2             300               9.967               2.113               3.927
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L1                 576               3.391               1.036               1.177
+  r4_C_sfx_clz fb24f51f5d15         qwen25_coder_7b L2                 300              11.853               1.572               5.140
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L1             576               2.535               0.830               0.852
+  r4_C_sfx_clz fb24f51f5d15         deepseek_coder_6p7b L2             300               9.277               1.423               3.927
+  r4_D b4cd11f13a07                 qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  r4_D b4cd11f13a07                 qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  r4_D b4cd11f13a07                 deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  r4_D b4cd11f13a07                 deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  r4_D_sfx f4fb209f9226             qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  r4_D_sfx f4fb209f9226             deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L1                 576               6.377               1.172               2.602
+  r4_D_sfx_cl f765c166de34          qwen25_coder_7b L2                 300              13.552               2.127               5.712
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L1             576               5.536               1.012               2.262
+  r4_D_sfx_cl f765c166de34          deepseek_coder_6p7b L2             300              10.867               2.113               4.377
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L1                 576               6.241               1.036               2.602
+  r4_D_sfx_clz cb29e1d7b6b8         qwen25_coder_7b L2                 300              12.997               1.572               5.712
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L1             576               5.354               0.830               2.262
+  r4_D_sfx_clz cb29e1d7b6b8         deepseek_coder_6p7b L2             300              10.177               1.423               4.377
+  p3_B d54101565a0b                 qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  p3_B d54101565a0b                 qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  p3_B d54101565a0b                 deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  p3_B d54101565a0b                 deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  p3_D e80cde8924cb                 qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  p3_D e80cde8924cb                 qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  p3_D e80cde8924cb                 deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  p3_D e80cde8924cb                 deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+  p4_mcss 1d3087c73439              qwen25_coder_7b L1                 576               6.896               1.691               2.602
+  p4_mcss 1d3087c73439              qwen25_coder_7b L2                 300              15.191               3.819               5.686
+  p4_mcss 1d3087c73439              deepseek_coder_6p7b L1             576               6.113               1.589               2.262
+  p4_mcss 1d3087c73439              deepseek_coder_6p7b L2             300              11.733               3.033               4.350
+  p4_B e52b040770df                 qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  p4_B e52b040770df                 qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  p4_B e52b040770df                 deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  p4_B e52b040770df                 deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L1                 576               7.330               2.125               2.602
+  p4_D 3fed1f1c1e24                 qwen25_coder_7b L2                 300              15.903               4.478               5.712
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L1             576               6.535               2.010               2.262
+  p4_D 3fed1f1c1e24                 deepseek_coder_6p7b L2             300              12.613               3.860               4.377
+  p4_B_V0 ebeb5a0753cd              qwen25_coder_7b L1                 576               2.035               2.035               0.000
+  p4_B_V0 ebeb5a0753cd              qwen25_coder_7b L2                 300               4.308               4.308               0.000
+  p4_B_V0 ebeb5a0753cd              deepseek_coder_6p7b L1             576               1.852               1.852               0.000
+  p4_B_V0 ebeb5a0753cd              deepseek_coder_6p7b L2             300               3.667               3.667               0.000
+  p4_B_V1 40e5e9455cea              qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  p4_B_V1 40e5e9455cea              qwen25_coder_7b L2                 300              10.100               4.308               2.896
+  p4_B_V1 40e5e9455cea              deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  p4_B_V1 40e5e9455cea              deepseek_coder_6p7b L2             300               7.093               3.667               1.713
+  p4_B_positional 271087ba99b6      qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  p4_B_positional 271087ba99b6      qwen25_coder_7b L2                 300              10.151               4.304               2.923
+  p4_B_positional 271087ba99b6      deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  p4_B_positional 271087ba99b6      deepseek_coder_6p7b L2             300               7.140               3.660               1.740
+  p4_B_mask_off 16de27361bad        qwen25_coder_7b L1                 576               4.097               2.035               1.031
+  p4_B_mask_off 16de27361bad        qwen25_coder_7b L2                 300              10.154               4.308               2.923
+  p4_B_mask_off 16de27361bad        deepseek_coder_6p7b L1             576               3.276               1.852               0.712
+  p4_B_mask_off 16de27361bad        deepseek_coder_6p7b L2             300               7.147               3.667               1.740
+  p4_B_canonical_paper 65eb9730301a qwen25_coder_7b L1                 576               4.233               2.170               1.031
+  p4_B_canonical_paper 65eb9730301a qwen25_coder_7b L2                 300              10.438               4.592               2.923
+  p4_B_canonical_paper 65eb9730301a deepseek_coder_6p7b L1             576               3.481               2.057               0.712
+  p4_B_canonical_paper 65eb9730301a deepseek_coder_6p7b L2             300               7.440               3.960               1.740
+

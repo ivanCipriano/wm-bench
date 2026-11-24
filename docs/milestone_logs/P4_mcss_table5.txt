@@ -1,0 +1,87 @@
+# P4 MCSS Table 5 on the 169 files of the selection (scripts/run_p4_dev.sh): 2026-11-23T12:25:26+01:00
+# wm-bench e52aef1bb907d436ad492d18e0b034c2f1547af4, multimark b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a for the points of P4; references read from existing cells
+mcss_paper_attacks.py: attack = table5 (MCSS Table 5, PIPELINE_metodo.md §4.4 point 3; criterion (a) of P2 with attack none)
+selection: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/_runs/diagnostics/inventory/mcss_selftest_eel_fb311767f65c.jsonl (169 files, sha256 0830e5e0746e7f39e288b3b313f7975a2cee998a9cd9a1fac1840070abf8aec0)
+library: build/patched/multimark at b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a (multimark 0.0.1); submodule b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a
+global_seed 20261001; keys per file 1; seeds derive_seed(global_seed, 'mcss-paper-attacks-msg' | 'mcss-paper-attacks-key', sample_id, k)
+python 3.11.18; workers 8; elapsed 72.6 s
+names pool: /mnt/beegfs/did_tesi_nlp_330/icipriano/wm_bench/artifacts/data/attack_pools/python.json (17406 names, sha256 7701fbfad888c6bd120a2ffc882789939ee4ba7ff067f833a5d1d4c9d8d8f334)
+message_accuracy = open decoding equal to the message (failed embeddings count as not recovered); covered = every codeword position has at least one vote after the attack; intervals: Wilson 95%
+
+profile mcss: {"canonical": "paper", "canonical_natural_forms": "off", "canonical_same_kind": "off", "channel_weights": null, "channels": "mcss8", "code_matrix": "random", "linking": "positional", "mask": "off", "message_bits": 24, "names_bits_per_name": 1, "names_include_params": true, "names_module_level": true, "names_proposer": "static", "names_single_letter": "extend_except_loop", "names_suffix_by_type": "off", "names_variant": "V1", "registry_seed": null, "t": 2, "voting": "simple"}
+profile multimark: {"canonical": "kind", "canonical_natural_forms": "off", "canonical_same_kind": "off", "channel_weights": null, "channels": "extended", "code_matrix": "dmin4", "linking": "function_channel", "mask": "on", "message_bits": 24, "names_bits_per_name": 1, "names_include_params": false, "names_module_level": true, "names_proposer": "static", "names_single_letter": "exclude", "names_suffix_by_type": "off", "names_variant": "V2", "registry_seed": null, "t": 2, "voting": "simple"}
+
+## MCSS Table 5 (message_accuracy = open decoding equal to the message; Wilson 95%)
+
+### mcss
+  attack                  recovered                           changed  bit_acc
+  none                    168/169 = 0.994 [0.967, 0.999]        0.000    0.999
+  rename2                 60/169 = 0.355 [0.287, 0.430]         1.000    0.927
+  rename4                 19/169 = 0.112 [0.073, 0.169]         1.000    0.820
+  rename8                 1/169 = 0.006 [0.001, 0.033]          1.000    0.636
+  rename16                2/169 = 0.012 [0.003, 0.042]          1.000    0.394
+  rename2_lower           158/169 = 0.935 [0.887, 0.963]        1.000    0.989
+  rename4_lower           78/169 = 0.462 [0.388, 0.537]         1.000    0.860
+  rename8_lower           3/169 = 0.018 [0.006, 0.051]          1.000    0.545
+  rename16_lower          3/169 = 0.018 [0.006, 0.051]          1.000    0.258
+  invert_aug_assign       112/169 = 0.663 [0.589, 0.730]        0.426    0.967
+  invert_compare_dir      90/169 = 0.533 [0.457, 0.606]         0.598    0.952
+  invert_equality_dir     63/169 = 0.373 [0.303, 0.448]         0.858    0.907
+  invert_list_comp        138/169 = 0.817 [0.751, 0.868]        0.266    0.991
+  invert_ternary          159/169 = 0.941 [0.895, 0.968]        0.053    0.996
+  invert_operand_order    107/169 = 0.633 [0.558, 0.702]        0.467    0.957
+  invert_empty_coll       114/169 = 0.675 [0.601, 0.741]        0.408    0.978
+  invert_none_check       163/169 = 0.964 [0.925, 0.984]        0.059    0.997
+
+  rename r, the two readings side by side (mcss):
+  r     T1.4 pool names (main)              random lowercase word               
+  2     60/169 = 0.355 [0.287, 0.430]       158/169 = 0.935 [0.887, 0.963]      
+  4     19/169 = 0.112 [0.073, 0.169]       78/169 = 0.462 [0.388, 0.537]       
+  8     1/169 = 0.006 [0.001, 0.033]        3/169 = 0.018 [0.006, 0.051]        
+  16    2/169 = 0.012 [0.003, 0.042]        3/169 = 0.018 [0.006, 0.051]        
+
+### multimark
+  attack                  recovered                           changed  bit_acc
+  none                    4/169 = 0.024 [0.009, 0.059]          0.000    0.437
+  rename2                 4/169 = 0.024 [0.009, 0.059]          0.976    0.409
+  rename4                 3/169 = 0.018 [0.006, 0.051]          0.976    0.378
+  rename8                 3/169 = 0.018 [0.006, 0.051]          0.976    0.353
+  rename16                4/169 = 0.024 [0.009, 0.059]          0.976    0.344
+  rename2_lower           3/169 = 0.018 [0.006, 0.051]          0.976    0.407
+  rename4_lower           3/169 = 0.018 [0.006, 0.051]          0.976    0.385
+  rename8_lower           3/169 = 0.018 [0.006, 0.051]          0.976    0.353
+  rename16_lower          3/169 = 0.018 [0.006, 0.051]          0.976    0.346
+  invert_aug_assign       2/169 = 0.012 [0.003, 0.042]          0.426    0.402
+  invert_compare_dir      3/169 = 0.018 [0.006, 0.051]          0.485    0.399
+  invert_equality_dir     0/169 = 0.000 [0.000, 0.022]          0.775    0.351
+  invert_list_comp        4/169 = 0.024 [0.009, 0.059]          0.260    0.429
+  invert_ternary          4/169 = 0.024 [0.009, 0.059]          0.053    0.435
+  invert_operand_order    4/169 = 0.024 [0.009, 0.059]          0.467    0.398
+  invert_empty_coll       4/169 = 0.024 [0.009, 0.059]          0.408    0.417
+  invert_none_check       4/169 = 0.024 [0.009, 0.059]          0.059    0.436
+
+  rename r, the two readings side by side (multimark):
+  r     T1.4 pool names (main)              random lowercase word               
+  2     4/169 = 0.024 [0.009, 0.059]        3/169 = 0.018 [0.006, 0.051]        
+  4     3/169 = 0.018 [0.006, 0.051]        3/169 = 0.018 [0.006, 0.051]        
+  8     3/169 = 0.018 [0.006, 0.051]        3/169 = 0.018 [0.006, 0.051]        
+  16    4/169 = 0.024 [0.009, 0.059]        3/169 = 0.018 [0.006, 0.051]        
+
+## expected orderings of Table 5 on mcss (PIPELINE §4.4 point 3; orderings, not exact values)
+  no attack = 1.00: FAIL (0.994)
+  channel inversions, worst to best: equality_dir 0.373, compare_dir 0.533, operand_order 0.633, aug_assign 0.663, empty_coll 0.675, list_comp 0.817, ternary 0.941, none_check 0.964
+  operand_order is the worst (ties allowed): FAIL
+  none_check is the best (ties allowed): PASS
+  rename, T1.4 pool names (main):
+    rename 2 >= 0.95: FAIL (off by 0.595)
+    rename 4 >= 0.95: FAIL (off by 0.838)
+    rename 8 < 0.10: PASS
+    rename 16 ~ 0 (<= 0.02): PASS
+    rename 2 >= 4 >= 8 >= 16: FAIL
+  rename, random lowercase word:
+    rename 2 >= 0.95: FAIL (off by 0.015)
+    rename 4 >= 0.95: FAIL (off by 0.488)
+    rename 8 < 0.10: PASS
+    rename 16 ~ 0 (<= 0.02): PASS
+    rename 2 >= 4 >= 8 >= 16: PASS
+  -> closer to the pattern of the paper: random lowercase word (rename checks passed: T1.4 pool names (main) 2/5, random lowercase word 3/5; total distance from the limits 1.433 and 0.504)

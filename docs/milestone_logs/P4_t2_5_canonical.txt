@@ -1,0 +1,7 @@
+##### nodo tnode02, commit e52aef1
+##### attacchi T2.5  sulle canoniche di L1 (repo /mnt/beegfs/did_tesi_nlp_330/icipriano/repo_wm_bench)
+
+########## python: 542 canoniche, 542 passano senza attacco (esecuzione delle canoniche della M4)
+T2.5 {"n": 1, "position": "before"}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.2445
+T2.5 {"n": 2, "position": "around"}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.2787
+T2.5 {"n": 4, "position": "around"}: passano 542/542, rotte 0, stati {'APPLIED': 542}, modificate 542/542, 1-CodeBLEU 0.3072

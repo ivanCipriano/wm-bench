@@ -1,0 +1,48 @@
+# P4 embedding of mcss, B and D at b2b6c18 vs the measured cells (scripts/run_p4_dev.sh): 2026-11-23T12:31:46+01:00
+# wm-bench e52aef1bb907d436ad492d18e0b034c2f1547af4, multimark b2b6c18ea5303ab134f84f11d8b1de1c2bb5ec5a for the points of P4; references read from existing cells
+# embedding identity on development (scripts/check_embed_identity.py), 2026-11-23T12:31:46+01:00, tnode01
+# models qwen25_coder_7b deepseek_coder_6p7b; levels L1 L2; split dev, language python; fields compared: code, embed_status, expected_message (paired by parent_id)
+
+## p4_mcss: mcss 1d3087c73439 (new) vs ae63f16de28f (measured)
+  p4_mcss qwen25_coder_7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new f95e799846a30f0dc26d0add6d63998ad740efe12f6e67f1e62987a6e356f07c
+                                          old f95e799846a30f0dc26d0add6d63998ad740efe12f6e67f1e62987a6e356f07c
+  p4_mcss qwen25_coder_7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 862857c9e6ae43949218a4c0a36487f6023f04da89c5adc4ea81f10cf772c081
+                                          old 862857c9e6ae43949218a4c0a36487f6023f04da89c5adc4ea81f10cf772c081
+  p4_mcss deepseek_coder_6p7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new 3159e06b39308ea8d68b044e1d6fbaf04ce055cf685d3a11c325e753dce3d1a8
+                                          old 3159e06b39308ea8d68b044e1d6fbaf04ce055cf685d3a11c325e753dce3d1a8
+  p4_mcss deepseek_coder_6p7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 3d0009db0cbb91f781e957f4ed60966429554595c6d9bcd0f3a55ffdb12da36f
+                                          old 3d0009db0cbb91f781e957f4ed60966429554595c6d9bcd0f3a55ffdb12da36f
+
+## p4_B: multimark e52b040770df (new) vs a8a296957377 (measured)
+  p4_B qwen25_coder_7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new 88e2d24cea5377066c876d9f19771d370686d60db62a1c0b292470aa26fe6e65
+                                          old 88e2d24cea5377066c876d9f19771d370686d60db62a1c0b292470aa26fe6e65
+  p4_B qwen25_coder_7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 32801ce9c05442cc2c3cd551233be9913302a80e768c28946da349631383c569
+                                          old 32801ce9c05442cc2c3cd551233be9913302a80e768c28946da349631383c569
+  p4_B deepseek_coder_6p7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new 1fffbaf134b3e7f0ca7f0ce3fff1585fbdf7aed6b645e67f59b4b94dd35dcc99
+                                          old 1fffbaf134b3e7f0ca7f0ce3fff1585fbdf7aed6b645e67f59b4b94dd35dcc99
+  p4_B deepseek_coder_6p7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new bb78ce352bcdc35927d5f1020a81196c1157c342684ab2987c56e8f7810d8e02
+                                          old bb78ce352bcdc35927d5f1020a81196c1157c342684ab2987c56e8f7810d8e02
+
+## p4_D: multimark 3fed1f1c1e24 (new) vs b4cd11f13a07 (measured)
+  p4_D qwen25_coder_7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new dabefe95020cd88d255fa8086ed6f603d46dca8bb8b6fac2c7b3a3df37505656
+                                          old dabefe95020cd88d255fa8086ed6f603d46dca8bb8b6fac2c7b3a3df37505656
+  p4_D qwen25_coder_7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 136f967f9a924ab923a66f583ca3d060602fcc71addc88a2ddba661939c3335f
+                                          old 136f967f9a924ab923a66f583ca3d060602fcc71addc88a2ddba661939c3335f
+  p4_D deepseek_coder_6p7b L1: IDENTICAL; samples 576 (new) / 576 (old), paired 576, only new 0, only old 0; same code 576, same embed_status 576, same expected_message 576
+    sha256 of the code (parent_id order): new fbb0c30a7c275a962e2543f52cd2176235c8ba2250a161b918debb92b915536e
+                                          old fbb0c30a7c275a962e2543f52cd2176235c8ba2250a161b918debb92b915536e
+  p4_D deepseek_coder_6p7b L2: IDENTICAL; samples 300 (new) / 300 (old), paired 300, only new 0, only old 0; same code 300, same embed_status 300, same expected_message 300
+    sha256 of the code (parent_id order): new 04e20737c91479b5c88d4a44c3b9c8bbb82d8fda4e33082741a84f105ecc22e6
+                                          old 04e20737c91479b5c88d4a44c3b9c8bbb82d8fda4e33082741a84f105ecc22e6
+
+## result: p4_mcss identical, p4_B identical, p4_D identical -> embedding identical byte for byte: the measured imperceptibility holds
