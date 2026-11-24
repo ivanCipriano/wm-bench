@@ -29,8 +29,12 @@ attacco) usano le stesse estrazioni di indici. Se i problemi sono meno di k, que
   discreti e la soglia all'1% da 1.000 gruppi è rumorosa; l'FPR della metà di misura si stampa
   sempre anche per livello, nativi L1, nativi L2 e integrazione, anche in ``calibrate``);
   (3) τ_k confrontata con la soglia teorica ``score_k >= 2``; (4) TPR dei positivi di dev non
-  decrescente in k (oltre 2σ della differenza); (5) due esecuzioni danno le stesse soglie
-  (determinismo). Bloccanti: (1), (4) e (5). Non scrive soglie;
+  decrescente in k (oltre 2σ della differenza), con righe, problemi distinti, punteggio medio
+  per k e il calo più grande con il 2σ per n = gruppi e per n = problemi; (5) due esecuzioni
+  danno le stesse soglie (determinismo). Bloccanti: (1), (5) e (4) **senza attacco**; (4) con un
+  attacco è un avviso (modifica fatta dopo il FAIL di mcss sotto T2.5 in
+  ``P6_aggregated_dev.txt``, decisione dell'utente; soglie e risultati invariati). Gli intervalli
+  di Wilson per livello hanno anche la versione con n = problemi distinti. Non scrive soglie;
 - ``calibrate`` (solo dev, metodo non ancora congelato): τ_k all'FPR obiettivo sui gruppi dei
   negativi umani di sviluppo L1+L2 (le stesse parti di ``calibrate``: nativi di L1, nativi di L2,
   integrazione combinata), regola di :class:`ThresholdCalibrator`. Scrive
@@ -41,13 +45,15 @@ attacco) usano le stesse estrazioni di indici. Se i problemi sono meno di k, que
   intervalli di Wilson e **bootstrap per gruppo** (ricampionamento dei 1.000 gruppi, percentili
   2,5–97,5). Sul test legge solo soglie congelate (sha256 del record ``freeze/<metodo>.json``);
   per ClassEval (L3, nessuna parte di sviluppo) si usano le τ_k di L1+L2 dev, dichiarato nel
-  report. Scrive ``aggregated_<livello>.csv`` in ``--out``.
+  report. La τ_k è unica (L1+L2 dev, nessuna soglia per livello): l'FPR si riporta **per
+  livello** (``neg_human`` del livello), con Wilson per gruppi, Wilson per problemi distinti e
+  bootstrap, in una tabella a parte del report. Scrive ``aggregated_<livello>.csv`` in ``--out``.
 
 Per MCGMark non si calcola: il suo punteggio non è additivo per campione.
 
 Uso (bench-core, in un job o con srun: legge solo tabelle; minuti)::
 
-    python scripts/report_aggregated.py verify --report /tmp/P6_aggregated_dev.txt
+    python scripts/report_aggregated.py verify --report /tmp/P6_aggregated_dev_v2.txt
     python scripts/report_aggregated.py calibrate --report /tmp/P6_aggregated_calibrate.txt
     python scripts/report_aggregated.py evaluate --split test --levels L1 L2 L3 \\
         --out $WMB/artifacts/tables --report /tmp/P6_aggregated_test.txt
@@ -261,9 +267,40 @@ def threshold_for(neg: pd.DataFrame, k: int, seed: int, target: float) -> dict[s
     return out
 
 
-def hits_at(pool: pd.DataFrame, k: int, seed: int, tau: float) -> FloatArray | None:
+def group_scores(pool: pd.DataFrame, k: int, seed: int) -> FloatArray | None:
     sums = groups(pool, k, N_GROUPS, seed)
-    return None if sums is None else (scores(sums) >= tau).astype(float)
+    return None if sums is None else scores(sums)
+
+
+def hits_at(pool: pd.DataFrame, k: int, seed: int, tau: float) -> FloatArray | None:
+    s = group_scores(pool, k, seed)
+    return None if s is None else (s >= tau).astype(float)
+
+
+def mean_score(s: FloatArray) -> str:
+    """Media dei punteggi aggregati dei gruppi con voti (i gruppi senza voti a parte)."""
+    finite = s[np.isfinite(s)]
+    text = f"{finite.mean():.3f}" if finite.size else "nan"
+    return text + (f"({s.size - finite.size} no votes)" if finite.size < s.size else "")
+
+
+def problem_wilson(rate_value: float, n_problems: int) -> tuple[float, float]:
+    """Wilson con n = problemi distinti: i 1.000 gruppi riusano gli stessi problemi, quindi la
+    Wilson con n = gruppi è troppo stretta quando i problemi sono pochi (v1.3.16, dichiarato)."""
+    from bench.metrics.stats import wilson
+
+    return wilson(round(rate_value * n_problems), n_problems)
+
+
+def worst_drop(vals: Sequence[float], n_groups: int, n_problems: int) -> tuple[float, float, float]:
+    """Calo più grande fra k consecutivi e il suo 2σ con n = gruppi e con n = problemi."""
+    best = (0.0, 0.0, 0.0)
+    finite = [v for v in vals if not math.isnan(v)]
+    for a, b in itertools.pairwise(finite):
+        var = a * (1 - a) + b * (1 - b)
+        if a - b > best[0]:
+            best = (a - b, 2 * math.sqrt(var / n_groups), 2 * math.sqrt(var / max(1, n_problems)))
+    return best
 
 
 # --------------------------------------------------------------------------- dati
@@ -333,7 +370,7 @@ class Aggregated:
         self.store, self.seed, self.target = store, global_seed, target_fpr
         self.configs, self.models = list(configs), list(models)
         self.out: list[str] = []
-        self.warnings = self.comparisons = 0
+        self.warnings = self.comparisons = self.tpr_warnings = 0
 
     def w(self, line: str = "") -> None:
         self.out.append(line)
@@ -382,8 +419,12 @@ class Aggregated:
                "comparisons (informative: the scores are discrete and τ_k from 1,000 groups of "
                "one half is noisy; about 5% of the comparisons are expected above a "
                "2σ limit)")  # fmt: skip
+        self.w(f"## TPR decreasing in k on attacked rows: {self.tpr_warnings} (WARN, not "
+               "blocking: change made after the FAIL of P6_aggregated_dev.txt, thresholds and "
+               "results unchanged)")  # fmt: skip
         self.w(f"## result: {'ALL CHECKS PASSED' if ok else 'SOME CHECKS FAILED'} (blocking: "
-               "k = 1 identity, determinism, TPR not decreasing in k beyond 2σ)")  # fmt: skip
+               "k = 1 identity, determinism, TPR not decreasing in k beyond 2σ without "
+               "attack)")  # fmt: skip
         return ok
 
     def _verify_identity(self, name: str, c: Config, model: str, neg: pd.DataFrame) -> bool:
@@ -412,9 +453,13 @@ class Aggregated:
                f"({parts[0]['problem_key'].nunique()} / {parts[1]['problem_key'].nunique()} "
                "problems): τ_k on one half, FPR on the other; limit = target + 2σ with the noise "
                "of the calibration and of the measurement, σ² = t(1-t)(1/n_cal + 1/n_out), "
-               "n = min(groups, rows of the half)")  # fmt: skip
+               "n = min(groups, rows of the half); per level: Wilson with n = groups (too "
+               "narrow: the groups reuse the same problems) and with n = distinct problems "
+               "(conservative)")  # fmt: skip
         self.w(f"  {'k':>3}{'cal':>5}{'τ_k':>10}{'FPR other':>11}{'Wilson':>20}{'limit':>9}"
                f"{'check':>8}")  # fmt: skip
+        self.w(f"  {'':>8}{'level':>18}{'FPR':>11}{'Wilson n=groups':>20}"
+               f"{'Wilson n=problems':>20}")  # fmt: skip
         above = total = 0
         for k in KS:
             seed = seed_for(self.seed, c.method, DEV_LEVEL, k)
@@ -452,29 +497,51 @@ class Aggregated:
                 continue
             fp = int(hits.sum())
             lo, hi = wilson(fp, hits.size)
+            n_problems = int(sub["problem_key"].nunique())
+            plo, phi = problem_wilson(fp / hits.size, n_problems)
             self.w(f"  {'':>8}{part:>18}{fp / hits.size:>11.4f}{f'[{lo:.4f}, {hi:.4f}]':>20}"
-                   f"  rows {len(sub)}, problems {sub['problem_key'].nunique()}")  # fmt: skip
+                   f"{f'[{plo:.4f}, {phi:.4f}]':>20}  rows {len(sub)}, "
+                   f"problems {n_problems}")  # fmt: skip
 
     def _verify_tpr(self, name: str, c: Config, model: str, full: dict[int, dict[str, float]],
                     subjects: Subjects) -> bool:  # fmt: skip
+        """TPR non decrescente in k: bloccante senza attacco, avviso (WARN) con attacco.
+
+        Con un attacco che toglie quasi tutto il segnale (mcss sotto T2.5, TPR ≈ 0,07) non c'è
+        niente da accumulare e, con ~50 problemi su L2, i 1.000 gruppi a k grande riusano gli
+        stessi problemi: il 2σ con n = gruppi è sottostimato. Modifica fatta dopo il FAIL di
+        ``P6_aggregated_dev.txt`` (decisione dell'utente, v1.3.16); non cambia soglie né
+        risultati. Sotto ogni riga: righe, problemi distinti, punteggio medio per k e il calo
+        più grande con il 2σ per n = gruppi e per n = problemi."""
         good = True
-        self.w(f"## {name}: TPR of the dev positives at τ_k (must not decrease in k)")
+        self.w(f"## {name}: TPR of the dev positives at τ_k (must not decrease in k; blocking "
+               "without attack, WARN with an attack)")  # fmt: skip
         for level in ("L1", "L2"):
             for label, table in conditions(self.store, c, model, level, "dev", subjects):
                 if table is None:
                     self.w(f"  {level} {label:<34} no detection")
                     continue
                 pool = votes(table, positives=True)
-                vals = []
+                n_problems = int(pool["problem_key"].nunique())
+                vals, means = [], []
                 for k, t in full.items():
-                    hits = hits_at(pool, k, seed_for(self.seed, c.method, level, k),
-                                   t["threshold"])  # fmt: skip
-                    vals.append(math.nan if hits is None else float(hits.mean()))
+                    s = group_scores(pool, k, seed_for(self.seed, c.method, level, k))
+                    vals.append(math.nan if s is None else float((s >= t["threshold"]).mean()))
+                    means.append("-" if s is None else mean_score(s))
                 finite = [v for v in vals if not math.isnan(v)]
                 mono = all(not decreases(a, b) for a, b in itertools.pairwise(finite))
-                good &= mono
+                if label == "no attack":
+                    good &= mono
+                    state = "OK" if mono else "FAIL (decreasing)"
+                else:
+                    self.tpr_warnings += 0 if mono else 1
+                    state = "OK" if mono else "WARN (decreasing, attacked: not blocking)"
                 cells = "".join(f"{v:>8.3f}" for v in vals)
-                self.w(f"  {level} {label:<34}{cells}  {'OK' if mono else 'FAIL (decreasing)'}")
+                self.w(f"  {level} {label:<34}{cells}  {state}")
+                drop, s_groups, s_problems = worst_drop(vals, N_GROUPS, n_problems)
+                self.w(f"  {'':>4}rows {len(pool)}, problems {n_problems}; mean score_k "
+                       f"{' '.join(means)}; largest drop {drop:.3f}, 2σ groups {s_groups:.3f}, "
+                       f"2σ problems {s_problems:.3f}")  # fmt: skip
         return good
 
     # ---- calibrate
@@ -538,6 +605,12 @@ class Aggregated:
                             fpr = rate(fp if fp is not None else np.array([]),
                                        boot_seed(self.seed, c.method, c.config_hash, model, level,
                                                  "neg_human", str(k)))  # fmt: skip
+                            n_pos = int(pool["problem_key"].nunique())
+                            n_neg = (int(neg_pool["problem_key"].nunique())
+                                     if neg_pool is not None else 0)  # fmt: skip
+                            tlo, thi = problem_wilson(tpr["value"], n_pos)
+                            flo, fhi = (problem_wilson(fpr["value"], n_neg) if n_neg
+                                        else (math.nan, math.nan))  # fmt: skip
                             rows.append({
                                 "method": c.method, "label": c.label, "config_hash": c.config_hash,
                                 "model_id": model, "level": level, "split": split,
@@ -550,7 +623,12 @@ class Aggregated:
                                 "fpr": fpr["value"], "fpr_wilson_low": fpr["wilson_low"],
                                 "fpr_wilson_high": fpr["wilson_high"],
                                 "fpr_boot_low": fpr["boot_low"], "fpr_boot_high": fpr["boot_high"],
-                                "n_problems": int(pool["problem_key"].nunique()),
+                                "n_problems": n_pos,
+                                "tpr_wilson_low_problems": tlo, "tpr_wilson_high_problems": thi,
+                                "fpr_negatives": f"neg_human {level} {split}",
+                                "n_neg_rows": 0 if neg_pool is None else len(neg_pool),
+                                "n_neg_problems": n_neg,
+                                "fpr_wilson_low_problems": flo, "fpr_wilson_high_problems": fhi,
                             })  # fmt: skip
         return pd.DataFrame(rows)
 
@@ -569,6 +647,27 @@ def evaluate_lines(frame: pd.DataFrame) -> list[str]:
                    f"{r.tpr:>8.3f}{f'[{r.tpr_wilson_low:.3f}, {r.tpr_wilson_high:.3f}]':>18}"
                    f"{f'[{r.tpr_boot_low:.3f}, {r.tpr_boot_high:.3f}]':>18}{r.fpr:>8.4f}"
                    f"{r.n_groups:>8}")  # fmt: skip
+    return out + fpr_lines(frame)
+
+
+def fpr_lines(frame: pd.DataFrame) -> list[str]:
+    """FPR dell'aggregata **per livello** (τ_k unica di L1+L2 dev, nessuna soglia per livello):
+    Wilson con n = gruppi (troppo stretta, i gruppi riusano i problemi), con n = problemi
+    distinti e bootstrap per gruppo (v1.3.16, da riportare così nella tesi)."""
+    out = ["", "# FPR of the aggregated detection by level (single τ_k from L1+L2 dev; Wilson with "
+           "n = groups is too narrow, Wilson with n = distinct problems is conservative)",
+           f"  {'config':<16}{'model':<22}{'level':<6}{'k':>3}{'FPR':>8}{'Wilson groups':>18}"
+           f"{'Wilson problems':>18}{'bootstrap':>18}{'rows':>7}{'problems':>9}"]  # fmt: skip
+    cols = ["label", "model_id", "level", "k"]
+    for r in frame.drop_duplicates(cols).itertuples():
+        if r.n_neg_problems == 0:
+            out.append(f"  {r.label:<16}{r.model_id:<22}{r.level:<6}{r.k:>3}  no negatives")
+            continue
+        out.append(f"  {r.label:<16}{r.model_id:<22}{r.level:<6}{r.k:>3}{r.fpr:>8.4f}"
+                   f"{f'[{r.fpr_wilson_low:.4f}, {r.fpr_wilson_high:.4f}]':>18}"
+                   f"{f'[{r.fpr_wilson_low_problems:.4f}, {r.fpr_wilson_high_problems:.4f}]':>18}"
+                   f"{f'[{r.fpr_boot_low:.4f}, {r.fpr_boot_high:.4f}]':>18}"
+                   f"{r.n_neg_rows:>7}{r.n_neg_problems:>9}")  # fmt: skip
     return out
 
 

@@ -11,10 +11,15 @@
 #
 #   bash scripts/run_p6.sh check                # 0) libreria, hash del registro, coda
 #   bash scripts/run_p6.sh k2_detect            # 1) rilevazione con k2 su L1+L2 dev (negativi)
-#   bash scripts/run_p6.sh aggregated_verify    # 2) verifica dell'aggregata su dev (srun, log)
+#   bash scripts/run_p6.sh aggregated_verify    # 2) verifica dell'aggregata su dev (srun, log v2)
 #   bash scripts/run_p6.sh k2_calibrate         # 3) soglie di k2 su L1+L2 dev (dopo la 1)
 #   bash scripts/run_p6.sh dry_run              # 4) controllo a vuoto del test e stima dei costi
 #   bash scripts/run_p6.sh aggregated_calibrate # 5) soglie τ_k su dev (dopo l'esame della 2)
+#
+# La verifica dell'aggregata scrive P6_aggregated_dev_v2.txt (il primo log, P6_aggregated_dev.txt,
+# resta com'è: il controllo «TPR non decrescente in k» è diventato un avviso per le righe
+# attaccate dopo il FAIL di mcss sotto T2.5); la calibrazione parte solo se il v2 esiste e non ha
+# FAIL bloccanti.
 #   FREEZE_APPROVED=yes bash scripts/run_p6.sh freeze   # 6) SOLO dopo l'approvazione dell'utente
 #
 # Le fasi 1 e 2 possono girare insieme. Tutto su CPU. Nessuna fase scrive su un'uscita esistente;
@@ -146,7 +151,7 @@ case "$PHASE" in
         submit --jobs 1 stage=calibrate_k2 "methods=[multimark]" "${K2_CAL[@]}"
         ;;
     aggregated_verify)
-        name=P6_aggregated_dev.txt
+        name=P6_aggregated_dev_v2.txt
         skip_log "$name" && exit 0
         room 1
         tmp="$(mktemp -u "$WMB/logs/${name%.txt}_XXXXXX.txt")"
@@ -182,7 +187,9 @@ case "$PHASE" in
     aggregated_calibrate)
         name=P6_aggregated_calibrate.txt
         skip_log "$name" && exit 0
-        [ -e "$LOGS/P6_aggregated_dev.txt" ] || die "run aggregated_verify first"
+        verify_log="$LOGS/P6_aggregated_dev_v2.txt"
+        [ -e "$verify_log" ] || die "run aggregated_verify first ($verify_log missing)"
+        grep -q "^## result: ALL CHECKS PASSED" "$verify_log" \n            || die "$verify_log has blocking failures: no aggregated thresholds"
         room 1
         tmp="$(mktemp -u "$WMB/logs/${name%.txt}_XXXXXX.txt")"
         "${SRUN[@]}" -c 2 --mem 16G -t 120 "$BENCH_PY" scripts/report_aggregated.py calibrate --report "$tmp"

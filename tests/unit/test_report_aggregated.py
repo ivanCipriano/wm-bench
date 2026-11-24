@@ -202,3 +202,72 @@ def test_calibrate_then_evaluate(local_root: Path, tmp_path: Path,
     with pytest.raises(SystemExit, match="not frozen"):
         _run(store, ["evaluate", "--split", "test", "--out", str(out),
                      "--report", str(tmp_path / "ev2.txt")])  # fmt: skip
+
+
+# --------------------------------------------------------------------------- v2 della verifica
+ATTACKED = ("T2.5 n=2,position=around", "attacked/T2.5/abc123")
+
+
+def _with_attack(store: FakeStore) -> FakeStore:
+    """Aggiunge la cella attaccata (positivi senza segnale, A ~ Bin(N, 1/2)) su L1 e L2 dev."""
+    from bench.pipeline.stages.detect import detection_ref
+
+    rng = np.random.default_rng(7)
+    for level in ("L1", "L2"):
+        problems = [f"t{level}_{i}" for i in range(50) for _ in range(3)]
+        n = rng.integers(1, 6, size=len(problems)).astype(float)
+        a = rng.binomial(n.astype(int), 0.5).astype(float)
+        ref = detection_ref(CFG.method, MODEL, CFG.config_hash, ATTACKED[1], level, "python", "dev")
+        store.data[str(ref.path)] = _table(list(a), list(n), problems, prefix=f"t{level}")
+    return store
+
+
+def test_problem_wilson_and_worst_drop() -> None:
+    lo, hi = agg.problem_wilson(0.05, 50)
+    glo, ghi = agg.problem_wilson(0.05, 1000)
+    assert lo < glo and hi > ghi  # con n = problemi l'intervallo è più largo
+    drop, s_groups, s_problems = agg.worst_drop([0.08, 0.12, 0.09, math.nan], 1000, 50)
+    assert math.isclose(drop, 0.03) and s_problems > s_groups > 0
+    assert agg.worst_drop([0.1, 0.2, 0.3], 1000, 50)[0] == 0.0
+    assert agg.mean_score(np.array([1.0, 3.0])) == "2.000"
+    assert "1 no votes" in agg.mean_score(np.array([1.0, -math.inf]))
+
+
+def test_decreasing_tpr_blocks_only_without_attack(
+    local_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(agg, "attack_subjects", lambda: [ATTACKED])
+    monkeypatch.setattr(agg, "decreases", lambda before, after, n=agg.N_GROUPS: True)
+    store = _with_attack(_store(tmp_path))
+    report = tmp_path / "v2.txt"
+    assert _run(store, ["verify", "--report", str(report)]) == 1  # senza attacco: bloccante
+    text = report.read_text(encoding="utf-8")
+    assert "L1 no attack" in text and "FAIL (decreasing)" in text
+    assert "WARN (decreasing, attacked: not blocking)" in text
+    assert "TPR decreasing in k on attacked rows: 2" in text
+    assert "problems 50; mean score_k" in text and "2σ problems" in text
+    for key in [k for k in store.data if "/positives/" in k]:
+        del store.data[key]  # restano solo le righe attaccate: avviso, la verifica passa
+    report2 = tmp_path / "v2b.txt"
+    assert _run(store, ["verify", "--report", str(report2)]) == 0
+    text2 = report2.read_text(encoding="utf-8")
+    assert "ALL CHECKS PASSED" in text2 and "FAIL (decreasing)" not in text2
+    assert "Wilson n=problems" in text2
+
+
+def test_evaluate_reports_fpr_by_level(local_root: Path, tmp_path: Path,
+                                       monkeypatch: pytest.MonkeyPatch) -> None:  # fmt: skip
+    monkeypatch.setattr(agg, "registered_configs", lambda: [CFG])
+    store = _store(tmp_path)
+    assert _run(store, ["calibrate", "--report", str(tmp_path / "cal.txt")]) == 0
+    out = tmp_path / "tables"
+    assert _run(store, ["evaluate", "--split", "dev", "--out", str(out),
+                        "--report", str(tmp_path / "ev.txt")]) == 0  # fmt: skip
+    text = (tmp_path / "ev.txt").read_text(encoding="utf-8")
+    assert "# FPR of the aggregated detection by level" in text
+    for level in ("L1", "L2"):
+        frame = pd.read_csv(out / f"aggregated_{level}_dev.csv")
+        assert set(frame["fpr_negatives"]) == {f"neg_human {level} dev"}
+        assert (frame["n_neg_problems"] == 300).all()
+        wide = frame["fpr_wilson_high_problems"] - frame["fpr_wilson_low_problems"]
+        assert (wide >= frame["fpr_wilson_high"] - frame["fpr_wilson_low"] - 1e-12).all()
