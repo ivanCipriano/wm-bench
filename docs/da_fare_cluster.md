@@ -231,3 +231,84 @@ copia). Dopo:
 
 Una cella di un attacco che MCGMark non ha mai girato fallirebbe per input mancante senza fermare le
 altre: se il dry run ne mostra, togliere quell'attacco dalla lista.
+
+## 4. ACW su L3, DeepSeek: cause dei `FAILED` e campioni lunghi di D42
+
+Sola lettura, come i comandi 1 e 2. Per DeepSeek su L3 test (configurazione 86851261a344):
+
+- i 5 codici più lunghi della baseline (`baseline/deepseek_coder_6p7b/L3_python_test.parquet`), con
+  identificativo, dataset e numero di caratteri: i due timeout di D42 devono essere i due da 24.717;
+- per ogni inserimento `FAILED` (tabella `watermarked/acw/...`), il risultato del worker
+  (`_runs/watermark/acw/.../results.jsonl`, `item_id` = `sample_id` della baseline): stato, errore
+  ed `extra` (senza l'elenco delle regole), e se il campione è uno dei due più lunghi;
+- per ogni rilevazione `FAILED` dei positivi, della baseline non marcata (`neg_llm`) e di un punto di
+  T2.4k: identificativo, campione di origine (`parent_id` per i positivi e gli attaccati) ed `extra`.
+
+```bash
+OUT="$WMB/logs/acw_l3_deepseek_failed.txt"
+if [ -e "$OUT" ]; then echo "[SKIP] $OUT exists (not overwritten)"; else
+"${SRUN[@]}" "$WMB/bench-core/bin/python" - "$WMB/artifacts" > "$OUT.tmp" <<'EOF'
+import glob, json, os, sys
+import pandas as pd
+
+root = sys.argv[1]
+M, C, S = "deepseek_coder_6p7b", "86851261a344", "L3_python_test"
+
+
+def short(extra):
+    extra = {k: v for k, v in (extra or {}).items() if k != "rules"}
+    return json.dumps(extra, sort_keys=True, default=str)[:500]
+
+
+base = pd.read_parquet(f"{root}/baseline/{M}/{S}.parquet", columns=["sample_id", "dataset", "code"])
+base["chars"] = base["code"].str.len()
+longest = base.sort_values("chars", ascending=False)
+top2 = set(longest["sample_id"].head(2))
+print(f"# ACW, L3 test, {M}, config {C}")
+print("## longest baseline codes")
+for r in longest.head(5).itertuples():
+    print(f"  {r.chars:>7}  {r.sample_id}  {r.dataset}")
+
+items = {}
+for res in sorted(glob.glob(f"{root}/_runs/watermark/acw/{M}/{C}/{S}/**/results.jsonl", recursive=True)):
+    with open(res) as h:
+        for line in h:
+            if line.strip():
+                r = json.loads(line)
+                items[r.get("item_id")] = r
+wm = pd.read_parquet(f"{root}/watermarked/acw/{M}/{C}/{S}.parquet",
+                     columns=["sample_id", "parent_id", "dataset", "embed_status"])
+chars = dict(zip(base["sample_id"], base["chars"]))
+print("## FAILED embeddings (worker results)")
+for r in wm[wm["embed_status"] == "FAILED"].itertuples():
+    w = items.get(r.parent_id, {})
+    print(f"- {r.parent_id}  {r.dataset}  chars {chars.get(r.parent_id)}  "
+          f"{'LONGEST-2' if r.parent_id in top2 else ''}")
+    print(f"    worker status {w.get('status')}  error {str(w.get('error'))[:400]!r}")
+    print(f"    extra {short(w.get('extra'))}")
+
+det = f"{root}/detection/acw/{M}/{C}"
+points = sorted(glob.glob(f"{det}/attacked/T2.4k/*/{S}.parquet"))
+tables = [("positives", f"{det}/positives/{S}.parquet"), ("neg_llm", f"{det}/neg_llm/{S}.parquet")]
+tables += [("T2.4k " + p.split(os.sep)[-2], p) for p in points[:1]]
+parents = dict(zip(wm["sample_id"], wm["parent_id"]))  # marcato -> baseline
+for p in points[:1]:
+    h = p.split(os.sep)[-2]
+    att = glob.glob(f"{root}/attacked/T2.4k/{h}/acw/{M}/{C}/{S}.parquet")
+    if att:
+        a = pd.read_parquet(att[0], columns=["sample_id", "parent_id"])
+        parents.update(dict(zip(a["sample_id"], a["parent_id"])))
+print("## FAILED detections (positives, neg_llm, first T2.4k point)")
+for name, path in tables:
+    t = pd.read_parquet(path, columns=["sample_id", "status", "extra_json"])
+    for r in t[t["status"] == "FAILED"].itertuples():
+        extra = json.loads(r.extra_json) if isinstance(r.extra_json, str) and r.extra_json else {}
+        origin = parents.get(r.sample_id, r.sample_id)
+        origin = parents.get(origin, origin)  # attaccato -> marcato -> baseline
+        print(f"- {name:<20} {r.sample_id}  origin {origin}  "
+              f"{'LONGEST-2' if origin in top2 else ''}")
+        print(f"    extra {short(extra)}")
+EOF
+mv -n "$OUT.tmp" "$OUT"; cat "$OUT"
+fi
+```
