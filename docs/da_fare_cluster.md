@@ -26,8 +26,13 @@ Il comando conta:
   L'attacco T2.4k (troncamento) non chiama Sourcery: i suoi timeout possono esserci solo nella
   rilevazione.
 
+Il primo giro (`acw_l3_sourcery_timeouts.txt`, 25 novembre 2026) cercava il manifest al percorso
+sbagliato (`<file>.manifest.json` invece di `<file>.parquet.manifest.json`) e ha saltato tutte le
+tabelle della rilevazione come incomplete; i conteggi dell'inserimento erano giusti. Il comando
+sotto è corretto e scrive `acw_l3_sourcery_timeouts_v2.txt` (il primo log resta com'è).
+
 ```bash
-OUT="$WMB/logs/acw_l3_sourcery_timeouts.txt"
+OUT="$WMB/logs/acw_l3_sourcery_timeouts_v2.txt"
 if [ -e "$OUT" ]; then echo "[SKIP] $OUT exists (not overwritten)"; else
 "${SRUN[@]}" "$WMB/bench-core/bin/python" - "$WMB/artifacts" > "$OUT.tmp" <<'EOF'
 import glob, json, os, sys
@@ -39,7 +44,7 @@ SUFFIX = "L3_python_test"
 
 
 def complete(path):
-    man = path[: -len(".parquet")] + ".manifest.json"
+    man = path + ".manifest.json"  # <file>.parquet.manifest.json (ArtifactRef.manifest_path)
     try:
         with open(man) as h:
             return json.load(h).get("status") == "complete"

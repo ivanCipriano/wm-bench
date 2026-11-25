@@ -57,8 +57,23 @@ punti dell'attacco, configurazioni) calcolate in giorni diversi, non la stessa c
 modelli: senza attacco watermark 2, execute 2, detect 6, metrics 2; con T2.4k (10 punti × 2 modelli)
 attack, execute, detect e metrics 20 ciascuno. Le celle di DeepSeek sono state rifatte con D42 dopo
 il blocco del 5–12 novembre; l'inserimento di Qwen era già finito il 5 novembre a 9b3c6b4, senza
-D42 (D42 non cambia i lotti senza campioni lenti). Il numero dei campioni `sourcery timeout` è
-ancora da contare e da riportare (D42).
+D42 (D42 non cambia i lotti senza campioni lenti).
+
+**Campioni `sourcery timeout` di ACW su L3 (D42)**, da `$WMB/logs/acw_l3_sourcery_timeouts.txt`
+(25 novembre 2026):
+
+| Modello | Insieme | Campioni | `FAILED` | `sourcery timeout` |
+|---|---|---|---|---|
+| DeepSeek-Coder 6.7B | positivi, inserimento | 3.564 | 6 | 2 |
+| Qwen2.5-Coder 7B | positivi, inserimento | 3.564 | 0 | 0 |
+| entrambi | rilevazione (positivi, negativi, T2.4k) | — | — | da contare |
+
+I 2 timeout di DeepSeek sono verosimilmente i due campioni da 24.717 caratteri descritti in D42
+(stesso modello e stesso numero; gli identificativi non sono stati confrontati); gli altri 4
+inserimenti `FAILED` di DeepSeek hanno un'altra causa. La rilevazione non è stata contata: il
+conteggio cercava il manifest al percorso sbagliato (`<file>.manifest.json` invece di
+`<file>.parquet.manifest.json`) e ha saltato tutte le tabelle come incomplete; il comando corretto
+è in `docs/da_fare_cluster.md` (log `acw_l3_sourcery_timeouts_v2.txt`).
 
 **Risultati calcolati sul ramo.** Solo ACW su L3, T2.4k: 4 file di rilevazione (a8bd0fe, 843f569) e
 le 20 celle di metriche (843f569), tutti del 13 novembre. Fra ed59236 e 843f569 il codice cambia solo
@@ -82,11 +97,35 @@ committate (`repo_dirty` falso ovunque; i file di documentazione e i log non con
 `repo_dirty` è vuoto quanto `repo_commit`, e la colonna «dirty 0» del log le conta come pulite solo
 perché il conteggio tratta il valore vuoto come falso.
 
-**Celle con commit non registrato.** Riguardano soprattutto SWEET e PromptMark (i metodi di Simone),
-più alcune celle di STONE e MCGMark. Tutte sono state scritte entro l'8 novembre, prima che il ramo
-esistesse (primo commit del ramo: 12 novembre), quindi non vengono dal codice del ramo. Il commit
-esatto però non è registrato. Causa probabile, da verificare: il processo girava con l'account
-dell'altro utente sul clone condiviso e git ha rifiutato il repository per proprietà diversa
-(«dubious ownership»: `rev-parse` esce con un errore e la provenienza registra `None`;
-`scripts/oracle_method.sh` aggira lo stesso problema con `safe.directory`). Il manifest registra
-comunque il job SLURM, il nodo e i commit delle copie patchate dei metodi, letti da file e non con git.
+**Celle con commit non registrato** (da `$WMB/logs/provenance_none.txt`, 25 novembre 2026). Sono
+7.172 file scritti da 327 job SLURM fra il 3 ottobre e l'8 novembre, **tutti lanciati dall'account
+di Simone**:
+
+| Metodo | File senza commit |
+|---|---|
+| SWEET | 6.235 |
+| PromptMark | 674 |
+| STONE | 217 |
+| MCGMark | 38 |
+| nessun metodo (baseline di L1 dev e test, 3 ottobre; perplessità della baseline, 29 ottobre e 4 novembre) | 8 |
+
+Nessuno viene dal codice del ramo, che comincia il 12 novembre. Lettura:
+
+- **Causa.** Nessun job dell'account di Ivan ha il commit vuoto, e tutti i job senza commit sono
+  dell'account di Simone. È coerente con un processo di Simone che lavora su un clone che non gli
+  appartiene: git rifiuta il repository per proprietà diversa («dubious ownership»), `rev-parse`
+  esce con un errore e la provenienza registra `None` (`scripts/oracle_method.sh` aggira lo stesso
+  problema con `safe.directory`). Che il clone usato fosse quello di Ivan è una deduzione, da
+  confermare con Simone.
+- **Librerie dei metodi.** I commit delle copie patchate registrati nei manifest (letti da file,
+  non con git) sono quelli dei submodule di `main`, fissati il 1° ottobre (abf71a4) e mai cambiati
+  fino ad a64f4ea: SWEET 853b47eb064c, PromptMark c04c8f61db1f, STONE bb5d809c0c49, MCGMark
+  eefa27b68747.
+- **Codice del benchmark.** Il commit non si può ricostruire con certezza. Se il clone era quello
+  di Ivan, il codice è quello del clone in quel momento, cioè lo stesso dei job di Ivan degli
+  stessi giorni (per esempio 205d8d0 e 9b3c6b4 fra il 2 e il 5 novembre, quando sono state scritte
+  le celle di test di SWEET).
+- **«Dirty».** Sconosciuto per queste celle (vedi sopra).
+
+Da dichiarare nella tesi: per queste celle la provenienza registrata comprende il job, il nodo, le
+date e il commit della libreria del metodo, ma non il commit del benchmark.
