@@ -76,11 +76,34 @@ Tutte le tabelle sono complete.
 | Qwen2.5-Coder 7B | negativi umani + LLM | rilevazione | 22.267 + 3.564 | 0 | 0 |
 | Qwen2.5-Coder 7B | attacchi T2.4k (10 punti × 3.564) | rilevazione | 35.640 | 0 | 0 |
 
-I timeout ci sono solo con DeepSeek, sempre 2 per tabella (inserimento, positivi, baseline non
-marcata, ogni punto di T2.4k) e mai sui negativi umani: è coerente con i due campioni da 24.717
-caratteri di D42, ma gli identificativi sono ancora da confrontare (`docs/da_fare_cluster.md`,
-comando 4). Oltre ai timeout, DeepSeek ha 4 inserimenti `FAILED` e 3 rilevazioni `FAILED` per
-tabella con un'altra causa, da leggere nei risultati del worker (stesso comando).
+I timeout ci sono solo con DeepSeek, sempre 2 per tabella, e mai sui negativi umani.
+
+**Cause dei `FAILED` di DeepSeek**, da `$WMB/logs/acw_l3_deepseek_failed.txt` (25 novembre 2026:
+risultati del worker dell'inserimento e tabelle della rilevazione; tutti i campioni coinvolti sono
+di CodeSearchNet):
+
+| Campione della baseline | Caratteri | Inserimento | Rilevazione (positivi, baseline non marcata, T2.4k) |
+|---|---|---|---|
+| dde8709c0fb0418f71eb33f023e6f0e3 | 24.717 | `sourcery timeout` (D42) | `sourcery timeout` |
+| a8181923305c9af7d8adda97de225390 | 24.717 | `sourcery timeout` (D42) | `sourcery timeout` |
+| fd443b274a549312d00314bbbee77638 | 0 | `empty code` | `FAILED`: nessuna delle 30 regole cambia il codice (`joint_unchanged`) |
+| 590a0d10b7b500aaf0c80b79bfdf0246 | 0 | `empty code` | come sopra |
+| 5f0acf25b48fe82e46d05c7f86c6f976 | 0 | `empty code` | come sopra |
+| 9ed92ac4974029e0524555cef54c3786 | 187 | `no transformation applied` (nessuna regola applicabile) | rilevato senza errori |
+
+- **I due timeout sono i due campioni lunghi di D42.** Gli identificativi coincidono: sono i due
+  codici più lunghi della baseline di DeepSeek (24.717 caratteri ciascuno; il terzo ne ha 5.263),
+  nell'inserimento e nella rilevazione dei positivi, della baseline non marcata e del primo punto di
+  T2.4k (1504a65ed908). Per gli altri 9 punti di T2.4k gli identificativi non sono stati letti; i
+  conteggi (5 `FAILED`, 2 timeout per punto) sono gli stessi.
+- **Le 3 rilevazioni `FAILED` per tabella che non sono timeout** sono i 3 campioni con codice vuoto,
+  gli stessi in ogni tabella.
+- **I 4 inserimenti `FAILED` che non sono timeout:** 3 campioni con codice vuoto (la generazione della
+  baseline non ha prodotto codice; non dipende da ACW) e 1 campione corto (187 caratteri) su cui
+  nessuna delle 30 regole di Sourcery è applicabile.
+- **Inserimento riuscito di ACW su L3 test:** Qwen 3.564 su 3.564 (100%); DeepSeek 3.558 su 3.564
+  (99,83%): 2 per il limite di tempo di D42, 3 per codice vuoto della baseline, 1 senza regole
+  applicabili.
 
 **Risultati calcolati sul ramo.** Solo ACW su L3, T2.4k: 4 file di rilevazione (a8bd0fe, 843f569) e
 le 20 celle di metriche (843f569), tutti del 13 novembre. Fra ed59236 e 843f569 il codice cambia solo
