@@ -1,0 +1,66 @@
+srun: job 827539 queued and waiting for resources
+srun: job 827539 has been allocated resources
+##### mcss attacks T3.1 on L1 test
+attack              2/2    COMPLETE
+execute             2/2    COMPLETE
+detect              2/2    COMPLETE
+metrics             2/2    COMPLETE
+k2_threshold        2/2    COMPLETE
+k2_freeze           1/1    COMPLETE
+k2_neg_test         2/2    COMPLETE
+k2_detect           2/2    COMPLETE
+k2_metrics          2/2    COMPLETE
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python main
+  status {'APPLIED': 2505, 'UNCHANGED': 168, 'TOOL_ERROR': 3}  changed 0.936099  1-CodeBLEU 0.190834 (changed only 0.203861)
+  detail means {"n_sites": 6.671457}
+  tools {}
+  tpr_at_fpr 0.0135  unchanged_fraction 0.0628  auroc 0.6914  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9361  tool_error_fraction 0.0011  codebleu_distance 0.1908
+  fractions UNCHANGED 0.0628  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2505): passed 1918  not compiling 0  compiling but failing 587  {'PASSED': 1918, 'FAILED': 553, 'TIMEOUT': 34}
+  detection status {'OK': 2667, 'FAILED': 9}  FAILED fraction 0.0034
+  tpr_at_fpr_changed_only 0.0116 (n=2505)
+  pass@1 failures 630/2676: entry point renamed 0, missing 0, other 630; entry lost in 0/2505 APPLIED (0.0000)
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python main
+  status {'UNCHANGED': 246, 'APPLIED': 2430}  changed 0.908072  1-CodeBLEU 0.298518 (changed only 0.328738)
+  detail means {"n_sites": 6.049794}
+  tools {}
+  tpr_at_fpr 0.0093  unchanged_fraction 0.0919  auroc 0.6781  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9081  tool_error_fraction 0.0000  codebleu_distance 0.2985
+  fractions UNCHANGED 0.0919  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2430): passed 1679  not compiling 0  compiling but failing 751  {'PASSED': 1679, 'FAILED': 744, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.0058 (n=2430)
+  pass@1 failures 803/2676: entry point renamed 4, missing 0, other 799; entry lost in 4/2430 APPLIED (0.0016)
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python main
+  remark_only_k1                     0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2                     0.5740 [0.5310; 0.6166] n=2676
+  remark_both                        0.0135 [0.0090; 0.0187] n=2676
+  remark_none                        0.4126 [0.3677; 0.4574] n=2676
+  tpr_at_fpr_k2                      0.5874 [0.5407; 0.6312] n=2676
+  auroc_k2                           0.9845 [0.9794; 0.9892] n=3604
+  fpr_human_test_k1                  0.0043 [0.0012; 0.0110] n=928
+  fpr_human_test_k2                  0.0043 [0.0012; 0.0110] n=928
+  threshold_k1                       1.2621  n=1
+  threshold_k2                       1.2621  n=1
+  unchanged_fraction                 0.0628 [0.0542; 0.0726] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.0011 [0.0004; 0.0033] n=2676
+  THRESHOLDS k1 1.2621  k2 1.2621  k2/k1 1.000
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python main
+  remark_only_k1                     0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2                     0.4604 [0.4148; 0.5023] n=2676
+  remark_both                        0.0093 [0.0056; 0.0135] n=2676
+  remark_none                        0.5303 [0.4858; 0.5722] n=2676
+  tpr_at_fpr_k2                      0.4697 [0.4238; 0.5146] n=2676
+  auroc_k2                           0.9770 [0.9698; 0.9835] n=3604
+  fpr_human_test_k1                  0.0043 [0.0012; 0.0110] n=928
+  fpr_human_test_k2                  0.0022 [0.0003; 0.0078] n=928
+  threshold_k1                       1.2621  n=1
+  threshold_k2                       1.2621  n=1
+  unchanged_fraction                 0.0919 [0.0816; 0.1035] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.0000 [0.0000; 0.0014] n=2676
+  THRESHOLDS k1 1.2621  k2 1.2621  k2/k1 1.000

@@ -1,0 +1,120 @@
+srun: job 827540 queued and waiting for resources
+srun: job 827540 has been allocated resources
+##### multimark attacks T3.1 on L1 test
+attack              4/4    COMPLETE
+execute             4/4    COMPLETE
+detect              4/4    COMPLETE
+metrics             4/4    COMPLETE
+k2_threshold        4/4    COMPLETE
+k2_freeze           1/1    COMPLETE
+k2_neg_test         4/4    COMPLETE
+k2_detect           4/4    COMPLETE
+k2_metrics          4/4    COMPLETE
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python prudent
+  status {'UNCHANGED': 902, 'APPLIED': 1771, 'TOOL_ERROR': 3}  changed 0.661809  1-CodeBLEU 0.124441 (changed only 0.188032)
+  detail means {"n_sites": 5.376623}
+  tools {}
+  tpr_at_fpr 0.0239  unchanged_fraction 0.3371  auroc 0.5116  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.6618  tool_error_fraction 0.0011  codebleu_distance 0.1244
+  fractions UNCHANGED 0.3371  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 1771): passed 1303  not compiling 0  compiling but failing 468  {'PASSED': 1303, 'FAILED': 435, 'TIMEOUT': 33}
+  detection status {'OK': 2079, 'FAILED': 597}  FAILED fraction 0.2231
+  tpr_at_fpr_changed_only 0.0271 (n=1771)
+  pass@1 failures 630/2676: entry point renamed 0, missing 0, other 630; entry lost in 0/1771 APPLIED (0.0000)
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2526, 'UNCHANGED': 147, 'TOOL_ERROR': 3}  changed 0.943946  1-CodeBLEU 0.202908 (changed only 0.214957)
+  detail means {"n_sites": 7.084323}
+  tools {}
+  tpr_at_fpr 0.0396  unchanged_fraction 0.0549  auroc 0.6162  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9439  tool_error_fraction 0.0011  codebleu_distance 0.2029
+  fractions UNCHANGED 0.0549  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2526): passed 1924  not compiling 0  compiling but failing 602  {'PASSED': 1924, 'FAILED': 569, 'TIMEOUT': 33}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.0388 (n=2526)
+  pass@1 failures 630/2676: entry point renamed 0, missing 0, other 630; entry lost in 0/2526 APPLIED (0.0000)
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python prudent
+  status {'UNCHANGED': 1222, 'APPLIED': 1454}  changed 0.543348  1-CodeBLEU 0.150523 (changed only 0.277028)
+  detail means {"n_sites": 5.454608}
+  tools {}
+  tpr_at_fpr 0.0153  unchanged_fraction 0.4567  auroc 0.4312  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5433  tool_error_fraction 0.0000  codebleu_distance 0.1505
+  fractions UNCHANGED 0.4567  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1454): passed 940  not compiling 0  compiling but failing 514  {'PASSED': 940, 'FAILED': 507, 'TIMEOUT': 7}
+  detection status {'OK': 1762, 'FAILED': 914}  FAILED fraction 0.3416
+  tpr_at_fpr_changed_only 0.0213 (n=1454)
+  pass@1 failures 803/2676: entry point renamed 3, missing 0, other 800; entry lost in 3/1454 APPLIED (0.0021)
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2457, 'UNCHANGED': 219}  changed 0.918161  1-CodeBLEU 0.314686 (changed only 0.342735)
+  detail means {"n_sites": 6.490842}
+  tools {}
+  tpr_at_fpr 0.0247  unchanged_fraction 0.0818  auroc 0.6157  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9182  tool_error_fraction 0.0000  codebleu_distance 0.3147
+  fractions UNCHANGED 0.0818  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2457): passed 1708  not compiling 0  compiling but failing 749  {'PASSED': 1708, 'FAILED': 742, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.0256 (n=2457)
+  pass@1 failures 803/2676: entry point renamed 4, missing 0, other 799; entry lost in 4/2457 APPLIED (0.0016)
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python prudent
+  remark_only_k1                     0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2                     0.3135 [0.2750; 0.3558] n=2676
+  remark_both                        0.0239 [0.0176; 0.0303] n=2676
+  remark_none                        0.6626 [0.6203; 0.6999] n=2676
+  tpr_at_fpr_k2                      0.3374 [0.2941; 0.3778] n=2676
+  auroc_k2                           0.7485 [0.7161; 0.7801] n=3604
+  fpr_human_test_k1                  0.0119 [0.0059; 0.0211] n=928
+  fpr_human_test_k2                  0.0054 [0.0018; 0.0125] n=928
+  threshold_k1                       1.2274  n=1
+  threshold_k2                       1.4070  n=1
+  unchanged_fraction                 0.3371 [0.3194; 0.3552] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.0011 [0.0004; 0.0033] n=2676
+  THRESHOLDS k1 1.2274  k2 1.4070  k2/k1 1.146
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python high_capacity
+  remark_only_k1                     0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2                     0.5075 [0.4664; 0.5493] n=2676
+  remark_both                        0.0396 [0.0310; 0.0478] n=2676
+  remark_none                        0.4529 [0.4088; 0.4982] n=2676
+  tpr_at_fpr_k2                      0.5471 [0.5019; 0.5946] n=2676
+  auroc_k2                           0.9691 [0.9614; 0.9757] n=3604
+  fpr_human_test_k1                  0.0065 [0.0024; 0.0140] n=928
+  fpr_human_test_k2                  0.0075 [0.0030; 0.0155] n=928
+  threshold_k1                       1.5423  n=1
+  threshold_k2                       1.5127  n=1
+  unchanged_fraction                 0.0549 [0.0469; 0.0642] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.0011 [0.0004; 0.0033] n=2676
+  THRESHOLDS k1 1.5423  k2 1.5127  k2/k1 0.981
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python prudent
+  remark_only_k1                     0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2                     0.2747 [0.2377; 0.3120] n=2676
+  remark_both                        0.0153 [0.0105; 0.0213] n=2676
+  remark_none                        0.7100 [0.6693; 0.7489] n=2676
+  tpr_at_fpr_k2                      0.2900 [0.2500; 0.3266] n=2676
+  auroc_k2                           0.6337 [0.5997; 0.6732] n=3604
+  fpr_human_test_k1                  0.0032 [0.0007; 0.0094] n=928
+  fpr_human_test_k2                  0.0129 [0.0067; 0.0225] n=928
+  threshold_k1                       1.3359  n=1
+  threshold_k2                       1.2391  n=1
+  unchanged_fraction                 0.4567 [0.4379; 0.4756] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.0000 [0.0000; 0.0014] n=2676
+  THRESHOLDS k1 1.3359  k2 1.2391  k2/k1 0.928
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python high_capacity
+  remark_only_k1                     0.0000 [0.0000; 0.0000] n=2676
+  remark_only_k2                     0.4088 [0.3669; 0.4507] n=2676
+  remark_both                        0.0247 [0.0183; 0.0314] n=2676
+  remark_none                        0.5665 [0.5209; 0.6095] n=2676
+  tpr_at_fpr_k2                      0.4335 [0.3920; 0.4772] n=2676
+  auroc_k2                           0.9596 [0.9495; 0.9683] n=3604
+  fpr_human_test_k1                  0.0032 [0.0007; 0.0094] n=928
+  fpr_human_test_k2                  0.0054 [0.0018; 0.0125] n=928
+  threshold_k1                       1.6105  n=1
+  threshold_k2                       1.5405  n=1
+  unchanged_fraction                 0.0818 [0.0720; 0.0928] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.0000 [0.0000; 0.0014] n=2676
+  THRESHOLDS k1 1.6105  k2 1.5405  k2/k1 0.957
