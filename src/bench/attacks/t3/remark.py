@@ -9,7 +9,9 @@ Il codice finale deriva da quello marcato con k1 (interpretazione dello SPEC, AD
   di generazione del metodo e del livello (la fase attack lo passa in :class:`MethodSetup`), un
   campione per campione marcato, seme dall'RNG del campione (SPEC §18); il messaggio atteso
   (MCGMark) è quello del campione marcato. Codice estratto con la regola D4;
-- **metodi post-hoc** (``CodeEmbedder``, ACW): il metodo riapplicato con k2 al codice marcato.
+- **metodi post-hoc** (``CodeEmbedder``, ACW): il metodo riapplicato con k2 al codice marcato;
+  per mcss e multimark (P6) anche ``PARTIAL`` è un inserimento riuscito e ``FAILED`` con
+  ``no_sites`` è ``UNCHANGED`` (``_post_hoc_multibit``).
 
 **Stati:** ``APPLIED`` se il codice cambia; ``UNCHANGED`` se resta uguale (ACW: nessuna regola di
 k2 lo modifica); ``TOOL_ERROR`` con il codice marcato se generazione o estrazione falliscono (I1,
@@ -100,12 +102,17 @@ class RemarkAttack(Attack):
         return self._regenerate(parents, language, ctxs, setup)
 
     def _post_hoc(self, parents: Sequence[Any], setup: MethodSetup) -> list[AttackOutcome]:
-        """ACW: riapplicazione con k2 al codice marcato con k1."""
+        """ACW: riapplicazione con k2 al codice marcato con k1 (mcss e multimark:
+        :meth:`_post_hoc_multibit`)."""
         todo = [p for p in parents if p.code.strip()]
         run = setup.adapter.embed_from_code(
             todo, setup.hp, setup.model, self.key_id, setup.run_dir, setup.device
         )
         found = {r.item_id: r for r in (run.worker.results if run.worker else [])}
+        from bench.methods.adapters.multimark import PosthocMultibitAdapter
+
+        if isinstance(setup.adapter, PosthocMultibitAdapter):
+            return [self._post_hoc_multibit(p, found.get(p.sample_id)) for p in parents]
         out = []
         for parent in parents:
             res = found.get(parent.sample_id)
@@ -129,6 +136,34 @@ class RemarkAttack(Attack):
             else:
                 out.append(tool_error(parent.code, res.error or str(res.status), detail))
         return out
+
+    @staticmethod
+    def _post_hoc_multibit(parent: Any, res: WorkerResult | None) -> AttackOutcome:
+        """mcss e multimark (P6): riapplicazione con k2, con gli stati della libreria (§3.9).
+
+        ``PARTIAL`` (meno siti dei 24 bit) è un inserimento riuscito, come nella fase watermark
+        (``PosthocMultibitAdapter.embed_from_code``): ``APPLIED`` se il codice cambia. ``FAILED``
+        con motivo ``no_sites`` non ha niente da rimarcare: ``UNCHANGED`` (come ACW senza regole).
+        Gli altri ``FAILED`` (``syntax_error``, ``rewrite_mismatch``, eccezioni) sono
+        ``TOOL_ERROR``. Correzione del 26 novembre 2026 (docs/deviations.md, P6): prima solo
+        ``OK`` contava come riuscito e quasi tutti i campioni finivano in ``TOOL_ERROR``.
+        """
+        if not parent.code.strip():
+            return AttackOutcome(parent.code, AttackStatus.UNCHANGED, {"empty": True})
+        if res is None:
+            return tool_error(parent.code, "no worker result")
+        extra = res.extra or {}
+        status = str(res.status)
+        detail = {
+            "embed_status": status,
+            "reason": extra.get("reason"),
+            "n_sites": extra.get("n_sites"),
+        }
+        if status in ("OK", "PARTIAL") and res.code is not None:
+            return outcome(parent.code, res.code, detail)
+        if status == "FAILED" and (res.error or extra.get("reason")) == "no_sites":
+            return outcome(parent.code, parent.code, detail)
+        return tool_error(parent.code, res.error or status, detail)
 
     def _regenerate(
         self,

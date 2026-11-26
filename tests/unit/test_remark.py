@@ -24,6 +24,7 @@ from bench.config.schema import ExperimentConfig
 from bench.domain.enums import AttackStatus, Language
 from bench.domain.models import Problem, ThresholdSet
 from bench.hpo.freeze import FreezeRecord, FrozenCell, data_sha256, freeze_ref
+from bench.methods.adapters.multimark import PosthocMultibitAdapter
 from bench.methods.base import CodeEmbedder
 from bench.pipeline.facade import BenchmarkFacade
 from bench.pipeline.stage import Cell, CellPlanner, StageContext
@@ -176,6 +177,76 @@ def test_acw_reapplication(tmp_path: Path) -> None:
     out = _attack().apply_with_method(parents, PY, _ctxs(2), _setup(FakeACW(), tmp_path))
     assert [o.status for o in out] == [AttackStatus.APPLIED, AttackStatus.UNCHANGED]
     assert out[0].detail["rules"] == [2, 3, 4] and out[0].detail["applicable_rules"] == [2]
+
+
+def _results(samples: Sequence[Any], extra: dict[str, Any] | None = None) -> list[WorkerResult]:
+    """Esiti della libreria secondo il codice: OK, PARTIAL, FAILED no_sites o syntax_error."""
+    out = []
+    for s in samples:
+        if "ok" in s.code or "partial" in s.code:
+            status = "OK" if "ok" in s.code else "PARTIAL"
+            out.append(WorkerResult(s.sample_id, None, status, None, s.code + "# k2\n", None,
+                                    None, None, {"reason": None, "n_sites": 5, **(extra or {})}))  # fmt: skip
+        else:
+            reason = "no_sites" if "nosites" in s.code else "syntax_error"
+            out.append(WorkerResult(s.sample_id, None, "FAILED", None, s.code, None, None, None,
+                                    {"reason": reason, "n_sites": 0}, error=reason))  # fmt: skip
+    return out
+
+
+class FakeMultibit(PosthocMultibitAdapter):
+    """mcss/multimark finto: stati della libreria (§3.9) secondo il codice."""
+
+    name = "multimark"
+
+    def __init__(self) -> None:
+        self.key_id = ""
+
+    def supports(self, language: Any) -> bool:
+        return True
+
+    def embed_from_code(self, samples: Sequence[Any], hp: Any, model: Any, key_id: str,
+                        run_dir: Path, device: str = "cpu") -> Any:  # fmt: skip
+        self.key_id = key_id
+        return SimpleNamespace(worker=SimpleNamespace(results=_results(samples)))
+
+
+MULTIBIT_CODES = ["ok = 1\n", "partial = 1\n", "nosites\n", "bad(\n", ""]
+
+
+def test_posthoc_multibit_reapplication(tmp_path: Path) -> None:
+    """mcss e multimark: PARTIAL è riuscito, no_sites UNCHANGED, gli altri FAILED TOOL_ERROR."""
+    parents = [_parent(c, i) for i, c in enumerate(MULTIBIT_CODES)]
+    adapter = FakeMultibit()
+    out = _attack().apply_with_method(parents, PY, _ctxs(5), _setup(adapter, tmp_path))
+    assert adapter.key_id == "k2"
+    assert [o.status for o in out] == [
+        AttackStatus.APPLIED, AttackStatus.APPLIED, AttackStatus.UNCHANGED,
+        AttackStatus.TOOL_ERROR, AttackStatus.UNCHANGED,
+    ]  # fmt: skip
+    assert out[1].code == "partial = 1\n# k2\n"
+    assert out[1].detail == {"embed_status": "PARTIAL", "reason": None, "n_sites": 5}
+    assert out[2].code == "nosites\n" and out[2].detail["reason"] == "no_sites"
+    assert out[3].code == "bad(\n" and out[3].detail["error"] == "syntax_error"
+    assert out[4].detail == {"empty": True}
+
+
+def test_acw_unchanged_by_the_multibit_branch(tmp_path: Path) -> None:
+    """ACW come prima: solo OK è riuscito (un PARTIAL resta TOOL_ERROR), dettaglio con le regole."""
+
+    class PartialACW(FakeACW):
+        def embed_from_code(self, samples: Sequence[Any], *args: Any, **kwargs: Any) -> Any:
+            results = _results(samples, {"rules": [1]})
+            return SimpleNamespace(worker=SimpleNamespace(results=results))
+
+    parents = [_parent(c, i) for i, c in enumerate(MULTIBIT_CODES)]
+    out = _attack().apply_with_method(parents, PY, _ctxs(5), _setup(PartialACW(), tmp_path))  # type: ignore[abstract]
+    assert [o.status for o in out] == [
+        AttackStatus.APPLIED, AttackStatus.TOOL_ERROR, AttackStatus.TOOL_ERROR,
+        AttackStatus.TOOL_ERROR, AttackStatus.UNCHANGED,
+    ]  # fmt: skip
+    assert out[1].detail["error"] == "PARTIAL" and out[1].detail["rules"] == [1]
+    assert "reason" not in out[0].detail and out[0].detail["rules"] == [1]
 
 
 def _write(facade: BenchmarkFacade, ref: ArtifactRef, obj: Any) -> None:
