@@ -1,0 +1,118 @@
+##### multimark attacks T3.1 on L1 test
+attack              4/4    COMPLETE
+execute             4/4    COMPLETE
+detect              4/4    COMPLETE
+metrics             4/4    COMPLETE
+k2_threshold        4/4    COMPLETE
+k2_freeze           1/1    COMPLETE
+k2_neg_test         4/4    COMPLETE
+k2_detect           4/4    COMPLETE
+k2_metrics          4/4    COMPLETE
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python prudent
+  status {'TOOL_ERROR': 2676}  changed 0.0  1-CodeBLEU 0.0 (changed only None)
+  detail means {}
+  tools {}
+  tpr_at_fpr 0.3374  unchanged_fraction 0.0000  auroc 0.7503  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0000  tool_error_fraction 1.0000  codebleu_distance 0.0000
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 1.0000
+  exec (APPLIED 0): passed 0  not compiling 0  compiling but failing 0  {}
+  detection status {'OK': 2079, 'FAILED': 597}  FAILED fraction 0.2231
+  tpr_at_fpr_changed_only nan (n=0)
+  pass@1 failures 630/2676: entry point renamed 0, missing 0, other 630; entry lost in 0/0 APPLIED (0.0000)
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python high_capacity
+  status {'TOOL_ERROR': 2675, 'APPLIED': 1}  changed 0.000374  1-CodeBLEU 0.000212 (changed only 0.566085)
+  detail means {}
+  tools {}
+  tpr_at_fpr 0.5482  unchanged_fraction 0.0000  auroc 0.9710  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0004  tool_error_fraction 0.9996  codebleu_distance 0.0002
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.9996
+  exec (APPLIED 1): passed 1  not compiling 0  compiling but failing 0  {'PASSED': 1}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.0000 (n=1)
+  pass@1 failures 630/2676: entry point renamed 0, missing 0, other 630; entry lost in 0/1 APPLIED (0.0000)
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python prudent
+  status {'TOOL_ERROR': 2676}  changed 0.0  1-CodeBLEU 0.0 (changed only None)
+  detail means {}
+  tools {}
+  tpr_at_fpr 0.2900  unchanged_fraction 0.0000  auroc 0.6314  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0000  tool_error_fraction 1.0000  codebleu_distance 0.0000
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 1.0000
+  exec (APPLIED 0): passed 0  not compiling 0  compiling but failing 0  {}
+  detection status {'OK': 1762, 'FAILED': 914}  FAILED fraction 0.3416
+  tpr_at_fpr_changed_only nan (n=0)
+  pass@1 failures 803/2676: entry point renamed 0, missing 0, other 803; entry lost in 0/0 APPLIED (0.0000)
+
+##### T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python high_capacity
+  status {'TOOL_ERROR': 2672, 'APPLIED': 4}  changed 0.001495  1-CodeBLEU 0.000647 (changed only 0.432701)
+  detail means {}
+  tools {}
+  tpr_at_fpr 0.4342  unchanged_fraction 0.0000  auroc 0.9651  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0015  tool_error_fraction 0.9985  codebleu_distance 0.0006
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.9985
+  exec (APPLIED 4): passed 0  not compiling 0  compiling but failing 4  {'FAILED': 4}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.0000 (n=4)
+  pass@1 failures 803/2676: entry point renamed 0, missing 0, other 803; entry lost in 0/4 APPLIED (0.0000)
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python prudent
+  remark_only_k1                     0.3296 [0.2888; 0.3711] n=2676
+  remark_only_k2                     0.0000 [0.0000; 0.0000] n=2676
+  remark_both                        0.0078 [0.0045; 0.0116] n=2676
+  remark_none                        0.6626 [0.6203; 0.6999] n=2676
+  tpr_at_fpr_k2                      0.0078 [0.0045; 0.0116] n=2676
+  auroc_k2                           0.4623 [0.4345; 0.4906] n=3604
+  fpr_human_test_k1                  0.0119 [0.0059; 0.0211] n=928
+  fpr_human_test_k2                  0.0054 [0.0018; 0.0125] n=928
+  threshold_k1                       1.2274  n=1
+  threshold_k2                       1.4070  n=1
+  unchanged_fraction                 0.0000 [0.0000; 0.0014] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                1.0000 [0.9986; 1.0000] n=2676
+  THRESHOLDS k1 1.2274  k2 1.4070  k2/k1 1.146
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} qwen25_coder_7b python high_capacity
+  remark_only_k1                     0.5430 [0.4992; 0.5863] n=2676
+  remark_only_k2                     0.0004 [0.0000; 0.0011] n=2676
+  remark_both                        0.0052 [0.0026; 0.0082] n=2676
+  remark_none                        0.4514 [0.4077; 0.4966] n=2676
+  tpr_at_fpr_k2                      0.0056 [0.0026; 0.0086] n=2676
+  auroc_k2                           0.4785 [0.4582; 0.4991] n=3604
+  fpr_human_test_k1                  0.0065 [0.0024; 0.0140] n=928
+  fpr_human_test_k2                  0.0075 [0.0030; 0.0155] n=928
+  threshold_k1                       1.5423  n=1
+  threshold_k2                       1.5127  n=1
+  unchanged_fraction                 0.0000 [0.0000; 0.0014] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.9996 [0.9979; 0.9999] n=2676
+  THRESHOLDS k1 1.5423  k2 1.5127  k2/k1 0.981
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python prudent
+  remark_only_k1                     0.2829 [0.2463; 0.3203] n=2676
+  remark_only_k2                     0.0000 [0.0000; 0.0000] n=2676
+  remark_both                        0.0071 [0.0041; 0.0105] n=2676
+  remark_none                        0.7100 [0.6693; 0.7489] n=2676
+  tpr_at_fpr_k2                      0.0071 [0.0041; 0.0105] n=2676
+  auroc_k2                           0.4096 [0.3840; 0.4377] n=3604
+  fpr_human_test_k1                  0.0032 [0.0007; 0.0094] n=928
+  fpr_human_test_k2                  0.0129 [0.0067; 0.0225] n=928
+  threshold_k1                       1.3359  n=1
+  threshold_k2                       1.2391  n=1
+  unchanged_fraction                 0.0000 [0.0000; 0.0014] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                1.0000 [0.9986; 1.0000] n=2676
+  THRESHOLDS k1 1.3359  k2 1.2391  k2/k1 0.928
+
+##### T3.1 k1/k2 T3.1 {"key_id": "k2", "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe"} deepseek_coder_6p7b python high_capacity
+  remark_only_k1                     0.4294 [0.3849; 0.4716] n=2676
+  remark_only_k2                     0.0015 [0.0000; 0.0045] n=2676
+  remark_both                        0.0049 [0.0022; 0.0082] n=2676
+  remark_none                        0.5643 [0.5191; 0.6073] n=2676
+  tpr_at_fpr_k2                      0.0064 [0.0026; 0.0112] n=2676
+  auroc_k2                           0.4907 [0.4688; 0.5118] n=3604
+  fpr_human_test_k1                  0.0032 [0.0007; 0.0094] n=928
+  fpr_human_test_k2                  0.0054 [0.0018; 0.0125] n=928
+  threshold_k1                       1.6105  n=1
+  threshold_k2                       1.5405  n=1
+  unchanged_fraction                 0.0000 [0.0000; 0.0014] n=2676
+  not_applicable_fraction            0.0000 [0.0000; 0.0014] n=2676
+  tool_error_fraction                0.9985 [0.9962; 0.9994] n=2676
+  THRESHOLDS k1 1.6105  k2 1.5405  k2/k1 0.957

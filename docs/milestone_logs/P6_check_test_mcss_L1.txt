@@ -1,0 +1,6 @@
+##### mcss on L1 test (frozen 2026-11-24 16:14 UTC)
+watermark     2/2    COMPLETE
+execute       2/2    COMPLETE
+detect        6/6    COMPLETE
+metrics       2/2    COMPLETE
+thresholds: frozen ones in every metrics cell

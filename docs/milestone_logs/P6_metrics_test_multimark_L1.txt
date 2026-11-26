@@ -1,0 +1,124 @@
+
+##### multimark deepseek_coder_6p7b python (L1 test, config 3fed1f1c1e24)
+threshold 1.6104640538603547  achieved FPR dev 0.0100  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.4237829773640334  achieved FPR dev 0.0080
+  secondary nreg1024: threshold 4.04577890166048  achieved FPR dev 0.0100
+  secondary decode: threshold 0.5  achieved FPR dev 0.0100
+  tpr_at_fpr                          0.4357  [0.3875, 0.4791]  n=2676  cluster_bootstrap
+  fpr_human                           0.0032  [0.0007, 0.0094]  n=928  clopper_pearson
+  fpr_llm                             0.0037  [0.0018, 0.0069]  n=2676  clopper_pearson
+  auroc                               0.9655  [0.9555, 0.9742]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.2182  [0.1827, 0.2545]  n=2676  cluster_bootstrap
+  auroc_nreg16                        0.6935  [0.6615, 0.7261]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.0613  [0.0411, 0.0822]  n=2676  cluster_bootstrap
+  auroc_nreg1024                      0.4354  [0.3993, 0.4686]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.0318  [0.0176, 0.0456]  n=2676  cluster_bootstrap
+  auroc_decode                        0.6730  [0.6430, 0.7030]  n=3604  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0065]  n=584  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0229]  n=164  wilson
+  pass_at_1                           0.6999  [0.6611, 0.7407]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.6999  [0.6588, 0.7403]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=446  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9980, 1.0000]  n=1873  wilson
+  message_accuracy                    0.0019  [0.0008, 0.0044]  n=2676  wilson
+  bit_accuracy                        0.1840  [0.1725, 0.1957]  n=2676  cluster_bootstrap
+  embedding_success_rate              0.0015  [0.0006, 0.0038]  n=2676  wilson
+  message_accuracy_detected           0.0043  [0.0018, 0.0100]  n=1166  wilson
+  theoretical threshold score >= 2 (p <= 0.01, fixed; pipeline v1.3.0):
+    tpr                               0.3651  [0.3468, 0.3837]  977/2676  clopper_pearson
+    fpr_human                         0.0022  [0.0003, 0.0078]  2/928  clopper_pearson
+    fpr_llm                           0.0004  [0.0000, 0.0021]  1/2676  clopper_pearson
+  embed_success_rate 0.0015  n_sites {"n": 2676, "mean": 6.168, "median": 5.0, "min": 0.0, "max": 36.0}
+
+##### multimark deepseek_coder_6p7b python (L1 test, config e52b040770df)
+threshold 1.3358981437945303  achieved FPR dev 0.0085  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.2321487062561687  achieved FPR dev 0.0075
+  secondary nreg1024: threshold 3.612359947967774  achieved FPR dev 0.0080
+  secondary decode: threshold 0.4583333333333333  achieved FPR dev 0.0080
+  tpr_at_fpr                          0.2900  [0.2522, 0.3333]  n=2676  cluster_bootstrap
+  fpr_human                           0.0032  [0.0007, 0.0094]  n=928  clopper_pearson
+  fpr_llm                             0.0064  [0.0037, 0.0102]  n=2676  clopper_pearson
+  auroc                               0.6314  [0.5905, 0.6689]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.1323  [0.1046, 0.1603]  n=2676  cluster_bootstrap
+  auroc_nreg16                        0.4746  [0.4332, 0.5124]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.0366  [0.0220, 0.0527]  n=2676  cluster_bootstrap
+  auroc_nreg1024                      0.4050  [0.3697, 0.4388]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.0176  [0.0075, 0.0299]  n=2676  cluster_bootstrap
+  auroc_decode                        0.5101  [0.4743, 0.5447]  n=3604  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0107]  n=354  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0377]  n=98  wilson
+  pass_at_1                           0.6999  [0.6618, 0.7429]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.6999  [0.6614, 0.7381]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=446  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9980, 1.0000]  n=1873  wilson
+  message_accuracy                    0.0000  [0.0000, 0.0014]  n=2676  wilson
+  bit_accuracy                        0.0935  [0.0827, 0.1037]  n=2676  cluster_bootstrap
+  embedding_success_rate              0.0000  [0.0000, 0.0014]  n=2676  wilson
+  message_accuracy_detected           0.0000  [0.0000, 0.0049]  n=776  wilson
+  theoretical threshold score >= 2 (p <= 0.01, fixed; pipeline v1.3.0):
+    tpr                               0.1756  [0.1614, 0.1906]  470/2676  clopper_pearson
+    fpr_human                         0.0011  [0.0000, 0.0060]  1/928  clopper_pearson
+    fpr_llm                           0.0004  [0.0000, 0.0021]  1/2676  clopper_pearson
+  embed_success_rate 0.0000  n_sites {"n": 2676, "mean": 3.151, "median": 2.0, "min": 0.0, "max": 26.0}
+
+##### multimark qwen25_coder_7b python (L1 test, config 3fed1f1c1e24)
+threshold 1.5423220813600191  achieved FPR dev 0.0085  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.4237829773640334  achieved FPR dev 0.0075
+  secondary nreg1024: threshold 4.04577890166048  achieved FPR dev 0.0100
+  secondary decode: threshold 0.5416666666666666  achieved FPR dev 0.0070
+  tpr_at_fpr                          0.5486  [0.5026, 0.5927]  n=2676  cluster_bootstrap
+  fpr_human                           0.0065  [0.0024, 0.0140]  n=928  clopper_pearson
+  fpr_llm                             0.0067  [0.0040, 0.0106]  n=2676  clopper_pearson
+  auroc                               0.9711  [0.9634, 0.9774]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.2582  [0.2193, 0.2960]  n=2676  cluster_bootstrap
+  auroc_nreg16                        0.7714  [0.7444, 0.7981]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.0759  [0.0538, 0.1005]  n=2676  cluster_bootstrap
+  auroc_nreg1024                      0.5046  [0.4716, 0.5377]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.0291  [0.0161, 0.0441]  n=2676  cluster_bootstrap
+  auroc_decode                        0.7160  [0.6874, 0.7437]  n=3604  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0055]  n=691  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0186]  n=203  wilson
+  pass_at_1                           0.7646  [0.7261, 0.7971]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.7646  [0.7264, 0.8005]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=446  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9981, 1.0000]  n=2046  wilson
+  message_accuracy                    0.0007  [0.0002, 0.0027]  n=2676  wilson
+  bit_accuracy                        0.2032  [0.1901, 0.2155]  n=2676  cluster_bootstrap
+  embedding_success_rate              0.0004  [0.0001, 0.0021]  n=2676  wilson
+  message_accuracy_detected           0.0014  [0.0004, 0.0050]  n=1468  wilson
+  theoretical threshold score >= 2 (p <= 0.01, fixed; pipeline v1.3.0):
+    tpr                               0.4163  [0.3975, 0.4352]  1114/2676  clopper_pearson
+    fpr_human                         0.0011  [0.0000, 0.0060]  1/928  clopper_pearson
+    fpr_llm                           0.0034  [0.0015, 0.0064]  9/2676  clopper_pearson
+  embed_success_rate 0.0004  n_sites {"n": 2673, "mean": 6.852, "median": 6.0, "min": 0.0, "max": 40.0}
+
+##### multimark qwen25_coder_7b python (L1 test, config e52b040770df)
+threshold 1.2274243995713552  achieved FPR dev 0.0100  n_neg 2000  levels ['L1', 'L2']  
+  secondary nreg16: threshold 2.2321487062561687  achieved FPR dev 0.0080
+  secondary nreg1024: threshold 3.612359947967774  achieved FPR dev 0.0080
+  secondary decode: threshold 0.4583333333333333  achieved FPR dev 0.0055
+  tpr_at_fpr                          0.3374  [0.2960, 0.3786]  n=2676  cluster_bootstrap
+  fpr_human                           0.0119  [0.0059, 0.0211]  n=928  clopper_pearson
+  fpr_llm                             0.0086  [0.0055, 0.0129]  n=2676  clopper_pearson
+  auroc                               0.7503  [0.7147, 0.7841]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg16                   0.1428  [0.1106, 0.1738]  n=2676  cluster_bootstrap
+  auroc_nreg16                        0.5734  [0.5374, 0.6112]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_nreg1024                 0.0508  [0.0329, 0.0695]  n=2676  cluster_bootstrap
+  auroc_nreg1024                      0.4798  [0.4500, 0.5128]  n=3604  cluster_bootstrap+negative_resampling
+  tpr_at_fpr_decode                   0.0217  [0.0097, 0.0344]  n=2676  cluster_bootstrap
+  auroc_decode                        0.6092  [0.5737, 0.6407]  n=3604  cluster_bootstrap+negative_resampling
+  wrong_attribution_rate_nreg16       0.0000  [0.0000, 0.0100]  n=382  wilson
+  wrong_attribution_rate_nreg1024     0.0000  [0.0000, 0.0275]  n=136  wilson
+  pass_at_1                           0.7646  [0.7279, 0.8016]  n=446  cluster_bootstrap
+  pass_at_1_baseline                  0.7646  [0.7309, 0.8008]  n=446  cluster_bootstrap
+  delta_pass_at_1_pp                  0.0000  [0.0000, 0.0000]  n=446  cluster_bootstrap
+  conditional_preservation            1.0000  [0.9981, 1.0000]  n=2046  wilson
+  message_accuracy                    0.0000  [0.0000, 0.0014]  n=2676  wilson
+  bit_accuracy                        0.1143  [0.1039, 0.1246]  n=2676  cluster_bootstrap
+  embedding_success_rate              0.0000  [0.0000, 0.0014]  n=2676  wilson
+  message_accuracy_detected           0.0000  [0.0000, 0.0042]  n=903  wilson
+  theoretical threshold score >= 2 (p <= 0.01, fixed; pipeline v1.3.0):
+    tpr                               0.1786  [0.1643, 0.1937]  478/2676  clopper_pearson
+    fpr_human                         0.0000  [0.0000, 0.0040]  0/928  clopper_pearson
+    fpr_llm                           0.0015  [0.0004, 0.0038]  4/2676  clopper_pearson
+  embed_success_rate 0.0000  n_sites {"n": 2673, "mean": 3.792, "median": 3.0, "min": 0.0, "max": 28.0}

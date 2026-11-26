@@ -1,0 +1,103 @@
+##### multimark M12 on L1 test
+perplexity            8/8    COMPLETE
+logreg                4/4    COMPLETE
+unixcoder             4/4    COMPLETE
+metrics               4/4    COMPLETE
+
+##### multimark qwen25_coder_7b python prudent (config e52b040770df)
+  empty_fraction_marked                    0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.7650 [0.7525; 0.7791] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8321 [0.8173; 0.8477] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.0672 [-0.0766; -0.0588] n=446 (cluster_bootstrap)
+  delta_nll_mean                           0.0637 [0.0575; 0.0706] n=446 (cluster_bootstrap)
+  delta_nll_median                         0.0522 [0.0421; 0.0602] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           0.3467 [0.3048; 0.3946] n=446 (cluster_bootstrap)
+  delta_ppl_median                         0.2276 [0.1990; 0.2658] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.7449 [0.7252; 0.7646] n=5352 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.7494 [0.7277; 0.7710] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          0.8717 [0.8560; 0.8876] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    0.8723 [0.8519; 0.8927] n=5 (mean_pm_sd_folds)
+  codebleu_exact                           0.8787 [0.8699; 0.8873] n=446 (cluster_bootstrap)
+  delta_nll_exact                          0.0637 [0.0575; 0.0703] n=446 (cluster_bootstrap)
+  delta_ppl_exact                          0.3467 [0.2996; 0.3931] n=446 (cluster_bootstrap)
+  empty_gap: 0.0000
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.779, 0.747, 0.721, 0.758, 0.742]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [0.867, 0.883, 0.878, 0.893, 0.84]
+  message_accuracy                         0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  bit_accuracy                             0.1143 [0.1039; 0.1246] n=2676 (cluster_bootstrap)
+  embedding_success_rate                   0.0000 [0.0000; 0.0014] n=2676 (wilson)
+
+##### multimark qwen25_coder_7b python high_capacity (config 3fed1f1c1e24)
+  empty_fraction_marked                    0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.7033 [0.6898; 0.7166] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8321 [0.8164; 0.8463] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.1288 [-0.1388; -0.1191] n=446 (cluster_bootstrap)
+  delta_nll_mean                           0.1318 [0.1217; 0.1426] n=446 (cluster_bootstrap)
+  delta_nll_median                         0.1171 [0.0996; 0.1250] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           0.8753 [0.7752; 0.9894] n=446 (cluster_bootstrap)
+  delta_ppl_median                         0.5742 [0.5058; 0.6617] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.8876 [0.8736; 0.9011] n=5352 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.8934 [0.8795; 0.9073] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          0.9597 [0.9525; 0.9668] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    0.9615 [0.9523; 0.9707] n=5 (mean_pm_sd_folds)
+  codebleu_exact                           0.7999 [0.7902; 0.8102] n=446 (cluster_bootstrap)
+  delta_nll_exact                          0.1318 [0.1219; 0.1420] n=446 (cluster_bootstrap)
+  delta_ppl_exact                          0.8753 [0.7786; 0.9826] n=446 (cluster_bootstrap)
+  empty_gap: 0.0000
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.913, 0.892, 0.893, 0.896, 0.874]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [0.954, 0.964, 0.973, 0.966, 0.951]
+  message_accuracy                         0.0007 [0.0002; 0.0027] n=2676 (wilson)
+  bit_accuracy                             0.2032 [0.1901; 0.2155] n=2676 (cluster_bootstrap)
+  embedding_success_rate                   0.0004 [0.0001; 0.0021] n=2676 (wilson)
+
+##### multimark deepseek_coder_6p7b python prudent (config e52b040770df)
+  empty_fraction_marked                    0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.7521 [0.7373; 0.7677] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8437 [0.8281; 0.8579] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.0916 [-0.1034; -0.0801] n=446 (cluster_bootstrap)
+  delta_nll_mean                           0.0804 [0.0715; 0.0889] n=446 (cluster_bootstrap)
+  delta_nll_median                         0.0492 [0.0341; 0.0610] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           0.4604 [0.3580; 0.5474] n=446 (cluster_bootstrap)
+  delta_ppl_median                         0.2584 [0.2133; 0.3030] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.7257 [0.7054; 0.7462] n=5352 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.7299 [0.6857; 0.7740] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          0.8152 [0.7944; 0.8363] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    0.8202 [0.8028; 0.8375] n=5 (mean_pm_sd_folds)
+  codebleu_exact                           0.8493 [0.8365; 0.8610] n=446 (cluster_bootstrap)
+  delta_nll_exact                          0.0804 [0.0711; 0.0894] n=446 (cluster_bootstrap)
+  delta_ppl_exact                          0.4604 [0.3694; 0.5559] n=446 (cluster_bootstrap)
+  empty_gap: 0.0000
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.794, 0.707, 0.686, 0.706, 0.756]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [0.838, 0.813, 0.797, 0.837, 0.816]
+  message_accuracy                         0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  bit_accuracy                             0.0935 [0.0827; 0.1037] n=2676 (cluster_bootstrap)
+  embedding_success_rate                   0.0000 [0.0000; 0.0014] n=2676 (wilson)
+
+##### multimark deepseek_coder_6p7b python high_capacity (config 3fed1f1c1e24)
+  empty_fraction_marked                    0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.6128 [0.6013; 0.6245] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8437 [0.8281; 0.8587] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.2309 [-0.2439; -0.2178] n=446 (cluster_bootstrap)
+  delta_nll_mean                           0.1564 [0.1413; 0.1710] n=446 (cluster_bootstrap)
+  delta_nll_median                         0.1429 [0.1276; 0.1591] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           1.2465 [1.0134; 1.5246] n=446 (cluster_bootstrap)
+  delta_ppl_median                         0.7443 [0.6591; 0.8740] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.8983 [0.8846; 0.9119] n=5352 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.9022 [0.8892; 0.9152] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          0.9575 [0.9496; 0.9651] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    0.9577 [0.9488; 0.9666] n=5 (mean_pm_sd_folds)
+  codebleu_exact                           0.6844 [0.6728; 0.6948] n=446 (cluster_bootstrap)
+  delta_nll_exact                          0.1564 [0.1427; 0.1711] n=446 (cluster_bootstrap)
+  delta_ppl_exact                          1.2465 [1.0067; 1.4941] n=446 (cluster_bootstrap)
+  empty_gap: 0.0000
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.922, 0.89, 0.906, 0.891, 0.903]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [0.96, 0.971, 0.948, 0.958, 0.952]
+  message_accuracy                         0.0019 [0.0008; 0.0044] n=2676 (wilson)
+  bit_accuracy                             0.1840 [0.1725; 0.1957] n=2676 (cluster_bootstrap)
+  embedding_success_rate                   0.0015 [0.0006; 0.0038] n=2676 (wilson)
+
+empty-fraction gaps > 2 points: none

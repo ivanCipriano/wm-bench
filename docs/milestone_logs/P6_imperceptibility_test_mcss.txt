@@ -1,0 +1,55 @@
+##### mcss M12 on L1 test
+perplexity            4/4    COMPLETE
+logreg                2/2    COMPLETE
+unixcoder             2/2    COMPLETE
+metrics               2/2    COMPLETE
+
+##### mcss qwen25_coder_7b python main (config 1d3087c73439)
+  empty_fraction_marked                    0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.6915 [0.6771; 0.7053] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8321 [0.8158; 0.8479] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.1407 [-0.1509; -0.1296] n=446 (cluster_bootstrap)
+  delta_nll_mean                           0.2298 [0.2169; 0.2431] n=446 (cluster_bootstrap)
+  delta_nll_median                         0.2154 [0.2030; 0.2317] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           1.7906 [1.6078; 1.9806] n=446 (cluster_bootstrap)
+  delta_ppl_median                         1.1429 [1.0242; 1.2986] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.9797 [0.9705; 0.9868] n=5352 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.9815 [0.9746; 0.9884] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          0.9953 [0.9915; 0.9983] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    0.9967 [0.9929; 1.0005] n=5 (mean_pm_sd_folds)
+  codebleu_exact                           0.7855 [0.7749; 0.7954] n=446 (cluster_bootstrap)
+  delta_nll_exact                          0.2298 [0.2175; 0.2430] n=446 (cluster_bootstrap)
+  delta_ppl_exact                          1.7906 [1.6208; 1.9842] n=446 (cluster_bootstrap)
+  empty_gap: 0.0000
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.99, 0.971, 0.981, 0.984, 0.981]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [0.998, 0.995, 1.0, 0.999, 0.991]
+  message_accuracy                         0.0011 [0.0004; 0.0033] n=2676 (wilson)
+  bit_accuracy                             0.2023 [0.1916; 0.2151] n=2676 (cluster_bootstrap)
+  embedding_success_rate                   0.0004 [0.0001; 0.0021] n=2676 (wilson)
+
+##### mcss deepseek_coder_6p7b python main (config 1d3087c73439)
+  empty_fraction_marked                    0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  empty_fraction_reference                 0.0000 [0.0000; 0.0014] n=2676 (wilson)
+  codebleu                                 0.5827 [0.5707; 0.5959] n=446 (cluster_bootstrap)
+  codebleu_natural                         0.8437 [0.8290; 0.8580] n=446 (cluster_bootstrap)
+  codebleu_minus_natural                   -0.2610 [-0.2750; -0.2475] n=446 (cluster_bootstrap)
+  delta_nll_mean                           0.2977 [0.2797; 0.3156] n=446 (cluster_bootstrap)
+  delta_nll_median                         0.2896 [0.2666; 0.3146] n=446 (cluster_bootstrap)
+  delta_ppl_mean                           3.1897 [2.8203; 3.6133] n=446 (cluster_bootstrap)
+  delta_ppl_median                         1.6962 [1.4025; 2.0348] n=446 (cluster_bootstrap)
+  adversarial_logreg_auroc_oof             0.9818 [0.9733; 0.9889] n=5352 (cluster_bootstrap)
+  adversarial_logreg_auroc_fold_mean       0.9830 [0.9732; 0.9928] n=5 (mean_pm_sd_folds)
+  adversarial_unixcoder_auroc_oof          0.9981 [0.9952; 0.9997] n=5352 (cluster_bootstrap)
+  adversarial_unixcoder_auroc_fold_mean    0.9988 [0.9969; 1.0007] n=5 (mean_pm_sd_folds)
+  codebleu_exact                           0.6480 [0.6374; 0.6594] n=446 (cluster_bootstrap)
+  delta_nll_exact                          0.2977 [0.2799; 0.3165] n=446 (cluster_bootstrap)
+  delta_ppl_exact                          3.1897 [2.8219; 3.6099] n=446 (cluster_bootstrap)
+  empty_gap: 0.0000
+  logreg vs baseline: folds disjoint by problem True, fold AUROC [0.995, 0.976, 0.987, 0.97, 0.987]
+  unixcoder vs baseline: folds disjoint by problem True, fold AUROC [0.995, 1.0, 1.0, 1.0, 0.999]
+  message_accuracy                         0.0034 [0.0018; 0.0064] n=2676 (wilson)
+  bit_accuracy                             0.1771 [0.1645; 0.1888] n=2676 (cluster_bootstrap)
+  embedding_success_rate                   0.0015 [0.0006; 0.0038] n=2676 (wilson)
+
+empty-fraction gaps > 2 points: none

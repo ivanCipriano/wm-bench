@@ -1,0 +1,1294 @@
+##### multimark attacks T1.1,T1.2,T1.3,T1.4,T1.5,T1.6,T2.1,T2.2,T2.4,T2.5,T4.1 on L1 test
+attack            120/120  COMPLETE
+execute           120/120  COMPLETE
+detect            120/120  COMPLETE
+metrics           120/120  COMPLETE
+control_attack      2/2    COMPLETE
+control_detect      4/4    COMPLETE
+control_metrics     4/4    COMPLETE
+
+##### T1.1 {} qwen25_coder_7b python prudent
+  status {'APPLIED': 1506, 'UNCHANGED': 1170}  changed 0.56278  1-CodeBLEU 0.020052 (changed only 0.03563)
+  detail means {}
+  tools {"black": "24.10.0"}
+  tpr_at_fpr 0.3374  unchanged_fraction 0.4372  auroc 0.7503  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5628  tool_error_fraction 0.0000  codebleu_distance 0.0201
+  fractions UNCHANGED 0.4372  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1506): passed 1093  not compiling 3  compiling but failing 410  {'PASSED': 1093, 'FAILED': 384, 'TIMEOUT': 26, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2079, 'FAILED': 597}  FAILED fraction 0.2231
+  tpr_at_fpr_changed_only 0.4290 (n=1506)
+
+##### T1.1 {} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 1528, 'UNCHANGED': 1148}  changed 0.571001  1-CodeBLEU 0.021225 (changed only 0.037172)
+  detail means {}
+  tools {"black": "24.10.0"}
+  tpr_at_fpr 0.5486  unchanged_fraction 0.4290  auroc 0.9711  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5710  tool_error_fraction 0.0000  codebleu_distance 0.0212
+  fractions UNCHANGED 0.4290  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1528): passed 1105  not compiling 3  compiling but failing 420  {'PASSED': 1105, 'FAILED': 394, 'TIMEOUT': 26, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.6204 (n=1528)
+
+##### T1.1 {} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 1400, 'UNCHANGED': 1276}  changed 0.523169  1-CodeBLEU 0.055235 (changed only 0.105579)
+  detail means {}
+  tools {"black": "24.10.0"}
+  tpr_at_fpr 0.2900  unchanged_fraction 0.4768  auroc 0.6314  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5232  tool_error_fraction 0.0000  codebleu_distance 0.0552
+  fractions UNCHANGED 0.4768  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1400): passed 876  not compiling 0  compiling but failing 524  {'PASSED': 876, 'FAILED': 517, 'TIMEOUT': 7}
+  detection status {'OK': 1762, 'FAILED': 914}  FAILED fraction 0.3416
+  tpr_at_fpr_changed_only 0.3707 (n=1400)
+
+##### T1.1 {} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 1407, 'UNCHANGED': 1269}  changed 0.525785  1-CodeBLEU 0.056438 (changed only 0.10734)
+  detail means {}
+  tools {"black": "24.10.0"}
+  tpr_at_fpr 0.4357  unchanged_fraction 0.4742  auroc 0.9655  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5258  tool_error_fraction 0.0000  codebleu_distance 0.0564
+  fractions UNCHANGED 0.4742  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1407): passed 879  not compiling 0  compiling but failing 528  {'PASSED': 879, 'FAILED': 521, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.5380 (n=1407)
+
+##### T1.2 {} qwen25_coder_7b python prudent
+  status {'UNCHANGED': 2614, 'APPLIED': 62}  changed 0.023169  1-CodeBLEU 0.001195 (changed only 0.051564)
+  detail means {}
+  tools {"ruff": "ruff 0.7.4"}
+  tpr_at_fpr 0.3374  unchanged_fraction 0.9768  auroc 0.7503  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0232  tool_error_fraction 0.0000  codebleu_distance 0.0012
+  fractions UNCHANGED 0.9768  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 62): passed 44  not compiling 0  compiling but failing 18  {'PASSED': 44, 'TIMEOUT': 3, 'FAILED': 15}
+  detection status {'OK': 2079, 'FAILED': 597}  FAILED fraction 0.2231
+  tpr_at_fpr_changed_only 0.5000 (n=62)
+
+##### T1.2 {} qwen25_coder_7b python high_capacity
+  status {'UNCHANGED': 2614, 'APPLIED': 62}  changed 0.023169  1-CodeBLEU 0.001195 (changed only 0.051564)
+  detail means {}
+  tools {"ruff": "ruff 0.7.4"}
+  tpr_at_fpr 0.5486  unchanged_fraction 0.9768  auroc 0.9711  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0232  tool_error_fraction 0.0000  codebleu_distance 0.0012
+  fractions UNCHANGED 0.9768  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 62): passed 44  not compiling 0  compiling but failing 18  {'PASSED': 44, 'TIMEOUT': 3, 'FAILED': 15}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.8548 (n=62)
+
+##### T1.2 {} deepseek_coder_6p7b python prudent
+  status {'UNCHANGED': 2644, 'APPLIED': 32}  changed 0.011958  1-CodeBLEU 0.001062 (changed only 0.088781)
+  detail means {}
+  tools {"ruff": "ruff 0.7.4"}
+  tpr_at_fpr 0.2900  unchanged_fraction 0.9880  auroc 0.6314  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0120  tool_error_fraction 0.0000  codebleu_distance 0.0011
+  fractions UNCHANGED 0.9880  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 32): passed 25  not compiling 0  compiling but failing 7  {'PASSED': 25, 'FAILED': 7}
+  detection status {'OK': 1762, 'FAILED': 914}  FAILED fraction 0.3416
+  tpr_at_fpr_changed_only 0.3125 (n=32)
+
+##### T1.2 {} deepseek_coder_6p7b python high_capacity
+  status {'UNCHANGED': 2644, 'APPLIED': 32}  changed 0.011958  1-CodeBLEU 0.001062 (changed only 0.088781)
+  detail means {}
+  tools {"ruff": "ruff 0.7.4"}
+  tpr_at_fpr 0.4357  unchanged_fraction 0.9880  auroc 0.9655  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0120  tool_error_fraction 0.0000  codebleu_distance 0.0011
+  fractions UNCHANGED 0.9880  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 32): passed 25  not compiling 0  compiling but failing 7  {'PASSED': 25, 'FAILED': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.6562 (n=32)
+
+##### T1.3 {"mode": "remove"} qwen25_coder_7b python prudent
+  status {'UNCHANGED': 1283, 'APPLIED': 1393}  changed 0.520553  1-CodeBLEU 0.180228 (changed only 0.346224)
+  detail means {"n_removed": 2.171572}
+  tools {}
+  tpr_at_fpr 0.3374  unchanged_fraction 0.4794  auroc 0.7503  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5206  tool_error_fraction 0.0000  codebleu_distance 0.1802
+  fractions UNCHANGED 0.4794  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1393): passed 1036  not compiling 3  compiling but failing 354  {'PASSED': 1036, 'FAILED': 339, 'TIMEOUT': 15, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2079, 'FAILED': 597}  FAILED fraction 0.2231
+  tpr_at_fpr_changed_only 0.2154 (n=1393)
+
+##### T1.3 {"mode": "remove"} qwen25_coder_7b python high_capacity
+  status {'UNCHANGED': 1283, 'APPLIED': 1393}  changed 0.520553  1-CodeBLEU 0.180231 (changed only 0.346229)
+  detail means {"n_removed": 2.171572}
+  tools {}
+  tpr_at_fpr 0.5486  unchanged_fraction 0.4794  auroc 0.9711  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.5206  tool_error_fraction 0.0000  codebleu_distance 0.1802
+  fractions UNCHANGED 0.4794  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1393): passed 1036  not compiling 3  compiling but failing 354  {'PASSED': 1036, 'FAILED': 339, 'TIMEOUT': 15, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.4781 (n=1393)
+
+##### T1.3 {"mode": "remove"} deepseek_coder_6p7b python prudent
+  status {'UNCHANGED': 2540, 'APPLIED': 136}  changed 0.050822  1-CodeBLEU 0.012459 (changed only 0.245142)
+  detail means {"n_removed": 3.345588}
+  tools {}
+  tpr_at_fpr 0.2900  unchanged_fraction 0.9492  auroc 0.6314  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0508  tool_error_fraction 0.0000  codebleu_distance 0.0125
+  fractions UNCHANGED 0.9492  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 136): passed 75  not compiling 0  compiling but failing 61  {'PASSED': 75, 'FAILED': 60, 'TIMEOUT': 1}
+  detection status {'OK': 1762, 'FAILED': 914}  FAILED fraction 0.3416
+  tpr_at_fpr_changed_only 0.6544 (n=136)
+
+##### T1.3 {"mode": "remove"} deepseek_coder_6p7b python high_capacity
+  status {'UNCHANGED': 2540, 'APPLIED': 136}  changed 0.050822  1-CodeBLEU 0.012458 (changed only 0.245139)
+  detail means {"n_removed": 3.345588}
+  tools {}
+  tpr_at_fpr 0.4357  unchanged_fraction 0.9492  auroc 0.9655  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0508  tool_error_fraction 0.0000  codebleu_distance 0.0125
+  fractions UNCHANGED 0.9492  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 136): passed 75  not compiling 0  compiling but failing 61  {'PASSED': 75, 'FAILED': 60, 'TIMEOUT': 1}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.8015 (n=136)
+
+##### T1.3 {"density": 0.333, "mode": "insert"} qwen25_coder_7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.099985 (changed only 0.099985)
+  detail means {"added_token_fraction": 0.273348, "added_tokens": 19.255232, "n_code_lines": 5.883034, "n_comments": 2.0213, "n_sites": 4.569507, "n_wanted": 2.022048}
+  tools {}
+  tpr_at_fpr 0.3374  unchanged_fraction 0.0000  auroc 0.7503  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.1000
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 2046  not compiling 3  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2079, 'FAILED': 597}  FAILED fraction 0.2231
+  tpr_at_fpr_changed_only 0.3374 (n=2676)
+
+##### T1.3 {"density": 0.333, "mode": "insert"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.09971 (changed only 0.09971)
+  detail means {"added_token_fraction": 0.275962, "added_tokens": 19.273169, "n_code_lines": 5.883034, "n_comments": 2.0213, "n_sites": 4.569507, "n_wanted": 2.022048}
+  tools {}
+  tpr_at_fpr 0.5486  unchanged_fraction 0.0000  auroc 0.9711  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.0997
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 2046  not compiling 3  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.5486 (n=2676)
+
+##### T1.3 {"density": 0.333, "mode": "insert"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.17933 (changed only 0.17933)
+  detail means {"added_token_fraction": 0.416394, "added_tokens": 18.121824, "n_code_lines": 5.403961, "n_comments": 1.914051, "n_sites": 3.915546, "n_wanted": 1.921151}
+  tools {}
+  tpr_at_fpr 0.2900  unchanged_fraction 0.0000  auroc 0.6314  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.1793
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 1762, 'FAILED': 914}  FAILED fraction 0.3416
+  tpr_at_fpr_changed_only 0.2900 (n=2676)
+
+##### T1.3 {"density": 0.333, "mode": "insert"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.178752 (changed only 0.178752)
+  detail means {"added_token_fraction": 0.415042, "added_tokens": 18.05157, "n_code_lines": 5.403961, "n_comments": 1.914051, "n_sites": 3.915546, "n_wanted": 1.921151}
+  tools {}
+  tpr_at_fpr 0.4357  unchanged_fraction 0.0000  auroc 0.9655  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.1788
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.4357 (n=2676)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} qwen25_coder_7b python prudent
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.098688 (changed only 0.099021)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 3.193851, "n_renamed": 1.068991, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.2336  unchanged_fraction 0.0022  auroc 0.7108  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.0987
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2040  not compiling 0  compiling but failing 627  {'PASSED': 2040, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2087, 'FAILED': 589}  FAILED fraction 0.2201
+  tpr_at_fpr_changed_only 0.2343 (n=2667)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.099024 (changed only 0.099358)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 3.234721, "n_renamed": 1.068991, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.3057  unchanged_fraction 0.0022  auroc 0.8342  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.0990
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2040  not compiling 0  compiling but failing 627  {'PASSED': 2040, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.3067 (n=2667)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.213366 (changed only 0.214649)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 3.157143, "n_renamed": 1.046241, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.2037  unchanged_fraction 0.0060  auroc 0.6108  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2134
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 790, 'TIMEOUT': 7}
+  detection status {'OK': 1765, 'FAILED': 911}  FAILED fraction 0.3404
+  tpr_at_fpr_changed_only 0.2049 (n=2660)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.25} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.2133 (changed only 0.214583)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 3.178195, "n_renamed": 1.046241, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.2537  unchanged_fraction 0.0060  auroc 0.7853  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2133
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 785, 'TIMEOUT': 12}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.2553 (n=2660)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} qwen25_coder_7b python prudent
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.099105 (changed only 0.09944)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 3.212598, "n_renamed": 1.068991, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.2414  unchanged_fraction 0.0022  auroc 0.7119  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.0991
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2040  not compiling 0  compiling but failing 627  {'PASSED': 2040, 'FAILED': 592, 'TIMEOUT': 35}
+  detection status {'OK': 2085, 'FAILED': 591}  FAILED fraction 0.2209
+  tpr_at_fpr_changed_only 0.2422 (n=2667)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.09836 (changed only 0.098692)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 3.24297, "n_renamed": 1.068991, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.3038  unchanged_fraction 0.0022  auroc 0.8302  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.0984
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2039  not compiling 0  compiling but failing 628  {'PASSED': 2039, 'FAILED': 594, 'TIMEOUT': 34}
+  detection status {'OK': 2663, 'FAILED': 13}  FAILED fraction 0.0049
+  tpr_at_fpr_changed_only 0.3048 (n=2667)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.213241 (changed only 0.214523)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 3.185338, "n_renamed": 1.046241, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1981  unchanged_fraction 0.0060  auroc 0.6115  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2132
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 789, 'TIMEOUT': 8}
+  detection status {'OK': 1764, 'FAILED': 912}  FAILED fraction 0.3408
+  tpr_at_fpr_changed_only 0.1992 (n=2660)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.25} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.214059 (changed only 0.215347)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 3.199624, "n_renamed": 1.046241, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.2522  unchanged_fraction 0.0060  auroc 0.7895  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2141
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 790, 'TIMEOUT': 7}
+  detection status {'OK': 2656, 'FAILED': 20}  FAILED fraction 0.0075
+  tpr_at_fpr_changed_only 0.2538 (n=2660)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} qwen25_coder_7b python prudent
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.132183 (changed only 0.132629)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 5.050619, "n_renamed": 1.629546, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1663  unchanged_fraction 0.0022  auroc 0.6787  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.1322
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2040  not compiling 0  compiling but failing 627  {'PASSED': 2040, 'FAILED': 592, 'TIMEOUT': 35}
+  detection status {'OK': 2091, 'FAILED': 585}  FAILED fraction 0.2186
+  tpr_at_fpr_changed_only 0.1669 (n=2667)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.131672 (changed only 0.132116)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 5.03862, "n_renamed": 1.629546, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1850  unchanged_fraction 0.0022  auroc 0.8015  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.1317
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2039  not compiling 0  compiling but failing 628  {'PASSED': 2039, 'FAILED': 594, 'TIMEOUT': 34}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.1856 (n=2667)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.256136 (changed only 0.257676)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 4.675564, "n_renamed": 1.47406, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1484  unchanged_fraction 0.0060  auroc 0.5935  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2561
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 789, 'TIMEOUT': 8}
+  detection status {'OK': 1767, 'FAILED': 909}  FAILED fraction 0.3397
+  tpr_at_fpr_changed_only 0.1492 (n=2660)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.5} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.255249 (changed only 0.256785)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 4.72218, "n_renamed": 1.47406, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1652  unchanged_fraction 0.0060  auroc 0.7569  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2552
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 788, 'TIMEOUT': 9}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.1662 (n=2660)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} qwen25_coder_7b python prudent
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.132895 (changed only 0.133343)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 5.041245, "n_renamed": 1.629546, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1596  unchanged_fraction 0.0022  auroc 0.6844  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.1329
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2040  not compiling 0  compiling but failing 627  {'PASSED': 2040, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2089, 'FAILED': 587}  FAILED fraction 0.2194
+  tpr_at_fpr_changed_only 0.1601 (n=2667)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.132354 (changed only 0.132801)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 5.048369, "n_renamed": 1.629546, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1842  unchanged_fraction 0.0022  auroc 0.7901  pass_at_1 0.7638  delta_pass_at_1_pp 0.0747  delta_pass_at_1_pp_vs_marked 0.0747  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.1324
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2038  not compiling 0  compiling but failing 629  {'PASSED': 2038, 'FAILED': 594, 'TIMEOUT': 35}
+  detection status {'OK': 2667, 'FAILED': 9}  FAILED fraction 0.0034
+  tpr_at_fpr_changed_only 0.1849 (n=2667)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.256169 (changed only 0.257709)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 4.690226, "n_renamed": 1.47406, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1484  unchanged_fraction 0.0060  auroc 0.5921  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2562
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 789, 'TIMEOUT': 8}
+  detection status {'OK': 1765, 'FAILED': 911}  FAILED fraction 0.3404
+  tpr_at_fpr_changed_only 0.1492 (n=2660)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.5} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.25431 (changed only 0.25584)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 4.699624, "n_renamed": 1.47406, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1629  unchanged_fraction 0.0060  auroc 0.7571  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.2543
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 790, 'TIMEOUT': 7}
+  detection status {'OK': 2657, 'FAILED': 19}  FAILED fraction 0.0071
+  tpr_at_fpr_changed_only 0.1639 (n=2660)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} qwen25_coder_7b python prudent
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.164902 (changed only 0.165458)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 7.048744, "n_renamed": 2.263967, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1207  unchanged_fraction 0.0022  auroc 0.6483  pass_at_1 0.7638  delta_pass_at_1_pp 0.0747  delta_pass_at_1_pp_vs_marked 0.0747  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.1649
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2038  not compiling 0  compiling but failing 629  {'PASSED': 2038, 'FAILED': 594, 'TIMEOUT': 35}
+  detection status {'OK': 2092, 'FAILED': 584}  FAILED fraction 0.2182
+  tpr_at_fpr_changed_only 0.1211 (n=2667)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2666, 'TOOL_ERROR': 4, 'UNCHANGED': 6}  changed 0.996263  1-CodeBLEU 0.164202 (changed only 0.164817)
+  detail means {"n_candidates": 2.854839, "n_occurrences": 7.014629, "n_renamed": 2.25994, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1087  unchanged_fraction 0.0022  auroc 0.7119  pass_at_1 0.7638  delta_pass_at_1_pp 0.0747  delta_pass_at_1_pp_vs_marked 0.0747  changed_fraction 0.9963  tool_error_fraction 0.0015  codebleu_distance 0.1642
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0015
+  exec (APPLIED 2666): passed 2038  not compiling 0  compiling but failing 628  {'PASSED': 2038, 'FAILED': 593, 'TIMEOUT': 35}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.1088 (n=2666)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.303069 (changed only 0.304892)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 6.702256, "n_renamed": 2.071805, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1181  unchanged_fraction 0.0060  auroc 0.5723  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.3031
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 788, 'TIMEOUT': 9}
+  detection status {'OK': 1765, 'FAILED': 911}  FAILED fraction 0.3404
+  tpr_at_fpr_changed_only 0.1188 (n=2660)
+
+##### T1.4 {"name_kind": "random", "ratio": 0.75} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.302208 (changed only 0.304026)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 6.690226, "n_renamed": 2.071805, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0927  unchanged_fraction 0.0060  auroc 0.6722  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.3022
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 787, 'TIMEOUT': 10}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.0932 (n=2660)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} qwen25_coder_7b python prudent
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.164897 (changed only 0.165454)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 7.029246, "n_renamed": 2.263967, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1271  unchanged_fraction 0.0022  auroc 0.6474  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.1649
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2039  not compiling 0  compiling but failing 628  {'PASSED': 2039, 'FAILED': 594, 'TIMEOUT': 34}
+  detection status {'OK': 2090, 'FAILED': 586}  FAILED fraction 0.2190
+  tpr_at_fpr_changed_only 0.1275 (n=2667)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2666, 'TOOL_ERROR': 4, 'UNCHANGED': 6}  changed 0.996263  1-CodeBLEU 0.164466 (changed only 0.165083)
+  detail means {"n_candidates": 2.854839, "n_occurrences": 7.034134, "n_renamed": 2.25994, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1121  unchanged_fraction 0.0022  auroc 0.7058  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9963  tool_error_fraction 0.0015  codebleu_distance 0.1645
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0015
+  exec (APPLIED 2666): passed 2040  not compiling 0  compiling but failing 626  {'PASSED': 2040, 'FAILED': 593, 'TIMEOUT': 33}
+  detection status {'OK': 2666, 'FAILED': 10}  FAILED fraction 0.0037
+  tpr_at_fpr_changed_only 0.1122 (n=2666)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.303376 (changed only 0.305201)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 6.706015, "n_renamed": 2.071805, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.1177  unchanged_fraction 0.0060  auroc 0.5720  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.3034
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 789, 'TIMEOUT': 8}
+  detection status {'OK': 1767, 'FAILED': 909}  FAILED fraction 0.3397
+  tpr_at_fpr_changed_only 0.1184 (n=2660)
+
+##### T1.4 {"name_kind": "natural", "ratio": 0.75} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.302416 (changed only 0.304236)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 6.67782, "n_renamed": 2.071805, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0968  unchanged_fraction 0.0060  auroc 0.6635  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.3024
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 789, 'TIMEOUT': 8}
+  detection status {'OK': 2659, 'FAILED': 17}  FAILED fraction 0.0064
+  tpr_at_fpr_changed_only 0.0974 (n=2660)
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} qwen25_coder_7b python prudent
+  status {'APPLIED': 2667, 'UNCHANGED': 6, 'TOOL_ERROR': 3}  changed 0.996637  1-CodeBLEU 0.189051 (changed only 0.189689)
+  detail means {"n_candidates": 2.860142, "n_occurrences": 9.023622, "n_renamed": 2.860142, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0945  unchanged_fraction 0.0022  auroc 0.6160  pass_at_1 0.7638  delta_pass_at_1_pp 0.0747  delta_pass_at_1_pp_vs_marked 0.0747  changed_fraction 0.9966  tool_error_fraction 0.0011  codebleu_distance 0.1891
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2667): passed 2038  not compiling 0  compiling but failing 629  {'PASSED': 2038, 'FAILED': 595, 'TIMEOUT': 34}
+  detection status {'OK': 2095, 'FAILED': 581}  FAILED fraction 0.2171
+  tpr_at_fpr_changed_only 0.0949 (n=2667)
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2666, 'TOOL_ERROR': 4, 'UNCHANGED': 6}  changed 0.996263  1-CodeBLEU 0.188532 (changed only 0.18924)
+  detail means {"n_candidates": 2.854839, "n_occurrences": 9.005626, "n_renamed": 2.854839, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0534  unchanged_fraction 0.0022  auroc 0.6340  pass_at_1 0.7638  delta_pass_at_1_pp 0.0747  delta_pass_at_1_pp_vs_marked 0.0747  changed_fraction 0.9963  tool_error_fraction 0.0015  codebleu_distance 0.1885
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0015
+  exec (APPLIED 2666): passed 2038  not compiling 0  compiling but failing 628  {'PASSED': 2038, 'FAILED': 595, 'TIMEOUT': 33}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.0533 (n=2666)
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.330384 (changed only 0.332371)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 8.305639, "n_renamed": 2.52406, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0811  unchanged_fraction 0.0060  auroc 0.5509  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.3304
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 790, 'TIMEOUT': 7}
+  detection status {'OK': 1769, 'FAILED': 907}  FAILED fraction 0.3389
+  tpr_at_fpr_changed_only 0.0816 (n=2660)
+
+##### T1.4 {"name_kind": "random", "ratio": 1.0} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.329392 (changed only 0.331373)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 8.305639, "n_renamed": 2.52406, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0590  unchanged_fraction 0.0060  auroc 0.6352  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.3294
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 790, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.0594 (n=2660)
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} qwen25_coder_7b python prudent
+  status {'APPLIED': 2666, 'TOOL_ERROR': 4, 'UNCHANGED': 6}  changed 0.996263  1-CodeBLEU 0.189107 (changed only 0.189816)
+  detail means {"n_candidates": 2.854839, "n_occurrences": 9.005626, "n_renamed": 2.854839, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0889  unchanged_fraction 0.0022  auroc 0.6133  pass_at_1 0.7638  delta_pass_at_1_pp 0.0747  delta_pass_at_1_pp_vs_marked 0.0747  changed_fraction 0.9963  tool_error_fraction 0.0015  codebleu_distance 0.1891
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0015
+  exec (APPLIED 2666): passed 2038  not compiling 0  compiling but failing 628  {'PASSED': 2038, 'FAILED': 595, 'TIMEOUT': 33}
+  detection status {'OK': 2091, 'FAILED': 585}  FAILED fraction 0.2186
+  tpr_at_fpr_changed_only 0.0889 (n=2666)
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2666, 'TOOL_ERROR': 4, 'UNCHANGED': 6}  changed 0.996263  1-CodeBLEU 0.188309 (changed only 0.189016)
+  detail means {"n_candidates": 2.854839, "n_occurrences": 9.005626, "n_renamed": 2.854839, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0609  unchanged_fraction 0.0022  auroc 0.6396  pass_at_1 0.7638  delta_pass_at_1_pp 0.0747  delta_pass_at_1_pp_vs_marked 0.0747  changed_fraction 0.9963  tool_error_fraction 0.0015  codebleu_distance 0.1883
+  fractions UNCHANGED 0.0022  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0015
+  exec (APPLIED 2666): passed 2038  not compiling 0  compiling but failing 628  {'PASSED': 2038, 'FAILED': 595, 'TIMEOUT': 33}
+  detection status {'OK': 2668, 'FAILED': 8}  FAILED fraction 0.0030
+  tpr_at_fpr_changed_only 0.0608 (n=2666)
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2660, 'UNCHANGED': 16}  changed 0.994021  1-CodeBLEU 0.330442 (changed only 0.33243)
+  detail means {"n_candidates": 2.52406, "n_occurrences": 8.305639, "n_renamed": 2.52406, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0818  unchanged_fraction 0.0060  auroc 0.5515  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9940  tool_error_fraction 0.0000  codebleu_distance 0.3304
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2660): passed 1863  not compiling 0  compiling but failing 797  {'PASSED': 1863, 'FAILED': 790, 'TIMEOUT': 7}
+  detection status {'OK': 1769, 'FAILED': 907}  FAILED fraction 0.3389
+  tpr_at_fpr_changed_only 0.0823 (n=2660)
+
+##### T1.4 {"name_kind": "natural", "ratio": 1.0} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2659, 'UNCHANGED': 16, 'TOOL_ERROR': 1}  changed 0.993647  1-CodeBLEU 0.329153 (changed only 0.331258)
+  detail means {"n_candidates": 2.522001, "n_occurrences": 8.294096, "n_renamed": 2.522001, "natural_fallbacks": 0.0}
+  tools {}
+  tpr_at_fpr 0.0583  unchanged_fraction 0.0060  auroc 0.6135  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9936  tool_error_fraction 0.0004  codebleu_distance 0.3292
+  fractions UNCHANGED 0.0060  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0004
+  exec (APPLIED 2659): passed 1863  not compiling 0  compiling but failing 796  {'PASSED': 1863, 'FAILED': 788, 'TIMEOUT': 8}
+  detection status {'OK': 2656, 'FAILED': 20}  FAILED fraction 0.0075
+  tpr_at_fpr_changed_only 0.0583 (n=2659)
+
+##### T1.5 {"k": 1} qwen25_coder_7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.126953 (changed only 0.126953)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.092676, "n_stderr_log": 0.431614, "n_unused_var": 0.47571}
+  tools {}
+  tpr_at_fpr 0.2664  unchanged_fraction 0.0000  auroc 0.7153  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.1270
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 2046  not compiling 3  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2403, 'FAILED': 273}  FAILED fraction 0.1020
+  tpr_at_fpr_changed_only 0.2664 (n=2676)
+
+##### T1.5 {"k": 1} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.127869 (changed only 0.127869)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.099028, "n_stderr_log": 0.441704, "n_unused_var": 0.459268}
+  tools {}
+  tpr_at_fpr 0.4529  unchanged_fraction 0.0000  auroc 0.9415  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.1279
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 2046  not compiling 3  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.4529 (n=2676)
+
+##### T1.5 {"k": 1} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.20166 (changed only 0.20166)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.08296, "n_stderr_log": 0.454783, "n_unused_var": 0.462257}
+  tools {}
+  tpr_at_fpr 0.2313  unchanged_fraction 0.0000  auroc 0.6065  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2017
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2219, 'FAILED': 457}  FAILED fraction 0.1708
+  tpr_at_fpr_changed_only 0.2313 (n=2676)
+
+##### T1.5 {"k": 1} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.201135 (changed only 0.201135)
+  detail means {"k": 1.0, "n_edits": 1.0, "n_extract": 0.08707, "n_stderr_log": 0.442825, "n_unused_var": 0.470105}
+  tools {}
+  tpr_at_fpr 0.3868  unchanged_fraction 0.0000  auroc 0.9342  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2011
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.3868 (n=2676)
+
+##### T1.5 {"k": 3} qwen25_coder_7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.211489 (changed only 0.211489)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.28438, "n_stderr_log": 1.315022, "n_unused_var": 1.400598}
+  tools {}
+  tpr_at_fpr 0.1898  unchanged_fraction 0.0000  auroc 0.6696  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2115
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 2046  not compiling 3  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2610, 'FAILED': 66}  FAILED fraction 0.0247
+  tpr_at_fpr_changed_only 0.1898 (n=2676)
+
+##### T1.5 {"k": 3} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.214368 (changed only 0.214368)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.306801, "n_stderr_log": 1.294469, "n_unused_var": 1.398729}
+  tools {}
+  tpr_at_fpr 0.3199  unchanged_fraction 0.0000  auroc 0.8982  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2144
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 2046  not compiling 3  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.3199 (n=2676)
+
+##### T1.5 {"k": 3} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.294644 (changed only 0.294644)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.265321, "n_stderr_log": 1.361734, "n_unused_var": 1.372945}
+  tools {}
+  tpr_at_fpr 0.1663  unchanged_fraction 0.0000  auroc 0.5781  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2946
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2572, 'FAILED': 104}  FAILED fraction 0.0389
+  tpr_at_fpr_changed_only 0.1663 (n=2676)
+
+##### T1.5 {"k": 3} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.29604 (changed only 0.29604)
+  detail means {"k": 3.0, "n_edits": 3.0, "n_extract": 0.266069, "n_stderr_log": 1.356129, "n_unused_var": 1.377803}
+  tools {}
+  tpr_at_fpr 0.2881  unchanged_fraction 0.0000  auroc 0.8945  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2960
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.2881 (n=2676)
+
+##### T1.5 {"k": 5} qwen25_coder_7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.248218 (changed only 0.248218)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.493274, "n_stderr_log": 2.197683, "n_unused_var": 2.309043}
+  tools {}
+  tpr_at_fpr 0.1637  unchanged_fraction 0.0000  auroc 0.6472  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2482
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 2046  not compiling 3  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2660, 'FAILED': 16}  FAILED fraction 0.0060
+  tpr_at_fpr_changed_only 0.1637 (n=2676)
+
+##### T1.5 {"k": 5} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.248197 (changed only 0.248197)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.499626, "n_stderr_log": 2.196188, "n_unused_var": 2.304185}
+  tools {}
+  tpr_at_fpr 0.2717  unchanged_fraction 0.0000  auroc 0.8707  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2482
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 2046  not compiling 3  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.2717 (n=2676)
+
+##### T1.5 {"k": 5} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.331329 (changed only 0.331329)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.434978, "n_stderr_log": 2.249626, "n_unused_var": 2.315396}
+  tools {}
+  tpr_at_fpr 0.1271  unchanged_fraction 0.0000  auroc 0.5622  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.3313
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2641, 'FAILED': 35}  FAILED fraction 0.0131
+  tpr_at_fpr_changed_only 0.1271 (n=2676)
+
+##### T1.5 {"k": 5} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.332843 (changed only 0.332843)
+  detail means {"k": 5.0, "n_edits": 5.0, "n_extract": 0.423767, "n_stderr_log": 2.26719, "n_unused_var": 2.309043}
+  tools {}
+  tpr_at_fpr 0.2422  unchanged_fraction 0.0000  auroc 0.8624  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.3328
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.2422 (n=2676)
+
+##### T1.6 {"caps": "convert"} qwen25_coder_7b python prudent
+  status {'UNCHANGED': 2584, 'APPLIED': 89, 'TOOL_ERROR': 3}  changed 0.033259  1-CodeBLEU 0.005174 (changed only 0.155569)
+  detail means {"n_candidates": 3.595506, "n_caps_kept": 0.0, "n_collisions": 0.089888, "n_module": 0.0, "n_module_renamed": 0.0, "n_occurrences": 3.820225, "n_renamed": 1.05618}
+  tools {}
+  tpr_at_fpr 0.3374  unchanged_fraction 0.9656  auroc 0.7503  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0333  tool_error_fraction 0.0011  codebleu_distance 0.0052
+  fractions UNCHANGED 0.9656  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 89): passed 67  not compiling 0  compiling but failing 22  {'TIMEOUT': 6, 'FAILED': 16, 'PASSED': 67}
+  detection status {'OK': 2079, 'FAILED': 597}  FAILED fraction 0.2231
+  tpr_at_fpr_changed_only 0.2809 (n=89)
+
+##### T1.6 {"caps": "convert"} qwen25_coder_7b python high_capacity
+  status {'UNCHANGED': 2644, 'APPLIED': 29, 'TOOL_ERROR': 3}  changed 0.010837  1-CodeBLEU 0.001486 (changed only 0.137117)
+  detail means {"n_candidates": 3.931034, "n_caps_kept": 0.0, "n_collisions": 0.068966, "n_module": 0.0, "n_module_renamed": 0.0, "n_occurrences": 3.586207, "n_renamed": 1.0}
+  tools {}
+  tpr_at_fpr 0.5486  unchanged_fraction 0.9880  auroc 0.9711  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0108  tool_error_fraction 0.0011  codebleu_distance 0.0015
+  fractions UNCHANGED 0.9880  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 29): passed 22  not compiling 0  compiling but failing 7  {'TIMEOUT': 3, 'FAILED': 4, 'PASSED': 22}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.7241 (n=29)
+
+##### T1.6 {"caps": "convert"} deepseek_coder_6p7b python prudent
+  status {'UNCHANGED': 2670, 'APPLIED': 6}  changed 0.002242  1-CodeBLEU 0.001008 (changed only 0.44937)
+  detail means {"n_candidates": 2.0, "n_caps_kept": 0.0, "n_collisions": 0.0, "n_module": 0.0, "n_module_renamed": 0.0, "n_occurrences": 3.0, "n_renamed": 1.0}
+  tools {}
+  tpr_at_fpr 0.2900  unchanged_fraction 0.9978  auroc 0.6314  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0022  tool_error_fraction 0.0000  codebleu_distance 0.0010
+  fractions UNCHANGED 0.9978  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 6): passed 6  not compiling 0  compiling but failing 0  {'PASSED': 6}
+  detection status {'OK': 1762, 'FAILED': 914}  FAILED fraction 0.3416
+  tpr_at_fpr_changed_only 0.0000 (n=6)
+
+##### T1.6 {"caps": "convert"} deepseek_coder_6p7b python high_capacity
+  status {'UNCHANGED': 2675, 'APPLIED': 1}  changed 0.000374  1-CodeBLEU 0.000168 (changed only 0.44937)
+  detail means {"n_candidates": 2.0, "n_caps_kept": 0.0, "n_collisions": 0.0, "n_module": 0.0, "n_module_renamed": 0.0, "n_occurrences": 3.0, "n_renamed": 1.0}
+  tools {}
+  tpr_at_fpr 0.4357  unchanged_fraction 0.9996  auroc 0.9655  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0004  tool_error_fraction 0.0000  codebleu_distance 0.0002
+  fractions UNCHANGED 0.9996  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1): passed 1  not compiling 0  compiling but failing 0  {'PASSED': 1}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.0000 (n=1)
+
+##### T1.6 {"caps": "keep"} qwen25_coder_7b python prudent
+  status {'UNCHANGED': 2584, 'APPLIED': 89, 'TOOL_ERROR': 3}  changed 0.033259  1-CodeBLEU 0.005174 (changed only 0.155569)
+  detail means {"n_candidates": 3.595506, "n_caps_kept": 0.0, "n_collisions": 0.089888, "n_module": 0.0, "n_module_renamed": 0.0, "n_occurrences": 3.820225, "n_renamed": 1.05618}
+  tools {}
+  tpr_at_fpr 0.3374  unchanged_fraction 0.9656  auroc 0.7503  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.0333  tool_error_fraction 0.0011  codebleu_distance 0.0052
+  fractions UNCHANGED 0.9656  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 89): passed 67  not compiling 0  compiling but failing 22  {'TIMEOUT': 6, 'FAILED': 16, 'PASSED': 67}
+  detection status {'OK': 2079, 'FAILED': 597}  FAILED fraction 0.2231
+  tpr_at_fpr_changed_only 0.2809 (n=89)
+
+##### T1.6 {"caps": "keep"} qwen25_coder_7b python high_capacity
+  status {'UNCHANGED': 2644, 'APPLIED': 29, 'TOOL_ERROR': 3}  changed 0.010837  1-CodeBLEU 0.001486 (changed only 0.137117)
+  detail means {"n_candidates": 3.931034, "n_caps_kept": 0.0, "n_collisions": 0.068966, "n_module": 0.0, "n_module_renamed": 0.0, "n_occurrences": 3.586207, "n_renamed": 1.0}
+  tools {}
+  tpr_at_fpr 0.5486  unchanged_fraction 0.9880  auroc 0.9711  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0108  tool_error_fraction 0.0011  codebleu_distance 0.0015
+  fractions UNCHANGED 0.9880  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 29): passed 22  not compiling 0  compiling but failing 7  {'TIMEOUT': 3, 'FAILED': 4, 'PASSED': 22}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.7241 (n=29)
+
+##### T1.6 {"caps": "keep"} deepseek_coder_6p7b python prudent
+  status {'UNCHANGED': 2670, 'APPLIED': 6}  changed 0.002242  1-CodeBLEU 0.001008 (changed only 0.44937)
+  detail means {"n_candidates": 2.0, "n_caps_kept": 0.0, "n_collisions": 0.0, "n_module": 0.0, "n_module_renamed": 0.0, "n_occurrences": 3.0, "n_renamed": 1.0}
+  tools {}
+  tpr_at_fpr 0.2900  unchanged_fraction 0.9978  auroc 0.6314  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0022  tool_error_fraction 0.0000  codebleu_distance 0.0010
+  fractions UNCHANGED 0.9978  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 6): passed 6  not compiling 0  compiling but failing 0  {'PASSED': 6}
+  detection status {'OK': 1762, 'FAILED': 914}  FAILED fraction 0.3416
+  tpr_at_fpr_changed_only 0.0000 (n=6)
+
+##### T1.6 {"caps": "keep"} deepseek_coder_6p7b python high_capacity
+  status {'UNCHANGED': 2675, 'APPLIED': 1}  changed 0.000374  1-CodeBLEU 0.000168 (changed only 0.44937)
+  detail means {"n_candidates": 2.0, "n_caps_kept": 0.0, "n_collisions": 0.0, "n_module": 0.0, "n_module_renamed": 0.0, "n_occurrences": 3.0, "n_renamed": 1.0}
+  tools {}
+  tpr_at_fpr 0.4357  unchanged_fraction 0.9996  auroc 0.9655  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.0004  tool_error_fraction 0.0000  codebleu_distance 0.0002
+  fractions UNCHANGED 0.9996  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1): passed 1  not compiling 0  compiling but failing 0  {'PASSED': 1}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.0000 (n=1)
+
+##### T2.1 {"b": 1, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python prudent
+  status {'APPLIED': 1541, 'UNCHANGED': 1135}  changed 0.575859  1-CodeBLEU 0.117604 (changed only 0.204223)
+  detail means {"b": 1.0, "n_points": 1.15769, "n_types": 1.0, "n_types_applicable": 1.767034}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.576  n_types_applicable mean 1.018  rejected {}
+  T2.1 applied types {'commutative_swap': 240, 'comparison_flip': 245, 'compound_assignment': 90, 'for_to_while': 259, 'if_else_inversion': 155, 'ruff:assign-if-exp': 5, 'ruff:comprehension-to-generator': 7, 'ruff:for-index-underscore': 10, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 334, 'ruff:list-comprehension': 36, 'ruff:merge-comparisons': 7, 'ruff:merge-duplicate-blocks': 1, 'ruff:merge-list-appends-into-extend': 1, 'ruff:merge-nested-ifs': 16, 'ruff:remove-unnecessary-else': 109, 'ruff:use-any': 21}
+  tpr_at_fpr 0.2407  unchanged_fraction 0.4241  auroc 0.6457  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.5759  tool_error_fraction 0.0000  codebleu_distance 0.1176
+  fractions UNCHANGED 0.4241  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1541): passed 1143  not compiling 3  compiling but failing 395  {'PASSED': 1143, 'FAILED': 362, 'TIMEOUT': 33, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 1872, 'FAILED': 804}  FAILED fraction 0.3004
+  tpr_at_fpr_changed_only 0.3082 (n=1541)
+
+##### T2.1 {"b": 1, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 1540, 'UNCHANGED': 1136}  changed 0.575486  1-CodeBLEU 0.117982 (changed only 0.205014)
+  detail means {"b": 1.0, "n_points": 1.180519, "n_types": 1.0, "n_types_applicable": 1.767532}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.575  n_types_applicable mean 1.017  rejected {}
+  T2.1 applied types {'commutative_swap': 249, 'comparison_flip': 241, 'compound_assignment': 79, 'for_to_while': 269, 'if_else_inversion': 164, 'ruff:assign-if-exp': 3, 'ruff:comprehension-to-generator': 3, 'ruff:for-index-underscore': 7, 'ruff:identity-comprehension': 4, 'ruff:inline-immediately-returned-variable': 337, 'ruff:list-comprehension': 33, 'ruff:merge-comparisons': 8, 'ruff:merge-duplicate-blocks': 1, 'ruff:merge-nested-ifs': 19, 'ruff:remove-unnecessary-else': 100, 'ruff:use-any': 23}
+  tpr_at_fpr 0.3714  unchanged_fraction 0.4245  auroc 0.9462  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.5755  tool_error_fraction 0.0000  codebleu_distance 0.1180
+  fractions UNCHANGED 0.4245  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1540): passed 1142  not compiling 3  compiling but failing 395  {'PASSED': 1142, 'FAILED': 362, 'TIMEOUT': 33, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.4123 (n=1540)
+
+##### T2.1 {"b": 1, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 1100, 'UNCHANGED': 1576}  changed 0.411061  1-CodeBLEU 0.086976 (changed only 0.21159)
+  detail means {"b": 1.0, "n_points": 1.243636, "n_types": 1.0, "n_types_applicable": 1.931818}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.411  n_types_applicable mean 0.794  rejected {}
+  T2.1 applied types {'commutative_swap': 225, 'comparison_flip': 194, 'compound_assignment': 52, 'for_to_while': 222, 'if_else_inversion': 191, 'ruff:assign-if-exp': 1, 'ruff:comprehension-to-generator': 11, 'ruff:for-index-underscore': 6, 'ruff:identity-comprehension': 3, 'ruff:inline-immediately-returned-variable': 37, 'ruff:list-comprehension': 10, 'ruff:merge-comparisons': 5, 'ruff:merge-duplicate-blocks': 2, 'ruff:merge-else-if-into-elif': 2, 'ruff:merge-nested-ifs': 10, 'ruff:remove-unnecessary-else': 108, 'ruff:use-any': 21}
+  tpr_at_fpr 0.2152  unchanged_fraction 0.5889  auroc 0.5927  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.4111  tool_error_fraction 0.0000  codebleu_distance 0.0870
+  fractions UNCHANGED 0.5889  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1100): passed 681  not compiling 0  compiling but failing 419  {'PASSED': 681, 'FAILED': 412, 'TIMEOUT': 7}
+  detection status {'OK': 1752, 'FAILED': 924}  FAILED fraction 0.3453
+  tpr_at_fpr_changed_only 0.3755 (n=1100)
+
+##### T2.1 {"b": 1, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 1101, 'UNCHANGED': 1575}  changed 0.411435  1-CodeBLEU 0.087122 (changed only 0.211751)
+  detail means {"b": 1.0, "n_points": 1.265213, "n_types": 1.0, "n_types_applicable": 1.930972}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.411  n_types_applicable mean 0.794  rejected {}
+  T2.1 applied types {'commutative_swap': 235, 'comparison_flip': 203, 'compound_assignment': 55, 'for_to_while': 217, 'if_else_inversion': 172, 'ruff:assign-if-exp': 2, 'ruff:comprehension-to-generator': 9, 'ruff:for-index-underscore': 7, 'ruff:identity-comprehension': 2, 'ruff:inline-immediately-returned-variable': 37, 'ruff:list-comprehension': 11, 'ruff:merge-comparisons': 5, 'ruff:merge-duplicate-blocks': 2, 'ruff:merge-nested-ifs': 14, 'ruff:remove-unnecessary-else': 105, 'ruff:use-any': 25}
+  tpr_at_fpr 0.3285  unchanged_fraction 0.5886  auroc 0.9453  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.4114  tool_error_fraction 0.0000  codebleu_distance 0.0871
+  fractions UNCHANGED 0.5886  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1101): passed 681  not compiling 0  compiling but failing 420  {'PASSED': 681, 'FAILED': 413, 'TIMEOUT': 7}
+  detection status {'OK': 2668, 'FAILED': 8}  FAILED fraction 0.0030
+  tpr_at_fpr_changed_only 0.4859 (n=1101)
+
+##### T2.1 {"b": 2, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python prudent
+  status {'APPLIED': 1541, 'UNCHANGED': 1135}  changed 0.575859  1-CodeBLEU 0.137995 (changed only 0.239633)
+  detail means {"b": 2.0, "n_points": 1.670344, "n_types": 1.356262, "n_types_applicable": 1.767034}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.781  n_types_applicable mean 1.018  rejected {}
+  T2.1 applied types {'commutative_swap': 336, 'comparison_flip': 348, 'compound_assignment': 161, 'for_to_while': 351, 'if_else_inversion': 168, 'ruff:assign-if-exp': 8, 'ruff:comprehension-to-generator': 8, 'ruff:for-index-underscore': 15, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 360, 'ruff:list-comprehension': 46, 'ruff:merge-comparisons': 15, 'ruff:merge-duplicate-blocks': 1, 'ruff:merge-list-appends-into-extend': 1, 'ruff:merge-nested-ifs': 30, 'ruff:remove-unnecessary-else': 203, 'ruff:use-any': 34}
+  tpr_at_fpr 0.1992  unchanged_fraction 0.4241  auroc 0.6247  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.5759  tool_error_fraction 0.0000  codebleu_distance 0.1380
+  fractions UNCHANGED 0.4241  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1541): passed 1143  not compiling 3  compiling but failing 395  {'PASSED': 1143, 'FAILED': 362, 'TIMEOUT': 33, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 1861, 'FAILED': 815}  FAILED fraction 0.3046
+  tpr_at_fpr_changed_only 0.2362 (n=1541)
+
+##### T2.1 {"b": 2, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 1540, 'UNCHANGED': 1136}  changed 0.575486  1-CodeBLEU 0.137322 (changed only 0.23862)
+  detail means {"b": 2.0, "n_points": 1.67987, "n_types": 1.361039, "n_types_applicable": 1.767532}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.783  n_types_applicable mean 1.017  rejected {}
+  T2.1 applied types {'commutative_swap': 352, 'comparison_flip': 356, 'compound_assignment': 159, 'for_to_while': 335, 'if_else_inversion': 171, 'ruff:assign-if-exp': 5, 'ruff:comprehension-to-generator': 11, 'ruff:for-index-underscore': 13, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 361, 'ruff:list-comprehension': 46, 'ruff:merge-comparisons': 14, 'ruff:merge-list-appends-into-extend': 2, 'ruff:merge-nested-ifs': 25, 'ruff:remove-unnecessary-else': 204, 'ruff:use-any': 37}
+  tpr_at_fpr 0.3270  unchanged_fraction 0.4245  auroc 0.9354  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.5755  tool_error_fraction 0.0000  codebleu_distance 0.1373
+  fractions UNCHANGED 0.4245  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1540): passed 1142  not compiling 3  compiling but failing 395  {'PASSED': 1142, 'FAILED': 362, 'TIMEOUT': 33, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.3351 (n=1540)
+
+##### T2.1 {"b": 2, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 1100, 'UNCHANGED': 1576}  changed 0.411061  1-CodeBLEU 0.106689 (changed only 0.259545)
+  detail means {"b": 2.0, "n_points": 1.908182, "n_types": 1.415455, "n_types_applicable": 1.931818}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.582  n_types_applicable mean 0.794  rejected {}
+  T2.1 applied types {'commutative_swap': 312, 'comparison_flip': 287, 'compound_assignment': 106, 'for_to_while': 282, 'if_else_inversion': 185, 'ruff:assign-if-exp': 4, 'ruff:comprehension-to-generator': 18, 'ruff:for-index-underscore': 8, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 41, 'ruff:list-comprehension': 22, 'ruff:merge-comparisons': 13, 'ruff:merge-duplicate-blocks': 6, 'ruff:merge-else-if-into-elif': 3, 'ruff:merge-nested-ifs': 24, 'ruff:remove-unnecessary-else': 199, 'ruff:use-any': 42}
+  tpr_at_fpr 0.1794  unchanged_fraction 0.5889  auroc 0.5781  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.4111  tool_error_fraction 0.0000  codebleu_distance 0.1067
+  fractions UNCHANGED 0.5889  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1100): passed 681  not compiling 0  compiling but failing 419  {'PASSED': 681, 'FAILED': 412, 'TIMEOUT': 7}
+  detection status {'OK': 1750, 'FAILED': 926}  FAILED fraction 0.3460
+  tpr_at_fpr_changed_only 0.2882 (n=1100)
+
+##### T2.1 {"b": 2, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 1101, 'UNCHANGED': 1575}  changed 0.411435  1-CodeBLEU 0.106442 (changed only 0.25871)
+  detail means {"b": 2.0, "n_points": 1.903724, "n_types": 1.407811, "n_types_applicable": 1.930972}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.579  n_types_applicable mean 0.794  rejected {}
+  T2.1 applied types {'commutative_swap': 307, 'comparison_flip': 282, 'compound_assignment': 101, 'for_to_while': 284, 'if_else_inversion': 183, 'ruff:assign-if-exp': 4, 'ruff:comprehension-to-generator': 19, 'ruff:for-index-underscore': 9, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 42, 'ruff:list-comprehension': 27, 'ruff:merge-comparisons': 13, 'ruff:merge-duplicate-blocks': 6, 'ruff:merge-else-if-into-elif': 3, 'ruff:merge-nested-ifs': 24, 'ruff:remove-unnecessary-else': 199, 'ruff:use-any': 42}
+  tpr_at_fpr 0.2937  unchanged_fraction 0.5886  auroc 0.9370  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.4114  tool_error_fraction 0.0000  codebleu_distance 0.1064
+  fractions UNCHANGED 0.5886  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1101): passed 681  not compiling 0  compiling but failing 420  {'PASSED': 681, 'FAILED': 413, 'TIMEOUT': 7}
+  detection status {'OK': 2668, 'FAILED': 8}  FAILED fraction 0.0030
+  tpr_at_fpr_changed_only 0.4015 (n=1101)
+
+##### T2.1 {"b": 3, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python prudent
+  status {'APPLIED': 1541, 'UNCHANGED': 1135}  changed 0.575859  1-CodeBLEU 0.142163 (changed only 0.246872)
+  detail means {"b": 3.0, "n_points": 1.867618, "n_types": 1.49708, "n_types_applicable": 1.767034}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.862  n_types_applicable mean 1.018  rejected {}
+  T2.1 applied types {'commutative_swap': 387, 'comparison_flip': 402, 'compound_assignment': 186, 'for_to_while': 367, 'if_else_inversion': 154, 'ruff:assign-if-exp': 8, 'ruff:comprehension-to-generator': 9, 'ruff:for-index-underscore': 17, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 362, 'ruff:list-comprehension': 50, 'ruff:merge-comparisons': 19, 'ruff:merge-duplicate-blocks': 2, 'ruff:merge-list-appends-into-extend': 2, 'ruff:merge-nested-ifs': 32, 'ruff:remove-unnecessary-else': 266, 'ruff:use-any': 39}
+  tpr_at_fpr 0.1824  unchanged_fraction 0.4241  auroc 0.6176  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.5759  tool_error_fraction 0.0000  codebleu_distance 0.1422
+  fractions UNCHANGED 0.4241  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1541): passed 1143  not compiling 3  compiling but failing 395  {'PASSED': 1143, 'FAILED': 362, 'TIMEOUT': 33, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 1861, 'FAILED': 815}  FAILED fraction 0.3046
+  tpr_at_fpr_changed_only 0.2070 (n=1541)
+
+##### T2.1 {"b": 3, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 1540, 'UNCHANGED': 1136}  changed 0.575486  1-CodeBLEU 0.142415 (changed only 0.247469)
+  detail means {"b": 3.0, "n_points": 1.852597, "n_types": 1.494805, "n_types_applicable": 1.767532}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.860  n_types_applicable mean 1.017  rejected {}
+  T2.1 applied types {'commutative_swap': 386, 'comparison_flip': 403, 'compound_assignment': 186, 'for_to_while': 366, 'if_else_inversion': 159, 'ruff:assign-if-exp': 9, 'ruff:comprehension-to-generator': 10, 'ruff:for-index-underscore': 14, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 361, 'ruff:list-comprehension': 50, 'ruff:merge-comparisons': 20, 'ruff:merge-duplicate-blocks': 2, 'ruff:merge-list-appends-into-extend': 3, 'ruff:merge-nested-ifs': 32, 'ruff:remove-unnecessary-else': 255, 'ruff:use-any': 41}
+  tpr_at_fpr 0.3113  unchanged_fraction 0.4245  auroc 0.9327  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.5755  tool_error_fraction 0.0000  codebleu_distance 0.1424
+  fractions UNCHANGED 0.4245  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1540): passed 1142  not compiling 3  compiling but failing 395  {'PASSED': 1142, 'FAILED': 362, 'TIMEOUT': 33, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.3078 (n=1540)
+
+##### T2.1 {"b": 3, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 1100, 'UNCHANGED': 1576}  changed 0.411061  1-CodeBLEU 0.111885 (changed only 0.272186)
+  detail means {"b": 3.0, "n_points": 2.121818, "n_types": 1.562727, "n_types_applicable": 1.931818}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.642  n_types_applicable mean 0.794  rejected {}
+  T2.1 applied types {'commutative_swap': 332, 'comparison_flip': 322, 'compound_assignment': 116, 'for_to_while': 300, 'if_else_inversion': 166, 'ruff:assign-if-exp': 4, 'ruff:comprehension-to-generator': 19, 'ruff:for-index-underscore': 10, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 42, 'ruff:list-comprehension': 27, 'ruff:merge-comparisons': 21, 'ruff:merge-duplicate-blocks': 11, 'ruff:merge-else-if-into-elif': 4, 'ruff:merge-nested-ifs': 30, 'ruff:remove-unnecessary-else': 253, 'ruff:use-any': 57}
+  tpr_at_fpr 0.1693  unchanged_fraction 0.5889  auroc 0.5733  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.4111  tool_error_fraction 0.0000  codebleu_distance 0.1119
+  fractions UNCHANGED 0.5889  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1100): passed 681  not compiling 0  compiling but failing 419  {'PASSED': 681, 'FAILED': 412, 'TIMEOUT': 7}
+  detection status {'OK': 1754, 'FAILED': 922}  FAILED fraction 0.3445
+  tpr_at_fpr_changed_only 0.2636 (n=1100)
+
+##### T2.1 {"b": 3, "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 1101, 'UNCHANGED': 1575}  changed 0.411435  1-CodeBLEU 0.112198 (changed only 0.272698)
+  detail means {"b": 3.0, "n_points": 2.152589, "n_types": 1.574024, "n_types_applicable": 1.930972}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.648  n_types_applicable mean 0.794  rejected {}
+  T2.1 applied types {'commutative_swap': 336, 'comparison_flip': 327, 'compound_assignment': 117, 'for_to_while': 303, 'if_else_inversion': 173, 'ruff:assign-if-exp': 5, 'ruff:comprehension-to-generator': 19, 'ruff:for-index-underscore': 7, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 41, 'ruff:list-comprehension': 27, 'ruff:merge-comparisons': 19, 'ruff:merge-duplicate-blocks': 11, 'ruff:merge-else-if-into-elif': 3, 'ruff:merge-nested-ifs': 34, 'ruff:remove-unnecessary-else': 252, 'ruff:use-any': 54}
+  tpr_at_fpr 0.2750  unchanged_fraction 0.5886  auroc 0.9342  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.4114  tool_error_fraction 0.0000  codebleu_distance 0.1122
+  fractions UNCHANGED 0.5886  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1101): passed 681  not compiling 0  compiling but failing 420  {'PASSED': 681, 'FAILED': 413, 'TIMEOUT': 7}
+  detection status {'OK': 2668, 'FAILED': 8}  FAILED fraction 0.0030
+  tpr_at_fpr_changed_only 0.3560 (n=1101)
+
+##### T2.1 {"b": "all", "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python prudent
+  status {'APPLIED': 1541, 'UNCHANGED': 1135}  changed 0.575859  1-CodeBLEU 0.144657 (changed only 0.251202)
+  detail means {"n_points": 1.972745, "n_types": 1.573653, "n_types_applicable": 1.767034}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.906  n_types_applicable mean 1.018  rejected {}
+  T2.1 applied types {'commutative_swap': 413, 'comparison_flip': 430, 'compound_assignment': 202, 'for_to_while': 378, 'if_else_inversion': 138, 'ruff:assign-if-exp': 10, 'ruff:comprehension-to-generator': 12, 'ruff:for-index-underscore': 19, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 362, 'ruff:list-comprehension': 51, 'ruff:merge-comparisons': 20, 'ruff:merge-duplicate-blocks': 2, 'ruff:merge-list-appends-into-extend': 4, 'ruff:merge-nested-ifs': 38, 'ruff:remove-unnecessary-else': 295, 'ruff:use-any': 46}
+  tpr_at_fpr 0.1771  unchanged_fraction 0.4241  auroc 0.6154  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.5759  tool_error_fraction 0.0000  codebleu_distance 0.1447
+  fractions UNCHANGED 0.4241  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1541): passed 1143  not compiling 3  compiling but failing 395  {'PASSED': 1143, 'FAILED': 362, 'TIMEOUT': 33, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 1861, 'FAILED': 815}  FAILED fraction 0.3046
+  tpr_at_fpr_changed_only 0.1979 (n=1541)
+
+##### T2.1 {"b": "all", "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 1540, 'UNCHANGED': 1136}  changed 0.575486  1-CodeBLEU 0.144614 (changed only 0.25129)
+  detail means {"n_points": 1.970779, "n_types": 1.572727, "n_types_applicable": 1.767532}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.905  n_types_applicable mean 1.017  rejected {}
+  T2.1 applied types {'commutative_swap': 413, 'comparison_flip': 430, 'compound_assignment': 202, 'for_to_while': 375, 'if_else_inversion': 139, 'ruff:assign-if-exp': 9, 'ruff:comprehension-to-generator': 12, 'ruff:for-index-underscore': 19, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 362, 'ruff:list-comprehension': 51, 'ruff:merge-comparisons': 20, 'ruff:merge-duplicate-blocks': 2, 'ruff:merge-list-appends-into-extend': 4, 'ruff:merge-nested-ifs': 35, 'ruff:remove-unnecessary-else': 295, 'ruff:use-any': 49}
+  tpr_at_fpr 0.3023  unchanged_fraction 0.4245  auroc 0.9305  pass_at_1 0.7642  delta_pass_at_1_pp 0.0374  delta_pass_at_1_pp_vs_marked 0.0374  changed_fraction 0.5755  tool_error_fraction 0.0000  codebleu_distance 0.1446
+  fractions UNCHANGED 0.4245  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1540): passed 1142  not compiling 3  compiling but failing 395  {'PASSED': 1142, 'FAILED': 362, 'TIMEOUT': 33, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.2922 (n=1540)
+
+##### T2.1 {"b": "all", "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 1100, 'UNCHANGED': 1576}  changed 0.411061  1-CodeBLEU 0.114423 (changed only 0.278361)
+  detail means {"n_points": 2.27, "n_types": 1.658182, "n_types_applicable": 1.931818}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.682  n_types_applicable mean 0.794  rejected {}
+  T2.1 applied types {'commutative_swap': 352, 'comparison_flip': 350, 'compound_assignment': 127, 'for_to_while': 307, 'if_else_inversion': 151, 'ruff:assign-if-exp': 4, 'ruff:comprehension-to-generator': 19, 'ruff:for-index-underscore': 10, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 42, 'ruff:list-comprehension': 28, 'ruff:merge-comparisons': 22, 'ruff:merge-duplicate-blocks': 12, 'ruff:merge-else-if-into-elif': 4, 'ruff:merge-nested-ifs': 36, 'ruff:remove-unnecessary-else': 290, 'ruff:use-any': 65}
+  tpr_at_fpr 0.1596  unchanged_fraction 0.5889  auroc 0.5697  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.4111  tool_error_fraction 0.0000  codebleu_distance 0.1144
+  fractions UNCHANGED 0.5889  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1100): passed 681  not compiling 0  compiling but failing 419  {'PASSED': 681, 'FAILED': 412, 'TIMEOUT': 7}
+  detection status {'OK': 1754, 'FAILED': 922}  FAILED fraction 0.3445
+  tpr_at_fpr_changed_only 0.2400 (n=1100)
+
+##### T2.1 {"b": "all", "ruff_rules": [{"acw": [1], "codes": ["RET505", "RET506", "RET507", "RET508"], "type": "remove-unnecessary-else"}, {"acw": [3], "codes": ["SIM210", "SIM211"], "type": "boolean-if-exp-identity"}, {"acw": [4, 29], "codes": ["PERF401"], "type": "list-comprehension"}, {"acw": [6], "codes": ["PLR1714"], "type": "merge-comparisons"}, {"acw": [9], "codes": ["SIM102"], "type": "merge-nested-ifs"}, {"acw": [11], "codes": ["RET504"], "type": "inline-immediately-returned-variable"}, {"acw": [12], "codes": ["B007"], "type": "for-index-underscore"}, {"acw": [15], "codes": ["C419"], "type": "comprehension-to-generator"}, {"acw": [16], "codes": ["SIM110"], "type": "use-any"}, {"acw": [18], "codes": ["FURB136"], "type": "min-max-identity"}, {"acw": [19], "codes": ["SIM114"], "type": "merge-duplicate-blocks"}, {"acw": [22], "codes": ["PLR5501"], "type": "merge-else-if-into-elif"}, {"acw": [31], "codes": ["C416"], "type": "identity-comprehension"}, {"acw": [32], "codes": ["FURB113"], "type": "merge-list-appends-into-extend"}, {"acw": [35], "codes": ["SIM108"], "type": "assign-if-exp"}], "ruff_version": "0.7.4"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 1101, 'UNCHANGED': 1575}  changed 0.411435  1-CodeBLEU 0.114344 (changed only 0.277915)
+  detail means {"n_points": 2.270663, "n_types": 1.658492, "n_types_applicable": 1.930972}
+  tools {"ruff": "ruff 0.7.4"}
+  T2.1 n_types mean 0.682  n_types_applicable mean 0.794  rejected {}
+  T2.1 applied types {'commutative_swap': 352, 'comparison_flip': 350, 'compound_assignment': 127, 'for_to_while': 308, 'if_else_inversion': 151, 'ruff:assign-if-exp': 5, 'ruff:comprehension-to-generator': 19, 'ruff:for-index-underscore': 10, 'ruff:identity-comprehension': 5, 'ruff:inline-immediately-returned-variable': 42, 'ruff:list-comprehension': 28, 'ruff:merge-comparisons': 22, 'ruff:merge-duplicate-blocks': 11, 'ruff:merge-else-if-into-elif': 4, 'ruff:merge-nested-ifs': 37, 'ruff:remove-unnecessary-else': 290, 'ruff:use-any': 65}
+  tpr_at_fpr 0.2683  unchanged_fraction 0.5886  auroc 0.9327  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.4114  tool_error_fraction 0.0000  codebleu_distance 0.1143
+  fractions UNCHANGED 0.5886  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1101): passed 681  not compiling 0  compiling but failing 420  {'PASSED': 681, 'FAILED': 413, 'TIMEOUT': 7}
+  detection status {'OK': 2668, 'FAILED': 8}  FAILED fraction 0.0030
+  tpr_at_fpr_changed_only 0.3397 (n=1101)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} qwen25_coder_7b python prudent
+  status {'APPLIED': 655, 'UNCHANGED': 2021}  changed 0.244768  1-CodeBLEU 0.03241 (changed only 0.132411)
+  detail means {"new_tokens": 160.587786}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.2526  unchanged_fraction 0.7552  auroc 0.7251  pass_at_1 0.7620  delta_pass_at_1_pp 0.2616  delta_pass_at_1_pp_vs_marked 0.2616  changed_fraction 0.2448  tool_error_fraction 0.0000  codebleu_distance 0.0324
+  fractions UNCHANGED 0.7552  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 655): passed 476  not compiling 0  compiling but failing 179  {'PASSED': 476, 'FAILED': 161, 'TIMEOUT': 18}
+  detection status {'OK': 2082, 'FAILED': 594}  FAILED fraction 0.2220
+  tpr_at_fpr_changed_only 0.3084 (n=655)
+  pass@1 failures 637/2676: entry point renamed 8, missing 0, other 629; entry lost in 8/655 APPLIED (0.0122)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 642, 'UNCHANGED': 2034}  changed 0.23991  1-CodeBLEU 0.032689 (changed only 0.136253)
+  detail means {"new_tokens": 162.545171}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.4701  unchanged_fraction 0.7601  auroc 0.9624  pass_at_1 0.7623  delta_pass_at_1_pp 0.2242  delta_pass_at_1_pp_vs_marked 0.2242  changed_fraction 0.2399  tool_error_fraction 0.0000  codebleu_distance 0.0327
+  fractions UNCHANGED 0.7601  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 642): passed 475  not compiling 0  compiling but failing 167  {'PASSED': 475, 'FAILED': 151, 'TIMEOUT': 16}
+  detection status {'OK': 2673, 'FAILED': 3}  FAILED fraction 0.0011
+  tpr_at_fpr_changed_only 0.4953 (n=642)
+  pass@1 failures 636/2676: entry point renamed 6, missing 0, other 630; entry lost in 6/642 APPLIED (0.0093)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} deepseek_coder_6p7b python prudent
+  status {'UNCHANGED': 2092, 'APPLIED': 584}  changed 0.218236  1-CodeBLEU 0.037167 (changed only 0.170304)
+  detail means {"new_tokens": 94.520548}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.2522  unchanged_fraction 0.7818  auroc 0.6189  pass_at_1 0.6954  delta_pass_at_1_pp 0.4484  delta_pass_at_1_pp_vs_marked 0.4484  changed_fraction 0.2182  tool_error_fraction 0.0000  codebleu_distance 0.0372
+  fractions UNCHANGED 0.7818  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 584): passed 342  not compiling 2  compiling but failing 240  {'PASSED': 342, 'FAILED': 238, 'TIMEOUT': 2, 'SYNTAX_ERROR': 2}
+  detection status {'OK': 1760, 'FAILED': 916}  FAILED fraction 0.3423
+  tpr_at_fpr_changed_only 0.3545 (n=584)
+  pass@1 failures 815/2676: entry point renamed 14, missing 0, other 801; entry lost in 14/584 APPLIED (0.0240)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "conservative"} deepseek_coder_6p7b python high_capacity
+  status {'UNCHANGED': 2080, 'APPLIED': 596}  changed 0.22272  1-CodeBLEU 0.038609 (changed only 0.173351)
+  detail means {"new_tokens": 93.667785}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "conservative.txt": "84964623c2d2aefb9ca3de0d571417fdbe6e78b4a5a7027a3ba2ff34c3b39fe7"}
+  tpr_at_fpr 0.4047  unchanged_fraction 0.7773  auroc 0.9577  pass_at_1 0.6932  delta_pass_at_1_pp 0.6726  delta_pass_at_1_pp_vs_marked 0.6726  changed_fraction 0.2227  tool_error_fraction 0.0000  codebleu_distance 0.0386
+  fractions UNCHANGED 0.7773  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 596): passed 340  not compiling 2  compiling but failing 254  {'PASSED': 340, 'FAILED': 251, 'TIMEOUT': 3, 'SYNTAX_ERROR': 2}
+  detection status {'OK': 2663, 'FAILED': 13}  FAILED fraction 0.0049
+  tpr_at_fpr_changed_only 0.5386 (n=596)
+  pass@1 failures 821/2676: entry point renamed 19, missing 0, other 802; entry lost in 19/596 APPLIED (0.0319)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} qwen25_coder_7b python prudent
+  status {'APPLIED': 2661, 'UNCHANGED': 15}  changed 0.994395  1-CodeBLEU 0.569097 (changed only 0.572305)
+  detail means {"new_tokens": 89.801954}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0176  unchanged_fraction 0.0056  auroc 0.4462  pass_at_1 0.5796  delta_pass_at_1_pp 18.4978  delta_pass_at_1_pp_vs_marked 18.4978  changed_fraction 0.9944  tool_error_fraction 0.0000  codebleu_distance 0.5691
+  fractions UNCHANGED 0.0056  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2661): passed 1536  not compiling 0  compiling but failing 1125  {'FAILED': 1097, 'PASSED': 1536, 'TIMEOUT': 28}
+  detection status {'OK': 2256, 'FAILED': 420}  FAILED fraction 0.1570
+  tpr_at_fpr_changed_only 0.0177 (n=2661)
+  pass@1 failures 1125/2676: entry point renamed 33, missing 0, other 1092; entry lost in 33/2661 APPLIED (0.0124)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2657, 'UNCHANGED': 19}  changed 0.9929  1-CodeBLEU 0.564461 (changed only 0.568497)
+  detail means {"new_tokens": 92.33647}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0609  unchanged_fraction 0.0071  auroc 0.7719  pass_at_1 0.5800  delta_pass_at_1_pp 18.4604  delta_pass_at_1_pp_vs_marked 18.4604  changed_fraction 0.9929  tool_error_fraction 0.0000  codebleu_distance 0.5645
+  fractions UNCHANGED 0.0071  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2657): passed 1538  not compiling 1  compiling but failing 1118  {'FAILED': 1091, 'PASSED': 1538, 'TIMEOUT': 27, 'SYNTAX_ERROR': 1}
+  detection status {'OK': 2675, 'FAILED': 1}  FAILED fraction 0.0004
+  tpr_at_fpr_changed_only 0.0613 (n=2657)
+  pass@1 failures 1124/2676: entry point renamed 42, missing 0, other 1082; entry lost in 42/2657 APPLIED (0.0158)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2553, 'UNCHANGED': 123}  changed 0.954036  1-CodeBLEU 0.527304 (changed only 0.552709)
+  detail means {"new_tokens": 66.869957}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0123  unchanged_fraction 0.0460  auroc 0.4148  pass_at_1 0.5041  delta_pass_at_1_pp 19.5815  delta_pass_at_1_pp_vs_marked 19.5815  changed_fraction 0.9540  tool_error_fraction 0.0000  codebleu_distance 0.5273
+  fractions UNCHANGED 0.0460  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2553): passed 1234  not compiling 0  compiling but failing 1319  {'FAILED': 1308, 'PASSED': 1234, 'TIMEOUT': 11}
+  detection status {'OK': 2086, 'FAILED': 590}  FAILED fraction 0.2205
+  tpr_at_fpr_changed_only 0.0129 (n=2553)
+  pass@1 failures 1327/2676: entry point renamed 61, missing 0, other 1266; entry lost in 61/2553 APPLIED (0.0239)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2562, 'UNCHANGED': 114}  changed 0.957399  1-CodeBLEU 0.532029 (changed only 0.555702)
+  detail means {"new_tokens": 67.720141}
+  tools {}
+  attacker meta-llama/Llama-3.1-8B-Instruct @ 0e9e39f249a16976918f6564b8830bc894c89659  decoding {"batch_size": 8, "clean_up_tokenization_spaces": false, "do_sample": false, "max_new_tokens": 2048, "num_beams": 1, "padding_side": "left"}
+  prompts_sha256 {"system.txt": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "full_rewrite.txt": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e"}
+  tpr_at_fpr 0.0557  unchanged_fraction 0.0426  auroc 0.7807  pass_at_1 0.5064  delta_pass_at_1_pp 19.3572  delta_pass_at_1_pp_vs_marked 19.3572  changed_fraction 0.9574  tool_error_fraction 0.0000  codebleu_distance 0.5320
+  fractions UNCHANGED 0.0426  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2562): passed 1249  not compiling 4  compiling but failing 1309  {'FAILED': 1298, 'PASSED': 1249, 'TIMEOUT': 11, 'SYNTAX_ERROR': 4}
+  detection status {'OK': 2667, 'FAILED': 9}  FAILED fraction 0.0034
+  tpr_at_fpr_changed_only 0.0543 (n=2562)
+  pass@1 failures 1321/2676: entry point renamed 55, missing 0, other 1266; entry lost in 55/2562 APPLIED (0.0215)
+
+##### T2.4 {"p": 0.75} qwen25_coder_7b python prudent
+  status {'APPLIED': 1735, 'UNCHANGED': 941}  changed 0.648356  1-CodeBLEU 0.139623 (changed only 0.21535)
+  detail means {"kept": 2.070317, "n": 3.194813, "p": 0.75, "removed": 1.124496}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 2, 3, 10]  n=1 0.3516  removed mean 0.729  targets {'entry': 2676}
+  tpr_at_fpr 0.3004  unchanged_fraction 0.3516  auroc 0.7332  pass_at_1 0.3046  delta_pass_at_1_pp 46.0015  delta_pass_at_1_pp_vs_marked 46.0015  changed_fraction 0.6484  tool_error_fraction 0.0000  codebleu_distance 0.1396
+  fractions UNCHANGED 0.3516  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1735): passed 25  not compiling 3  compiling but failing 1707  {'FAILED': 1707, 'PASSED': 25, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2040, 'FAILED': 636}  FAILED fraction 0.2377
+  tpr_at_fpr_changed_only 0.4300 (n=1735)
+
+##### T2.4 {"p": 0.75} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 1735, 'UNCHANGED': 941}  changed 0.648356  1-CodeBLEU 0.139639 (changed only 0.215375)
+  detail means {"kept": 2.070317, "n": 3.194813, "p": 0.75, "removed": 1.124496}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 2, 3, 10]  n=1 0.3516  removed mean 0.729  targets {'entry': 2676}
+  tpr_at_fpr 0.5273  unchanged_fraction 0.3516  auroc 0.9690  pass_at_1 0.3046  delta_pass_at_1_pp 46.0015  delta_pass_at_1_pp_vs_marked 46.0015  changed_fraction 0.6484  tool_error_fraction 0.0000  codebleu_distance 0.1396
+  fractions UNCHANGED 0.3516  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1735): passed 25  not compiling 3  compiling but failing 1707  {'FAILED': 1707, 'PASSED': 25, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.7228 (n=1735)
+
+##### T2.4 {"p": 0.75} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 1252, 'UNCHANGED': 1420, 'NOT_APPLICABLE': 4}  changed 0.468563  1-CodeBLEU 0.116228 (changed only 0.248424)
+  detail means {"kept": 2.17492, "n": 3.289936, "p": 0.75, "removed": 1.115016}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 1, 3, 11]  n=1 0.5314  removed mean 0.522  targets {'entry': 2672}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 4}
+  tpr_at_fpr 0.2485  unchanged_fraction 0.5314  auroc 0.6131  pass_at_1 0.4129  delta_pass_at_1_pp 28.6996  delta_pass_at_1_pp_vs_marked 28.6996  changed_fraction 0.4686  tool_error_fraction 0.0000  codebleu_distance 0.1164
+  fractions UNCHANGED 0.5306  NOT_APPLICABLE 0.0015  TOOL_ERROR 0.0000
+  exec (APPLIED 1252): passed 25  not compiling 0  compiling but failing 1227  {'FAILED': 1227, 'PASSED': 25}
+  detection status {'OK': 1720, 'FAILED': 956}  FAILED fraction 0.3572
+  tpr_at_fpr_changed_only 0.4800 (n=1252)
+
+##### T2.4 {"p": 0.75} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 1252, 'UNCHANGED': 1420, 'NOT_APPLICABLE': 4}  changed 0.468563  1-CodeBLEU 0.116242 (changed only 0.248454)
+  detail means {"kept": 2.17492, "n": 3.289936, "p": 0.75, "removed": 1.115016}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 1, 3, 11]  n=1 0.5314  removed mean 0.522  targets {'entry': 2672}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 4}
+  tpr_at_fpr 0.4118  unchanged_fraction 0.5314  auroc 0.9640  pass_at_1 0.4129  delta_pass_at_1_pp 28.6996  delta_pass_at_1_pp_vs_marked 28.6996  changed_fraction 0.4686  tool_error_fraction 0.0000  codebleu_distance 0.1164
+  fractions UNCHANGED 0.5306  NOT_APPLICABLE 0.0015  TOOL_ERROR 0.0000
+  exec (APPLIED 1252): passed 25  not compiling 0  compiling but failing 1227  {'FAILED': 1227, 'PASSED': 25}
+  detection status {'OK': 2668, 'FAILED': 8}  FAILED fraction 0.0030
+  tpr_at_fpr_changed_only 0.7220 (n=1252)
+
+##### T2.4 {"p": 0.5} qwen25_coder_7b python prudent
+  status {'APPLIED': 1735, 'UNCHANGED': 941}  changed 0.648356  1-CodeBLEU 0.324057 (changed only 0.499814)
+  detail means {"kept": 1.390202, "n": 3.194813, "p": 0.5, "removed": 1.804611}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 2, 3, 10]  n=1 0.3516  removed mean 1.170  targets {'entry': 2676}
+  tpr_at_fpr 0.1147  unchanged_fraction 0.3516  auroc 0.6986  pass_at_1 0.3001  delta_pass_at_1_pp 46.4499  delta_pass_at_1_pp_vs_marked 46.4499  changed_fraction 0.6484  tool_error_fraction 0.0000  codebleu_distance 0.3241
+  fractions UNCHANGED 0.3516  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1735): passed 13  not compiling 3  compiling but failing 1719  {'FAILED': 1719, 'PASSED': 13, 'SYNTAX_ERROR': 3}
+  detection status {'FAILED': 684, 'OK': 1992}  FAILED fraction 0.2556
+  tpr_at_fpr_changed_only 0.1435 (n=1735)
+
+##### T2.4 {"p": 0.5} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 1735, 'UNCHANGED': 941}  changed 0.648356  1-CodeBLEU 0.32408 (changed only 0.499849)
+  detail means {"kept": 1.390202, "n": 3.194813, "p": 0.5, "removed": 1.804611}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 2, 3, 10]  n=1 0.3516  removed mean 1.170  targets {'entry': 2676}
+  tpr_at_fpr 0.3834  unchanged_fraction 0.3516  auroc 0.9633  pass_at_1 0.3001  delta_pass_at_1_pp 46.4499  delta_pass_at_1_pp_vs_marked 46.4499  changed_fraction 0.6484  tool_error_fraction 0.0000  codebleu_distance 0.3241
+  fractions UNCHANGED 0.3516  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 1735): passed 13  not compiling 3  compiling but failing 1719  {'FAILED': 1719, 'PASSED': 13, 'SYNTAX_ERROR': 3}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.5009 (n=1735)
+
+##### T2.4 {"p": 0.5} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 1252, 'UNCHANGED': 1420, 'NOT_APPLICABLE': 4}  changed 0.468563  1-CodeBLEU 0.278321 (changed only 0.594877)
+  detail means {"kept": 1.404153, "n": 3.289936, "p": 0.5, "removed": 1.885783}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 1, 3, 11]  n=1 0.5314  removed mean 0.884  targets {'entry': 2672}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 4}
+  tpr_at_fpr 0.1035  unchanged_fraction 0.5314  auroc 0.5843  pass_at_1 0.4058  delta_pass_at_1_pp 29.4096  delta_pass_at_1_pp_vs_marked 29.4096  changed_fraction 0.4686  tool_error_fraction 0.0000  codebleu_distance 0.2787
+  fractions UNCHANGED 0.5306  NOT_APPLICABLE 0.0015  TOOL_ERROR 0.0000
+  exec (APPLIED 1252): passed 6  not compiling 0  compiling but failing 1246  {'FAILED': 1246, 'PASSED': 6}
+  detection status {'FAILED': 998, 'OK': 1678}  FAILED fraction 0.3729
+  tpr_at_fpr_changed_only 0.1701 (n=1252)
+
+##### T2.4 {"p": 0.5} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 1252, 'UNCHANGED': 1420, 'NOT_APPLICABLE': 4}  changed 0.468563  1-CodeBLEU 0.278335 (changed only 0.594907)
+  detail means {"kept": 1.404153, "n": 3.289936, "p": 0.5, "removed": 1.885783}
+  tools {}
+  T2.4 n min/p25/median/p75/max [1, 1, 1, 3, 11]  n=1 0.5314  removed mean 0.884  targets {'entry': 2672}
+  T2.4 NOT_APPLICABLE reasons {'entry_not_found': 4}
+  tpr_at_fpr 0.2889  unchanged_fraction 0.5314  auroc 0.9603  pass_at_1 0.4058  delta_pass_at_1_pp 29.4096  delta_pass_at_1_pp_vs_marked 29.4096  changed_fraction 0.4686  tool_error_fraction 0.0000  codebleu_distance 0.2788
+  fractions UNCHANGED 0.5306  NOT_APPLICABLE 0.0015  TOOL_ERROR 0.0000
+  exec (APPLIED 1252): passed 6  not compiling 0  compiling but failing 1246  {'FAILED': 1246, 'PASSED': 6}
+  detection status {'OK': 2668, 'FAILED': 8}  FAILED fraction 0.0030
+  tpr_at_fpr_changed_only 0.4593 (n=1252)
+
+##### T2.5 {"n": 1, "position": "before"} qwen25_coder_7b python prudent
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.25625 (changed only 0.256538)
+  detail means {"added_loc": 15.756079, "n_inserted": 1.0, "n_renamed": 0.011223}
+  tools {}
+  tpr_at_fpr 0.2833  unchanged_fraction 0.0000  auroc 0.7146  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.2563
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2564, 'FAILED': 112}  FAILED fraction 0.0419
+  tpr_at_fpr_changed_only 0.2836 (n=2673)
+
+##### T2.5 {"n": 1, "position": "before"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.256635 (changed only 0.256923)
+  detail means {"added_loc": 15.837636, "n_inserted": 1.0, "n_renamed": 0.013468}
+  tools {}
+  tpr_at_fpr 0.3438  unchanged_fraction 0.0000  auroc 0.8940  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.2566
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2673, 'FAILED': 3}  FAILED fraction 0.0011
+  tpr_at_fpr_changed_only 0.3442 (n=2673)
+
+##### T2.5 {"n": 1, "position": "before"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.28726 (changed only 0.28726)
+  detail means {"added_loc": 15.681988, "n_inserted": 1.0, "n_renamed": 0.011584}
+  tools {}
+  tpr_at_fpr 0.2336  unchanged_fraction 0.0000  auroc 0.6052  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2873
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2539, 'FAILED': 137}  FAILED fraction 0.0512
+  tpr_at_fpr_changed_only 0.2336 (n=2676)
+
+##### T2.5 {"n": 1, "position": "before"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.2879 (changed only 0.2879)
+  detail means {"added_loc": 15.786996, "n_inserted": 1.0, "n_renamed": 0.010463}
+  tools {}
+  tpr_at_fpr 0.2922  unchanged_fraction 0.0000  auroc 0.8740  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.2879
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.2922 (n=2676)
+
+##### T2.5 {"n": 2, "position": "around"} qwen25_coder_7b python prudent
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.292876 (changed only 0.293205)
+  detail means {"added_loc": 31.622147, "n_inserted": 2.0, "n_renamed": 0.022821}
+  tools {}
+  tpr_at_fpr 0.2306  unchanged_fraction 0.0000  auroc 0.6928  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.2929
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2651, 'FAILED': 25}  FAILED fraction 0.0093
+  tpr_at_fpr_changed_only 0.2308 (n=2673)
+
+##### T2.5 {"n": 2, "position": "around"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.291772 (changed only 0.2921)
+  detail means {"added_loc": 31.219978, "n_inserted": 2.0, "n_renamed": 0.025065}
+  tools {}
+  tpr_at_fpr 0.2803  unchanged_fraction 0.0000  auroc 0.8583  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.2918
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2673, 'FAILED': 3}  FAILED fraction 0.0011
+  tpr_at_fpr_changed_only 0.2806 (n=2673)
+
+##### T2.5 {"n": 2, "position": "around"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.314393 (changed only 0.314393)
+  detail means {"added_loc": 31.213752, "n_inserted": 2.0, "n_renamed": 0.02429}
+  tools {}
+  tpr_at_fpr 0.1771  unchanged_fraction 0.0000  auroc 0.5881  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.3144
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2658, 'FAILED': 18}  FAILED fraction 0.0067
+  tpr_at_fpr_changed_only 0.1771 (n=2676)
+
+##### T2.5 {"n": 2, "position": "around"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.313371 (changed only 0.313371)
+  detail means {"added_loc": 31.174141, "n_inserted": 2.0, "n_renamed": 0.024664}
+  tools {}
+  tpr_at_fpr 0.2160  unchanged_fraction 0.0000  auroc 0.8324  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.3134
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.2160 (n=2676)
+
+##### T2.5 {"n": 4, "position": "around"} qwen25_coder_7b python prudent
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.318066 (changed only 0.318423)
+  detail means {"added_loc": 62.802469, "n_inserted": 4.0, "n_renamed": 0.047512}
+  tools {}
+  tpr_at_fpr 0.1734  unchanged_fraction 0.0000  auroc 0.6634  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.3181
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2672, 'FAILED': 4}  FAILED fraction 0.0015
+  tpr_at_fpr_changed_only 0.1736 (n=2673)
+
+##### T2.5 {"n": 4, "position": "around"} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.317391 (changed only 0.317748)
+  detail means {"added_loc": 62.799476, "n_inserted": 4.0, "n_renamed": 0.047138}
+  tools {}
+  tpr_at_fpr 0.1764  unchanged_fraction 0.0000  auroc 0.8096  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.3174
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2673, 'FAILED': 3}  FAILED fraction 0.0011
+  tpr_at_fpr_changed_only 0.1766 (n=2673)
+
+##### T2.5 {"n": 4, "position": "around"} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.329586 (changed only 0.329586)
+  detail means {"added_loc": 62.823991, "n_inserted": 4.0, "n_renamed": 0.05157}
+  tools {}
+  tpr_at_fpr 0.1323  unchanged_fraction 0.0000  auroc 0.5688  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.3296
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2674, 'FAILED': 2}  FAILED fraction 0.0007
+  tpr_at_fpr_changed_only 0.1323 (n=2676)
+
+##### T2.5 {"n": 4, "position": "around"} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.329917 (changed only 0.329917)
+  detail means {"added_loc": 63.347907, "n_inserted": 4.0, "n_renamed": 0.045217}
+  tools {}
+  tpr_at_fpr 0.1442  unchanged_fraction 0.0000  auroc 0.7849  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.3299
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2676}  FAILED fraction 0.0000
+  tpr_at_fpr_changed_only 0.1442 (n=2676)
+
+##### T4.1 {"rename": false} qwen25_coder_7b python prudent
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.481718 (changed only 0.482259)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.3345  unchanged_fraction 0.0000  auroc 0.7480  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.4817
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2078, 'FAILED': 598}  FAILED fraction 0.2235
+  tpr_at_fpr_changed_only 0.3348 (n=2673)
+
+##### T4.1 {"rename": false} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.481705 (changed only 0.482246)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.5385  unchanged_fraction 0.0000  auroc 0.9698  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.4817
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.5391 (n=2673)
+
+##### T4.1 {"rename": false} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.50201 (changed only 0.50201)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.2833  unchanged_fraction 0.0000  auroc 0.6291  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.5020
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 1761, 'FAILED': 915}  FAILED fraction 0.3419
+  tpr_at_fpr_changed_only 0.2833 (n=2676)
+
+##### T4.1 {"rename": false} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.502122 (changed only 0.502122)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.4148  unchanged_fraction 0.0000  auroc 0.9635  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.5021
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.4148 (n=2676)
+
+##### T4.1 {"rename": true} qwen25_coder_7b python prudent
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.521511 (changed only 0.522096)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.0882  unchanged_fraction 0.0000  auroc 0.5534  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.5215
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 1615, 'FAILED': 1061}  FAILED fraction 0.3965
+  tpr_at_fpr_changed_only 0.0883 (n=2673)
+
+##### T4.1 {"rename": true} qwen25_coder_7b python high_capacity
+  status {'APPLIED': 2673, 'TOOL_ERROR': 3}  changed 0.998879  1-CodeBLEU 0.540143 (changed only 0.54075)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.2040  unchanged_fraction 0.0000  auroc 0.9078  pass_at_1 0.7646  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 0.9989  tool_error_fraction 0.0011  codebleu_distance 0.5401
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0011
+  exec (APPLIED 2673): passed 2046  not compiling 0  compiling but failing 627  {'PASSED': 2046, 'FAILED': 593, 'TIMEOUT': 34}
+  detection status {'OK': 2670, 'FAILED': 6}  FAILED fraction 0.0022
+  tpr_at_fpr_changed_only 0.2043 (n=2673)
+
+##### T4.1 {"rename": true} deepseek_coder_6p7b python prudent
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.551556 (changed only 0.551556)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.0957  unchanged_fraction 0.0000  auroc 0.5270  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.5516
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 1544, 'FAILED': 1132}  FAILED fraction 0.4230
+  tpr_at_fpr_changed_only 0.0957 (n=2676)
+
+##### T4.1 {"rename": true} deepseek_coder_6p7b python high_capacity
+  status {'APPLIED': 2676}  changed 1.0  1-CodeBLEU 0.567406 (changed only 0.567406)
+  detail means {}
+  tools {"python-minifier": "2.11.3"}
+  tpr_at_fpr 0.1779  unchanged_fraction 0.0000  auroc 0.9209  pass_at_1 0.6999  delta_pass_at_1_pp 0.0000  delta_pass_at_1_pp_vs_marked 0.0000  changed_fraction 1.0000  tool_error_fraction 0.0000  codebleu_distance 0.5674
+  fractions UNCHANGED 0.0000  NOT_APPLICABLE 0.0000  TOOL_ERROR 0.0000
+  exec (APPLIED 2676): passed 1873  not compiling 0  compiling but failing 803  {'PASSED': 1873, 'FAILED': 796, 'TIMEOUT': 7}
+  detection status {'OK': 2665, 'FAILED': 11}  FAILED fraction 0.0041
+  tpr_at_fpr_changed_only 0.1779 (n=2676)
+
+##### controllo negativo (D34), FPR nominale 0.01
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} qwen25_coder_7b python prudent
+  tpr_at_fpr 0.0176 [0.0127, 0.0236]  fpr_llm_rewritten 0.0179 [0.0133, 0.0237]  fpr_llm_original 0.0086 [0.0055, 0.0129]  auroc_vs_human 0.4462 [0.4183, 0.4728]  auroc_rewritten 0.4410 [0.4169, 0.4667]
+  REGOLA: artefatto dello stile dell'attaccante (FPR vicino al TPR)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} qwen25_coder_7b python high_capacity
+  tpr_at_fpr 0.0609 [0.0497, 0.0725]  fpr_llm_rewritten 0.0120 [0.0082, 0.0168]  fpr_llm_original 0.0067 [0.0040, 0.0106]  auroc_vs_human 0.7719 [0.7521, 0.7915]  auroc_rewritten 0.7541 [0.7381, 0.7698]
+  REGOLA: robustezza vera (FPR sulla baseline riscritta vicino al nominale)
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} deepseek_coder_6p7b python prudent
+  tpr_at_fpr 0.0123 [0.0082, 0.0168]  fpr_llm_rewritten 0.0127 [0.0088, 0.0177]  fpr_llm_original 0.0064 [0.0037, 0.0102]  auroc_vs_human 0.4148 [0.3844, 0.4465]  auroc_rewritten 0.4522 [0.4248, 0.4796]
+  REGOLA: non applicabile: il TPR dopo l'attacco non supera l'FPR nominale
+
+##### T2.2 {"attacker": "llama31_8b_attacker", "batch_size": 8, "max_new_tokens": 2048, "prompt_sha256": "d1aecc0e1f02d9dd816550044ab03d824a126c2cb2659be1570d3816ed1a9a5e", "system_sha256": "1d4acf7484f9c76d9f9110c847ee5fecb2f18c76831bd2f8711c6a3cd093aafe", "variant": "full_rewrite"} deepseek_coder_6p7b python high_capacity
+  tpr_at_fpr 0.0557 [0.0452, 0.0669]  fpr_llm_rewritten 0.0056 [0.0031, 0.0092]  fpr_llm_original 0.0037 [0.0018, 0.0069]  auroc_vs_human 0.7807 [0.7617, 0.8009]  auroc_rewritten 0.7829 [0.7670, 0.7969]
+  REGOLA: robustezza vera (FPR sulla baseline riscritta vicino al nominale)

@@ -1,0 +1,6 @@
+##### multimark on L2 test (frozen 2026-11-24 16:14 UTC)
+watermark     4/4    COMPLETE
+execute       4/4    COMPLETE
+detect       12/12   COMPLETE
+metrics       4/4    COMPLETE
+thresholds: frozen ones in every metrics cell
