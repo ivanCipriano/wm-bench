@@ -11,6 +11,11 @@ dell'utente del 28 ottobre 2026), l'esito del controllo dei fold e, per MCGMark,
 capacità della fase ``metrics`` (SPEC §13.5). Per ACW anche i passi al netto della formattazione
 (``logreg_fmtfree``, ``unixcoder_fmtfree``, ``acw_format``; ADR-015 §7) e le loro metriche accanto
 alle ufficiali.
+
+Metodi post-hoc (``mcss``, ``multimark``; P6, ADR-019): una cella per configurazione congelata,
+con l'etichetta (``prudent``/``high_capacity``) nel nome della cella, riferimento solo la baseline
+(niente gemella) e le metriche di capacità come per MCGMark. Per i cinque metodi l'uscita non
+cambia.
 """
 
 from __future__ import annotations
@@ -36,6 +41,8 @@ from bench.store.artifact_store import ArtifactStore
 
 LEVEL, SPLIT = "L1", "test"
 CAPACITY = ("message_accuracy", "bit_accuracy", "embedding_success_rate")
+POSTHOC = ("mcss", "multimark")
+MULTIBIT = ("mcgmark", *POSTHOC)
 
 
 def fmt(row: dict[Any, Any]) -> str:
@@ -46,7 +53,8 @@ def fmt(row: dict[Any, Any]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("method", choices=["sweet", "acw", "stone", "promptmark", "mcgmark"])
+    parser.add_argument("method", choices=["sweet", "acw", "stone", "promptmark", "mcgmark",
+                                           *POSTHOC])  # fmt: skip
     parser.add_argument("--report", action="store_true")
     args = parser.parse_args()
     method = args.method
@@ -81,6 +89,8 @@ def main() -> int:
             config_hash=frozen.config_hash,
         )
         name = f"{frozen.model_id} {frozen.language}"
+        if frozen.label:  # post-hoc: più configurazioni per (modello, linguaggio)
+            name += f" {frozen.label}"
         cells.append((name, cell))
         add_steps(steps, stage, method, name, cell)
     sys.stdout.write(f"##### {method} M12 on {LEVEL} {SPLIT}\n")
@@ -154,7 +164,7 @@ def write_cell(store: ArtifactStore, method: str, name: str, cell: Cell, ref: An
                     f"{extra.get('folds_disjoint_by_problem')}, fold AUROC "
                     f"{[round(a, 3) for a in extra.get('fold_auroc', [])]}\n"
                 )
-    if method == "mcgmark":
+    if method in MULTIBIT:
         cap = metrics_ref(method, model, h, LEVEL, lang, SPLIT, list(FINAL_LEVELS))
         if store.exists(cap):
             for row in store.read_table(cap).to_dict(orient="records"):

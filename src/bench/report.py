@@ -22,6 +22,13 @@ Un comando (``scripts/report.py``) rigenera tutto in ``<out>/``:
   una riga per campione (l'ultima: i tentativi ripetuti dopo una ripresa non si contano due volte);
 - ``README.md``: indice, esclusioni I6 e note sulle deviazioni
   (``configs/report/annotations.yaml``).
+
+**Metodi post-hoc** (``mcss``, ``multimark``; P6, ADR-019), solo con ``methods`` che li comprende
+(``scripts/report.py --with-posthoc``): più configurazioni congelate per (modello, linguaggio),
+distinte dalla colonna ``label`` (``prudent``, ``high_capacity``; vuota per i cinque metodi) in
+tutte le tabelle e figure; attacchi anche T1.6 e T2.5; tabelle ``attacks_L2`` e ``attacks_L3``
+(insieme S, T1.6, T2.4k, T2.5 su L2; ClassEval su L3). Senza i post-hoc (default) tabelle, figure
+e file scritti sono quelli di prima, byte per byte.
 """
 
 from __future__ import annotations
@@ -49,6 +56,8 @@ from bench.store.artifact_store import ArtifactStore
 logger = logging.getLogger(__name__)
 
 METHODS = ("sweet", "acw", "stone", "promptmark", "mcgmark")
+POSTHOC_METHODS = ("mcss", "multimark")  # P6: solo con methods che li comprende
+POSTHOC_ATTACKS = ("T1.6", "T2.5")  # attacchi girati solo per i post-hoc (P6)
 LEVELS = ("L1", "L2", "L3")
 ATTACKS = (
     "T1.1",
@@ -141,27 +150,54 @@ def load_annotations(path: Path) -> list[Annotation]:
 
 
 # --------------------------------------------------------------------------- raccolta
-def frozen_cells(store: ArtifactStore) -> list[tuple[str, str, str, str]]:
-    """(metodo, modello, linguaggio, hash congelato) dei metodi congelati."""
+def labelled(methods: Sequence[str]) -> bool:
+    """Report con i post-hoc: colonna ``label`` (più configurazioni per modello e linguaggio)."""
+    return any(m in POSTHOC_METHODS for m in methods)
+
+
+def frozen_configs(
+    store: ArtifactStore, methods: Sequence[str] = METHODS
+) -> list[tuple[str, str, str, str, str]]:
+    """(metodo, modello, linguaggio, hash congelato, etichetta) dei metodi congelati; etichetta
+    vuota per i record senza (i cinque metodi)."""
     out = []
-    for method in METHODS:
+    for method in methods:
         record = load_freeze(store, method)
         if record is None:
             continue
         out += [
-            (method, c.model_id, c.language, str(c.config_hash))
+            (method, c.model_id, c.language, str(c.config_hash), c.label or "")
             for c in record.cells
             if c.config_hash and not c.not_applicable
         ]
     return out
 
 
-def collect(store: ArtifactStore, annotations: Sequence[Annotation] = ()) -> pd.DataFrame:
+def frozen_cells(
+    store: ArtifactStore, methods: Sequence[str] = METHODS
+) -> list[tuple[str, str, str, str]]:
+    """(metodo, modello, linguaggio, hash congelato) dei metodi congelati."""
+    return [(m, model, lang, h) for m, model, lang, h, _ in frozen_configs(store, methods)]
+
+
+def _keys(frame: pd.DataFrame, *rest: str) -> list[str]:
+    """Colonne chiave: ``method``, ``label`` se c'è (report con i post-hoc), poi ``rest``."""
+    return ["method", *(["label"] if "label" in frame.columns else []), *rest]
+
+
+def collect(
+    store: ArtifactStore,
+    annotations: Sequence[Annotation] = (),
+    methods: Sequence[str] = METHODS,
+) -> pd.DataFrame:
     """Tutte le metriche di test (soglie L1+L2), senza e con attacco, e quelle d'impercettibilità
-    (colonna ``source``: ``metrics`` o ``imperceptibility``), in formato lungo."""
+    (colonna ``source``: ``metrics`` o ``imperceptibility``), in formato lungo; con i post-hoc
+    anche la colonna ``label`` e gli attacchi T1.6 e T2.5."""
     rows: list[dict[str, Any]] = []
-    attacks = {a: grid_attacks(a) for a in ATTACKS if _has_grid(a)}
-    for method, model, lang, h in frozen_cells(store):
+    with_label = labelled(methods)
+    names = (*ATTACKS, *POSTHOC_ATTACKS) if with_label else ATTACKS
+    attacks = {a: grid_attacks(a) for a in names if _has_grid(a)}
+    for method, model, lang, h, label in frozen_configs(store, methods):
         for level in LEVELS:
             refs: list[tuple[str | None, dict[str, Any], Any, str]] = [
                 (None, {}, metrics_ref(method, model, h, level, lang, "test", FINAL_LEVELS),
@@ -197,6 +233,7 @@ def collect(store: ArtifactStore, annotations: Sequence[Annotation] = ()) -> pd.
                         {
                             "source": source,
                             "method": method,
+                            **({"label": label} if with_label else {}),
                             "model_id": model,
                             "level": level,
                             "language": lang,
@@ -254,7 +291,7 @@ def _ci_table(
     part = part[part["metric"].isin(metrics)]
     if part.empty:
         return pd.DataFrame()
-    index = ["method", "model_id", "language", *extra_index]
+    index = _keys(part, "model_id", "language", *extra_index)
     part = part.assign(
         cell=[
             fmt_value(v, lo, hi)
@@ -291,7 +328,7 @@ def attack_table(long: pd.DataFrame, level: str = "L1") -> pd.DataFrame:
     if part.empty:
         return pd.DataFrame()
     table = part.pivot_table(
-        index=["attack", "params", "method", "model_id", "language"],
+        index=["attack", "params", *_keys(part, "model_id", "language")],
         columns="metric",
         values="value",
         aggfunc="first",
@@ -346,7 +383,9 @@ def save_figure(fig: Any, out: Path, name: str) -> None:
         fig.savefig(out / f"{name}.{ext}", bbox_inches="tight", dpi=150)
 
 
-def roc_figures(store: ArtifactStore, cfg: Any, out: Path) -> list[str]:
+def roc_figures(
+    store: ArtifactStore, cfg: Any, out: Path, methods: Sequence[str] = METHODS
+) -> list[str]:
     import matplotlib
 
     matplotlib.use("Agg")
@@ -355,8 +394,9 @@ def roc_figures(store: ArtifactStore, cfg: Any, out: Path) -> list[str]:
     from bench.pipeline.stages.watermark import make_adapter
 
     written = []
-    for method, model, lang, h in frozen_cells(store):
+    for method, model, lang, h, label in frozen_configs(store, methods):
         adapter = make_adapter(cfg, method)
+        tag = f"{method}_{label}" if label else method  # post-hoc: una curva per configurazione
         for level in LEVELS:
             pos_ref = detection_ref(method, model, h, "positives", level, lang, "test")
             neg_ref = detection_ref(method, model, h, "neg_human", level, lang, "test")
@@ -372,8 +412,9 @@ def roc_figures(store: ArtifactStore, cfg: Any, out: Path) -> list[str]:
             ax.plot(fpr, tpr, lw=1.5)
             ax.plot([0, 1], [0, 1], ls=":", lw=0.8, color="grey")
             ax.axvline(0.01, ls="--", lw=0.8, color="grey")
-            ax.set(xlabel="FPR", ylabel="TPR", title=f"{method} {model} {level} {lang}")
-            name = f"roc_{method}_{model}_{level}_{lang}"
+            title = f"{method} {f'{label} ' if label else ''}{model} {level} {lang}"
+            ax.set(xlabel="FPR", ylabel="TPR", title=title)
+            name = f"roc_{tag}_{model}_{level}_{lang}"
             save_figure(fig, out, name)
             plt.close(fig)
             written.append(name)
@@ -391,7 +432,7 @@ def line_figures(long: pd.DataFrame, out: Path) -> list[str]:
     att = long[long["attack"].notna() & _source(long, "metrics")]
     for attack_id, part in att.groupby("attack"):
         wide = part.pivot_table(
-            index=["method", "model_id", "language", "level", "params"],
+            index=[*_keys(part, "model_id", "language"), "level", "params"],
             columns="metric",
             values="value",
             aggfunc="first",
@@ -399,7 +440,7 @@ def line_figures(long: pd.DataFrame, out: Path) -> list[str]:
         if attack_id == "T2.4k":
             for level, sub in wide.groupby("level"):
                 fig, ax = plt.subplots(figsize=(4, 3))
-                for key, s in sub.groupby(["method", "model_id", "language"]):
+                for key, s in sub.groupby(_keys(sub, "model_id", "language")):
                     ks = [json.loads(p)["k"] for p in s["params"]]
                     order = np.argsort(ks)
                     ax.plot(
@@ -419,7 +460,7 @@ def line_figures(long: pd.DataFrame, out: Path) -> list[str]:
         if "codebleu_distance" not in wide or "tpr_at_fpr" not in wide:
             continue
         fig, ax = plt.subplots(figsize=(4, 3))
-        for key, s in wide.groupby(["method", "model_id"]):
+        for key, s in wide.groupby(_keys(wide, "model_id")):
             ax.scatter(s["codebleu_distance"], s["tpr_at_fpr"], s=8, label=" ".join(map(str, key)))
         ax.set(xlabel="1 - CodeBLEU (intensity)", ylabel="TPR at 1% FPR", title=str(attack_id))
         ax.legend(fontsize=5)
@@ -444,7 +485,7 @@ def imperceptibility_figure(long: pd.DataFrame, out: Path, level: str = "L1") ->
     ]
     if part.empty:
         return []
-    axes = ["method", "model_id", "language"]
+    axes = _keys(part, "model_id", "language")
     keys = sorted({tuple(r) for r in part[axes].itertuples(index=False)})
     x = np.arange(len(keys))
     fig, ax = plt.subplots(figsize=(max(4.0, 0.35 * len(keys) + 1), 3.2))
@@ -467,11 +508,12 @@ def imperceptibility_figure(long: pd.DataFrame, out: Path, level: str = "L1") ->
 
 
 # --------------------------------------------------------------------------- efficienza
-def efficiency(store: ArtifactStore) -> pd.DataFrame:
+def efficiency(store: ArtifactStore, methods: Sequence[str] = METHODS) -> pd.DataFrame:
     """Secondi per campione dei worker sul test (generazione e rilevazione dei positivi)."""
     rows = []
     runs = store.root / "_runs"
-    for method, model, lang, h in frozen_cells(store):
+    with_label = labelled(methods)
+    for method, model, lang, h, label in frozen_configs(store, methods):
         for level in LEVELS:
             for phase, path in (
                 ("generation", runs / "watermark" / method / model / h / f"{level}_{lang}_test"),
@@ -488,6 +530,7 @@ def efficiency(store: ArtifactStore) -> pd.DataFrame:
                 rows.append(
                     {
                         "method": method,
+                        **({"label": label} if with_label else {}),
                         "model_id": model,
                         "level": level,
                         "language": lang,
@@ -532,10 +575,18 @@ def _gpu(
 
 
 # --------------------------------------------------------------------------- tutto
-def build_report(store: ArtifactStore, cfg: Any, out: Path, annotations_path: Path) -> list[str]:
-    """Rigenera tabelle, figure ed efficienza in ``out``; restituisce i file scritti."""
+def build_report(
+    store: ArtifactStore,
+    cfg: Any,
+    out: Path,
+    annotations_path: Path,
+    methods: Sequence[str] = METHODS,
+) -> list[str]:
+    """Rigenera tabelle, figure ed efficienza in ``out``; restituisce i file scritti. Con i
+    post-hoc in ``methods`` anche la colonna ``label`` e le tabelle degli attacchi su L2 e L3."""
     annotations = load_annotations(annotations_path) if annotations_path.is_file() else []
-    long = collect(store, annotations)
+    with_label = labelled(methods)
+    long = collect(store, annotations, methods)
     tables, figures = out / "tables", out / "figures"
     tables.mkdir(parents=True, exist_ok=True)
     written = []
@@ -566,18 +617,27 @@ def build_report(store: ArtifactStore, cfg: Any, out: Path, annotations_path: Pa
         written.append("tables/imperceptibility_L1")
         write_table(attack_table(long), tables, "attacks_L1", "Attacchi su L1 test")
         written.append("tables/attacks_L1")
+        if with_label:  # post-hoc (P6): attacchi anche su L2 (insieme S e altri) e su ClassEval
+            for level in ("L2", "L3"):
+                write_table(attack_table(long, level), tables, f"attacks_{level}",
+                            f"Attacchi su {level} test")  # fmt: skip
+                written.append(f"tables/attacks_{level}")
         written += [f"figures/{n}" for n in line_figures(long, figures)]
         written += [f"figures/{n}" for n in imperceptibility_figure(long, figures)]
-    written += [f"figures/{n}" for n in roc_figures(store, cfg, figures)]
-    eff = efficiency(store)
+    written += [f"figures/{n}" for n in roc_figures(store, cfg, figures, methods)]
+    eff = efficiency(store, methods)
     write_table(eff, tables, "efficiency", "Secondi per campione (worker); " + MCGMARK_NOTE)
     written.append("tables/efficiency")
-    _readme(out, written, long, annotations)
+    _readme(out, written, long, annotations, with_label)
     return written
 
 
 def _readme(
-    out: Path, written: Iterable[str], long: pd.DataFrame, annotations: Sequence[Annotation]
+    out: Path,
+    written: Iterable[str],
+    long: pd.DataFrame,
+    annotations: Sequence[Annotation],
+    with_label: bool = False,
 ) -> None:
     lines = [
         "# Report (M14)",
@@ -609,4 +669,15 @@ def _readme(
         "- Una riga per campione: i tentativi ripetuti dopo una ripresa non si contano due volte.",
         "",
     ]
+    if with_label:
+        lines += [
+            "## Metodi post-hoc (P6)",
+            "",
+            "- `mcss` e `multimark`: una riga per configurazione congelata, colonna `label` "
+            "(`main`, `prudent`, `high_capacity`; vuota per i cinque metodi), soglie L1+L2 di "
+            "sviluppo congelate (ADR-019).",
+            "- L3 = solo ClassEval per i positivi; l'FPR di L3 sui negativi umani Python di L3 "
+            "(anche CodeSearchNet), quello di ClassEval in `fpr_human|classeval`.",
+            "",
+        ]
     (out / "README.md").write_text("\n".join(lines), encoding="utf-8")

@@ -109,3 +109,112 @@ def test_elapsed_counts_each_sample_once(tmp_path: Path) -> None:
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
     assert _elapsed(path) == (6.0, 3)
+
+
+# --------------------------------------------------------------------------- post-hoc (P6)
+def _rows(values: dict[str, float]) -> pd.DataFrame:
+    names = list(values)
+    return pd.DataFrame({
+        "name": names, "value": [values[n] for n in names],
+        "ci_low": [values[n] - 0.1 for n in names], "ci_high": [values[n] + 0.1 for n in names],
+        "n": [10] * len(names), "ci_method": ["cluster_bootstrap"] * len(names),
+    })  # fmt: skip
+
+
+def _store_with_posthoc(cfg: ExperimentConfig, with_posthoc: bool) -> BenchmarkFacade:
+    """STONE congelato (una configurazione) e, se richiesto, multimark con due configurazioni
+    etichettate; metriche senza attacco (L1, L3), con T1.4 (L1), T2.4k (L2) e T2.5 (L2)."""
+    from bench.attacks.base import grid_attacks
+
+    facade = BenchmarkFacade(cfg)
+    t14 = next(iter(grid_attacks("T1.4")))
+    k_points = list(grid_attacks("T2.4k"))[:2]
+    t25 = next(iter(grid_attacks("T2.5")))
+    configs: list[tuple[str, list[tuple[str | None, str]]]] = [("stone", [(None, "h1")])]
+    if with_posthoc:
+        configs.append(
+            ("multimark", [("prudent", "e52b040770df"), ("high_capacity", "3fed1f1c1e24")])
+        )
+    for method, cells in configs:
+        frozen = [FrozenCell(model_id="m", language="python", config_hash=h, label=label)
+                  for label, h in cells]  # fmt: skip
+        record = FreezeRecord(method=method, frozen_at=datetime.now(UTC),
+                              levels=list(FINAL_LEVELS), grid_sha256=None, candidate_hashes=[],
+                              cells=frozen)  # fmt: skip
+        _write(facade, freeze_ref(method), record)
+        for i, (_, h) in enumerate(cells):
+            base = 0.5 + 0.1 * i
+            for level in ("L1", "L3"):
+                ref = metrics_ref(method, "m", h, level, "python", "test", FINAL_LEVELS)
+                _write(facade, ref, _rows({"tpr_at_fpr": base, "auroc": 0.9, "pass_at_1": 0.7,
+                                           "tpr_at_fpr|classeval": base}))  # fmt: skip
+            attacked = [("T1.4", t14, "L1"), *[("T2.4k", k, "L2") for k in k_points]]
+            if method == "multimark":  # T2.5 gira solo per i post-hoc (P6)
+                attacked.append(("T2.5", t25, "L2"))
+            for attack_id, ph, level in attacked:
+                ref = metrics_ref(method, "m", h, level, "python", "test", FINAL_LEVELS,
+                                  (attack_id, ph))  # fmt: skip
+                values = {"tpr_at_fpr": base - 0.2, "auroc": 0.8, "changed_fraction": 0.9,
+                          "codebleu_distance": 0.3}  # fmt: skip
+                _write(facade, ref, _rows(values))
+            imp = imperceptibility_ref(method, "m", h, "L1", "python", "test")
+            _write(facade, imp, _rows({"codebleu": 0.8, "adversarial_logreg_auroc_oof": 0.6}))
+    return facade
+
+
+def _tables(out: Path) -> dict[str, str]:
+    return {p.name: p.read_text(encoding="utf-8") for p in sorted((out / "tables").iterdir())}
+
+
+def _with_artifacts(cfg: ExperimentConfig, root: Path) -> ExperimentConfig:
+    return cfg.model_copy(update={"paths": cfg.paths.model_copy(update={"artifacts": root})})
+
+
+def test_default_report_ignores_the_posthoc_methods(cfg: ExperimentConfig, tmp_path: Path) -> None:
+    """Senza --with-posthoc il report dei cinque metodi è lo stesso, byte per byte, anche con
+    mcss e multimark congelati nello store (P6)."""
+    annotations = config_dir() / "report" / "annotations.yaml"
+    cfg_a, cfg_b = _with_artifacts(cfg, tmp_path / "a"), _with_artifacts(cfg, tmp_path / "b")
+    only_five = _store_with_posthoc(cfg_a, with_posthoc=False)
+    with_posthoc = _store_with_posthoc(cfg_b, with_posthoc=True)
+    out_a, out_b = tmp_path / "ra", tmp_path / "rb"
+    written_a = build_report(only_five.store, cfg_a, out_a, annotations)
+    written_b = build_report(with_posthoc.store, cfg_b, out_b, annotations)
+    assert written_a == written_b
+    assert _tables(out_a) == _tables(out_b)
+    readme_a = (out_a / "README.md").read_text(encoding="utf-8")
+    assert readme_a == (out_b / "README.md").read_text(encoding="utf-8")
+    assert "label" not in pd.read_csv(out_a / "tables" / "metrics_long.csv").columns
+
+
+def test_posthoc_report_keeps_the_five_methods_identical(
+    cfg: ExperimentConfig, tmp_path: Path
+) -> None:
+    """Con i post-hoc: colonna label (una riga per configurazione), T2.5 e attacchi su L2; le righe
+    dei cinque metodi sono quelle del report di default, tolta la colonna label."""
+    from bench.report import METHODS, POSTHOC_METHODS
+
+    annotations = config_dir() / "report" / "annotations.yaml"
+    facade = _store_with_posthoc(cfg, with_posthoc=True)
+    out_d, out_p = tmp_path / "default", tmp_path / "posthoc"
+    build_report(facade.store, cfg, out_d, annotations)
+    written = build_report(facade.store, cfg, out_p, annotations, (*METHODS, *POSTHOC_METHODS))
+    assert {"tables/attacks_L2", "tables/attacks_L3"} <= set(written)
+    for name in ("metrics_long", "main_L1", "main_L3", "main_L3_by_dataset",
+                 "imperceptibility_L1", "attacks_L1"):  # fmt: skip
+        default = pd.read_csv(out_d / "tables" / f"{name}.csv", dtype=str, keep_default_na=False)
+        posthoc = pd.read_csv(out_p / "tables" / f"{name}.csv", dtype=str, keep_default_na=False)
+        assert "label" in posthoc.columns, name
+        five = posthoc[posthoc["method"].isin(METHODS)].drop(columns="label")
+        assert set(five.columns) == set(default.columns), name
+        five = five[list(default.columns)].reset_index(drop=True)
+        assert five.equals(default.reset_index(drop=True)), name
+    main = pd.read_csv(out_p / "tables" / "main_L1.csv", keep_default_na=False)
+    mm = main[main["method"] == "multimark"]
+    assert sorted(mm["label"]) == ["high_capacity", "prudent"]
+    assert set(mm.loc[mm["label"] == "prudent", "tpr_at_fpr"]) == {"0.500 [0.400, 0.600]"}
+    assert set(mm.loc[mm["label"] == "high_capacity", "tpr_at_fpr"]) == {"0.600 [0.500, 0.700]"}
+    l2 = pd.read_csv(out_p / "tables" / "attacks_L2.csv", keep_default_na=False)
+    assert {"T2.4k", "T2.5"} <= set(l2["attack"])
+    assert (out_p / "figures" / "k_curve_L2.png").is_file()
+    assert "Metodi post-hoc (P6)" in (out_p / "README.md").read_text(encoding="utf-8")

@@ -1,7 +1,8 @@
-"""Stato e risultati degli attacchi su L1 test di un metodo congelato (Milestone 10, ADR-012).
+"""Stato e risultati degli attacchi sul test di un metodo congelato (Milestone 10, ADR-012; P6).
 
 Uso (con bench-core, nodo di login, nessun job):
     python scripts/check_attacks.py METHOD ATTACK[,ATTACK] [--missing] [--report]
+    python scripts/check_attacks.py mcss|multimark ATTACK[,ATTACK] --level L1|L2|L3 [--report]
 
 Per ogni passo di ``submit_attacks_l1.sh`` (attack, execute, detect, metrics) conta gli artefatti
 completi delle celle (modello, linguaggio, configurazione dell'attacco) con la configurazione
@@ -21,6 +22,12 @@ stati, frazione modificata, 1 − CodeBLEU, medie dei conteggi) e le metriche (T
 ΔPass@1 rispetto alla baseline e al marcato non attaccato), con la frazione di campioni
 ``UNCHANGED`` accanto al TPR; per gli attacchi con LLM anche attaccante, decoding e SHA-256
 dei prompt.
+
+**Metodi post-hoc** (``mcss``, ``multimark``; P6, ADR-019): una cella per configurazione congelata
+(etichetta ``prudent``/``high_capacity`` nel nome della cella) e ``--level``: su L2 solo i punti
+scelti per il test (:data:`bench.chains.POSTHOC_POINTS`: l'insieme S, più T1.6, T2.4k e T2.5 con
+tutti i loro punti), su L3 ClassEval (stessi punti delle catene). Per i cinque metodi ``--level``
+resta L1 e l'uscita non cambia.
 """
 
 from __future__ import annotations
@@ -56,6 +63,7 @@ from bench.pipeline.stages.watermark import make_adapter
 from bench.store.artifact_store import ArtifactStore
 
 LEVEL, SPLIT = "L1", "test"
+POSTHOC = ("mcss", "multimark")
 LLM_REWRITES = frozenset({"T2.2", "T3.1"})  # riscritture con LLM: funzione d'ingresso rinominata?
 REPORT_METRICS = (
     "tpr_at_fpr", "auroc", "pass_at_1", "delta_pass_at_1_pp", "delta_pass_at_1_pp_vs_marked",
@@ -70,15 +78,21 @@ def _metrics(store: ArtifactStore, ref: Any) -> dict[str, float]:
     return dict(zip(table["name"], table["value"], strict=True))
 
 
-def main() -> int:
+def main() -> int:  # noqa: PLR0912, PLR0915
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("method", choices=["sweet", "acw", "stone", "promptmark", "mcgmark"])
+    parser.add_argument("method", choices=["sweet", "acw", "stone", "promptmark", "mcgmark",
+                                           *POSTHOC])  # fmt: skip
     parser.add_argument("attacks")
     parser.add_argument("--missing", action="store_true")
     parser.add_argument("--report", action="store_true")
     parser.add_argument("--control", action="store_true", help="controllo negativo (D34)")
+    parser.add_argument("--level", choices=["L1", "L2", "L3"], default=LEVEL,
+                        help="post-hoc only (L2: chosen points, L3 = ClassEval)")  # fmt: skip
     args = parser.parse_args()
     method = args.method
+    level = args.level
+    if level != LEVEL and method not in POSTHOC:
+        parser.error("--level L2/L3 is only for the post-hoc methods (mcss, multimark)")
     cfg = load_experiment(["paths=cluster", "stage=attack"])
     store = ArtifactStore(cfg.paths.artifacts)
     record = load_freeze(store, method)
@@ -99,22 +113,26 @@ def main() -> int:
                 model, lang, h = cell.model_id, cell.language, cell.config_hash
                 # hash della cella con la versione corrente del catalogo del suo linguaggio
                 params_hash = attack.params_hash(lang)
+                if not chosen_point(method, level, attack_id, params_hash):
+                    continue
                 name = f"{attack_id} {json.dumps(attack.params, sort_keys=True)} {model} {lang}"
+                if cell.label:  # post-hoc: più configurazioni per (modello, linguaggio)
+                    name += f" {cell.label}"
                 base = Cell(
-                    method=method, model_id=model, level=LEVEL, language=lang, split=SPLIT,
+                    method=method, model_id=model, level=level, language=lang, split=SPLIT,
                     attack_id=attack_id, attack_params_hash=params_hash,
                 )  # fmt: skip
                 attacked = attacked_ref(
-                    attack_id, params_hash, method, model, h, LEVEL, lang, SPLIT
+                    attack_id, params_hash, method, model, h, level, lang, SPLIT
                 )
                 steps["attack"].append((name, attacked))
                 exe = execution_ref(replace(base, source="attacked"), h)
                 steps["execute"].append((name, exe))
                 subject = attacked_subject(attack_id, params_hash)
-                det = detection_ref(method, model, h, subject, LEVEL, lang, SPLIT)
+                det = detection_ref(method, model, h, subject, level, lang, SPLIT)
                 steps["detect"].append((name, det))
                 ref = metrics_ref(
-                    method, model, h, LEVEL, lang, SPLIT, FINAL_LEVELS, (attack_id, params_hash)
+                    method, model, h, level, lang, SPLIT, FINAL_LEVELS, (attack_id, params_hash)
                 )
                 steps["metrics"].append((name, ref))
                 report.append((name, attacked, ref, exe, det))
@@ -122,19 +140,35 @@ def main() -> int:
                     attack_id, language=lang
                 ):
                     key = (attack_id, params_hash)
-                    control.append(_add_control(steps, method, model, lang, h, key, name, ref))
+                    control.append(
+                        _add_control(steps, method, model, lang, h, key, name, ref, level)
+                    )
                 if attack_id == REMARK_ATTACK:
-                    remark.append(_add_remark(steps, method, model, lang, h, params_hash, name))
+                    remark.append(
+                        _add_remark(steps, method, model, lang, h, params_hash, name, level)
+                    )
 
-    sys.stdout.write(f"##### {method} attacks {args.attacks} on {LEVEL} {SPLIT}\n")
+    sys.stdout.write(f"##### {method} attacks {args.attacks} on {level} {SPLIT}\n")
     _write_steps(store, steps, args.missing)
     if args.report:
-        _write_report(store, report, make_adapter(cfg, method))
+        _write_report(store, report, make_adapter(cfg, method), level)
         if args.control:
             _write_control(store, control, cfg.detection.target_fpr)
         if remark:
             _write_remark(store, remark)
     return 0
+
+
+def chosen_point(method: str, level: str, attack_id: str, params_hash: str) -> bool:
+    """Punto dell'attacco da controllare: per i post-hoc fuori da L1 solo i punti scelti per il
+    test (``bench.chains.POSTHOC_POINTS``; un attacco senza punti elencati li tiene tutti, come
+    l'opzione ``attack_points`` delle catene); per gli altri metodi e su L1 tutti."""
+    if method not in POSTHOC or level == LEVEL:
+        return True
+    from bench.chains import POSTHOC_POINTS
+
+    points = POSTHOC_POINTS.get(level, {}).get(attack_id)
+    return points is None or params_hash in points
 
 
 def _add_control(
@@ -146,15 +180,16 @@ def _add_control(
     key: tuple[str, str],
     name: str,
     ref: Any,
+    level: str = LEVEL,
 ) -> tuple[str, Any, Any]:
     """Passi del controllo negativo (D34) di una cella; la baseline riscritta è per modello e
     linguaggio, comune a tutti i metodi."""
-    base_ref = (f"{model} {lang}", attacked_baseline_ref(*key, model, LEVEL, lang, SPLIT))
+    base_ref = (f"{model} {lang}", attacked_baseline_ref(*key, model, level, lang, SPLIT))
     if base_ref not in steps["control_attack"]:
         steps["control_attack"].append(base_ref)
-    det = control_detection_ref(method, model, h, *key, LEVEL, lang, SPLIT)
+    det = control_detection_ref(method, model, h, *key, level, lang, SPLIT)
     steps["control_detect"].append((name, det))
-    cref = control_metrics_ref(method, model, h, LEVEL, lang, SPLIT, list(FINAL_LEVELS), key)
+    cref = control_metrics_ref(method, model, h, level, lang, SPLIT, list(FINAL_LEVELS), key)
     steps["control_metrics"].append((name, cref))
     return name, ref, cref
 
@@ -189,6 +224,7 @@ def _add_remark(
     h: str,
     params_hash: str,
     name: str,
+    level: str = LEVEL,
 ) -> tuple[str, Any]:
     """Passi della seconda chiave di una cella T3.1; ritorna (nome, metriche della ri-marcatura)."""
     steps["k2_threshold"].append(
@@ -197,14 +233,14 @@ def _add_remark(
     if not steps["k2_freeze"]:
         steps["k2_freeze"].append((method, freeze_ref(method, ALT_KEY_ID)))
     steps["k2_neg_test"].append(
-        (name, detection_ref(method, model, h, "neg_human", LEVEL, lang, SPLIT, ALT_KEY_ID))
+        (name, detection_ref(method, model, h, "neg_human", level, lang, SPLIT, ALT_KEY_ID))
     )
     subject = attacked_subject(REMARK_ATTACK, params_hash)
     steps["k2_detect"].append(
-        (name, detection_ref(method, model, h, subject, LEVEL, lang, SPLIT, ALT_KEY_ID))
+        (name, detection_ref(method, model, h, subject, level, lang, SPLIT, ALT_KEY_ID))
     )
     ref = remark_metrics_ref(
-        method, model, h, LEVEL, lang, SPLIT, list(FINAL_LEVELS), (REMARK_ATTACK, params_hash)
+        method, model, h, level, lang, SPLIT, list(FINAL_LEVELS), (REMARK_ATTACK, params_hash)
     )
     steps["k2_metrics"].append((name, ref))
     return name, ref
@@ -230,7 +266,10 @@ def _write_remark(store: ArtifactStore, remark: list[tuple[str, Any]]) -> None:
 
 
 def _write_report(
-    store: ArtifactStore, report: list[tuple[str, Any, Any, Any, Any]], adapter: Any
+    store: ArtifactStore,
+    report: list[tuple[str, Any, Any, Any, Any]],
+    adapter: Any,
+    level: str = LEVEL,
 ) -> None:
     """Intensità e metriche per cella (``--report``)."""
     for name, attacked, ref, exe, det in report:
@@ -254,7 +293,7 @@ def _write_report(
                     f"  prompts_sha256 {json.dumps(extra.get('prompts_sha256'))}\n"
                 )
             if extra.get("attack_id") == "T2.1":
-                _write_refactor(store, attacked)
+                _write_refactor(store, attacked, level)
             if extra.get("attack_id") == "T2.4":
                 _write_truncate(store, attacked)
         values = _metrics(store, ref)
@@ -267,17 +306,17 @@ def _write_report(
         if store.exists(attacked):
             _write_outcomes(store, attacked, ref, exe, det, adapter)
             if extra.get("attack_id") in LLM_REWRITES and store.exists(exe):
-                _write_entry(store, attacked, exe)
+                _write_entry(store, attacked, exe, level)
 
 
-def _write_entry(store: ArtifactStore, attacked: Any, exe: Any) -> None:
+def _write_entry(store: ArtifactStore, attacked: Any, exe: Any, level: str = LEVEL) -> None:
     """Fallimenti di Pass@1 divisi fra funzione d'ingresso rinominata o mancante e altri
     (decisione dell'utente del 28 ottobre 2026, T3.1; ``bench.attacks.interface``)."""
     samples = store.read_table(attacked)
     lang = str(samples["language"].iloc[0])
     problems = {
         str(r["problem_key"]): Problem.model_validate(r)
-        for r in store.read_table(problems_ref(LEVEL, lang)).to_dict(orient="records")
+        for r in store.read_table(problems_ref(level, lang)).to_dict(orient="records")
     }
     runs = store.read_table(exe)
     status = {str(k): str(v) for k, v in zip(runs["sample_id"], runs["status"], strict=True)}
@@ -357,7 +396,7 @@ def _write_truncate(store: ArtifactStore, attacked: Any) -> None:
         sys.stdout.write(f"  T2.4 NOT_APPLICABLE reasons {dict(reasons)}\n")
 
 
-def _write_refactor(store: ArtifactStore, attacked: Any) -> None:
+def _write_refactor(store: ArtifactStore, attacked: Any, level: str = LEVEL) -> None:
     """T2.1 (decisioni dell'utente del 26 ottobre 2026): tipi di regola effettivamente applicati
     (media su tutti i campioni a cui l'attacco si applica, UNCHANGED compresi) e, per ACW, la quota
     dei tipi applicati equivalenti a una regola di inserimento della configurazione congelata
@@ -380,7 +419,7 @@ def _write_refactor(store: ArtifactStore, attacked: Any) -> None:
     if first["method"] != "acw":
         return
     det = detection_ref(
-        "acw", str(first["model_id"]), str(first["config_hash"]), "positives", LEVEL,
+        "acw", str(first["model_id"]), str(first["config_hash"]), "positives", level,
         str(first["language"]), SPLIT,
     )  # fmt: skip
     if not store.exists(det):
