@@ -77,3 +77,50 @@ def test_set_aside_t3_1_posthoc(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     store.path_of(first).write_text("y", encoding="utf-8")  # di nuovo: la destinazione esiste
     assert aside.main() == 1 and store.path_of(first).read_text(encoding="utf-8") == "y"
     assert moved.read_text(encoding="utf-8") == "x"
+
+
+def test_set_aside_t3_1_detect_stage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """``--stage detect`` (v2): rilevazione k1 e k2, metriche T3.1 e della ri-marcatura e cartelle
+    di lavoro della rilevazione (k1 e k2) con ``.v2_stale_detect``; attacco ed esecuzione restano;
+    si ferma se una destinazione esiste."""
+    aside = _load("set_aside_t3_1_posthoc")
+    record = FreezeRecord(
+        method="mcss", frozen_at=datetime(2026, 11, 24, tzinfo=UTC), levels=["L1", "L2"],
+        grid_sha256=None, candidate_hashes=[],
+        cells=[FrozenCell(model_id=MODEL, language="python", label="main", config_hash="h1")],
+    )  # fmt: skip
+    monkeypatch.setattr(aside, "load_freeze", lambda store, method: record)
+    store = ArtifactStore(tmp_path)
+    every = aside.t3_1_refs(store, "mcss")
+    refs = aside.t3_1_refs(store, "mcss", "detect")
+    assert [r.path for _, r in refs] == [r.path for _, r in every[2:]] and len(refs) == 4
+    assert [r.path.parts[0] for _, r in refs[:2]] == ["detection", "detection"]
+    dirs = [d for _, d in aside.detect_run_dirs(store, "mcss")]
+    cell = Path("attacked", "T3.1", "0b0f5086dab1", "L1_python_test")
+    assert dirs == [tmp_path / "_runs/detect/mcss" / MODEL / "h1" / cell,
+                    tmp_path / "_runs/detect/mcss" / MODEL / "h1" / "k2" / cell]  # fmt: skip
+    for _, ref in every:  # tutti gli artefatti della v2 e le due cartelle di lavoro
+        for path in (store.path_of(ref), store.manifest_of(ref)):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("v2", encoding="utf-8")
+    for d in dirs:
+        d.mkdir(parents=True)
+        (d / "results.jsonl").write_text("old", encoding="utf-8")
+    fake_cfg = SimpleNamespace(paths=SimpleNamespace(artifacts=tmp_path))
+    monkeypatch.setattr(aside, "load_experiment", lambda overrides: fake_cfg)
+    args = ["set_aside", "--methods", "mcss", "--stage", "detect"]
+    monkeypatch.setattr(sys, "argv", args)
+    assert aside.main() == 0 and all(d.is_dir() for d in dirs)  # default: stampa soltanto
+    monkeypatch.setattr(sys, "argv", [*args, "--apply"])
+    assert aside.main() == 0
+    suffix = ".v2_stale_detect"
+    for _, ref in every[:2]:  # attacco ed esecuzione restano
+        assert store.path_of(ref).is_file() and store.manifest_of(ref).is_file()
+    for _, ref in refs:
+        data = store.path_of(ref)
+        assert not data.exists() and data.with_name(data.name + suffix).is_file()
+    for d in dirs:
+        assert not d.exists()
+        assert (d.with_name(d.name + suffix) / "results.jsonl").read_text("utf-8") == "old"
+    dirs[1].mkdir(parents=True)  # di nuovo: la destinazione esiste, niente si sposta
+    assert aside.main() == 1 and dirs[1].is_dir()
