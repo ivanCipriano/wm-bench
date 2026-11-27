@@ -1,0 +1,90 @@
+[10:03:45] 5000 manifest letti (detection)
+[10:05:36] 10000 manifest letti (detection)
+[10:07:13] 15000 manifest letti (execution)
+[10:08:42] 20000 manifest letti (execution)
+[10:10:06] 25000 manifest letti (metrics_L1L2)
+[10:11:13] manifest letti; pianificazione dei passi
+[10:11:13] passo 1/32: stone/L1/T1.6/attack
+lettura dei manifest...
+
+##### passi che mancano (ore-job, fonte dei tempi)
+[10:11:15] passo 2/32: stone/L1/T1.6/execute
+  stone/L1/T1.6/attack                     ivan    CPU    4 celle      0.0 h  [other methods same level/split]
+[10:11:15] passo 3/32: stone/L1/T1.6/detect
+  stone/L1/T1.6/execute                    ivan    CPU    4 celle      0.1 h  [other methods same level/split]
+[10:11:16] passo 4/32: stone/L1/T1.6/metrics
+  stone/L1/T1.6/detect                     ivan    GPU    4 celle      0.1 h  [detect same level/split | other methods same level/split]
+[10:11:16] passo 5/32: stone/L1/T2.5/attack
+  stone/L1/T1.6/metrics                    ivan    CPU    4 celle      0.0 h  [cell median]
+[10:11:17] passo 6/32: stone/L1/T2.5/execute
+  stone/L1/T2.5/attack                     ivan    CPU    6 celle      0.0 h  [other methods same level/split]
+[10:11:17] passo 7/32: stone/L1/T2.5/detect
+  stone/L1/T2.5/execute                    ivan    CPU    6 celle      0.2 h  [other methods same level/split]
+[10:11:18] passo 8/32: stone/L1/T2.5/metrics
+  stone/L1/T2.5/detect                     ivan    GPU    6 celle      0.2 h  [detect same level/split | other methods same level/split]
+[10:11:18] passo 9/32: stone/L2/T1.6/attack
+  stone/L1/T2.5/metrics                    ivan    CPU    6 celle      0.0 h  [cell median]
+[10:11:19] passo 10/32: stone/L2/T1.6/execute
+  stone/L2/T1.6/attack                     ivan    CPU    4 celle      0.0 h  [other methods same level/split]
+[10:11:19] passo 11/32: stone/L2/T1.6/detect
+  stone/L2/T1.6/execute                    ivan    CPU    4 celle      0.1 h  [other methods same level/split]
+[10:11:20] passo 12/32: stone/L2/T1.6/metrics
+  stone/L2/T1.6/detect                     ivan    GPU    4 celle      0.1 h  [detect same level/split | other methods same level/split]
+[10:11:20] passo 13/32: stone/L2/T2.5/attack
+  stone/L2/T1.6/metrics                    ivan    CPU    4 celle      0.0 h  [cell median]
+[10:11:21] passo 14/32: stone/L2/T2.5/execute
+  stone/L2/T2.5/attack                     ivan    CPU    6 celle      0.0 h  [other methods same level/split]
+[10:11:21] passo 15/32: stone/L2/T2.5/detect
+  stone/L2/T2.5/execute                    ivan    CPU    6 celle      0.2 h  [other methods same level/split]
+[10:11:22] passo 16/32: stone/L2/T2.5/metrics
+  stone/L2/T2.5/detect                     ivan    GPU    6 celle      0.1 h  [detect same level/split | other methods same level/split]
+[10:11:22] passo 17/32: mcgmark/L1/T1.6/attack
+  stone/L2/T2.5/metrics                    ivan    CPU    6 celle      0.0 h  [cell median]
+[10:11:22] passo 18/32: mcgmark/L1/T1.6/execute
+  mcgmark/L1/T1.6/attack                   ivan    CPU    4 celle      0.0 h  [other methods same level/split]
+[10:11:23] passo 19/32: mcgmark/L1/T1.6/detect
+  mcgmark/L1/T1.6/execute                  ivan    CPU    4 celle      0.1 h  [other methods same level/split]
+[10:11:23] passo 20/32: mcgmark/L1/T1.6/metrics
+  mcgmark/L1/T1.6/detect                   ivan    GPU    4 celle      0.1 h  [detect same level/split | other methods same level/split]
+[10:11:24] passo 21/32: mcgmark/L1/T2.5/attack
+  mcgmark/L1/T1.6/metrics                  ivan    CPU    4 celle      0.0 h  [cell median]
+[10:11:24] passo 22/32: mcgmark/L1/T2.5/execute
+  mcgmark/L1/T2.5/attack                   ivan    CPU    6 celle      0.0 h  [other methods same level/split]
+[10:11:24] passo 23/32: mcgmark/L1/T2.5/detect
+  mcgmark/L1/T2.5/execute                  ivan    CPU    6 celle      0.2 h  [other methods same level/split]
+[10:11:25] passo 24/32: mcgmark/L1/T2.5/metrics
+  mcgmark/L1/T2.5/detect                   ivan    GPU    6 celle      0.1 h  [detect same level/split | other methods same level/split]
+[10:11:25] passo 25/32: mcgmark/L2/T1.6/attack
+  mcgmark/L1/T2.5/metrics                  ivan    CPU    6 celle      0.0 h  [cell median]
+[10:11:26] passo 26/32: mcgmark/L2/T1.6/execute
+  mcgmark/L2/T1.6/attack                   ivan    CPU    4 celle      0.0 h  [other methods same level/split]
+[10:11:26] passo 27/32: mcgmark/L2/T1.6/detect
+  mcgmark/L2/T1.6/execute                  ivan    CPU    4 celle      0.1 h  [other methods same level/split]
+[10:11:26] passo 28/32: mcgmark/L2/T1.6/metrics
+  mcgmark/L2/T1.6/detect                   ivan    GPU    4 celle      0.0 h  [detect same level/split | other methods same level/split]
+[10:11:27] passo 29/32: mcgmark/L2/T2.5/attack
+  mcgmark/L2/T1.6/metrics                  ivan    CPU    4 celle      0.0 h  [cell median]
+[10:11:27] passo 30/32: mcgmark/L2/T2.5/execute
+  mcgmark/L2/T2.5/attack                   ivan    CPU    6 celle      0.0 h  [other methods same level/split]
+[10:11:28] passo 31/32: mcgmark/L2/T2.5/detect
+  mcgmark/L2/T2.5/execute                  ivan    CPU    6 celle      0.2 h  [other methods same level/split]
+[10:11:28] passo 32/32: mcgmark/L2/T2.5/metrics
+  mcgmark/L2/T2.5/detect                   ivan    GPU    6 celle      0.1 h  [detect same level/split | other methods same level/split]
+  mcgmark/L2/T2.5/metrics                  ivan    CPU    6 celle      0.0 h  [cell median]
+
+##### per metodo e livello (ore-job)
+  metodo       livello       GPU h    CPU h
+  mcgmark      L1 test         0.2      0.4
+  mcgmark      L2 test         0.1      0.4
+  stone        L1 test         0.3      0.4
+  stone        L2 test         0.1      0.4
+
+##### giorni reali per proprietario (senza attesa in coda)
+  senza ACW su L2 test e L3:
+    ivan    GPU      0.7 h, CPU      1.5 h; 10 posti      0.2 h; cammino critico      0.1 h -> 0.0 giorni
+    simone  GPU      0.0 h, CPU      0.0 h; 10 posti      0.0 h; cammino critico      0.0 h -> 0.0 giorni
+  con ACW su L2 test e L3:
+    ivan    GPU      0.7 h, CPU      1.5 h; 10 posti      0.2 h; cammino critico      0.1 h -> 0.0 giorni
+    simone  GPU      0.0 h, CPU      0.0 h; 10 posti      0.0 h; cammino critico      0.0 h -> 0.0 giorni
+
+  SWEET (priorità sulle GPU): cammino critico      0.0 h, GPU      0.0 h

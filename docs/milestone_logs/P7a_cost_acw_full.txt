@@ -1,0 +1,56 @@
+[10:13:06] 5000 manifest letti (detection)
+[10:13:14] 10000 manifest letti (detection)
+[10:13:22] 15000 manifest letti (execution)
+[10:13:30] 20000 manifest letti (execution)
+[10:13:39] 25000 manifest letti (metrics_L1L2)
+[10:13:45] manifest letti; pianificazione dei passi
+[10:13:45] passo 1/16: acw/L1/T1.6/attack
+lettura dei manifest...
+
+##### passi che mancano (ore-job, fonte dei tempi)
+[10:13:45] passo 2/16: acw/L1/T1.6/execute
+  acw/L1/T1.6/attack                       ivan    CPU    4 celle      0.0 h  [other methods same level/split] (HELD: licenza)
+[10:13:45] passo 3/16: acw/L1/T1.6/detect
+  acw/L1/T1.6/execute                      ivan    CPU    4 celle      0.1 h  [other methods same level/split] (HELD: licenza)
+[10:13:46] passo 4/16: acw/L1/T1.6/metrics
+  acw/L1/T1.6/detect                       ivan    CPU    4 celle      4.9 h  [detect same level/split | other methods same level/split] (HELD: licenza)
+[10:13:46] passo 5/16: acw/L1/T2.5/attack
+  acw/L1/T1.6/metrics                      ivan    CPU    4 celle      0.0 h  [cell median] (HELD: licenza)
+[10:13:47] passo 6/16: acw/L1/T2.5/execute
+  acw/L1/T2.5/attack                       ivan    CPU    6 celle      0.0 h  [other methods same level/split] (HELD: licenza)
+[10:13:47] passo 7/16: acw/L1/T2.5/detect
+  acw/L1/T2.5/execute                      ivan    CPU    6 celle      0.2 h  [other methods same level/split] (HELD: licenza)
+[10:13:47] passo 8/16: acw/L1/T2.5/metrics
+  acw/L1/T2.5/detect                       ivan    CPU    6 celle      7.3 h  [detect same level/split | other methods same level/split] (HELD: licenza)
+[10:13:48] passo 9/16: acw/L2/T1.6/attack
+  acw/L1/T2.5/metrics                      ivan    CPU    6 celle      0.0 h  [cell median] (HELD: licenza)
+[10:13:48] passo 10/16: acw/L2/T1.6/execute
+  acw/L2/T1.6/attack                       ivan    CPU    4 celle      0.0 h  [other methods same level/split] (HELD: licenza)
+[10:13:48] passo 11/16: acw/L2/T1.6/detect
+  acw/L2/T1.6/execute                      ivan    CPU    4 celle      0.1 h  [other methods same level/split] (HELD: licenza)
+[10:13:49] passo 12/16: acw/L2/T1.6/metrics
+  acw/L2/T1.6/detect                       ivan    CPU    4 celle      2.1 h  [detect same level/split | other methods same level/split] (HELD: licenza)
+[10:13:49] passo 13/16: acw/L2/T2.5/attack
+  acw/L2/T1.6/metrics                      ivan    CPU    4 celle      0.0 h  [cell median] (HELD: licenza)
+[10:13:50] passo 14/16: acw/L2/T2.5/execute
+  acw/L2/T2.5/attack                       ivan    CPU    6 celle      0.0 h  [other methods same level/split] (HELD: licenza)
+[10:13:50] passo 15/16: acw/L2/T2.5/detect
+  acw/L2/T2.5/execute                      ivan    CPU    6 celle      0.2 h  [other methods same level/split] (HELD: licenza)
+[10:13:50] passo 16/16: acw/L2/T2.5/metrics
+  acw/L2/T2.5/detect                       ivan    CPU    6 celle      3.1 h  [detect same level/split | other methods same level/split] (HELD: licenza)
+  acw/L2/T2.5/metrics                      ivan    CPU    6 celle      0.0 h  [cell median] (HELD: licenza)
+
+##### per metodo e livello (ore-job)
+  metodo       livello       GPU h    CPU h
+  acw          L1 test         0.0     12.6
+  acw          L2 test         0.0      5.6
+
+##### giorni reali per proprietario (senza attesa in coda)
+  senza ACW su L2 test e L3:
+    ivan    GPU      0.0 h, CPU      0.0 h; 10 posti      0.0 h; cammino critico      0.0 h -> 0.0 giorni
+    simone  GPU      0.0 h, CPU      0.0 h; 10 posti      0.0 h; cammino critico      0.0 h -> 0.0 giorni
+  con ACW su L2 test e L3:
+    ivan    GPU      0.0 h, CPU     18.1 h; 10 posti      1.8 h; cammino critico      3.7 h -> 0.2 giorni
+    simone  GPU      0.0 h, CPU      0.0 h; 10 posti      0.0 h; cammino critico      0.0 h -> 0.0 giorni
+
+  SWEET (priorità sulle GPU): cammino critico      0.0 h, GPU      0.0 h
