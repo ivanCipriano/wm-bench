@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from bench.chains import Chains, Step, StepState, all_steps, load_state
+from bench.chains import Chains, Report, Step, StepState, all_steps, load_state
 
 WMB = "/wmb"
 
@@ -269,3 +269,181 @@ def test_p7a_steps() -> None:
     assert by["stone/L3/T2.4k/attack"].overrides[3] == "languages=[python,java,cpp]"
     with pytest.raises(ValueError):
         p7a_steps("sweet", WMB)
+
+
+# --------------------------------------------------------------------------- P7.a, 27 novembre
+LINE = [
+    Step("l/a", "ivan", "detect", ()),
+    Step("l/b", "ivan", "metrics", (), needs=("l/a",)),
+    Step("l/c", "ivan", "attack", (), needs=("l/b",)),
+]
+
+
+def _fail_a(slurm: FakeSlurm, state: dict[str, StepState], reason: str) -> None:
+    """I job di l/a finiscono FAILED; quelli in attesa prendono il motivo dato."""
+    for j in state["l/a"].jobs:
+        slurm.jobs.pop(j, None)
+        slurm.ended[j] = "FAILED"
+    for j, (st, _) in list(slurm.jobs.items()):
+        slurm.jobs[j] = (st, reason)
+
+
+def test_failed_need_is_not_queued_and_costs_no_attempt(tmp_path: Path) -> None:
+    """Un passo che dipende (anche indirettamente) da un passo FAILED non va in coda
+    (DEP_FAILED, fermo), i suoi job in attesa si cancellano anche prima che SLURM li segni
+    DependencyNeverSatisfied, e le cancellazioni non consumano tentativi."""
+    slurm = FakeSlurm()
+
+    def tick() -> dict[str, Report]:
+        return {r.key: r for r in Chains(LINE, lambda s: False, slurm, tmp_path).run("ivan")}
+
+    def state() -> dict[str, StepState]:
+        return load_state(Chains([], lambda s: False, slurm, tmp_path).state_path("ivan"))
+
+    assert {k: r.status for k, r in tick().items()} == dict.fromkeys(LINE_KEYS, "SUBMITTED")
+    for _ in range(2):  # due fallimenti di l/a: a valle cancellati e rimandati
+        _fail_a(slurm, state(), "DependencyNeverSatisfied")
+        assert {k: r.status for k, r in tick().items()} == dict.fromkeys(LINE_KEYS, "SUBMITTED")
+    assert state()["l/b"].attempts == 1 and state()["l/c"].attempts == 1  # tentativi restituiti
+    # terzo fallimento: SLURM non ha ancora rivalutato le attese (motivo "Dependency"), come alle
+    # 10:45 del 27 novembre
+    _fail_a(slurm, state(), "Dependency")
+    before = len(slurm.submitted)
+    reports = tick()
+    assert reports["l/a"].status == "FAILED"
+    assert reports["l/b"].status == reports["l/c"].status == "DEP_FAILED"
+    assert "l/a, which FAILED" in reports["l/b"].detail
+    assert "l/b, which FAILED" in reports["l/c"].detail  # indiretto
+    assert len(slurm.submitted) == before and not slurm.jobs  # nulla in coda, attese cancellate
+    st = state()
+    assert st["l/b"].attempts == 0 and st["l/c"].attempts == 0
+    assert st["l/b"].history[-1]["attempt_refunded"] is True
+    # giro dopo: fermi, senza invii; status li mostra come DEP_FAILED
+    assert {r.status for r in tick().values()} == {"FAILED", "DEP_FAILED"}
+    assert len(slurm.submitted) == before
+    statuses = {r.key: r.status for r in Chains(LINE, lambda s: False, slurm, tmp_path).status()}
+    assert statuses == {"l/a": "FAILED", "l/b": "DEP_FAILED", "l/c": "DEP_FAILED"}
+    # dopo il reset del solo passo fallito la catena riparte
+    Chains(LINE, lambda s: False, slurm, tmp_path).reset("ivan", ["l/a"], "token renewed")
+    assert {k: r.status for k, r in tick().items()} == dict.fromkeys(LINE_KEYS, "SUBMITTED")
+
+
+LINE_KEYS = [s.key for s in LINE]
+
+
+def test_needs_still_retrying_are_not_dead(tmp_path: Path) -> None:
+    """Un primo fallimento a monte non ferma nulla: il passo a valle si rimanda dietro il nuovo
+    tentativo (comportamento di prima, tolto il tentativo consumato)."""
+    slurm = FakeSlurm()
+    Chains(LINE[:2], lambda s: False, slurm, tmp_path).run("ivan")
+    path = Chains([], lambda s: False, slurm, tmp_path).state_path("ivan")
+    _fail_a(slurm, load_state(path), "DependencyNeverSatisfied")
+    reports = {r.key: r for r in Chains(LINE[:2], lambda s: False, slurm, tmp_path).run("ivan")}
+    assert reports["l/b"].status == "SUBMITTED"
+    assert slurm.submitted[-1][2] == tuple(load_state(path)["l/a"].jobs)
+
+
+def test_state_is_saved_when_a_tick_breaks(tmp_path: Path) -> None:
+    """Se un comando SLURM fallisce a metà giro, i job già inviati restano nello stato."""
+
+    class Broken(FakeSlurm):
+        def submit(self, step: Step, n_jobs: int, after: Sequence[str], gpu: str | None,
+                   extra: Sequence[str]) -> list[str]:  # fmt: skip
+            if step.key == "l/b":
+                raise RuntimeError("bench submit: no answer after 1800 s")
+            return super().submit(step, n_jobs, after, gpu, extra)
+
+    slurm = Broken()
+    chains = Chains(LINE, lambda s: False, slurm, tmp_path)
+    with pytest.raises(RuntimeError):
+        chains.run("ivan")
+    assert load_state(chains.state_path("ivan"))["l/a"].jobs == ["100"]
+
+
+def test_slurm_commands_have_a_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    import subprocess
+
+    from bench import chains as mod
+
+    seen: list[float] = []
+
+    def hang(cmd: Sequence[str], **kw: object) -> None:
+        seen.append(float(kw["timeout"]))  # type: ignore[arg-type]
+        assert kw["stdin"] is subprocess.DEVNULL
+        raise subprocess.TimeoutExpired(cmd, float(kw["timeout"]))  # type: ignore[arg-type]
+
+    monkeypatch.setattr(mod.subprocess, "run", hang)
+    with pytest.raises(RuntimeError, match="no answer after 300"):
+        mod.RealSlurm().queued()
+    with pytest.raises(mod.SubmitTimeout, match="check squeue"):
+        mod.RealSlurm().submit(LINE[0], 1, [], None, [])
+    assert seen == [mod.QUERY_TIMEOUT_S, mod.SUBMIT_TIMEOUT_S]
+    assert issubclass(mod.SubmitTimeout, RuntimeError)
+
+
+def test_sourcery_token_warning(tmp_path: Path) -> None:
+    import os
+
+    from bench.chains import sourcery_token_warning
+
+    token = tmp_path / "sourcery_token"
+    assert "not found" in (sourcery_token_warning(token) or "")
+    token.write_text("x", encoding="utf-8")
+    now = token.stat().st_mtime
+    assert sourcery_token_warning(token, now=now + 11.9 * 86400) is None
+    warning = sourcery_token_warning(token, now=now + 13 * 86400)
+    assert warning is not None and "13.0 days old" in warning
+    os.utime(token, (now - 20 * 86400, now - 20 * 86400))
+    assert "20." in (sourcery_token_warning(token, now=now) or "")
+
+
+def _chains_script():  # type: ignore[no-untyped-def]
+    import importlib.util
+    import sys
+
+    from tests.conftest import REPO_ROOT
+
+    spec = importlib.util.spec_from_file_location(
+        "wmb_chains_script", REPO_ROOT / "scripts" / "chains.py"
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_loop_tick_lines_terminal_and_submit_timeout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Ciclo: riga ``tick start`` a ogni giro, DEP_FAILED fermo (il ciclo finisce con exit 1),
+    ``SubmitTimeout`` ferma il ciclo (exit 3); avviso sul token solo con passi di ACW scelti."""
+    import argparse
+
+    script = _chains_script()
+    steps = [Step("acw/L1/x", "ivan", "detect", ()), Step("stone/L1/x", "ivan", "detect", ())]
+    monkeypatch.setattr(script, "setup", lambda smoke: (steps, [], tmp_path, []))
+    monkeypatch.setattr(script, "sourcery_token_warning", lambda: "WARNING: old token")
+    args = argparse.Namespace(smoke=False, owner="ivan", only=["stone/"], every=0)
+    assert script.token_warning(steps, args) is None
+    monkeypatch.setattr(
+        script, "run_once",
+        lambda a: [Report("stone/L1/x", "ivan", "DEP_FAILED", "needs y, which FAILED")],
+    )  # fmt: skip
+    assert script.loop(args) == 1
+    lines = (tmp_path / "loop_ivan.log").read_text(encoding="utf-8").splitlines()
+    assert (
+        lines[0].endswith(" tick start") and "blocked by a failed step ['stone/L1/x']" in lines[-1]
+    )
+    assert not any("WARNING" in line for line in lines)
+
+    def timeout(a: argparse.Namespace) -> list[Report]:
+        raise script.SubmitTimeout("acw/L1/x: bench submit: no answer after 1800 s")
+
+    monkeypatch.setattr(script, "run_once", timeout)
+    args.only = []
+    assert script.token_warning(steps, args) == "WARNING: old token"
+    assert script.loop(args) == 3
+    lines = (tmp_path / "loop_ivan.log").read_text(encoding="utf-8").splitlines()
+    assert lines[-3].endswith(" tick start") and lines[-2].endswith("WARNING: old token")
+    assert lines[-1].endswith("loop stopped")

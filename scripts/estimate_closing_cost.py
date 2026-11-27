@@ -55,7 +55,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from bench.chains import MAX_JOBS, OWNERS, POSTHOC, Step, all_steps
+from bench.chains import MAX_JOBS, OWNERS, POSTHOC, Step, all_steps, sourcery_token_warning
 from bench.config.builder import load_experiment
 from bench.config.resources import ResourceClass
 from bench.domain.enums import Language
@@ -294,6 +294,15 @@ def h(seconds: float) -> str:
     return f"{seconds / 3600:8.1f}"
 
 
+def token_note(steps: list[Step]) -> str:
+    """Avviso (riga vuota prima) se fra i passi c'è ACW e il token di Sourcery è vecchio: le prove
+    durano circa 15 giorni; stringa vuota altrimenti."""
+    if not any(s.key.startswith("acw/") for s in steps):
+        return ""
+    warning = sourcery_token_warning()
+    return f"\n{warning}\n" if warning else ""
+
+
 def parse_args(argv: list[str] | None) -> Any:
     import argparse
 
@@ -324,6 +333,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915
     if args.only:
         steps = [s for s in steps if s.key.startswith(tuple(args.only))]
     gpu_rules = dict(cfg.resources.gpu_methods_by_stage)
+    warning = token_note(steps)
+    w(warning)
 
     step_s: dict[str, float] = {}
     gpu_of: dict[str, bool] = {}
@@ -380,6 +391,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915
         w(f"\n##### celle senza tempi di riferimento ({len(unknown)}; non contate)\n")
         for line in unknown[:40]:
             w(f"  {line}\n")
+    w(warning)  # ripetuto in fondo, dove si legge la stima
     return 0
 
 

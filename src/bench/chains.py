@@ -9,7 +9,12 @@ Decisioni dell'utente del 30 ottobre 2026 (``docs/milestone_logs/M13_M14_plan.md
   ``force=true``) sono finiti quando un loro invio è terminato con successo;
 - un passo parte quando i passi da cui dipende sono finiti, oppure subito con
   ``--dependency=afterok`` sui job ancora attivi di quei passi; un job in attesa con
-  ``DependencyNeverSatisfied`` (un passo precedente fallito) si cancella e il passo si ritenta;
+  ``DependencyNeverSatisfied`` (un passo precedente fallito) si cancella e il passo si ritenta,
+  senza che la cancellazione consumi uno dei suoi tentativi (il fallimento è a monte);
+- un passo che dipende da un passo ``FAILED`` (3 tentativi, nessun job attivo), anche
+  indirettamente, non va in coda: è ``DEP_FAILED`` (fermo, come ``FAILED``), e i suoi job ancora in
+  attesa di quella dipendenza si cancellano senza contare un tentativo (decisione dell'utente del
+  27 novembre 2026, P7.a: prima finivano in coda dietro job che non sarebbero mai partiti);
 - la rilevazione resta su ``gpuq`` (``bench.pipeline.submit.DETECT_STAGES``); la generazione può
   andare su ``aiq`` (``gpu="auto"``: la partizione con meno job in attesa), e una volta scelta la
   GPU di un passo resta la stessa nei tentativi successivi (una cella tutta su un tipo di GPU);
@@ -104,6 +109,43 @@ SWEET_ATTACKS = ("T1.1", "T1.2", "T1.3", "T1.4", "T1.5", "T2.1", "T2.2", "T2.4",
 ACTIVE = ("PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "REQUEUED", "RESIZING", "SUSPENDED")
 FAILED = ("FAILED", "TIMEOUT", "CANCELLED", "NODE_FAIL", "OUT_OF_MEMORY", "BOOT_FAIL", "DEADLINE",
           "PREEMPTED")  # fmt: skip
+# Limiti di tempo dei comandi SLURM (P7.a, 27 novembre 2026: un giro del ciclo si è bloccato senza
+# errori). Interrogazioni e cancellazioni: un errore come gli altri, il ciclo riprova al giro dopo.
+# ``bench submit``: limite largo e, se scade, :class:`SubmitTimeout` (il ciclo si ferma: il job
+# potrebbe essere stato inviato senza che lo stato lo sappia, va guardato ``squeue``).
+QUERY_TIMEOUT_S = 300
+SUBMIT_TIMEOUT_S = 1800
+# Token di Sourcery (ACW): le prove sono scadute dopo circa 15 giorni (26 ottobre → 10 novembre;
+# 10 novembre → fallimenti del 27 novembre); oltre questa età la stima e i giri lo segnalano.
+SOURCERY_TOKEN_FILE = Path.home() / ".config" / "wmb" / "sourcery_token"
+SOURCERY_TOKEN_MAX_DAYS = 12
+
+
+class SubmitTimeout(RuntimeError):
+    """``bench submit`` non ha risposto entro :data:`SUBMIT_TIMEOUT_S`."""
+
+
+def sourcery_token_warning(
+    path: Path | None = None, now: float | None = None, max_days: float = SOURCERY_TOKEN_MAX_DAYS
+) -> str | None:
+    """Avviso se il file del token di Sourcery manca o ha più di ``max_days`` giorni (dalla data
+    di modifica, cioè dall'ultimo ``update_sourcery_token.sh``); ``None`` se è recente.
+    Non legge mai il contenuto del file."""
+    import time
+
+    path = SOURCERY_TOKEN_FILE if path is None else path
+    try:
+        mtime = path.stat().st_mtime
+    except OSError:
+        return f"WARNING: Sourcery token file {path} not found (ACW detect needs it)"
+    age = ((time.time() if now is None else now) - mtime) / 86400
+    if age > max_days:
+        return (
+            f"WARNING: Sourcery token file {path} is {age:.1f} days old (> {max_days:g}): the "
+            "trial may have expired; check the canary or renew with "
+            "scripts/update_sourcery_token.sh before launching ACW"
+        )
+    return None
 
 
 @dataclass(frozen=True)
@@ -664,8 +706,19 @@ class Slurm(Protocol):
     ) -> list[str]: ...  # fmt: skip
 
 
-def _run(cmd: Sequence[str], env: dict[str, str] | None = None) -> str:
-    out = subprocess.run(list(cmd), capture_output=True, text=True, check=False, env=env)
+def _run(
+    cmd: Sequence[str], env: dict[str, str] | None = None, timeout: float = QUERY_TIMEOUT_S
+) -> str:
+    """Esegue un comando SLURM; stdin chiuso (nessuna attesa sul terminale).
+
+    Raises:
+        RuntimeError: exit code diverso da zero o tempo scaduto.
+    """
+    try:
+        out = subprocess.run(list(cmd), capture_output=True, text=True, check=False, env=env,
+                             timeout=timeout, stdin=subprocess.DEVNULL)  # fmt: skip
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(f"{' '.join(cmd[:2])}: no answer after {timeout:g} s") from None
     if out.returncode != 0:
         raise RuntimeError(f"{' '.join(cmd)}: exit {out.returncode}: {out.stderr.strip()[-800:]}")
     return out.stdout
@@ -723,7 +776,16 @@ class RealSlurm:
         env = dict(os.environ)
         if gpu:
             env["WMB_GPU"] = gpu
-        return re.findall(r"^SLURM job (\S+) ", _run(cmd, env), flags=re.M)
+        try:
+            out = _run(cmd, env, timeout=SUBMIT_TIMEOUT_S)
+        except RuntimeError as exc:
+            if "no answer after" in str(exc):
+                raise SubmitTimeout(
+                    f"{step.key}: {exc}; jobs may have been submitted without being recorded: "
+                    "check squeue before restarting the loop"
+                ) from None
+            raise
+        return re.findall(r"^SLURM job (\S+) ", out, flags=re.M)
 
 
 # --------------------------------------------------------------------------- stato
@@ -758,7 +820,9 @@ class Report:
 
     key: str
     owner: str
-    status: str  # DONE, RUNNING, PENDING, SUBMITTED, READY, WAITING, BLOCKED, FAILED, HELD
+    # DONE, RUNNING, PENDING, SUBMITTED, READY, WAITING, BLOCKED, FAILED, DEP_FAILED, HELD
+    # (BLOCKED = non ancora pianificabile; DEP_FAILED = dipende da un passo FAILED)
+    status: str
     detail: str = ""
 
 
@@ -791,6 +855,7 @@ class Chains:
         self.with_acw = with_acw
         self._done: dict[str, bool | None] = {}
         self._others: dict[str, StepState] = {}  # stati degli altri account (giro corrente)
+        self._dead: dict[str, bool] = {}  # dipendenze fallite (memoria dentro un passo)
 
     def state_path(self, owner: str) -> Path:
         return self.state_dir / f"state_{owner}__{self.runner}.json"
@@ -834,7 +899,10 @@ class Chains:
         never = [j for j, (_, reason) in active.items() if "DependencyNeverSatisfied" in reason]
         if never:
             self.slurm.cancel(active)
-            st.history.append({"at": _now(), "jobs": st.jobs, "end": "DependencyNeverSatisfied"})
+            # il job non è mai partito: il tentativo si restituisce (fallimento a monte)
+            st.attempts = max(0, st.attempts - 1)
+            st.history.append({"at": _now(), "jobs": st.jobs, "end": "DependencyNeverSatisfied",
+                               "attempt_refunded": True})  # fmt: skip
             st.jobs = []
             return "FAILED", "a previous step failed (DependencyNeverSatisfied): cancelled"
         if active:
@@ -861,27 +929,76 @@ class Chains:
         everyone = {**self._others, **state}
         free = MAX_JOBS - self.slurm.queued()
         reports: list[Report] = []
-        for step in self.steps:
-            if step.owner != owner or (only and not step.key.startswith(tuple(only))):
-                continue
-            st = state.setdefault(step.key, StepState())
-            reports.append(self._advance(step, st, everyone, free, dry_run))
-            if reports[-1].status == "SUBMITTED":
-                free -= len(st.jobs)
-            if st.jobs or step.key not in everyone:  # i job dell'altro account restano visibili
-                everyone[step.key] = st
-        if not dry_run:
-            save_state(path, state)
+        try:
+            for step in self.steps:
+                if step.owner != owner or (only and not step.key.startswith(tuple(only))):
+                    continue
+                st = state.setdefault(step.key, StepState())
+                self._dead = {}
+                reports.append(self._advance(step, st, everyone, free, dry_run))
+                if reports[-1].status == "SUBMITTED":
+                    free -= len(st.jobs)
+                if st.jobs or step.key not in everyone:  # i job dell'altro account restano visibili
+                    everyone[step.key] = st
+        finally:
+            # anche se il giro si interrompe (comando SLURM in errore o scaduto): i job già
+            # inviati restano nello stato, così il giro dopo non li rimanda
+            if not dry_run:
+                save_state(path, state)
         return reports
 
-    def _advance(  # noqa: PLR0911 - un esito per stato del passo
+    def _is_dead(self, key: str, everyone: dict[str, StepState]) -> bool:
+        """``True`` se il passo è ``FAILED`` (non finito, tentativi esauriti, nessun job attivo)
+        o dipende, anche indirettamente, da un passo così: non finirà senza un ``reset``."""
+        if key not in self._dead:
+            self._dead[key] = False  # nessun ciclo nelle dipendenze; protegge comunque
+            step = self.by_key[key]
+            st = everyone.get(key, StepState())
+            other = self._others.get(key)
+            alive = bool(self.is_done(step, everyone)) or any(
+                s is not None and s.jobs and self.slurm.active(s.jobs) for s in (st, other)
+            )
+            if alive:
+                dead = False
+            elif st.attempts >= MAX_ATTEMPTS:
+                dead = True
+            else:
+                dead = any(self._is_dead(need, everyone) for need in step.needs)
+            self._dead[key] = dead
+        return self._dead[key]
+
+    def _failed_need(self, step: Step, everyone: dict[str, StepState]) -> str | None:
+        """Prima dipendenza non finita che non finirà (:meth:`_is_dead`), o ``None``."""
+        return next((n for n in step.needs if self._is_dead(n, everyone)), None)
+
+    def _cancel_behind_failure(
+        self, step: Step, st: StepState, everyone: dict[str, StepState]
+    ) -> Report | None:
+        """Job tutti in attesa (afterok) di una dipendenza che non partirà più: si cancellano
+        subito, senza aspettare che SLURM li segni ``DependencyNeverSatisfied`` e senza contare
+        il tentativo. ``None`` se nessuna dipendenza è fallita."""
+        failed = self._failed_need(step, everyone)
+        if failed is None:
+            return None
+        self.slurm.cancel(st.jobs)
+        st.attempts = max(0, st.attempts - 1)
+        st.history.append({"at": _now(), "jobs": st.jobs, "end": f"cancelled: {failed} FAILED",
+                           "attempt_refunded": True})  # fmt: skip
+        st.jobs = []
+        return Report(step.key, step.owner, "DEP_FAILED",
+                      f"needs {failed}, which FAILED: pending jobs cancelled")  # fmt: skip
+
+    def _advance(  # noqa: PLR0911, PLR0912 - un esito per stato del passo
         self, step: Step, st: StepState, everyone: dict[str, StepState], free: int, dry_run: bool
     ) -> Report:
         if step.acw and not self.with_acw:
             return Report(step.key, step.owner, "HELD", "ACW on new data: needs --with-acw")
         job_state, info = self._refresh(step, st) if not dry_run else ("NONE", "")
         if job_state == "ACTIVE":
-            return Report(step.key, step.owner, "RUNNING", info)
+            cancelled = (
+                self._cancel_behind_failure(step, st, everyone) if info == "PENDING" else None
+            )
+            return cancelled or Report(step.key, step.owner, "RUNNING", info)
         other = self._others.get(step.key)
         if other is not None and other.jobs and self.slurm.active(other.jobs):
             return Report(step.key, step.owner, "RUNNING", "jobs of another account")
@@ -897,6 +1014,9 @@ class Chains:
                 continue
             jobs = list(self.slurm.active(everyone.get(need, StepState()).jobs))
             if not jobs:
+                if self._is_dead(need, everyone):
+                    return Report(step.key, step.owner, "DEP_FAILED",
+                                  f"needs {need}, which FAILED: not submitted")  # fmt: skip
                 return Report(step.key, step.owner, "WAITING", f"needs {need}")
             wait += jobs
         if done is None and not wait:
@@ -926,8 +1046,10 @@ class Chains:
     def status(self) -> list[Report]:
         """Stato di tutte le catene (entrambi i proprietari), senza inviare nulla."""
         everyone = self._all_state()
+        self._others = {}
         reports = []
         for step in self.steps:
+            self._dead = {}
             st = everyone.get(step.key, StepState())
             active = self.slurm.active(st.jobs) if st.jobs else {}
             # HELD solo se il passo non è mai partito: inviato da un ciclo con --with-acw, il suo
@@ -943,7 +1065,13 @@ class Chains:
                 reports.append(Report(step.key, step.owner, "DONE"))
             elif st.attempts >= MAX_ATTEMPTS:
                 reports.append(Report(step.key, step.owner, "FAILED", f"{st.attempts} attempts"))
-            elif st.history and st.history[-1].get("end") not in (None, ["COMPLETED"]):
+            elif (failed := self._failed_need(step, everyone)) is not None:
+                reports.append(Report(step.key, step.owner, "DEP_FAILED", f"needs {failed}"))
+            elif (
+                st.history
+                and st.history[-1].get("end") not in (None, ["COMPLETED"])
+                and not st.history[-1].get("attempt_refunded")
+            ):
                 reports.append(Report(step.key, step.owner, "FAILED", str(st.history[-1]["end"])))
             else:
                 reports.append(Report(step.key, step.owner, "TODO"))

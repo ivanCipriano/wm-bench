@@ -12,7 +12,15 @@ con ``afterok`` sui passi ancora in corso. È riprendibile: un passo finito (out
 non si rilancia, uno interrotto si rilancia e le fasi riprendono dalle celle complete. ``loop``
 ripete ``run`` ogni ``--every`` secondi, scrive una riga per passo cambiato in
 ``$WMB/logs/chains/loop_<owner>.log`` e si ferma da solo quando i passi del proprietario sono tutti
-finiti (o fermi: ``HELD`` senza ``--with-acw``, ``FAILED`` dopo 3 tentativi, da guardare).
+finiti (o fermi: ``HELD`` senza ``--with-acw``, ``FAILED`` dopo 3 tentativi, ``DEP_FAILED`` se
+dipendono da un passo ``FAILED``: da guardare). Ogni giro scrive una riga ``tick start`` all'inizio
+e i conteggi alla fine: un giro senza la seconda riga si è interrotto. I comandi SLURM hanno un
+limite di tempo (``bench.chains.QUERY_TIMEOUT_S``): se scade, il giro finisce con una riga
+``ERROR`` e il ciclo riprova al giro dopo; se non risponde ``bench submit``
+(``SUBMIT_TIMEOUT_S``) il ciclo si ferma, perché un job potrebbe essere partito senza essere
+registrato (guardare ``squeue`` prima di rilanciare).
+Con passi di ACW scelti, ``run`` e ``loop`` avvisano se il file del token di Sourcery ha più di
+12 giorni (``bench.chains.sourcery_token_warning``).
 
 Con ``--smoke`` lavora nella cartella separata ``$WMB/smoke/`` (artefatti, stati, job con un job
 per passo) preparata da ``scripts/smoke_seed.py``: lo store dei job ha ``WMB_WRITE_ROOT`` e si
@@ -36,7 +44,17 @@ from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 
-from bench.chains import OWNERS, Chains, RealSlurm, Report, Step, all_steps, artifact_done
+from bench.chains import (
+    OWNERS,
+    Chains,
+    RealSlurm,
+    Report,
+    Step,
+    SubmitTimeout,
+    all_steps,
+    artifact_done,
+    sourcery_token_warning,
+)
 from bench.config.builder import load_experiment
 from bench.store.artifact_store import WRITE_ROOT_ENV
 
@@ -52,7 +70,17 @@ SMOKE_SKIP = (
     "sweet/M12/unixcoder",
     "sweet/M12/metrics",
 )
-TERMINAL = {"DONE", "HELD", "FAILED"}
+TERMINAL = {"DONE", "HELD", "FAILED", "DEP_FAILED"}
+
+
+def token_warning(steps: list[Step], args: argparse.Namespace) -> str | None:
+    """Avviso sull'età del token di Sourcery se fra i passi scelti ce n'è uno di ACW."""
+    owners = OWNERS if args.owner == "all" else (args.owner,)
+    chosen = [s for s in steps if s.owner in owners
+              and (not args.only or s.key.startswith(tuple(args.only)))]  # fmt: skip
+    if not any(s.key.startswith("acw/") for s in chosen):
+        return None
+    return sourcery_token_warning()
 
 
 def setup(smoke: bool) -> tuple[list[Step], list[str], Path, list[str]]:
@@ -152,10 +180,24 @@ def loop(args: argparse.Namespace) -> int:
     log = state_dir / f"loop_{args.owner}.log"
     log.parent.mkdir(parents=True, exist_ok=True)
     previous: dict[str, str] = {}
+    steps = setup(args.smoke)[0]
     while True:
         stamp = datetime.now(UTC).isoformat(timespec="seconds")
+        warning = token_warning(steps, args)
+        with log.open("a", encoding="utf-8") as handle:
+            handle.write(f"{stamp} tick start\n")
+            if warning:
+                handle.write(f"{stamp} {warning}\n")
+        if warning:
+            sys.stdout.write(f"{stamp} {warning}\n")
         try:
             reports = run_once(args)
+        except SubmitTimeout as exc:  # un job forse inviato e non registrato: ci si ferma
+            message = f"{stamp} ERROR {exc}; loop stopped\n"
+            with log.open("a", encoding="utf-8") as handle:
+                handle.write(message)
+            sys.stdout.write(message)
+            return 3
         except (RuntimeError, OSError, SystemExit) as exc:  # un giro fallito non ferma il ciclo
             with log.open("a", encoding="utf-8") as handle:
                 handle.write(f"{stamp} ERROR {exc}\n")
@@ -171,12 +213,14 @@ def loop(args: argparse.Namespace) -> int:
         sys.stdout.write(f"{stamp} {dict(sorted(counts.items()))} (log: {log})\n")
         if all(r.status in TERMINAL for r in reports):
             failed = [r.key for r in reports if r.status == "FAILED"]
+            blocked = [r.key for r in reports if r.status == "DEP_FAILED"]
             held = [r.key for r in reports if r.status == "HELD"]
-            message = f"{stamp} all chains of {args.owner} ended; failed {failed}; held {held}\n"
+            message = (f"{stamp} all chains of {args.owner} ended; failed {failed}; "
+                       f"blocked by a failed step {blocked}; held {held}\n")  # fmt: skip
             with log.open("a", encoding="utf-8") as handle:
                 handle.write(message)
             sys.stdout.write(message)
-            return 1 if failed else 0
+            return 1 if failed or blocked else 0
         time.sleep(args.every)
 
 
@@ -216,6 +260,9 @@ def main() -> int:
         sys.stdout.write("reset: " + (", ".join(reset) or "no step matched") + "\n")
         return 0
     if args.command == "run":
+        warning = token_warning(setup(args.smoke)[0], args)
+        if warning:
+            sys.stdout.write(warning + "\n")
         print_reports(run_once(args))
         return 0
     return loop(args)
