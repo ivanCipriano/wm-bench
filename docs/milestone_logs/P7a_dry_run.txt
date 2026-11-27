@@ -1,0 +1,80 @@
+acw/L1/T1.6-reduced                ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs acw/L1/T1.6-reduced/attack
+    detect               WAITING   needs acw/L1/T1.6-reduced/attack
+    metrics              WAITING   needs acw/L1/T1.6-reduced/execute
+acw/L1/T1.6                        ivan    WAITING 4
+    attack               WAITING   needs acw/L1/T1.6-reduced/metrics
+    execute              WAITING   needs acw/L1/T1.6/attack
+    detect               WAITING   needs acw/L1/T1.6/attack
+    metrics              WAITING   needs acw/L1/T1.6/execute
+acw/L1/T2.5-reduced                ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs acw/L1/T2.5-reduced/attack
+    detect               WAITING   needs acw/L1/T2.5-reduced/attack
+    metrics              WAITING   needs acw/L1/T2.5-reduced/execute
+acw/L1/T2.5                        ivan    WAITING 4
+    attack               WAITING   needs acw/L1/T2.5-reduced/metrics
+    execute              WAITING   needs acw/L1/T2.5/attack
+    detect               WAITING   needs acw/L1/T2.5/attack
+    metrics              WAITING   needs acw/L1/T2.5/execute
+acw/L2/T1.6-reduced                ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs acw/L2/T1.6-reduced/attack
+    detect               WAITING   needs acw/L2/T1.6-reduced/attack
+    metrics              WAITING   needs acw/L2/T1.6-reduced/execute
+acw/L2/T1.6                        ivan    WAITING 4
+    attack               WAITING   needs acw/L2/T1.6-reduced/metrics
+    execute              WAITING   needs acw/L2/T1.6/attack
+    detect               WAITING   needs acw/L2/T1.6/attack
+    metrics              WAITING   needs acw/L2/T1.6/execute
+acw/L2/T2.5-reduced                ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs acw/L2/T2.5-reduced/attack
+    detect               WAITING   needs acw/L2/T2.5-reduced/attack
+    metrics              WAITING   needs acw/L2/T2.5-reduced/execute
+acw/L2/T2.5                        ivan    WAITING 4
+    attack               WAITING   needs acw/L2/T2.5-reduced/metrics
+    execute              WAITING   needs acw/L2/T2.5/attack
+    detect               WAITING   needs acw/L2/T2.5/attack
+    metrics              WAITING   needs acw/L2/T2.5/execute
+stone/L1/T1.6                      ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs stone/L1/T1.6/attack
+    detect               WAITING   needs stone/L1/T1.6/attack
+    metrics              WAITING   needs stone/L1/T1.6/execute
+stone/L1/T2.5                      ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs stone/L1/T2.5/attack
+    detect               WAITING   needs stone/L1/T2.5/attack
+    metrics              WAITING   needs stone/L1/T2.5/execute
+stone/L2/T1.6                      ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs stone/L2/T1.6/attack
+    detect               WAITING   needs stone/L2/T1.6/attack
+    metrics              WAITING   needs stone/L2/T1.6/execute
+stone/L2/T2.5                      ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs stone/L2/T2.5/attack
+    detect               WAITING   needs stone/L2/T2.5/attack
+    metrics              WAITING   needs stone/L2/T2.5/execute
+mcgmark/L1/T1.6                    ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs mcgmark/L1/T1.6/attack
+    detect               WAITING   needs mcgmark/L1/T1.6/attack
+    metrics              WAITING   needs mcgmark/L1/T1.6/execute
+mcgmark/L1/T2.5                    ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs mcgmark/L1/T2.5/attack
+    detect               WAITING   needs mcgmark/L1/T2.5/attack
+    metrics              WAITING   needs mcgmark/L1/T2.5/execute
+mcgmark/L2/T1.6                    ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs mcgmark/L2/T1.6/attack
+    detect               WAITING   needs mcgmark/L2/T1.6/attack
+    metrics              WAITING   needs mcgmark/L2/T1.6/execute
+mcgmark/L2/T2.5                    ivan    READY 1, WAITING 3
+    attack               READY     would submit 4 job(s)
+    execute              WAITING   needs mcgmark/L2/T2.5/attack
+    detect               WAITING   needs mcgmark/L2/T2.5/attack
+    metrics              WAITING   needs mcgmark/L2/T2.5/execute
