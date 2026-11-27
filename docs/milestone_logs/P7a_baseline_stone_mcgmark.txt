@@ -1,0 +1,120 @@
+srun: job 828724 queued and waiting for resources
+srun: job 828724 has been allocated resources
+
+##### stone qwen25_coder_7b python L1 test (config 8de321b62de6, threshold 4.123858773057611)
+  no attack  tpr_at_fpr 0.0187 [0.0090, 0.0295] n=2676  auroc 0.8040 [0.7811, 0.8274] n=3604
+  no attack  detection status {'OK': 2676}  FAILED fraction 0.0000
+  no attack  recomputed TPR: FAILED as not detected 0.0187  |  OK only (FAILED excluded) 0.0187 (n_OK=2676)
+  no attack  OK     n=2676  median code lines 7
+  marked     n=2676  embed_status {'OK': 2676}  extraction_ok 1.0000
+  marked     not passing ast.parse 2 (0.0007), empty 0  (T1.6/T2.5 TOOL_ERROR expected = not passing ast.parse)
+  point                                      tpr_at_fpr                 det FAILED TOOL_ERROR
+  T1.6 {"caps": "convert"}                   0.0187 [0.0086, 0.0303] n=2676     0.0000     0.0007
+  T1.6 {"caps": "keep"}                      0.0187 [0.0090, 0.0295] n=2676     0.0000     0.0007
+  T2.5 {"n": 1, "position": "before"}        0.0135 [0.0093, 0.0183] n=2676     0.0000     0.0007
+  T2.5 {"n": 2, "position": "around"}        0.0123 [0.0078, 0.0176] n=2676     0.0000     0.0007
+  T2.5 {"n": 4, "position": "around"}        0.0135 [0.0093, 0.0183] n=2676     0.0000     0.0007
+
+##### stone deepseek_coder_6p7b python L1 test (config 8aca8150359d, threshold 4.850525107551197)
+  no attack  tpr_at_fpr 0.0049 [0.0004, 0.0112] n=2676  auroc 0.6061 [0.5743, 0.6369] n=3604
+  no attack  detection status {'OK': 2676}  FAILED fraction 0.0000
+  no attack  recomputed TPR: FAILED as not detected 0.0049  |  OK only (FAILED excluded) 0.0049 (n_OK=2676)
+  no attack  OK     n=2676  median code lines 4
+  marked     n=2676  embed_status {'OK': 2676}  extraction_ok 1.0000
+  marked     not passing ast.parse 2 (0.0007), empty 0  (T1.6/T2.5 TOOL_ERROR expected = not passing ast.parse)
+  point                                      tpr_at_fpr                 det FAILED TOOL_ERROR
+  T1.6 {"caps": "convert"}                   0.0049 [0.0007, 0.0108] n=2676     0.0000     0.0007
+  T1.6 {"caps": "keep"}                      0.0049 [0.0007, 0.0105] n=2676     0.0000     0.0007
+  T2.5 {"n": 1, "position": "before"}        0.0232 [0.0168, 0.0299] n=2676     0.0000     0.0007
+  T2.5 {"n": 2, "position": "around"}        0.0303 [0.0239, 0.0370] n=2676     0.0000     0.0007
+  T2.5 {"n": 4, "position": "around"}        0.0493 [0.0411, 0.0575] n=2676     0.0000     0.0007
+
+##### stone qwen25_coder_7b python L2 test (config 8de321b62de6, threshold 4.123858773057611)
+  no attack  tpr_at_fpr 0.0450 [0.0242, 0.0692] n=1200  auroc 0.8047 [0.7729, 0.8351] n=2200
+  no attack  detection status {'OK': 1199, 'FAILED': 1}  FAILED fraction 0.0008
+  no attack  recomputed TPR: FAILED as not detected 0.0450  |  OK only (FAILED excluded) 0.0450 (n_OK=1199)
+  no attack  OK     n=1199  median code lines 13
+  no attack  FAILED n=1     median code lines 1
+  marked     n=1200  embed_status {'OK': 1200}  extraction_ok 1.0000
+  marked     not passing ast.parse 12 (0.0100), empty 0  (T1.6/T2.5 TOOL_ERROR expected = not passing ast.parse)
+  point                                      tpr_at_fpr                 det FAILED TOOL_ERROR
+  T1.6 {"caps": "convert"}                   0.0358 [0.0183, 0.0567] n=1200     0.0008     0.0100
+  T1.6 {"caps": "keep"}                      0.0350 [0.0167, 0.0550] n=1200     0.0008     0.0100
+  T2.5 {"n": 1, "position": "before"}        0.0308 [0.0158, 0.0492] n=1200     0.0000     0.0100
+  T2.5 {"n": 2, "position": "around"}        0.0267 [0.0158, 0.0392] n=1200     0.0000     0.0100
+  T2.5 {"n": 4, "position": "around"}        0.0217 [0.0133, 0.0308] n=1200     0.0000     0.0100
+
+##### stone deepseek_coder_6p7b python L2 test (config 8aca8150359d, threshold 4.850525107551197)
+  no attack  tpr_at_fpr 0.0225 [0.0083, 0.0392] n=1200  auroc 0.6555 [0.6195, 0.6922] n=2200
+  no attack  detection status {'OK': 1199, 'FAILED': 1}  FAILED fraction 0.0008
+  no attack  recomputed TPR: FAILED as not detected 0.0225  |  OK only (FAILED excluded) 0.0225 (n_OK=1199)
+  no attack  OK     n=1199  median code lines 9
+  no attack  FAILED n=1     median code lines 0
+  marked     n=1200  embed_status {'OK': 1200}  extraction_ok 0.9992
+  marked     not passing ast.parse 0 (0.0000), empty 1  (T1.6/T2.5 TOOL_ERROR expected = not passing ast.parse)
+  point                                      tpr_at_fpr                 det FAILED TOOL_ERROR
+  T1.6 {"caps": "convert"}                   0.0083 [0.0025, 0.0150] n=1200     0.0008     0.0000
+  T1.6 {"caps": "keep"}                      0.0183 [0.0083, 0.0325] n=1200     0.0008     0.0000
+  T2.5 {"n": 1, "position": "before"}        0.0350 [0.0241, 0.0467] n=1200     0.0008     0.0000
+  T2.5 {"n": 2, "position": "around"}        0.0417 [0.0300, 0.0550] n=1200     0.0008     0.0000
+  T2.5 {"n": 4, "position": "around"}        0.0558 [0.0425, 0.0700] n=1200     0.0008     0.0000
+
+##### mcgmark qwen25_coder_7b python L1 test (config 697c5eb78b23, threshold 10.0)
+  no attack  tpr_at_fpr 0.0811 [0.0658, 0.0957] n=2676  auroc 0.5177 [0.5068, 0.5291] n=3604
+  no attack  detection status {'FAILED': 2430, 'OK': 246}  FAILED fraction 0.9081
+  no attack  recomputed TPR: FAILED as not detected 0.0811  |  OK only (FAILED excluded) 0.8821 (n_OK=246)
+  no attack  OK     n=246   median code lines 20  median n_eligible 40
+  no attack  FAILED n=2430  median code lines 7  median n_eligible 6
+  marked     n=2676  embed_status {'PARTIAL': 2409, 'OK': 267}  extraction_ok 1.0000
+  marked     not passing ast.parse 606 (0.2265), empty 0  (T1.6/T2.5 TOOL_ERROR expected = not passing ast.parse)
+  point                                      tpr_at_fpr                 det FAILED TOOL_ERROR
+  T1.6 {"caps": "convert"}                   0.0811 [0.0646, 0.0972] n=2676     0.9081     0.2265
+  T1.6 {"caps": "keep"}                      0.0811 [0.0658, 0.0960] n=2676     0.9081     0.2265
+  T2.5 {"n": 1, "position": "before"}        0.0456 [0.0370, 0.0542] n=2676     0.5056     0.2265
+  T2.5 {"n": 2, "position": "around"}        0.0486 [0.0400, 0.0575] n=2676     0.2971     0.2265
+  T2.5 {"n": 4, "position": "around"}        0.0542 [0.0456, 0.0632] n=2676     0.2179     0.2265
+
+##### mcgmark deepseek_coder_6p7b python L1 test (config 6c30ca18a68e, threshold 10.0)
+  no attack  tpr_at_fpr 0.0340 [0.0254, 0.0426] n=2676  auroc 0.4956 [0.4873, 0.5035] n=3604
+  no attack  detection status {'FAILED': 2580, 'OK': 96}  FAILED fraction 0.9641
+  no attack  recomputed TPR: FAILED as not detected 0.0340  |  OK only (FAILED excluded) 0.9479 (n_OK=96)
+  no attack  OK     n=96    median code lines 16  median n_eligible 30
+  no attack  FAILED n=2580  median code lines 6  median n_eligible 7
+  marked     n=2676  embed_status {'PARTIAL': 2575, 'OK': 101}  extraction_ok 1.0000
+  marked     not passing ast.parse 515 (0.1925), empty 0  (T1.6/T2.5 TOOL_ERROR expected = not passing ast.parse)
+  point                                      tpr_at_fpr                 det FAILED TOOL_ERROR
+  T1.6 {"caps": "convert"}                   0.0340 [0.0258, 0.0433] n=2676     0.9634     0.1932
+  T1.6 {"caps": "keep"}                      0.0340 [0.0254, 0.0434] n=2676     0.9634     0.1932
+  T2.5 {"n": 1, "position": "before"}        0.0295 [0.0224, 0.0366] n=2676     0.5224     0.1925
+  T2.5 {"n": 2, "position": "around"}        0.0400 [0.0318, 0.0486] n=2676     0.2926     0.1925
+  T2.5 {"n": 4, "position": "around"}        0.0396 [0.0325, 0.0475] n=2676     0.2257     0.1925
+
+##### mcgmark qwen25_coder_7b python L2 test (config 697c5eb78b23, threshold 10.0)
+  no attack  tpr_at_fpr 0.0717 [0.0558, 0.0892] n=1200  auroc 0.5019 [0.4903, 0.5143] n=2200
+  no attack  detection status {'FAILED': 1113, 'OK': 87}  FAILED fraction 0.9275
+  no attack  recomputed TPR: FAILED as not detected 0.0717  |  OK only (FAILED excluded) 0.9885 (n_OK=87)
+  no attack  OK     n=87    median code lines 30  median n_eligible 32
+  no attack  FAILED n=1113  median code lines 13  median n_eligible 6
+  marked     n=1200  embed_status {'PARTIAL': 1111, 'OK': 89}  extraction_ok 1.0000
+  marked     not passing ast.parse 499 (0.4158), empty 0  (T1.6/T2.5 TOOL_ERROR expected = not passing ast.parse)
+  point                                      tpr_at_fpr                 det FAILED TOOL_ERROR
+  T1.6 {"caps": "convert"}                   0.0708 [0.0533, 0.0892] n=1200     0.9275     0.4158
+  T1.6 {"caps": "keep"}                      0.0717 [0.0542, 0.0900] n=1200     0.9275     0.4158
+  T2.5 {"n": 1, "position": "before"}        0.0592 [0.0450, 0.0750] n=1200     0.6350     0.4158
+  T2.5 {"n": 2, "position": "around"}        0.0617 [0.0467, 0.0792] n=1200     0.4575     0.4158
+  T2.5 {"n": 4, "position": "around"}        0.0658 [0.0492, 0.0825] n=1200     0.3908     0.4158
+
+##### mcgmark deepseek_coder_6p7b python L2 test (config 6c30ca18a68e, threshold 10.0)
+  no attack  tpr_at_fpr 0.0575 [0.0417, 0.0750] n=1200  auroc 0.4678 [0.4549, 0.4804] n=2200
+  no attack  detection status {'FAILED': 1129, 'OK': 71}  FAILED fraction 0.9408
+  no attack  recomputed TPR: FAILED as not detected 0.0575  |  OK only (FAILED excluded) 0.9718 (n_OK=71)
+  no attack  OK     n=71    median code lines 23  median n_eligible 36
+  no attack  FAILED n=1129  median code lines 10  median n_eligible 7
+  marked     n=1200  embed_status {'PARTIAL': 1123, 'OK': 77}  extraction_ok 1.0000
+  marked     not passing ast.parse 291 (0.2425), empty 0  (T1.6/T2.5 TOOL_ERROR expected = not passing ast.parse)
+  point                                      tpr_at_fpr                 det FAILED TOOL_ERROR
+  T1.6 {"caps": "convert"}                   0.0550 [0.0408, 0.0700] n=1200     0.9400     0.2425
+  T1.6 {"caps": "keep"}                      0.0567 [0.0425, 0.0733] n=1200     0.9400     0.2425
+  T2.5 {"n": 1, "position": "before"}        0.0350 [0.0250, 0.0458] n=1200     0.5542     0.2425
+  T2.5 {"n": 2, "position": "around"}        0.0442 [0.0325, 0.0558] n=1200     0.3242     0.2425
+  T2.5 {"n": 4, "position": "around"}        0.0408 [0.0292, 0.0533] n=1200     0.2708     0.2425
