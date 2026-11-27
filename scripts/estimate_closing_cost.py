@@ -4,7 +4,15 @@ mancano, per metodo e livello, e giorni reali.
 Uso (con bench-core, nodo di login, nessun job; qualche minuto per leggere i manifest):
     python scripts/estimate_closing_cost.py | tee docs/milestone_logs/M13_closing_cost.txt
     python scripts/estimate_closing_cost.py --methods mcss multimark   # solo P6 dei post-hoc
+    python scripts/estimate_closing_cost.py --only stone/L1/T1.6/ --only stone/L1/T2.5/   # P7.a
     (file nuovo: non riscrivere un log già committato; se esiste, usare un altro nome)
+
+P7.a (ADR-018 §5): ``--only`` come in ``scripts/chains.py``; la GPU dei passi dei cinque metodi
+segue la regola per metodo di ``resources.gpu_methods_by_stage`` (la rilevazione di ACW è su CPU,
+quella di STONE e MCGMark su GPU). T1.6 e T2.5 non sono mai stati fatti da questi metodi: la
+rilevazione usa i secondi per riga della rilevazione senza attacco dello stesso metodo e le righe
+per problema degli altri metodi (post-hoc), quindi per T2.5 (codice più lungo) la stima è per
+difetto, soprattutto per ACW (Sourcery).
 
 Metodi post-hoc ``mcss`` e ``multimark`` (P6, v1.3.16): le celle di test si pianificano con gli
 hash del registro ``configs/freeze/posthoc.yaml`` anche prima del congelamento (``CellPlanner`` con
@@ -262,10 +270,17 @@ def missing_cells(step: Step, store: ArtifactStore) -> Iterator[Cell]:
         yield from (c if c.method in POSTHOC else replace(c, config_hash=None) for c in cells)
 
 
-def is_gpu(step: Step) -> bool:
-    """Passo su GPU: per i post-hoc solo se lo dice il passo (proponente statico, P6)."""
-    if step.chain.split("/")[0] in POSTHOC:
+def is_gpu(step: Step, gpu_rules: dict[str, dict[str, bool]] | None = None) -> bool:
+    """Passo su GPU: per i post-hoc solo se lo dice il passo (proponente statico, P6); per gli
+    altri la regola per metodo di ``resources.gpu_methods_by_stage`` se c'è (P7.a: la rilevazione
+    di ACW e PromptMark è su CPU, quella di STONE e MCGMark su GPU), altrimenti la risorsa della
+    fase."""
+    method = step.chain.split("/")[0]
+    if method in POSTHOC:
         return step.gpu is not None
+    rule = (gpu_rules or {}).get(step.stage, {})
+    if method in rule:
+        return bool(rule[method])
     return STAGES.get(step.stage).resources is not ResourceClass.CPU
 
 
@@ -285,6 +300,9 @@ def parse_args(argv: list[str] | None) -> Any:
     parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("--methods", nargs="*", default=None,
                         help="only the steps of these chains (e.g. mcss multimark)")  # fmt: skip
+    parser.add_argument("--only", action="append", default=[],
+                        help="only steps whose name starts with this prefix (repeatable, as in "
+                             "scripts/chains.py)")  # fmt: skip
     return parser.parse_args(argv)
 
 
@@ -303,6 +321,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915
     by_key = {s.key: s for s in steps}
     if args.methods:
         steps = [s for s in steps if s.chain.split("/")[0] in set(args.methods)]
+    if args.only:
+        steps = [s for s in steps if s.key.startswith(tuple(args.only))]
+    gpu_rules = dict(cfg.resources.gpu_methods_by_stage)
 
     step_s: dict[str, float] = {}
     gpu_of: dict[str, bool] = {}
@@ -312,7 +333,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915
     for i, step in enumerate(steps, 1):
         progress(f"passo {i}/{len(steps)}: {step.key}")
         sys.stdout.flush()
-        gpu = is_gpu(step)
+        gpu = is_gpu(step, gpu_rules)
         total, sources, n = 0.0, set(), 0
         for cell in missing_cells(step, store):
             n += 1

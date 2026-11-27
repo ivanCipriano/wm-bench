@@ -220,3 +220,52 @@ def test_reset_after_three_failures(tmp_path: Path) -> None:
     assert Chains(steps, lambda s: False, slurm, tmp_path).run("ivan")[0].status == "SUBMITTED"
     with pytest.raises(RuntimeError, match="active"):  # job attivi: niente reset
         Chains(steps, lambda s: False, slurm, tmp_path).reset("ivan", ["c/"], "x")
+
+
+def test_p7a_steps() -> None:
+    """P7.a (ADR-018 §5): T1.6 e T2.5 su L1 e L2 test, solo python, per ACW, STONE e MCGMark
+    (proprietario ivan), in coda; ACW con la variante ridotta e ``acw=True``; i passi di prima
+    non cambiano."""
+    from bench.attacks.base import grid_attacks
+    from bench.chains import P7A_REDUCED, attack_steps, p7a_steps
+
+    steps = all_steps(WMB)
+    by = {s.key: s for s in steps}
+    p7a = [s for m in ("acw", "stone", "mcgmark") for s in p7a_steps(m, WMB)]
+    assert [s.key for s in steps[-len(p7a) :]] == [s.key for s in p7a]  # in coda
+    assert len(p7a) == 64  # stone 16, mcgmark 16, acw 32 (completa e ridotta)
+    stages = ("attack", "execute", "detect", "metrics")
+    for m in ("acw", "stone", "mcgmark"):
+        for level in ("L1", "L2"):
+            for attack in ("T1.6", "T2.5"):
+                suffixes = ("", "-reduced") if m == "acw" else ("",)
+                for suffix in suffixes:
+                    for stage in stages:
+                        assert f"{m}/{level}/{attack}{suffix}/{stage}" in by
+    owners = {s.key: s.owner for s in steps}
+    for s in p7a:
+        assert s.owner == "ivan" and "languages=[python]" in s.overrides
+        assert s.acw == s.key.startswith("acw/") and s.gpu is None
+        assert all(owners[n] == "ivan" for n in s.needs)  # niente di Simone
+        if s.key.split("/")[1] == "L1":  # L1: niente passi senza attacco (fatti nella M10)
+            assert all(n.startswith(s.key.rsplit("/", 1)[0]) for n in s.needs)
+    assert by["stone/L2/T2.5/attack"].needs == ("stone/L2/watermark",)
+    assert "mcgmark/L2/metrics" in by["mcgmark/L2/T1.6/metrics"].needs
+    assert not any(o.startswith("attack_points") for o in by["acw/L1/T2.5/attack"].overrides)
+    params = {a: {h: x.params for h, x in grid_attacks(a).items()} for a in ("T1.6", "T2.5")}
+    assert params["T1.6"][P7A_REDUCED["T1.6"][0]] == {"caps": "convert"}
+    assert params["T2.5"][P7A_REDUCED["T2.5"][0]] == {"n": 2, "position": "around"}
+    assert "attack_points=['9528392ed687']" in by["acw/L2/T2.5-reduced/attack"].overrides
+    # stesse celle (stessi hash): la completa parte solo a ridotta finita, mai insieme
+    assert by["acw/L1/T1.6/attack"].needs == ("acw/L1/T1.6-reduced/metrics",)
+    assert by["acw/L2/T2.5/attack"].needs == ("acw/L2/watermark", "acw/L2/T2.5-reduced/metrics")
+    assert by["acw/L2/T2.5-reduced/attack"].needs == ("acw/L2/watermark",)
+    assert by["stone/L1/T1.6/attack"].needs == ()
+    # i default di attack_steps lasciano i passi di prima com'erano
+    assert attack_steps("stone", "T2.4k", "L2", WMB) == [
+        by[f"stone/L2/T2.4k/{st}"] for st in stages
+    ]
+    assert by["acw/L2/T2.4k/attack"].overrides[3] == "languages=[python]"
+    assert by["stone/L3/T2.4k/attack"].overrides[3] == "languages=[python,java,cpp]"
+    with pytest.raises(ValueError):
+        p7a_steps("sweet", WMB)

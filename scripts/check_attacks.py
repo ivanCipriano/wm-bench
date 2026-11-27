@@ -28,6 +28,9 @@ dei prompt.
 scelti per il test (:data:`bench.chains.POSTHOC_POINTS`: l'insieme S, più T1.6, T2.4k e T2.5 con
 tutti i loro punti), su L3 ClassEval (stessi punti delle catene). Per i cinque metodi ``--level``
 resta L1 e l'uscita non cambia.
+
+**P7.a** (ADR-018 §5): per ACW, STONE e MCGMark anche ``--level L2``, solo con T1.6 e T2.5
+(tutti i loro punti; le celle di java e cpp non ci sono perché i due attacchi sono solo Python).
 """
 
 from __future__ import annotations
@@ -43,6 +46,7 @@ import pandas as pd
 
 from bench.attacks.base import grid_attacks, negative_control_attacks
 from bench.attacks.interface import pass_failures
+from bench.chains import P7A_ATTACKS, P7A_LEVELS, P7A_METHODS
 from bench.config.builder import load_experiment
 from bench.domain.models import Problem
 from bench.hpo.freeze import FINAL_LEVELS, freeze_ref, load_freeze
@@ -91,8 +95,11 @@ def main() -> int:  # noqa: PLR0912, PLR0915
     args = parser.parse_args()
     method = args.method
     level = args.level
-    if level != LEVEL and method not in POSTHOC:
-        parser.error("--level L2/L3 is only for the post-hoc methods (mcss, multimark)")
+    if not level_allowed(method, level, args.attacks.split(",")):
+        parser.error(
+            "--level L2/L3 is only for the post-hoc methods (mcss, multimark) and, on L2, for "
+            f"{', '.join(P7A_METHODS)} with {', '.join(P7A_ATTACKS)} (P7.a)"
+        )
     cfg = load_experiment(["paths=cluster", "stage=attack"])
     store = ArtifactStore(cfg.paths.artifacts)
     record = load_freeze(store, method)
@@ -157,6 +164,15 @@ def main() -> int:  # noqa: PLR0912, PLR0915
         if remark:
             _write_remark(store, remark)
     return 0
+
+
+def level_allowed(method: str, level: str, attacks: list[str]) -> bool:
+    """Livello ammesso: L1 per tutti; L2 e L3 per i post-hoc; L2 per i metodi di P7.a con i soli
+    attacchi di P7.a (T1.6, T2.5)."""
+    if level == LEVEL or method in POSTHOC:
+        return True
+    p7a = level in P7A_LEVELS and method in P7A_METHODS
+    return p7a and all(a in P7A_ATTACKS for a in attacks)
 
 
 def chosen_point(method: str, level: str, attack_id: str, params_hash: str) -> bool:

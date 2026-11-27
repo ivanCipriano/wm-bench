@@ -22,8 +22,10 @@
 - **Linguaggi:** solo Python; sugli altri `NOT_APPLICABLE`. Lo stile dei nomi del canale V1
   esiste solo nei metodi post-hoc Python.
 - **Determinismo:** l'attacco non usa l'RNG. Lo stesso codice dà sempre lo stesso risultato.
-- **Griglia:** `caps ∈ {convert, keep}`, cioè 2 punti con `attack_params_hash` `8e1e8882fb91`
-  (`convert`) e `9ad68973c317` (`keep`).
+- **Griglia:** `caps ∈ {convert, keep}`, cioè 2 punti con `attack_params_hash` `9ad68973c317`
+  (`convert`) e `8e1e8882fb91` (`keep`). Correzione del 26 novembre 2026: la prima stesura di
+  questo ADR aveva le due etichette invertite; il codice (`grid_attacks("T1.6")`),
+  `bench.chains.POSTHOC_POINTS` e i log di P6 hanno sempre usato gli hash giusti.
   - `convert`: tutto in `snake_case`, costanti di modulo comprese. È la regola di §5.5.
   - `keep`: i nomi **di modulo** in `ALL_CAPS` restano invariati, come chiede PEP 8 per le
     costanti. `ALL_CAPS` vuol dire un nucleo con almeno una lettera e nessuna minuscola (`MOD`,
@@ -156,3 +158,40 @@ dal protocollo, che prevede gli attacchi sul test con la configurazione congelat
   - canoniche di L1 sul cluster: `LOG=P4_t2_5_canonical.txt bash scripts/check_attacks_canonical.sh
     --languages python --attacks T2.5` (fase `canonical` di `run_p4_dev.sh`). Lo script legge la
     raccolta di funzioni se la fase `function_pools` è stata lanciata e altrimenti salta T2.5.
+
+## 5. P7.a: T1.6 e T2.5 su ACW, STONE e MCGMark (26 novembre 2026)
+
+- **Decisione** (PIPELINE di multimark v1.3.18, P7 ridotta, punto P7.a; decisioni dell'utente del
+  26 novembre 2026): T1.6 (`convert`, `keep`) e T2.5 (i tre punti) sul test di L1 e L2, solo
+  python, per i metodi Python del proprietario `ivan` (ACW, STONE, MCGMark), con le loro
+  configurazioni e soglie congelate. Niente per SWEET e PromptMark (proprietario `simone`). È il
+  perimetro sul test lasciato aperto in §4 («tutti i metodi Python secondo §5.5»), ristretto ai
+  metodi di `ivan`.
+- **Cosa non cambia:** gli attacchi, le griglie e quindi gli `attack_params_hash` (§1 e §4); le
+  configurazioni e le soglie congelate; le celle già calcolate. Le celle di P7.a sono nuove (questi
+  hash non sono mai stati calcolati per questi metodi). La raccolta di funzioni di T2.5
+  (`data/function_pools/python.parquet`, una per linguaggio, indipendente dal metodo) è quella di
+  P4 e P6.
+- **Catene** (`bench.chains.p7a_steps`, in coda a `all_steps`; si lanciano solo con `--only`):
+  per metodo, livello e attacco i passi attack, execute, detect e metrics, con `languages=[python]`
+  (STONE ha anche java e cpp: nessuna cella `NOT_APPLICABLE` in più). Su L1 nessuna dipendenza dai
+  passi senza attacco: per questi metodi L1 test è stato fatto nella M10 fuori dalle catene
+  (`submit_attacks_l1.sh`) e le fasi leggono gli artefatti; su L2 le dipendenze di sempre
+  (`<metodo>/L2/watermark` e `<metodo>/L2/metrics`). ACW ha `acw=True` anche su L1 (la rilevazione
+  usa Sourcery: parte solo con `--with-acw`) e una variante ridotta, catene
+  `acw/<livello>/<attacco>-reduced` con `attack_points` T1.6 `convert` (`9ad68973c317`) e T2.5
+  `n = 2, around` (`9528392ed687`). Le sue celle sono un sottoinsieme di quelle della variante
+  completa: stessi `attack_params_hash`, quindi **stessi artefatti e stesse cartelle di lavoro del
+  worker** (non ci sono uscite separate, e non servono: è lo stesso calcolo). Perché le due
+  varianti non scrivano mai insieme le stesse celle, l'attacco della completa dipende dalle
+  metriche della ridotta: la completa parte solo a ridotta finita e rifà soltanto i punti che
+  mancano; la ridotta lanciata dopo la completa risulta già finita. I passi di prima sono identici
+  (`tests/unit/test_chains.py::test_p7a_steps`).
+- **Risorse:** attacco, esecuzione e metriche su CPU; la rilevazione segue
+  `resources.gpu_methods_by_stage.detect` (STONE e MCGMark su GPU, ACW su CPU con Sourcery).
+  `scripts/estimate_closing_cost.py` usa ora la stessa regola per metodo (prima contava la fase,
+  quindi la rilevazione di ACW come GPU) e ha `--only` come le catene.
+- **Controlli e report:** `scripts/check_attacks.py` ammette `--level L2` per questi tre metodi
+  solo con T1.6 e T2.5; per il resto l'uscita non cambia. `src/bench/report.py` non cambia: il
+  report di default dei cinque metodi resta lo stesso byte per byte e le celle di P7.a non ci
+  entrano (includerle è un passo successivo, da decidere).

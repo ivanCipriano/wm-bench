@@ -124,3 +124,17 @@ def test_set_aside_t3_1_detect_stage(tmp_path: Path, monkeypatch: pytest.MonkeyP
         assert (d.with_name(d.name + suffix) / "results.jsonl").read_text("utf-8") == "old"
     dirs[1].mkdir(parents=True)  # di nuovo: la destinazione esiste, niente si sposta
     assert aside.main() == 1 and dirs[1].is_dir()
+
+
+def test_level_allowed_for_p7a() -> None:
+    """``--level L2`` per ACW, STONE e MCGMark solo con T1.6 e T2.5 (P7.a); L1 per tutti; i
+    post-hoc come prima; SWEET e PromptMark solo L1."""
+    for method in ("sweet", "acw", "stone", "promptmark", "mcgmark", "mcss", "multimark"):
+        assert attacks.level_allowed(method, "L1", ["T1.1", "T2.5"])
+    for method in ("acw", "stone", "mcgmark"):
+        assert attacks.level_allowed(method, "L2", ["T1.6", "T2.5"])
+        assert not attacks.level_allowed(method, "L2", ["T1.6", "T1.4"])
+        assert not attacks.level_allowed(method, "L3", ["T1.6"])
+    for method in ("sweet", "promptmark"):
+        assert not attacks.level_allowed(method, "L2", ["T1.6"])
+    assert attacks.level_allowed("multimark", "L3", ["T2.4k"])

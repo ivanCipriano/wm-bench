@@ -333,6 +333,15 @@ def test_estimator_counts_and_gpu(local_root: Path) -> None:
     assert est.is_gpu(Step("multimark/M12/unixcoder", "ivan", "adversarial_unixcoder", (),
                            gpu="auto"))  # fmt: skip
     assert est.is_gpu(Step("stone/L2/watermark", "ivan", "watermark", ()))
+    # P7.a: regola per metodo delle risorse (rilevazione di ACW su CPU, di STONE e MCGMark su GPU)
+    rules = {"detect": {"acw": False, "stone": True, "mcgmark": True, "promptmark": False}}
+    assert not est.is_gpu(Step("acw/L1/T2.5/detect", "ivan", "detect", ()), rules)
+    assert est.is_gpu(Step("stone/L1/T2.5/detect", "ivan", "detect", ()), rules)
+    assert est.is_gpu(Step("mcgmark/L2/T1.6/detect", "ivan", "detect", ()), rules)
+    assert not est.is_gpu(Step("stone/L1/T2.5/attack", "ivan", "attack", ()), rules)
+    assert not est.is_gpu(Step("mcss/L1/detect", "ivan", "detect", ()), {"detect": {"mcss": True}})
+    assert est.parse_args(["--only", "acw/L1/T1.6/", "--only", "acw/L2/"]).only == [
+        "acw/L1/T1.6/", "acw/L2/"]  # fmt: skip
     steps = {"multimark/L1/watermark": 3600.0 * 10, "multimark/M12/perplexity": 3600.0 * 2}
     by = {"multimark/L1/watermark": Step("multimark/L1/watermark", "ivan", "watermark", (),
                                          jobs=4),

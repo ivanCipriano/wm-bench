@@ -28,6 +28,9 @@ configurazioni (``mcss`` main, ``multimark`` prudent e high_capacity: un passo d
 copre le due), tutto su CPU salvo perplexity, ``adversarial_unixcoder`` e T2.2; L1 test con la
 suite completa, L2 test con l'insieme S più T1.6, T2.4k e T2.5, L3 = solo ClassEval
 (``posthoc_datasets=[classeval]``) con T2.4k, T2.5, T1.4 natural r = 1,0 e T1.6 convert.
+
+P7.a (v1.3.18, ADR-018 §5; :func:`p7a_steps`): T1.6 e T2.5 su L1 e L2 test, solo python, per ACW,
+STONE e MCGMark (proprietario ivan), in coda a :func:`all_steps`; si lanciano con ``--only``.
 """
 
 from __future__ import annotations
@@ -86,6 +89,17 @@ POSTHOC_POINTS: dict[str, dict[str, tuple[str, ...]]] = {
     },
 }
 POSTHOC_L3_DATASETS = "[classeval]"
+# P7.a (PIPELINE di multimark v1.3.18, decisioni dell'utente del 26 novembre 2026; ADR-018 §5):
+# T1.6 e T2.5 sul test dei metodi Python del proprietario ivan, solo python, L1 e L2, con le
+# configurazioni e le soglie congelate. Variante ridotta di ACW (passi ``<attacco>-reduced``):
+# T1.6 convert e T2.5 n = 2 around.
+P7A_METHODS = ("acw", "stone", "mcgmark")
+P7A_ATTACKS = ("T1.6", "T2.5")
+P7A_LEVELS = ("L1", "L2")
+P7A_REDUCED: dict[str, tuple[str, ...]] = {
+    "T1.6": ("9ad68973c317",),  # caps = convert
+    "T2.5": ("9528392ed687",),  # n = 2, position = around
+}
 SWEET_ATTACKS = ("T1.1", "T1.2", "T1.3", "T1.4", "T1.5", "T2.1", "T2.2", "T2.4", "T4.1", "T4.2")
 ACTIVE = ("PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "REQUEUED", "RESIZING", "SUSPENDED")
 FAILED = ("FAILED", "TIMEOUT", "CANCELLED", "NODE_FAIL", "OUT_OF_MEMORY", "BOOT_FAIL", "DEADLINE",
@@ -127,11 +141,14 @@ DoneCheck = Callable[[Step], bool | None]  # None: non pianificabile (es. metodo
 
 
 # --------------------------------------------------------------------------- definizione
-def _test(method: str, level: str, attacks: str = "[]") -> tuple[str, ...]:
+def _test(
+    method: str, level: str, attacks: str = "[]", languages: str | None = None
+) -> tuple[str, ...]:
     posthoc_l3 = method in POSTHOC and level == "L3"
     only = (f"posthoc_datasets={POSTHOC_L3_DATASETS}",) if posthoc_l3 else ()
+    langs = languages or LANGS[method]
     return (f"methods=[{method}]", f"levels=[{level}]", "splits=[test]",
-            f"languages={LANGS[method]}", f"attacks={attacks}", *only)  # fmt: skip
+            f"languages={langs}", f"attacks={attacks}", *only)  # fmt: skip
 
 
 def _image(wmb: str) -> tuple[str, ...]:
@@ -245,17 +262,36 @@ def test_phase(method: str, level: str, wmb: str, after: Sequence[str] = ()) -> 
 
 
 def attack_steps(
-    method: str, attack: str, level: str, wmb: str, points: Sequence[str] = ()
+    method: str,
+    attack: str,
+    level: str,
+    wmb: str,
+    points: Sequence[str] = (),
+    languages: str | None = None,
+    clean_needs: bool = True,
+    suffix: str = "",
+    acw: bool | None = None,
+    after: Sequence[str] = (),
 ) -> list[Step]:
     """Un attacco sul test di un livello: attack, execute, detect, metrics (M10, M11); con
-    ``points`` solo quei punti dell'attacco (``attack_points``, P6)."""
-    owner, prefix = METHOD_OWNER[method], f"{method}/{level}/{attack}"
+    ``points`` solo quei punti dell'attacco (``attack_points``, P6).
+
+    Argomenti di P7.a (i default lasciano i passi come prima): ``languages`` al posto di quelli
+    del metodo; ``clean_needs=False`` senza dipendenze dai passi senza attacco del livello (su L1
+    i cinque metodi li hanno fatti fuori dalle catene, nella M10: gli artefatti ci sono e le fasi
+    li leggono); ``suffix`` nel nome della catena (``<attacco><suffix>``, es. la variante ridotta
+    di ACW); ``acw`` al posto della regola di ACW (L2 e L3); ``after`` passi in più da cui dipende
+    l'attacco (P7.a: la variante completa di ACW dopo la ridotta)."""
+    owner, prefix = METHOD_OWNER[method], f"{method}/{level}/{attack}{suffix}"
     chosen = (f"attack_points=[{','.join(repr(h) for h in points)}]",) if points else ()
-    test = (*_test(method, level, f"[{attack}]"), *chosen)
+    test = (*_test(method, level, f"[{attack}]", languages), *chosen)
     image = _image(wmb) if level == "L3" else ()
-    acw = method == "acw" and level in ("L2", "L3")
+    if acw is None:
+        acw = method == "acw" and level in ("L2", "L3")
     gpu_attack = "auto" if attack in ("T2.2", "T2.3", "T3.1") else None
     clean = f"{method}/{level}"
+    marked = ((f"{clean}/watermark",) if clean_needs else ()) + tuple(after)
+    clean_metrics = (f"{clean}/metrics",) if clean_needs else ()
     return [
         Step(
             f"{prefix}/attack",
@@ -263,7 +299,7 @@ def attack_steps(
             "attack",
             test,
             jobs=4,
-            needs=(f"{clean}/watermark",),
+            needs=marked,
             gpu=gpu_attack,
             acw=acw,
         ),  # fmt: skip
@@ -290,10 +326,41 @@ def attack_steps(
             owner,
             "metrics",
             (*test, "detection.threshold_levels=[L1,L2]"),
-            needs=(f"{prefix}/execute", f"{prefix}/detect", f"{clean}/metrics"),
+            needs=(f"{prefix}/execute", f"{prefix}/detect", *clean_metrics),
             acw=acw,
         ),  # fmt: skip
     ]
+
+
+def p7a_steps(method: str, wmb: str) -> list[Step]:
+    """P7.a (ADR-018 §5): T1.6 e T2.5 con tutti i loro punti su L1 e L2 test, solo python.
+
+    Su L1 nessuna dipendenza dai passi senza attacco (fatti fuori dalle catene, M10); su L2 da
+    quelli delle catene (:func:`test_phase`). I passi di ACW hanno ``acw=True`` anche su L1 (la
+    rilevazione usa Sourcery: partono solo con ``--with-acw``); per ACW anche la variante ridotta
+    :data:`P7A_REDUCED` (catene ``acw/<livello>/<attacco>-reduced``).
+
+    Le celle della variante ridotta sono un sottoinsieme di quelle della completa: stessi
+    ``attack_params_hash``, quindi stessi artefatti e stesse cartelle di lavoro del worker. Perché
+    le due varianti non scrivano mai insieme le stesse celle, l'attacco della completa dipende dalle
+    metriche della ridotta: la completa parte solo a ridotta finita (e rifà solo i punti che
+    mancano). Lanciare la completa vuol dire quindi dare ``--only`` per tutte e due."""
+    if method not in P7A_METHODS:
+        raise ValueError(f"P7.a: {method} is not among {P7A_METHODS}")
+    is_acw = method == "acw"
+    steps: list[Step] = []
+    for level in P7A_LEVELS:
+        for attack in P7A_ATTACKS:
+            common: dict[str, Any] = {"languages": "[python]", "clean_needs": level != "L1",
+                                      "acw": is_acw}  # fmt: skip
+            after: tuple[str, ...] = ()
+            if is_acw:
+                reduced = attack_steps(method, attack, level, wmb, P7A_REDUCED[attack],
+                                       suffix="-reduced", **common)  # fmt: skip
+                steps += reduced
+                after = (reduced[-1].key,)  # metriche della ridotta
+            steps += attack_steps(method, attack, level, wmb, after=after, **common)
+    return steps
 
 
 def sweet_steps(wmb: str) -> list[Step]:
@@ -526,6 +593,8 @@ def all_steps(wmb: str) -> list[Step]:
         steps += k_curve_steps(method, wmb)
     for method in POSTHOC:
         steps += posthoc_steps(method, wmb)
+    for method in P7A_METHODS:  # P7.a: in coda, lanciati solo con --only
+        steps += p7a_steps(method, wmb)
     keys = [s.key for s in steps]
     duplicates = sorted({k for k in keys if keys.count(k) > 1})
     if duplicates:
