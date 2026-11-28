@@ -425,6 +425,15 @@ def roc_points(pos: Any, neg: Any) -> tuple[Any, Any]:
     return fpr, tpr
 
 
+def _yerr(value: Any, low: Any, high: Any) -> list[list[float]]:
+    """Barre d'errore asimmetriche (sotto, sopra) come liste: con una matrice 2xN e N = 1
+    matplotlib converte in scalare un array di un elemento (DeprecationWarning di NumPy 1.25,
+    errore nelle versioni future)."""
+    below = np.nan_to_num(np.asarray(value, dtype=float) - np.asarray(low, dtype=float))
+    above = np.nan_to_num(np.asarray(high, dtype=float) - np.asarray(value, dtype=float))
+    return [below.tolist(), above.tolist()]
+
+
 def save_figure(fig: Any, out: Path, name: str) -> None:
     out.mkdir(parents=True, exist_ok=True)
     for ext in ("pdf", "png"):
@@ -542,7 +551,7 @@ def imperceptibility_figure(long: pd.DataFrame, out: Path, level: str = "L1") ->
         value = np.array([sub["value"].get(k, np.nan) for k in keys], dtype=float)
         low = np.array([sub["ci_low"].get(k, np.nan) for k in keys], dtype=float)
         high = np.array([sub["ci_high"].get(k, np.nan) for k in keys], dtype=float)
-        err = np.vstack([np.nan_to_num(value - low), np.nan_to_num(high - value)])
+        err = _yerr(value, low, high)
         ax.bar(x + (i - 0.5) * 0.4, value, width=0.4, yerr=err, capsize=1.5,
                label=name.split("_")[1])  # fmt: skip
     ax.axhline(0.5, ls=":", lw=0.8, color="grey")
@@ -623,7 +632,7 @@ def capacity_figures(rows: pd.DataFrame, out: Path) -> list[str]:
                 value = cur[metric].to_numpy(dtype=float)
                 low = cur[f"{metric}_low"].to_numpy(dtype=float)
                 high = cur[f"{metric}_high"].to_numpy(dtype=float)
-                err = np.vstack([np.nan_to_num(value - low), np.nan_to_num(high - value)])
+                err = _yerr(value, low, high)
                 ax.errorbar(x, value, yerr=err, marker="o", ms=3, capsize=2, label=str(model))
             ax.set_xticks(x, labels, fontsize=7)
             ax.set(title=title, ylim=(0.0, 1.0))

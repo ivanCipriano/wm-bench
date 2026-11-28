@@ -355,3 +355,23 @@ def test_report_script_never_overwrites_an_out_folder(tmp_path: Path) -> None:
         script.main(["--out", str(tmp_path / "new"), "--with-p7a", "--with-posthoc"])
     assert exc.value.code == 2
     assert not (tmp_path / "new").exists()
+
+
+@pytest.mark.filterwarnings("error::DeprecationWarning")
+def test_error_bars_with_a_single_bar_raise_no_warning(tmp_path: Path) -> None:
+    """Una sola cella d'impercettibilità (una barra per classificatore): con la matrice 2x1 di
+    prima matplotlib dava il DeprecationWarning di NumPy sulla conversione a scalare."""
+    from bench.report import _yerr, imperceptibility_figure
+
+    assert _yerr([0.6, 0.5], [0.5, float("nan")], [0.8, 0.7]) == [
+        pytest.approx([0.1, 0.0]),
+        pytest.approx([0.2, 0.2]),
+    ]
+    long = pd.DataFrame({
+        "source": ["imperceptibility"] * 2, "method": ["stone"] * 2, "model_id": ["m"] * 2,
+        "level": ["L1"] * 2, "language": ["python"] * 2, "attack": [None] * 2,
+        "metric": ["adversarial_logreg_auroc_oof", "adversarial_unixcoder_auroc_oof"],
+        "value": [0.6, 0.7], "ci_low": [0.5, 0.6], "ci_high": [0.7, 0.8],
+    })  # fmt: skip
+    assert imperceptibility_figure(long, tmp_path) == ["imperceptibility_adversarial_L1"]
+    assert (tmp_path / "imperceptibility_adversarial_L1.pdf").is_file()
