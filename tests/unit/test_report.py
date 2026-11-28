@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from bench.config.builder import config_dir
 from bench.config.schema import ExperimentConfig
@@ -218,3 +219,139 @@ def test_posthoc_report_keeps_the_five_methods_identical(
     assert {"T2.4k", "T2.5"} <= set(l2["attack"])
     assert (out_p / "figures" / "k_curve_L2.png").is_file()
     assert "Metodi post-hoc (P6)" in (out_p / "README.md").read_text(encoding="utf-8")
+
+
+# --------------------------------------------------------------------------- tesi: P7.a, capacità
+ANNOTATIONS = config_dir() / "report" / "annotations.yaml"
+CAPACITY_VALUES = {"message_accuracy": 0.2, "bit_accuracy": 0.6, "message_accuracy_detected": 0.9}
+
+
+def _store_for_thesis(cfg: ExperimentConfig, with_p7a_cells: bool) -> BenchmarkFacade:
+    """STONE, MCGMark e PromptMark congelati: metriche senza attacco (L1) e con T1.4 (L1); con
+    ``with_p7a_cells`` anche T1.6 (L1) e T2.5 (L2) per tutti e tre (PromptMark è fuori da P7.a).
+    Le righe di capacità ci sono per tutti, per controllare che il report le mostri solo per
+    MCGMark."""
+    from bench.attacks.base import grid_attacks
+
+    facade = BenchmarkFacade(cfg)
+    t14, t16, t25 = (next(iter(grid_attacks(a))) for a in ("T1.4", "T1.6", "T2.5"))
+    for method, h in (("stone", "h1"), ("mcgmark", "h2"), ("promptmark", "h3")):
+        frozen = [FrozenCell(model_id="m", language="python", config_hash=h)]
+        record = FreezeRecord(method=method, frozen_at=datetime.now(UTC),
+                              levels=list(FINAL_LEVELS), grid_sha256=None, candidate_hashes=[],
+                              cells=frozen)  # fmt: skip
+        _write(facade, freeze_ref(method), record)
+        ref = metrics_ref(method, "m", h, "L1", "python", "test", FINAL_LEVELS)
+        _write(facade, ref, _rows({"tpr_at_fpr": 0.5, "auroc": 0.9, "pass_at_1": 0.7}))
+        attacked = [("T1.4", t14, "L1")]
+        if with_p7a_cells:
+            attacked += [("T1.6", t16, "L1"), ("T2.5", t25, "L2")]
+        for attack_id, ph, level in attacked:
+            values = {"tpr_at_fpr": 0.3, "auroc": 0.8, "changed_fraction": 0.9,
+                      "codebleu_distance": 0.3, **CAPACITY_VALUES}  # fmt: skip
+            ref = metrics_ref(method, "m", h, level, "python", "test", FINAL_LEVELS,
+                              (attack_id, ph))  # fmt: skip
+            _write(facade, ref, _rows(values))
+    return facade
+
+
+def test_p7a_option(cfg: ExperimentConfig, tmp_path: Path) -> None:
+    """Senza l'opzione le celle di P7.a nello store non cambiano niente; con l'opzione entrano solo
+    in metrics_long e in attacks_P7a (ACW, STONE, MCGMark; L1 e L2), il resto è identico."""
+    cfg_a, cfg_b = _with_artifacts(cfg, tmp_path / "a"), _with_artifacts(cfg, tmp_path / "b")
+    without = _store_for_thesis(cfg_a, with_p7a_cells=False)
+    with_cells = _store_for_thesis(cfg_b, with_p7a_cells=True)
+    out_a, out_b, out_p = tmp_path / "ra", tmp_path / "rb", tmp_path / "rp"
+    written_a = build_report(without.store, cfg_a, out_a, ANNOTATIONS)
+    written_b = build_report(with_cells.store, cfg_b, out_b, ANNOTATIONS)
+    assert written_a == written_b and _tables(out_a) == _tables(out_b)
+    written_p = build_report(with_cells.store, cfg_b, out_p, ANNOTATIONS, p7a=True)
+    assert set(written_p) == {*written_b, "tables/attacks_P7a"}  # nessuna figura in più
+    same = {k: v for k, v in _tables(out_p).items()
+            if not k.startswith(("metrics_long", "attacks_P7a"))}  # fmt: skip
+    assert same == {k: v for k, v in _tables(out_b).items() if not k.startswith("metrics_long")}
+    long = pd.read_csv(out_p / "tables" / "metrics_long.csv")
+    p7 = long[long["attack"].isin(["T1.6", "T2.5"])]
+    assert set(p7["method"]) == {"stone", "mcgmark"}  # PromptMark fuori da P7.a
+    table = pd.read_csv(out_p / "tables" / "attacks_P7a.csv")
+    assert set(zip(table["attack"], table["level"], strict=True)) == {
+        ("T1.6", "L1"),
+        ("T2.5", "L2"),
+    }
+    assert set(table["method"]) == {"stone", "mcgmark"}
+    assert "message_accuracy" not in table.columns  # capacità solo con capacity
+    assert "P7.a (ADR-018" in (out_p / "README.md").read_text(encoding="utf-8")
+
+
+def test_capacity_columns_only_for_mcgmark(cfg: ExperimentConfig, tmp_path: Path) -> None:
+    from bench.report import CAPACITY_METRICS
+
+    facade = _store_for_thesis(cfg, with_p7a_cells=True)
+    build_report(facade.store, cfg, tmp_path / "default", ANNOTATIONS)
+    default = pd.read_csv(tmp_path / "default" / "tables" / "attacks_L1.csv")
+    assert not set(CAPACITY_METRICS) & set(default.columns)
+    out = tmp_path / "capacity"
+    written = build_report(facade.store, cfg, out, ANNOTATIONS, p7a=True, capacity=True)
+    for name in ("attacks_L1", "attacks_P7a"):
+        table = pd.read_csv(out / "tables" / f"{name}.csv")
+        assert list(table.columns[-3:]) == list(CAPACITY_METRICS), name
+        mcg = table[table["method"] == "mcgmark"]
+        others = table[table["method"] != "mcgmark"]
+        assert not mcg.empty and not others.empty, name
+        for metric, value in CAPACITY_VALUES.items():
+            assert (mcg[metric] == value).all(), (name, metric)
+        assert others[list(CAPACITY_METRICS)].isna().all().all(), name
+        base = default.columns if name == "attacks_L1" else table.columns[:-3]
+        assert list(table.columns[: len(base)]) == list(base), name
+    # nessuna rilevazione di MCGMark nello store: tabelle della curva vuote, nessuna figura
+    assert {"tables/capacity_by_sites_mcgmark", "tables/capacity_by_loc_mcgmark"} <= set(written)
+    assert not [w for w in written if w.startswith("figures/capacity_")]
+    assert "Capacità di MCGMark" in (out / "README.md").read_text(encoding="utf-8")
+
+
+def test_capacity_figures(tmp_path: Path) -> None:
+    """Una figura PDF per (metodo, fascia, livello) con campioni nelle fasce; la curva per
+    ``loc_to_generate`` senza dato non si scrive."""
+    from bench.metrics.capacity_bands import LOC_BANDS, MCGMARK_SITE_BANDS, band_rows
+    from bench.report import capacity_figures
+    from tests.unit.test_capacity_bands import _table
+
+    frame = pd.DataFrame([
+        {"method": "mcgmark", "model_id": model, "level": "L1", "language": "python",
+         "kind": kind, **row}
+        for model in ("qwen", "deepseek")
+        for kind, column, bands in (("sites", "n_sites", MCGMARK_SITE_BANDS),
+                                    ("loc", "loc_to_generate", LOC_BANDS))
+        for row in band_rows(_table(), column, bands, 12, 10.0, seed=1)
+    ])  # fmt: skip
+    out = tmp_path / "figures"
+    assert capacity_figures(frame, out) == ["capacity_by_sites_mcgmark_L1"]
+    assert (out / "capacity_by_sites_mcgmark_L1.pdf").is_file()
+    assert not (out / "capacity_by_loc_mcgmark_L1.pdf").exists()
+    assert capacity_figures(pd.DataFrame(), out) == []
+
+
+def test_p7a_is_not_combined_with_the_posthoc_methods(cfg: ExperimentConfig) -> None:
+    from bench.report import METHODS, POSTHOC_METHODS, collect
+
+    facade = BenchmarkFacade(cfg)
+    with pytest.raises(ValueError, match="p7a"):
+        collect(facade.store, (), (*METHODS, *POSTHOC_METHODS), p7a=True)
+
+
+def test_report_script_never_overwrites_an_out_folder(tmp_path: Path) -> None:
+    """La guardia sta nello script: una cartella --out esistente si rifiuta prima di leggere la
+    configurazione o lo store; il default senza --out resta com'era."""
+    from tests.unit.test_inventory_scripts import _load
+
+    script = _load("report")
+    existing = tmp_path / "report"
+    existing.mkdir()
+    with pytest.raises(SystemExit) as exc:
+        script.main(["--out", str(existing), "--with-p7a", "--with-capacity"])
+    assert exc.value.code == 2
+    assert list(existing.iterdir()) == []
+    with pytest.raises(SystemExit) as exc:
+        script.main(["--out", str(tmp_path / "new"), "--with-p7a", "--with-posthoc"])
+    assert exc.value.code == 2
+    assert not (tmp_path / "new").exists()
