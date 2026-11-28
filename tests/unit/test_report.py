@@ -375,3 +375,16 @@ def test_error_bars_with_a_single_bar_raise_no_warning(tmp_path: Path) -> None:
     })  # fmt: skip
     assert imperceptibility_figure(long, tmp_path) == ["imperceptibility_adversarial_L1"]
     assert (tmp_path / "imperceptibility_adversarial_L1.pdf").is_file()
+
+
+def test_r6_marks_only_t1_2_javascript_of_sweet() -> None:
+    """R6 (docs/results_notes.md): T1.2 su JavaScript è un attacco nullo; l'annotazione segna solo
+    quelle righe di metriche, senza cambiare valori."""
+    r6 = next(a for a in load_annotations(ANNOTATIONS) if a.deviation == "R6")
+    assert r6.applies("sweet", "L1", "T1.2", "metrics", "javascript")
+    assert not r6.applies("sweet", "L1", "T1.2", "metrics", "python")
+    assert not r6.applies("sweet", "L1", "T1.1", "metrics", "javascript")
+    assert not r6.applies("sweet", "L1", None, "metrics", "javascript")
+    assert not r6.applies("stone", "L1", "T1.2", "metrics", "javascript")
+    assert not r6.applies("sweet", "L1", "T1.2", "imperceptibility", "javascript")
+    assert "attacco nullo" in r6.note

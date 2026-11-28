@@ -1,6 +1,7 @@
 # Deviazioni da segnalare nelle tabelle del report (M14; docs/deviations.md). Campi opzionali:
 # methods, levels, attacks, languages (vuoti = tutti); scope: metrics o imperceptibility (vuoto =
-# entrambe). Si aggiornano quando si registra una deviazione nuova.
+# entrambe). Si aggiornano quando si registra una deviazione nuova. Le voci R<n> non sono
+# deviazioni ma risultati da segnalare (docs/results_notes.md); non cambiano nessun valore.
 annotations:
 - {deviation: D6, methods: [acw], note: "ACW solo su Python (altri linguaggi NOT_APPLICABLE)"}
 - {deviation: D9, note: "accoppiamento baseline/marcato approssimato (ΔPass@1)"}
@@ -23,3 +24,4 @@ annotations:
 - {deviation: D39, levels: [L3], note: "negativi di CodeSearchNet senza le funzioni già usate in L1"}
 - {deviation: D40, levels: [L3], note: "ClassEval con 2.048 token nuovi"}
 - {deviation: D41, levels: [L3], note: "ClassEval 17, 48, 58 fuori da Pass@1 (91 classi)"}
+- {deviation: R6, methods: [sweet], attacks: [T1.2], languages: [javascript], scope: metrics, note: "attacco nullo: ESLint 9.14 (recommended, --fix) non modifica nessun campione (0/840 per modello); docs/results_notes.md R6"}
