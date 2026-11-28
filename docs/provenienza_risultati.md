@@ -29,9 +29,9 @@ punti dell'attacco, configurazioni) calcolate in giorni diversi, non la stessa c
 | MCGMark | L1+L2 | dev (calibrazione, selezione, congelamento) | main | 10–22 ott; k2 27 ott | sì (prima e dopo la patch 0004 degli outlier) | no | congelamenti 60f4f65 (17 ott) e e4a6d39 (22 ott, outlier); vale il secondo |
 | MCGMark | L1 | dev | main | 7–22 ott; k2 27 ott | sì | no | |
 | MCGMark | L2 | dev | main + non registrato | 15–22 ott; k2 27 ott | sì | detect 10 file, execute 4 file (16 ott) | |
-| MCGMark | L1 | test | main + non registrato | 17–29 ott | sì (due configurazioni: prima e dopo gli outlier) | T4.1 (attack, execute, detect, metrics: 28 ott), execute senza attacco 4 file (18 ott), controllo di T2.2 (26 ott) | |
-| MCGMark | L2 | test | main (205d8d0) | 4 nov | no | no | |
-| MCGMark | L3 | test | main (9b3c6b4; gemella anche 205d8d0) | 4–5 nov | solo la gemella | no | |
+| MCGMark | L1 | test | main + non registrato | 17–29 ott | sì (due configurazioni: prima e dopo gli outlier) | T4.1 (attack, execute, detect, metrics: 28 ott), execute senza attacco 4 file (18 ott), controllo di T2.2 (26 ott) | metrics ricalcolate al ramo il 28 nov (vedi «Aggiornamento del 28 novembre 2026»); le 4 metrics di T4.1 ora hanno il commit |
+| MCGMark | L2 | test | main (205d8d0) | 4 nov | no | no | metrics ricalcolate al ramo il 28 nov |
+| MCGMark | L3 | test | main (9b3c6b4; gemella anche 205d8d0) | 4–5 nov | solo la gemella | no | metrics ricalcolate al ramo il 28 nov |
 | PromptMark | L1+L2 | dev (calibrazione, selezione, congelamento) | main + non registrato | 10–16 ott; k2 27 ott | sì | calibrate 54 file e tune 4 file (14 ott) | congelamento 23a9a44 (16 ott) |
 | PromptMark | L1 | dev | main + non registrato | 7–13 ott | sì | watermark 60, execute 54, detect 162 file (12–13 ott); detect_k2 (27 ott) | |
 | PromptMark | L2 | dev | quasi tutto non registrato (watermark anche main 07521df) | 14–16 ott; k2 27 ott | sì | detect 224, execute 56, watermark 6 file; detect_k2 | |
@@ -112,7 +112,57 @@ in `src/bench/doctor.py` (una riga, controllo degli ambienti), `configs/envs/env
 `patches/multimark/README.md`: niente che `detect` o `metrics` di ACW leggano, quindi i risultati
 sono quelli della versione main+D42. Le modifiche comuni di ADR-017 (16 novembre in poi) sono tutte
 successive: nessun risultato dei cinque metodi le usa. Per lo stesso motivo **nessuna** cella di
-MCGMark ha ancora `message_accuracy_detected` né la capacità sulle celle attaccate.
+MCGMark ha ancora `message_accuracy_detected` né la capacità sulle celle attaccate (situazione al 25
+novembre; superata dal ricalcolo del 28 novembre, qui sotto).
+
+**Aggiornamento del 28 novembre 2026: metriche di test di MCGMark ricalcolate sul ramo.** Fase
+`metrics` con `force=true` sulle 98 celle di test della configurazione congelata e4a6d39 (6 senza
+attacco su L1–L3, 52 con gli attacchi di L1 compreso T3.1, 40 con T2.4k su L2 e L3), job 829062,
+829066–829069 dell'account di Ivan; dettaglio, copia di sicurezza, doppio invio di T2.4k e
+controlli in `docs/modifiche_ramo.md` («Ricalcolo delle metriche di MCGMark»).
+
+- **Versione del codice:** i manifest di `metrics_L1L2/…/mcgmark/` delle 98 celle hanno
+  `repo_commit` **5d9184bbe760**, `repo_dirty` falso (job 829066: 6 file; 829067 e 829068: 26 + 26;
+  829069: 40; `$WMB/logs/provenance_mcgmark_cells.txt`, parte B). 5d9184b è un commit di sola
+  documentazione sopra 301ef4b: il codice è quello del ramo con le misure additive di ADR-017
+  (punti 7 e 8 di `docs/modifiche_ramo.md`). Watermark, gemella, esecuzioni, rilevazioni, soglie e
+  congelamento di MCGMark restano su `main` com'erano nella tabella.
+- **Valori:** il controllo `mcgmark_metrics_recompute_check_v2.txt` trova 0 valori cambiati su 156
+  file; righe nuove `message_accuracy_detected` in 98 file e `message_accuracy`, `bit_accuracy`,
+  `embedding_success_rate` nelle 92 celle con attacco. Il primo controllo
+  (`mcgmark_metrics_recompute_check.txt`) non vale: lanciato prima della fine dei job.
+- **Celle senza commit** (parte A del log, tutte di job dell'account di Simone): le 4 metrics di
+  T4.1 di L1 test (job 807584, 28 ottobre) sono state riscritte e ora hanno il commit; restano 34
+  file: L2 dev (14: execute di marcato e gemella, rilevazioni dei cinque soggetti, configurazione
+  `9df49d3f4f38`), L1 test execute del 18 ottobre (4), controllo di T2.2 (detect e metrics, 4,
+  configurazione congelata), T4.1 attack, execute e detect (12, configurazione congelata).
+- **Le 4 esecuzioni del 18 ottobre** (job 800150 e 800151) stanno tutte sotto `9df49d3f4f38`, ma
+  sono due cose diverse:
+  - `execution/llm_watermarked/…/9df49d3f4f38/L1_python_test`: marcato della configurazione di
+    prima degli outlier (congelamento 60f4f65, superato da e4a6d39). Non è usato da nessuna cella
+    congelata né dal report (2 file);
+  - `execution/baseline_twin/…/9df49d3f4f38/L1_python_test`: è **la gemella delle configurazioni
+    congelate**. Per D32 la gemella si genera senza processor e `outlier_scale` non cambia il
+    testo: `McgmarkAdapter.twin_hparams` toglie `outlier_scale` e `twin_config_hash`
+    (`src/bench/pipeline/stages/watermark.py`) dà l'hash dei soli iperparametri rimasti, cioè
+    quello del default senza outlier, `9df49d3f4f38`, per ogni configurazione. Le fasi `execute`,
+    `detect`, `metrics` e `imperceptibility` delle celle congelate leggono questa gemella (2 file).
+- **Metriche di test non ricalcolate** (parte B: 156 file, 98 ricalcolati a 5d9184bbe760 e 20 di
+  P7.a a 8f5588a37562; restano 38):
+  - `metrics_attack_control` di T2.2 (D34), configurazione congelata, job 805780, commit non
+    registrato (2 file): non calcola metriche di capacità;
+  - 6bcbdbe0a902, job 807573, 28 ottobre (2 file): `metrics_remark` di T3.1 (k2), configurazione
+    congelata; non calcola metriche di capacità;
+  - 1637b5aab914 (job 800172, 18 ottobre, 2 file), 34ed25f659a6 (job 800894, 20 ottobre, 30 file)
+    e 38604d9abd2b (job 801556, 21 ottobre, 2 file): 34 file della configurazione **di prima degli
+    outlier** (`9df49d3f4f38`), scritti prima del congelamento del 22 ottobre. Il numero torna con
+    le celle pianificate: 156 − 122 (98 + 20 di P7.a + 2 di controllo + 2 di T3.1 k2) = 34.
+    Dedotto dai conteggi e dalle date (senza attacco 2; T1.1, T1.2 v1, T1.3, T1.4, T1.5 = 30;
+    T1.2 v2 dopo 38604d9 = 2), non letto dai percorsi.
+  - **Il report non le raccoglie:** `bench.report.collect` legge solo le configurazioni del record
+    di congelamento (`frozen_configs`, che prende `config_hash` da `record.cells`) e costruisce i
+    percorsi con quell'hash (`metrics_ref(method, model, h, …)`); le cartelle `attack_control/` e
+    `remark/` non sono mai lette.
 
 **Risultati su commit di main precedenti ad a64f4ea.** Tutti gli altri risultati con commit
 registrato sono su commit di `main` fra il 5 ottobre e il 5 novembre. Fra 205d8d0 (2 novembre) e

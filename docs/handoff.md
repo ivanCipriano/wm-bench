@@ -418,6 +418,11 @@ fi
 
 ### 3.2 Ricalcolo delle metriche di MCGMark (da `docs/da_fare_cluster.md` §3), necessario
 
+> **SUPERATO il 28/11/2026: copia incompleta e invii rifiutati, vedi docs/modifiche_ramo.md**
+> (sezione «Ricalcolo delle metriche di MCGMark»). Il comando qui sotto resta solo come riferimento:
+> `cp -a metrics_L1L2/mcgmark` non copia le celle con attacco, e il secondo e il terzo `bench
+> submit` vengono rifiutati senza `--allow-concurrent`.
+
 È necessario perché la tesi mostra la capacità sotto attacco di MCGMark.
 
 **Cosa fa.** Riscrive solo `metrics_L1L2/mcgmark/...`: stesse celle, stessi percorsi, soltanto la

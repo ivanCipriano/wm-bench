@@ -38,6 +38,7 @@ override e dipendenze; il ramo aggiunge solo i 234 passi di `mcss` e `multimark`
 | 16 | `metrics` sul test: scelta della cella congelata per `config_hash` quando il record ha più configurazioni; seconda chiave (`detect_k2`, `calibrate_k2`, `metrics_remark`) per configurazione | Estensione | Nessuno: con una sola configurazione per (modello, linguaggio) si prende l'unica cella, come prima; stessi controlli (soglia definitiva, `config_hash`, sha256 della soglia) | c3ebf6f; ADR-019 §2, §4 |
 | 17 | Script: `report_metrics.py` (`--config`, soglia teorica `score >= 2`), `estimate_closing_cost.py --methods`, `check_test.py` e `freeze_method.py` estesi ai post-hoc, `report_aggregated.py`, `run_p6.sh` | Estensione | Nessuno: per i cinque gli script si comportano come prima (il rifiuto del repository «sporco» in `freeze_method.py` vale solo per i post-hoc) | b499905, c3ebf6f, 60c6a9d |
 | 18 | Catene: passi di test di `mcss` e `multimark` (fermi fino al congelamento) | Estensione | Nessuno: i 159 passi dei cinque sono identici (verificato confrontando `all_steps` di a64f4ea e del ramo) | c3ebf6f |
+| 19 | Report della tesi (28 novembre 2026): `scripts/report.py --with-p7a` (T1.6 e T2.5 di ACW, STONE e MCGMark su L1 e L2 in `metrics_long` e nella tabella `attacks_P7a`) e `--with-capacity` (colonne `message_accuracy`, `bit_accuracy`, `message_accuracy_detected` nelle tabelle degli attacchi, solo MCGMark; curve `capacity_by_sites_mcgmark_<livello>` con fasce a giri 1–23, 24–47, 48–95, 96+ e `capacity_by_loc_mcgmark_<livello>`); guardia: una cartella `--out` esistente si rifiuta; fasce e tabella della cella spostate da `scripts/report_capacity.py` a `bench.metrics.capacity_bands` | Estensione (report) | Nessuno sui dati; senza le opzioni il report è lo stesso byte per byte (test) | 075b7eb, e8aa553 |
 
 ## Avvisi per chi lavora sui cinque metodi
 
@@ -48,9 +49,66 @@ override e dipendenze; il ramo aggiunge solo i 234 passi di `mcss` e `multimark`
   `message_accuracy_detected` né la capacità sulle celle attaccate; quelle calcolate dopo sì. I valori
   delle metriche che esistevano già sono identici. Le tabelle del report possono quindi avere righe in
   più per alcune celle di MCGMark e non per altre, finché la fase `metrics` non si rifà.
+  **Rifatta il 28 novembre 2026** sulle 98 celle di test della configurazione congelata (sezione
+  «Ricalcolo delle metriche di MCGMark» qui sotto): le tabelle di MCGMark non sono più miste.
 - **ACW con D42:** i campioni `sourcery timeout` si riportano per livello, modello e insieme quando
   ACW su L3 è finito (D42).
 - **Provenienza:** i manifest scritti dal ramo hanno `repo_commit` di `posthoc-multimark`; per le fasi
   dei cinque metodi il codice usato è equivalente a ed59236 salvo le righe additive dei punti 7 e 8.
 - **Opzioni nuove** (`hpo.points`, `attack_points`, `posthoc_datasets`): non servono ai cinque; con il
   default `null` non cambiano niente.
+
+## Ricalcolo delle metriche di MCGMark (28 novembre 2026)
+
+Risultati dei cinque metodi ricalcolati sul ramo; il codice è quello della tabella (punti 7 e 8,
+ADR-017), nessun commit di codice nuovo.
+
+- **Perché.** Le metriche di test di MCGMark di M10 e M11 (fino al 5 novembre) non avevano
+  `message_accuracy_detected` né la capacità sulle celle con attacco; quelle di P7.a (T1.6, T2.5,
+  calcolate sul ramo) sì. La tesi riporta la capacità sotto attacco di MCGMark, quindi le tabelle
+  non potevano restare miste.
+- **Cosa.** Solo la fase `metrics` con `force=true`, `methods=[mcgmark]`, `splits=[test]`,
+  `languages=[python]`, `detection.threshold_levels=[L1,L2]`, configurazione congelata e4a6d39
+  (Qwen `697c5eb78b23`, DeepSeek `6c30ca18a68e`). Tre invii, 98 celle (dry run: 6, 52, 40):
+  - senza attacco, L1, L2 e L3: 6 celle;
+  - L1 con T1.1, T1.2, T1.3, T1.4, T1.5, T2.1, T2.2, T2.4, T3.1, T4.1: 52 celle;
+  - L2 e L3 con T2.4k: 40 celle.
+- **Cosa non si è toccato.** Calibrazione, scelta, congelamento, rilevazioni ed esecuzioni (solo
+  letti). Non ricalcolate: le celle di P7.a (avevano già le righe nuove), `metrics_remark` di T3.1
+  (k2) e `metrics_attack_control` di T2.2 (D34): queste due fasi non calcolano metriche di capacità,
+  quindi un ricalcolo non aggiungerebbe niente.
+- **Copia di sicurezza.** `$WMB/backup_metrics_mcgmark_20261128`, creata alle 11:26:05: tutte le
+  cartelle `mcgmark` sotto `metrics_L1L2/` (anche `attacked/`, `attack_control/` e `remark/`), 312
+  file nello store e 312 nella copia. Il comando di `docs/handoff.md` §3.2 (`cp -a
+  metrics_L1L2/mcgmark`) avrebbe copiato solo le 6 celle senza attacco: le celle con attacco stanno in
+  `metrics_L1L2/attacked/<attacco>/<hash>/mcgmark/`. È stato usato il comando corretto.
+- **Job SLURM** (tutti `COMPLETED`, account di Ivan): 829062 (T2.4k, partito alle 11:26:34, dopo
+  la copia), 829066, 829067 e 829068 (le celle senza attacco e gli attacchi di L1), 829069.
+  **Doppio invio di T2.4k:** 829069 è un secondo invio delle stesse 40 celle di T2.4k, partito alle
+  11:37:16, dopo la fine di 829062 (nessuna sovrapposizione). Con `force=true` ha riscritto le 40
+  celle già riscritte da 829062; i valori finali sono quelli di 829069 e il controllo v2 li trova
+  identici a quelli di prima per le metriche che esistevano già.
+- **Controlli.**
+  - `$WMB/logs/mcgmark_metrics_recompute_check.txt` (11:26:38): **non valido**. È stato lanciato
+    prima della fine dei job, quindi ha letto celle non ancora riscritte o in corso di
+    riscrittura. Resta nei log com'è e non si usa.
+  - `$WMB/logs/mcgmark_metrics_recompute_check_v2.txt`: controllo valido, a job finiti. 156 file di
+    metriche confrontati con la copia, **0 valori cambiati**; `message_accuracy_detected` nuova in
+    98 file (6 + 52 + 40); `message_accuracy`, `bit_accuracy` ed `embedding_success_rate` nuove in
+    92 file (le celle con attacco).
+- **Effetto.** Additivo: stesse celle, stessi percorsi, valori esistenti identici, righe nuove.
+  I manifest delle 98 celle hanno ora il `repo_commit` del ramo (`docs/provenienza_risultati.md`).
+
+## Test del report (28 novembre 2026)
+
+- **075b7eb**, log `$WMB/logs/P7_report_tests_075b7eb.txt.tmp`. Il log è rimasto `.tmp` per la
+  guardia del comando (exit 1: il file prende il nome definitivo solo se tutto passa) e non si
+  rinomina: vale con questo nome. Esito: `ruff check` e `ruff format --check` puliti sui 6 file
+  toccati; `mypy --strict` pulito (134 file); `pytest tests/unit` 1029 passati, 1 saltato,
+  **1 fallito**: `test_attack_tools.py::test_external_tools[T1.2-javascript-eslint]`, che non
+  riguarda il report (nessun file degli attacchi è cambiato fra 5d9184b e 075b7eb) ed è un
+  difetto preesistente di T1.2 su JavaScript: con ESLint 9.14 e le regole `recommended` nessuna
+  correzione si applica (anche sulle 164 canoniche, `M10_canonical_attacks.txt`: UNCHANGED
+  164/164). Inoltre 16 `DeprecationWarning` di NumPy da matplotlib in `test_report.py`.
+- **e8aa553**: barre d'errore passate come liste (niente avviso con una sola barra) e un test
+  con gli avvisi trattati come errori. Log atteso: `$WMB/logs/P7_report_tests_e8aa553.txt`.
